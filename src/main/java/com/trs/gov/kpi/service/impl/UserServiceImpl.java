@@ -1,9 +1,9 @@
-package trs.com.cn.gov.kpi.service.impl;
+package com.trs.gov.kpi.service.impl;
 
 import org.springframework.stereotype.Service;
-import trs.com.cn.gov.kpi.dao.UserMapper;
-import trs.com.cn.gov.kpi.entity.User;
-import trs.com.cn.gov.kpi.service.UserService;
+import com.trs.gov.kpi.dao.UserMapper;
+import com.trs.gov.kpi.entity.User;
+import com.trs.gov.kpi.service.UserService;
 
 import javax.annotation.Resource;
 

@@ -1,6 +1,6 @@
-package trs.com.cn.gov.kpi.service;
+package com.trs.gov.kpi.service;
 
-import trs.com.cn.gov.kpi.entity.User;
+import com.trs.gov.kpi.entity.User;
 
 /**
  * Created by wangxuan on 2017/5/9.

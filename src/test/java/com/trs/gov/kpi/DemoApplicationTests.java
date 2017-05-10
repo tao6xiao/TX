@@ -1,12 +1,12 @@
-package trs.com.cn.gov.kpi;
+package com.trs.gov.kpi;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import trs.com.cn.gov.kpi.entity.User;
-import trs.com.cn.gov.kpi.service.UserService;
+import com.trs.gov.kpi.entity.User;
+import com.trs.gov.kpi.service.UserService;
 
 import javax.annotation.Resource;
 

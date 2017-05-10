@@ -1,11 +1,11 @@
-package trs.com.cn.gov.kpi.controller;
+package com.trs.gov.kpi.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import trs.com.cn.gov.kpi.entity.exception.BizException;
-import trs.com.cn.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 
 /**
  * Created by wangxuan on 2017/5/10.

@@ -2,9 +2,9 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="trs.com.cn.gov.kpi.dao.UserMapper">
+<mapper namespace="com.trs.gov.kpi.dao.UserMapper">
     
-    <resultMap id="userMap" type="trs.com.cn.gov.kpi.entity.User">
+    <resultMap id="userMap" type="com.trs.gov.kpi.entity.User">
         <id column="id" property="id" />
         <result column="name" property="name" />
     </resultMap>

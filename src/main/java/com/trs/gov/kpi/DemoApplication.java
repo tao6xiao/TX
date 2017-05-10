@@ -1,4 +1,4 @@
-package trs.com.cn.gov.kpi;
+package com.trs.gov.kpi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

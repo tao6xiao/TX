@@ -1,9 +1,8 @@
-package trs.com.cn.gov.kpi.dao;
+package com.trs.gov.kpi.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import trs.com.cn.gov.kpi.entity.User;
+import com.trs.gov.kpi.entity.User;
 
 /**
  * Created by wangxuan on 2017/5/9.

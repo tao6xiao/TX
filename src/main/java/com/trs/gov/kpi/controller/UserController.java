@@ -1,8 +1,8 @@
-package trs.com.cn.gov.kpi.controller;
+package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.entity.User;
+import com.trs.gov.kpi.service.UserService;
 import org.springframework.web.bind.annotation.*;
-import trs.com.cn.gov.kpi.entity.User;
-import trs.com.cn.gov.kpi.service.UserService;
 
 import javax.annotation.Resource;
 

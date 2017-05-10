@@ -1,4 +1,4 @@
-package trs.com.cn.gov.kpi.entity;
+package com.trs.gov.kpi.entity;
 
 import lombok.Data;
 
