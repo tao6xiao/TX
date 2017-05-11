@@ -1,6 +1,6 @@
-package com.trs.gov.kpi.utils;
+package trs.com.cn.gov.kpi.utils;
 
-import com.trs.gov.kpi.entity.exception.BizException;
+import trs.com.cn.gov.kpi.entity.exception.BizException;
 
 /**
  * Created by wangxuan on 2017/5/10.

@@ -1,4 +1,4 @@
-package com.trs.gov.kpi.entity.exception;
+package trs.com.cn.gov.kpi.entity.exception;
 
 /**
  * Created by wangxuan on 2017/5/10.
