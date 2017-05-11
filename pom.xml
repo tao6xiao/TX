@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>trs.com.cn.gov</groupId>
-	<artifactId>kpi</artifactId>
+	<artifactId>wcm-gov-kpi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>demo</name>
+	<name>wcm-gov-kpi</name>
 	<description>GovernmentCenter project for Spring Boot</description>
 
 	<parent>
