@@ -1,8 +1,9 @@
 package com.trs.gov.kpi.service.impl;
 
-import org.springframework.stereotype.Service;
 import com.trs.gov.kpi.dao.UserMapper;
 import com.trs.gov.kpi.entity.User;
+import org.springframework.stereotype.Service;
+
 import com.trs.gov.kpi.service.UserService;
 
 import javax.annotation.Resource;
@@ -19,6 +20,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(int id) {
 
-        return userMapper.getUserById(id);
+        return userMapper.selectByPrimaryKey(id);
     }
 }

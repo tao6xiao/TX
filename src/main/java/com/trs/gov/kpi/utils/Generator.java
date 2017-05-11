@@ -1,4 +1,4 @@
-package com.trs.gov.kpi;
+package com.trs.gov.kpi.utils;
 
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.Configuration;
@@ -13,11 +13,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeneratorTest {
+public class Generator {
 	public static void main(String[] args) throws IOException, XMLParserException, InvalidConfigurationException, SQLException, InterruptedException {
 		List<String> warnings = new ArrayList<String>();
 	    boolean overwrite = true;
-		File configFile = new File("C:\\TRS\\workspace\\gov-kpi\\src\\test\\java\\trs\\com\\cn\\gov\\kpi\\generator\\xml\\generator.xml");
+		File configFile = new File("C:\\TRS\\workspace\\gov-kpi\\src\\main\\java\\com\\trs\\gov\\kpi\\utils\\generator.xml");
 	    ConfigurationParser cp = new ConfigurationParser(warnings);
 	    Configuration config = cp.parseConfiguration(configFile);
 	    DefaultShellCallback callback = new DefaultShellCallback(overwrite);

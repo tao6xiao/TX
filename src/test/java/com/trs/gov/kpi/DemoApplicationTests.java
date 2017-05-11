@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import com.trs.gov.kpi.entity.User;
 import com.trs.gov.kpi.service.UserService;
 
 import javax.annotation.Resource;
@@ -20,9 +19,9 @@ public class DemoApplicationTests {
 	@Test
 	public void contextLoads() {
 
-		User user = userService.getUserById(1);
-		System.out.println(user);
-		Assert.assertTrue(user != null);
+//		User user = userService.getUserById(1);
+//		System.out.println(user);
+//		Assert.assertTrue(user != null);
 	}
 
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.MonitorFrequencyMapper">
+  <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.MonitorFrequency">
+    <result column="siteId" jdbcType="INTEGER" property="siteId" />
+    <result column="typeId" jdbcType="TINYINT" property="typeId" />
+    <result column="value" jdbcType="SMALLINT" property="value" />
+  </resultMap>
+  <insert id="insert" parameterType="com.trs.gov.kpi.entity.MonitorFrequency">
+    insert into monitorfrequency (siteId, typeId, value
+      )
+    values (#{siteId,jdbcType=INTEGER}, #{typeId,jdbcType=TINYINT}, #{value,jdbcType=SMALLINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.MonitorFrequency">
+    insert into monitorfrequency
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="siteId != null">
+        siteId,
+      </if>
+      <if test="typeId != null">
+        typeId,
+      </if>
+      <if test="value != null">
+        value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=TINYINT},
+      </if>
+      <if test="value != null">
+        #{value,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+</mapper>

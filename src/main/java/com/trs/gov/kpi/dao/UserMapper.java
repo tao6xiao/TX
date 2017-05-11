@@ -1,14 +1,19 @@
 package com.trs.gov.kpi.dao;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import com.trs.gov.kpi.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 
-/**
- * Created by wangxuan on 2017/5/9.
- */
 @Mapper
 public interface UserMapper {
+    int deleteByPrimaryKey(Integer id);
 
-    User getUserById(@Param("id") int id);
+    int insert(User record);
+
+    int insertSelective(User record);
+
+    User selectByPrimaryKey(Integer id);
+
+    int updateByPrimaryKeySelective(User record);
+
+    int updateByPrimaryKey(User record);
 }
