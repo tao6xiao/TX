@@ -58,9 +58,7 @@ public class CommonProcessor {
     public ResponseTemplate handCommonException(Exception ex) {
 
         log.error("", ex);
-        return new ResponseTemplate(false,
-                StringUtils.isEmpty(ex.getMessage()) ? SYSTEMEXCEPTION_MESSAGE : ex.getMessage(),
-                null);
+        return new ResponseTemplate(false, SYSTEMEXCEPTION_MESSAGE, null);
     }
 
     /**
