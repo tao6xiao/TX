@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 /**
  * Created by HLoach on 2017/5/11.
  */
-@Service
 public interface MonitorSiteService {
     MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId);
 

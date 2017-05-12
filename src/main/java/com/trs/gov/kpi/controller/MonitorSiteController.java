@@ -6,8 +6,10 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.impl.MonitorSiteServiceImpl;
 import com.trs.gov.kpi.utils.DataTypeConversion;
+import lombok.Setter;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 /**
@@ -17,7 +19,8 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/setting")
 public class MonitorSiteController {
-    @Resource
+
+    @Resource @Setter
     MonitorSiteService monitorSiteService;
 
     @RequestMapping(value = "/site",method = RequestMethod.GET)

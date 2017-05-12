@@ -8,6 +8,7 @@ import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.utils.DataTypeConversion;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 
