@@ -13,7 +13,7 @@ public interface MonitorSiteService {
 
     MonitorSite getMonitorSiteBySiteId(Integer siteId);
 
-    int addMonitorSite(MonitorSite monitorSite);
+    int addMonitorSite(MonitorSiteDeal monitorSiteDeal);
 
     int updateMonitorSiteBySiteId(MonitorSiteDeal monitorSiteDeal);
 

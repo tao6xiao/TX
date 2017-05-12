@@ -29,24 +29,19 @@ public class MonitorSiteController {
 
     @RequestMapping(value = "/site",method = RequestMethod.POST)
     @ResponseBody
-    private void save(){//@ModelAttribute MonitorSiteDeal monitorSiteDeal
-//        int siteId = monitorSiteDeal.getSiteId();
-        MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(1);
-        MonitorSiteServiceImpl monitorSiteService = new MonitorSiteServiceImpl();
-        Integer[] siteIdsInt = new Integer[]{1,2};
-        monitorSite.setGuarderAccount("zhangsan11");
-        MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(monitorSite, siteIdsInt);
+    private String save(@ModelAttribute MonitorSiteDeal monitorSiteDeal){
+        int siteId = monitorSiteDeal.getSiteId();
+        MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
         int num = 0;
         if(monitorSite != null){//检测站点表中存在siteId对应记录，将修改记录
             num = monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
 
         }else {//检测站点表中不存在siteId对应记录，将插入记录
-            num = monitorSiteService.addMonitorSite(monitorSite);
+            num = monitorSiteService.addMonitorSite(monitorSiteDeal);
         }
-        System.err.println(num);
         if(num == 0){
-//            return "error";
+            return "error";
         }
-//        return "success";
+        return "success";
     }
 }

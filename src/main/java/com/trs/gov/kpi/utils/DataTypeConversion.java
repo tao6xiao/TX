@@ -6,11 +6,15 @@ package com.trs.gov.kpi.utils;
 public class DataTypeConversion {
 
     //String数组转Integer数组
-    public static Integer[] stringArrayToIntegerArray(String[] arrayForString){
-        Integer[] arrayForInteger = new Integer[arrayForString.length];
-        for (int i = 0; i < arrayForString.length; i++){
-            Integer elementForInteger = Integer.parseInt(arrayForString[i]);
-            arrayForInteger[i] = elementForInteger;
+    public static Integer[] stringToIntegerArray(String str){
+        String[] arrayForString = str.split(",");
+        Integer[] arrayForInteger = null;
+        if(arrayForString.length > 1) {
+            arrayForInteger = new Integer[arrayForString.length];
+            for (int i = 0; i < arrayForString.length; i++) {
+                Integer elementForInteger = Integer.parseInt(arrayForString[i]);
+                arrayForInteger[i] = elementForInteger;
+            }
         }
         return arrayForInteger;
     }
@@ -22,8 +26,13 @@ public class DataTypeConversion {
         for (int i = 0; i < arrayForInteger.length; i++){
             String elementForString  = arrayForInteger[i].toString();
             buffer.append(elementForString);
+            if(i+1 != arrayForInteger.length){
+                buffer.append(",");
+            }
         }
-        str = buffer.toString();
+        if(buffer.length() > 0) {
+            str = buffer.toString();
+        }
         return str;
     }
 

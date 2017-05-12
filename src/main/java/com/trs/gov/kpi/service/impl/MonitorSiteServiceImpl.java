@@ -23,12 +23,10 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     public MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId) {
         MonitorSite monitorSite = monitorSiteMapper.selectByPrimaryKey(siteId);
         MonitorSiteDeal monitorSiteDeal = null;
-        if(monitorSite != null){
-            String[] siteIdsArrayForString = getSplitSiteIdsArray(monitorSite);
-            if(siteIdsArrayForString.length > 0){
-            Integer[] siteIdsArrayForInteger = DataTypeConversion.stringArrayToIntegerArray(siteIdsArrayForString);
-            monitorSiteDeal = getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(monitorSite,siteIdsArrayForInteger);
-            }
+        if (monitorSite != null) {
+            String siteIds = monitorSite.getSiteIds();
+            Integer[] siteIdsArrayForInteger = DataTypeConversion.stringToIntegerArray(siteIds);
+            monitorSiteDeal = getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(monitorSite, siteIdsArrayForInteger);
         }
         return monitorSiteDeal;
     }
@@ -40,8 +38,14 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     }
 
     @Override
-    public int addMonitorSite(MonitorSite monitorSite) {
-        int num = monitorSiteMapper.insert(monitorSite);
+    public int addMonitorSite(MonitorSiteDeal monitorSiteDeal) {
+        Integer[] siteIdsForInteger = monitorSiteDeal.getSiteIds();
+        String siteIdsForString = DataTypeConversion.integerArrayToString(siteIdsForInteger);
+        int num = 0;
+        if (siteIdsForString != null) {
+            MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal, siteIdsForString);
+            num = monitorSiteMapper.insert(monitorSite);
+        }
         return num;
     }
 
@@ -54,7 +58,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         return num;
     }
 
-    private MonitorSite getMonitorSiteFromMonitorSiteDealAndSiteIds(MonitorSiteDeal monitorSiteDeal, String siteIds){
+    private MonitorSite getMonitorSiteFromMonitorSiteDealAndSiteIds(MonitorSiteDeal monitorSiteDeal, String siteIds) {
         MonitorSite monitorSite = new MonitorSite();
         monitorSite.setSiteId(monitorSiteDeal.getSiteId());
         monitorSite.setDepartmentName(monitorSiteDeal.getDepartmentName());
@@ -67,13 +71,13 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     }
 
 
-    private String[] getSplitSiteIdsArray(MonitorSite monitorSite){
-        String siteIds = monitorSite.getSiteIds();
-        String[] siteIdsArrayForString = siteIds.split(",");
-        return  siteIdsArrayForString;
-    }
+//    private String[] getSplitSiteIdsArray(MonitorSite monitorSite){
+//        String siteIds = monitorSite.getSiteIds();
+//        String[] siteIdsArrayForString = siteIds.split(",");
+//        return  siteIdsArrayForString;
+//    }
 
-    public MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite, Integer[] siteIdsArrayForInteger){
+    public MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite, Integer[] siteIdsArrayForInteger) {
         MonitorSiteDeal monitorSiteDeal = new MonitorSiteDeal();
         monitorSiteDeal.setSiteId(monitorSite.getSiteId());
         monitorSiteDeal.setDepartmentName(monitorSite.getDepartmentName());

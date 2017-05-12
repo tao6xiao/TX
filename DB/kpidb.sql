@@ -1,0 +1,33 @@
+use kpidb;
+-- 监测设置信息表
+drop TABLE IF EXISTS monitorsite;
+CREATE TABLE monitorsite(
+		siteId INT PRIMARY KEY, -- 站点编号
+		departmentName VARCHAR(200), -- 单位名称
+		guarderName VARCHAR(64), -- 保障人员姓名 
+		guarderAccount VARCHAR(50), -- 保障人员登陆账号
+		guarderPhone VARCHAR(50), -- 保障人员电话号码
+		indexUrl VARCHAR(300), -- 首页地址
+		siteIds VARCHAR(200) -- 监测站点编号，数组
+);
+
+INSERT INTO monitorsite VALUES(1,"江州市监察局","张三","zhangsan","13456858676","http://test1.org.cn","1,2");
+INSERT INTO monitorsite VALUES(2,"江州市教育局","李四","lisi","12536896521","http://test2.org.cn","3");
+INSERT INTO monitorsite VALUES(3,"江州市分析部","王五","wangwu","15789652425","http://test3.org.cn","4");
+
+-- 监测频率表
+drop TABLE IF EXISTS monitorfrequency;
+CREATE TABLE monitorfrequency(
+	siteId int, -- 站点编号
+	typeId TINYINT, -- 类型(比如1：首页可用性，2：全站失链接，3：信息错误)
+	value SMALLINT -- 对应频率的值（比如对应次/天，value为1，表示1次/天）
+);
+INSERT INTO monitorfrequency VALUES(1,1,1);
+INSERT INTO monitorfrequency VALUES(1,2,2);
+INSERT INTO monitorfrequency VALUES(1,3,3);
+INSERT INTO monitorfrequency VALUES(2,1,1);
+INSERT INTO monitorfrequency VALUES(2,2,2);
+INSERT INTO monitorfrequency VALUES(2,3,3);
+INSERT INTO monitorfrequency VALUES(3,1,1);
+INSERT INTO monitorfrequency VALUES(3,2,2);
+INSERT INTO monitorfrequency VALUES(3,3,3);
