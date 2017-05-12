@@ -44,12 +44,12 @@
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
 
-		<table schema="" tableName="user" domainObjectName="User"
+		<!--<table schema="" tableName="user" domainObjectName="User"
 			   enableCountByExample="false" enableUpdateByExample="false"
 			   enableDeleteByExample="false" enableSelectByExample="false"
 			   selectByExampleQueryId="false">
 			<property name="useActualColumnNames" value="true" />
-		</table>
+		</table>-->
 
 		<!-- 指定数据库表 <table tableName="student"></table> -->
 		<table schema="" tableName="monitorfrequency" domainObjectName="MonitorFrequency"
