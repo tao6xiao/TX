@@ -25,7 +25,10 @@ public class MonitorSiteController {
 
     @RequestMapping(value = "/site",method = RequestMethod.GET)
     @ResponseBody
-    private MonitorSiteDeal queryBySiteId(@RequestParam int siteId){
+    public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
+        if(siteId == null){
+            throw new BizException();
+        }
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
 
         return monitorSiteDeal;
@@ -33,7 +36,10 @@ public class MonitorSiteController {
 
     @RequestMapping(value = "/site",method = RequestMethod.POST)
     @ResponseBody
-    private String save(@ModelAttribute MonitorSiteDeal monitorSiteDeal){
+    public String save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException {
+        if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getSiteIds() == null || monitorSiteDeal.getSiteIds().length == 0){
+            throw new BizException();
+        }
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
         int num = 0;
@@ -42,10 +48,6 @@ public class MonitorSiteController {
 
         }else {//检测站点表中不存在siteId对应记录，将插入记录
             num = monitorSiteService.addMonitorSite(monitorSiteDeal);
-        }
-        if(num == 0){
-
-            return "error";
         }
         return null;
     }
