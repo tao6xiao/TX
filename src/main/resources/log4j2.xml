@@ -7,8 +7,8 @@
             </PatternLayout>
         </Console>
         <!-- 按日期每天生成log文件 -->
-        <RollingFile name="RollingFile" fileName="/var/log/kpi/info.log"
-                     filePattern="/var/log/kpi/info-%d{yyyy-MM-dd}.log">
+        <RollingFile name="RollingFile" fileName="/opt/TRS/TRSWCMV7/wcmlogs/kpi/info.log"
+                     filePattern="/opt/TRS/TRSWCMV7/wcmlogs/kpi/info-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="%d %p %C{1.} [%t]: %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
