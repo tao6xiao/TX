@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
@@ -13,9 +14,10 @@ import java.util.Map;
 public class HelloController {
 
     @GetMapping("/")
-    public Map<String, String> sayHello() {
+    @ResponseBody
+    public Object sayHello() {
 
-        return Collections.singletonMap("say", "hello");
+        return null;
     }
 
     @GetMapping("/exce")

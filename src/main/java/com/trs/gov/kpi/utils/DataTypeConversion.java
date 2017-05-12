@@ -1,5 +1,9 @@
 package com.trs.gov.kpi.utils;
 
+import org.apache.tomcat.util.buf.StringUtils;
+
+import java.util.Arrays;
+
 /**
  * Created by HLoach on 2017/5/11.
  */
@@ -21,6 +25,7 @@ public class DataTypeConversion {
 
     //Integer数组转String
     public static String integerArrayToString(Integer[] arrayForInteger){
+
         String str = null;
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < arrayForInteger.length; i++){

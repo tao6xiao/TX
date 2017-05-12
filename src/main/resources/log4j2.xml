@@ -7,17 +7,17 @@
             </PatternLayout>
         </Console>
         <!-- 按日期每天生成log文件 -->
-        <RollingFile name="RollingFile" fileName="temp/CL_BATCH.log"
-                     filePattern="temp/CL_BATCH-%d{yyyy-MM-dd}.log">
+        <RollingFile name="RollingFile" fileName="/var/log/kpi/info.log"
+                     filePattern="/var/log/kpi/info-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="%d %p %C{1.} [%t]: %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
             </Policies>
 
             <!-- log文件只打印error级别信息 -->
-            <Filters>
+            <!--<Filters>
                 <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
-            </Filters>
+            </Filters>-->
         </RollingFile>
     </Appenders>
     <Loggers>
