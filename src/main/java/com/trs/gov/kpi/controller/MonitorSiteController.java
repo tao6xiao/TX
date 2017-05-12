@@ -2,10 +2,12 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
+import com.trs.gov.kpi.entity.ResponseTemplate;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.impl.MonitorSiteServiceImpl;
 import com.trs.gov.kpi.utils.DataTypeConversion;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,9 +24,9 @@ public class MonitorSiteController {
 
     @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
-    private MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) {
-        if(siteId == null){
-            //TODO throw Exception
+    public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
+        if (siteId == null) {
+            throw new BizException();
         }
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
 
@@ -33,8 +35,10 @@ public class MonitorSiteController {
 
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
-    private String save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) {
-        //TODO parameter validation
+    public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException {
+        if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getSiteIds() == null || monitorSiteDeal.getSiteIds().length == 0) {
+            throw new BizException();
+        }
 
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
@@ -44,10 +48,6 @@ public class MonitorSiteController {
 
         } else {//检测站点表中不存在siteId对应记录，将插入记录
             num = monitorSiteService.addMonitorSite(monitorSiteDeal);
-        }
-        if(num == 0){
-
-            return "error";
         }
         return null;
     }

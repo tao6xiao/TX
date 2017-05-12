@@ -37,4 +37,13 @@
       </if>
     </trim>
   </insert>
+  <sql id="Base_Column_List">
+    siteId, typeId, value
+  </sql>
+  <select id="queryBySiteId" parameterType="int" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM monitorFrequency
+    WHERE siteId = #{siteId,jdbcType=INTEGER}
+  </select>
 </mapper>

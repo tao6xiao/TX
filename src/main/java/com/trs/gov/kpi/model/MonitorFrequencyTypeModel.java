@@ -8,15 +8,20 @@ import java.util.HashMap;
  */
 public class MonitorFrequencyTypeModel {
 
-    private HashMap<Integer, MonitorFrequencyType> types ;
+    private static HashMap<Integer, MonitorFrequencyType> types = null ;
+    private static MonitorFrequencyTypeModel monitorFrequencyTypeModel = null;
 
     private MonitorFrequencyTypeModel() {
+        types = new HashMap<>();
         types.put(1, new MonitorFrequencyType(1));
         types.put(2, new MonitorFrequencyType(2));
         types.put(3, new MonitorFrequencyType(3));
     }
 
-    public HashMap<Integer, MonitorFrequencyType> getTypes() {
+    public static HashMap<Integer, MonitorFrequencyType> getTypes() {
+        if(monitorFrequencyTypeModel == null){
+            monitorFrequencyTypeModel = new MonitorFrequencyTypeModel();
+        }
         return types;
     }
 
