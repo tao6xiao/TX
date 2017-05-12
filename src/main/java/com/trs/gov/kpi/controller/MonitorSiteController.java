@@ -19,29 +19,31 @@ public class MonitorSiteController {
     @Resource
     MonitorSiteService monitorSiteService;
 
-    @RequestMapping(value = "/site",method = RequestMethod.GET)
+    @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
-    private MonitorSiteDeal queryBySiteId(@RequestParam int siteId){
+    private MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) {
+        if(siteId == null){
+            //TODO throw Exception
+        }
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
 
         return monitorSiteDeal;
     }
 
-    @RequestMapping(value = "/site",method = RequestMethod.POST)
+    @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
-    private String save(@ModelAttribute MonitorSiteDeal monitorSiteDeal){
+    private String save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) {
+        //TODO parameter validation
+
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
         int num = 0;
-        if(monitorSite != null){//检测站点表中存在siteId对应记录，将修改记录
+        if (monitorSite != null) {//检测站点表中存在siteId对应记录，将修改记录
             num = monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
 
-        }else {//检测站点表中不存在siteId对应记录，将插入记录
+        } else {//检测站点表中不存在siteId对应记录，将插入记录
             num = monitorSiteService.addMonitorSite(monitorSiteDeal);
         }
-        if(num == 0){
-            return "error";
-        }
-        return "success";
+        return null;
     }
 }

@@ -77,7 +77,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
 //        return  siteIdsArrayForString;
 //    }
 
-    public MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite, Integer[] siteIdsArrayForInteger) {
+    private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite, Integer[] siteIdsArrayForInteger) {
         MonitorSiteDeal monitorSiteDeal = new MonitorSiteDeal();
         monitorSiteDeal.setSiteId(monitorSite.getSiteId());
         monitorSiteDeal.setDepartmentName(monitorSite.getDepartmentName());
