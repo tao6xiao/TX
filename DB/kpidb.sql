@@ -32,3 +32,10 @@ INSERT INTO monitorfrequency VALUES(2,3,3);
 INSERT INTO monitorfrequency VALUES(3,1,1);
 INSERT INTO monitorfrequency VALUES(3,2,2);
 INSERT INTO monitorfrequency VALUES(3,3,3);
+
+DROP TABLE IF EXISTS `globalid`;
+CREATE TABLE `globalid` (
+  `id` bigint(64) NOT NULL AUTO_INCREMENT,
+  `gentime` datetime(6) NOT NULL COMMENT '生成时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用于生成全局的一个id';
