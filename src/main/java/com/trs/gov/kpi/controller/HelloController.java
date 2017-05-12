@@ -17,4 +17,10 @@ public class HelloController {
 
         return Collections.singletonMap("say", "hello");
     }
+
+    @GetMapping("/exce")
+    public String exce() throws Exception {
+
+        throw new Exception();
+    }
 }
