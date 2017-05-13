@@ -3,6 +3,8 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorFrequencyDeal;
+import com.trs.gov.kpi.entity.MonitorFrequencyFreq;
+import com.trs.gov.kpi.entity.MonitorFrequencySetUp;
 import com.trs.gov.kpi.model.MonitorFrequencyType;
 import com.trs.gov.kpi.model.MonitorFrequencyTypeModel;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
@@ -34,6 +36,44 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
             }
         }
         return monitorFrequencyDealList;
+    }
+
+    @Override
+    public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
+        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
+        int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
+        return num;
+    }
+
+    @Override
+    public List<MonitorFrequency> checkSiteIdAndTypeAreBothExitsOrNot(int siteId) {
+        List<MonitorFrequency> monitorFrequencyList = monitorFrequencyMapper.queryBySiteId(siteId);
+        return monitorFrequencyList;
+    }
+
+    @Override
+    public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
+        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
+        int num = monitorFrequencyMapper.updateMonitorFrequencySetUp(monitorFrequencyList);
+        return num;
+    }
+
+    private List<MonitorFrequency> addFrequencySetUpToList(MonitorFrequencySetUp monitorFrequencySetUp) {
+        int siteId = monitorFrequencySetUp.getSiteId();
+        MonitorFrequencyFreq[] freqs = monitorFrequencySetUp.getFreqs();
+        List<MonitorFrequency> monitorFrequencyList = new ArrayList<>();//为何创建ArrayList
+        for(int i = 0; i < freqs.length; i++ ){
+            MonitorFrequencyFreq monitorFrequencyFreq = freqs[i];
+            MonitorFrequency monitorFrequency = new MonitorFrequency();
+            monitorFrequency.setSiteId(siteId);
+            monitorFrequency.setTypeId(monitorFrequencyFreq.getId());
+            Short value = monitorFrequencyFreq.getValue();
+            if(value != null) {
+                monitorFrequency.setValue(value);
+                monitorFrequencyList.add(monitorFrequency);
+            }
+        }
+        return  monitorFrequencyList;
     }
 
     private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency,HashMap<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap) {

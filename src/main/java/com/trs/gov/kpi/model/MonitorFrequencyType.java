@@ -15,6 +15,8 @@ public class MonitorFrequencyType {
     public static final Integer FREQUNIT_ONE = 1;// 次/天
     public static final Integer FREQUNIT_TWO = 2;// 天/次
 
+    public static final Integer TYPE_NUM = 3;//类型数量
+
     private String name;//类型名
     private Integer freqUnit;//频率粒度
 

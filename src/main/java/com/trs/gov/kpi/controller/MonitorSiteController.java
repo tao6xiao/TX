@@ -23,6 +23,12 @@ public class MonitorSiteController {
     @Resource @Setter
     MonitorSiteService monitorSiteService;
 
+    /**
+     * 通过siteId查询监测站点的设置参数
+     * @param siteId
+     * @return
+     * @throws BizException
+     */
     @RequestMapping(value = "/site",method = RequestMethod.GET)
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
@@ -34,9 +40,15 @@ public class MonitorSiteController {
         return monitorSiteDeal;
     }
 
+    /**
+     *  获取参数插入或者修改监测站点设置记录
+     * @param monitorSiteDeal
+     * @return
+     * @throws BizException
+     */
     @RequestMapping(value = "/site",method = RequestMethod.POST)
     @ResponseBody
-    public String save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException {
+    public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException {
         if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getSiteIds() == null || monitorSiteDeal.getSiteIds().length == 0){
             throw new BizException();
         }

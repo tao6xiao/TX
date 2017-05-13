@@ -46,4 +46,20 @@
     FROM monitorFrequency
     WHERE siteId = #{siteId,jdbcType=INTEGER}
   </select>
+  <insert id="insertMonitorFrequencyList" parameterType="java.util.List">
+    insert into monitorfrequency (
+    <include refid="Base_Column_List" />
+      )
+    values
+    <foreach collection="monitorFrequencyList" item="monitorFrequency" separator=",">
+      (#{monitorFrequency.siteId,jdbcType=INTEGER},#{monitorFrequency.typeId,jdbcType=TINYINT}, #{monitorFrequency.value,jdbcType=SMALLINT})
+    </foreach>
+  </insert>
+  <update id="updateMonitorFrequencySetUp" parameterType="java.util.List">
+    <foreach collection="monitorFrequencyList" item="monitorFrequency" separator=";">
+    UPDATE monitorfrequency
+    set value = #{monitorFrequency.value}
+    WHERE siteId = #{monitorFrequency.siteId} AND typeId = #{monitorFrequency.typeId}
+    </foreach>
+  </update>
 </mapper>

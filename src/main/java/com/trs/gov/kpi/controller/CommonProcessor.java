@@ -67,14 +67,13 @@ public class CommonProcessor {
      * @return
      * @throws Throwable
      */
-//    @Around("execution(* com.trs.gov.kpi.controller..* (..))")
-//    public Object wrapSuccessResponse(ProceedingJoinPoint pj) throws Throwable {
-//
-//        Object retVal = pj.proceed();
-//        if(retVal == null) {
-//
-//            return new ResponseTemplate(true, INVOKE_SUCCESS_MESSAGE, null);
-//        }
-//        return retVal;
-//    }
+    @Around("execution(* com.trs.gov.kpi.controller..* (..))")
+    public Object wrapSuccessResponse(ProceedingJoinPoint pj) throws Throwable {
+        //TODO 返回基本数据类型的处理
+        Object retVal = pj.proceed();
+        if(retVal == null) {
+            return new ResponseTemplate(true, INVOKE_SUCCESS_MESSAGE, null);
+        }
+        return retVal;
+    }
 }
