@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.entity.InfoUpdate;
-import com.trs.gov.kpi.entity.IssueCount;
-import com.trs.gov.kpi.entity.SolveStatus;
+import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,9 +50,21 @@ public class InfoUpdateController {
 
 
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public List<InfoUpdate> getIssueList(int currPage, int pageSize,@ModelAttribute InfoUpdate infoUpdate) {
-        List<InfoUpdate> issueList = infoUpdateService.getIssueList(currPage, pageSize, infoUpdate);
-        return issueList;
+    public Data getIssueList(int currPage, int pageSize, @ModelAttribute InfoUpdate infoUpdate) {
+        List<InfoUpdate> list = infoUpdateService.getIssueList(currPage, pageSize, infoUpdate);
+        Pager pager = new Pager();
+        if(infoUpdate != null){
+            pager.setCurrPage(currPage);
+            pager.setPageSize(pageSize);
+            int count = infoUpdateService.getUpdateNotIntimeCount(infoUpdate.getSiteId());
+            pager.setItemCount(count);
+            int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
+            pager.setPageCount(pageCount);
+        }
+        Data data = new Data();
+        data.setData(list);
+        data.setPager(pager);
+        return data;
     }
 
     @RequestMapping(value = "/handle", method = RequestMethod.POST)

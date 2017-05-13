@@ -1,9 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 
-import com.trs.gov.kpi.entity.IssueCount;
-import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.SolveStatus;
+import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,9 +43,21 @@ public class LinkAvailabilityController {
 
 
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public List<LinkAvailability> getIssueList(int currPage, int pageSize,@ModelAttribute LinkAvailability linkAvailability) {
-        List<LinkAvailability> issueList = linkAvailabilityService.getIssueList(currPage, pageSize, linkAvailability);
-        return issueList;
+    public Data getIssueList(int currPage, int pageSize,@ModelAttribute LinkAvailability linkAvailability) {
+        List<LinkAvailability> list = linkAvailabilityService.getIssueList(currPage, pageSize, linkAvailability);
+        Pager pager = new Pager();
+        if(linkAvailability != null){
+            pager.setCurrPage(currPage);
+            pager.setPageSize(pageSize);
+            int count = linkAvailabilityService.getUnhandledIssueCount(linkAvailability.getSiteId());
+            pager.setItemCount(count);
+            int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
+            pager.setPageCount(pageCount);
+        }
+        Data data = new Data();
+        data.setData(list);
+        data.setPager(pager);
+        return data;
     }
 
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
