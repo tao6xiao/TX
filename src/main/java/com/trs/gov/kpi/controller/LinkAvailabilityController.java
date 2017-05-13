@@ -28,10 +28,12 @@ public class LinkAvailabilityController {
 
         IssueCount unhandledIssueCount = new IssueCount();
         unhandledIssueCount.setType(SolveStatus.UN_SOLVED.value);
+        unhandledIssueCount.setName(SolveStatus.UN_SOLVED.name);
         unhandledIssueCount.setCount(linkAvailabilityService.getUnhandledIssueCount(siteId));
 
         IssueCount handledIssueCount = new IssueCount();
         handledIssueCount.setType(SolveStatus.SOLVED.value);
+        handledIssueCount.setName(SolveStatus.SOLVED.name);
         handledIssueCount.setCount(linkAvailabilityService.getHandledIssueCount(siteId));
 
         List list = new ArrayList();
@@ -48,13 +50,13 @@ public class LinkAvailabilityController {
         return issueList;
     }
 
-    @RequestMapping(value = "/handle", method = RequestMethod.GET)
+    @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssueById(int siteId, int id) {
         linkAvailabilityService.handIssueById(siteId, id);
         return "";
     }
 
-    @RequestMapping("/handle/batch")
+    @RequestMapping(value = "/handle/batch", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.handIssuesByIds(siteId, Arrays.asList(ids));
         return "";
@@ -66,14 +68,14 @@ public class LinkAvailabilityController {
         return "";
     }
 
-    @RequestMapping("/ignore/batch")
+    @RequestMapping(value = "/ignore/batch", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return "";
     }
 
 
-    @RequestMapping("/delete")
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String delIssueByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.delIssueByIds(siteId, Arrays.asList(ids));
         return "";

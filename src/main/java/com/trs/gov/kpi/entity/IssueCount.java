@@ -8,10 +8,9 @@ import lombok.Data;
 @Data
 public class IssueCount {
 
-    /**
-     * 0--> 未解决，1-->已解决
-     */
     private int type;
+
+    private String name;
 
     private int count;
 
