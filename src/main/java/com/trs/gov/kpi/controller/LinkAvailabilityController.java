@@ -1,11 +1,14 @@
 package com.trs.gov.kpi.controller;
 
 
+import com.trs.gov.kpi.entity.IssueCount;
 import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.SolveStatus;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,10 +24,21 @@ public class LinkAvailabilityController {
 
 
     @RequestMapping(value = "/count", method = RequestMethod.GET)
-    public String getIssueCount(int siteId) {
-        int unhandledIssueCount = linkAvailabilityService.getUnhandledIssueCount(siteId);
-        int handledIssueCount = linkAvailabilityService.getHandledIssueCount(siteId);
-        return Integer.toString(unhandledIssueCount);
+    public List getIssueCount(int siteId) {
+
+        IssueCount unhandledIssueCount = new IssueCount();
+        unhandledIssueCount.setType(SolveStatus.UN_SOLVED.value);
+        unhandledIssueCount.setCount(linkAvailabilityService.getUnhandledIssueCount(siteId));
+
+        IssueCount handledIssueCount = new IssueCount();
+        handledIssueCount.setType(SolveStatus.SOLVED.value);
+        handledIssueCount.setCount(linkAvailabilityService.getHandledIssueCount(siteId));
+
+        List list = new ArrayList();
+        list.add(unhandledIssueCount);
+        list.add(handledIssueCount);
+
+        return list;
     }
 
 

@@ -14,11 +14,11 @@
     </resultMap>
 
     <select id="getHandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId}
+        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId} AND  typeId = 1
     </select>
 
     <select id="getUnhandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId}
+        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 1
     </select>
 
     <!--<select id="getUnhandledIssueCountByTime" resultType="int">-->
