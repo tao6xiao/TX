@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.LinkAvailabilityMapper">
+
+
+    <resultMap id="linkAvailabilityMap" type="com.trs.gov.kpi.entity.LinkAvailability">
+        <id column="id" property="id"/>
+        <result column="issueTypeId" property="issueTypeId"/>
+        <result column="invalidLink" property="invalidLink"/>
+        <result column="snapshot" property="snapshot"/>
+        <result column="checkTime" property="checkTime"/>
+    </resultMap>
+
+    <select id="getHandledIssueCount" parameterType="int" resultType="int">
+        SELECT count(1) FROM issue_link WHERE isResolved IN (1,2) AND siteId = #{siteId}
+    </select>
+
+    <select id="getUnhandledIssueCount" parameterType="int" resultType="int">
+        SELECT count(1) FROM issue_link WHERE isResolved = 0 AND siteId = #{siteId}
+    </select>
+
+    <!--<select id="getUnhandledIssueCountByTime" resultType="int">-->
+    <!--select count(1) from issue_link where checkTime-->
+    <!--<![CDATA[-->
+    <!--<-->
+    <!--]]>-->
+    <!--#{checkTime} and isResolved=0 and siteId = #{siteId}-->
+    <!--</select>-->
+
+
+    <select id="getIssueList" resultMap="linkAvailabilityMap">
+        SELECT id,
+        issueTypeId,
+        invalidLink,
+        snapshot,
+        checkTime
+        FROM issue_link
+        WHERE siteId = #{linkAvailability.siteId,jdbcType=INTEGER}
+        <if test="linkAvailability.id != null">
+            AND id LIKE concat('%',#{linkAvailability.id,jdbcType=VARCHAR},'%')
+        </if>
+        AND isResolved = 0
+        limit #{currPage},#{pageSize}
+    </select>
+
+    <update id="handIssueById" parameterType="int">
+        UPDATE issue_link
+        SET    isResolved = 1
+        WHERE  siteId = #{siteId}
+        AND    id = #{id}
+    </update>
+
+    <update id="handIssuesByIds" parameterType="java.util.List">
+        UPDATE issue_link
+        SET isResolved = 1
+        WHERE siteId = ${siteId}
+        AND id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+    <update id="ignoreIssueById" parameterType="int">
+        UPDATE issue_link
+        SET    isResolved = 2
+        WHERE  siteId = #{siteId}
+        AND    id = #{id}
+    </update>
+
+    <update id="ignoreIssuesByIds" parameterType="java.util.List">
+        UPDATE issue_link
+        SET isResolved = 2
+        WHERE siteId = ${siteId}
+        AND id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+    <update id="delIssueByIds" parameterType="java.util.List">
+        UPDATE issue_link
+        SET isDel = 1
+        WHERE siteId = ${siteId}
+        AND id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+</mapper>
