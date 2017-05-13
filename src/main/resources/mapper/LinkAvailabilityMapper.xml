@@ -11,6 +11,8 @@
         <result column="detail" property="invalidLink"/>
         <result column="customer1" property="snapshot"/>
         <result column="issueTime" property="checkTime"/>
+        <result column="beginDateTime" property="beginDateTime"/>
+        <result column="endDateTime" property="endDateTime"/>
     </resultMap>
 
     <select id="getHandledIssueCount" parameterType="int" resultType="int">
@@ -40,6 +42,23 @@
         WHERE siteId = #{linkAvailability.siteId,jdbcType=INTEGER}
         <if test="linkAvailability.id != null">
             AND id LIKE concat('%',#{linkAvailability.id,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="linkAvailability.search != null">
+            AND id LIKE concat('%',#{linkAvailability.search,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="linkAvailability.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{linkAvailability.beginDateTime,jdbcType=DATE}
+        </if>
+        <if test="linkAvailability.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{linkAvailability.endDateTime,jdbcType=DATE}
         </if>
         AND typeId = 1
         AND isResolved = 0
