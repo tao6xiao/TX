@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.InfoUpdateMapper">
+
+
+    <resultMap id="infoUpdateMap" type="com.trs.gov.kpi.entity.InfoUpdate">
+        <id column="id" property="id"/>
+        <result column="subTypeId" property="issueTypeName"/>
+        <result column="detail" property="chnlUrl"/>
+        <result column="customer1" property="chnlName"/>
+        <result column="customer2" property="chnlId"/>
+        <result column="issueTime" property="checkTime"/>
+    </resultMap>
+
+    <select id="getHandledIssueCount" parameterType="int" resultType="int">
+        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId} AND  typeId = 2
+    </select>
+
+    <select id="getUpdateNotIntimeCount" parameterType="int" resultType="int">
+        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 2
+    </select>
+
+    <select id="getUpdateWarningCount" parameterType="int" resultType="int">
+        SELECT count(1) FROM warning WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 2
+    </select>
+
+    <!--<select id="getUnhandledIssueCountByTime" resultType="int">-->
+    <!--select count(1) from issue_link where checkTime-->
+    <!--<![CDATA[-->
+    <!--<-->
+    <!--]]>-->
+    <!--#{checkTime} and isResolved=0 and siteId = #{siteId}-->
+    <!--</select>-->
+
+
+    <select id="getIssueList" resultMap="infoUpdateMap">
+        SELECT id,
+        subTypeId,
+        detail,
+        customer1,
+        customer2,
+        issueTime
+        FROM issue
+        WHERE siteId = #{infoUpdate.siteId,jdbcType=INTEGER}
+        <if test="infoUpdate.id != null">
+            AND id LIKE concat('%',#{infoUpdate.id,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="infoUpdate.search != null">
+            AND id LIKE concat('%',#{infoUpdate.search,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="infoUpdate.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{infoUpdate.beginDateTime,jdbcType=DATE}
+        </if>
+        <if test="infoUpdate.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{infoUpdate.endDateTime,jdbcType=DATE}
+        </if>
+        AND typeId = 2
+        AND isResolved = 0
+        limit #{currPage},#{pageSize}
+    </select>
+
+</mapper>

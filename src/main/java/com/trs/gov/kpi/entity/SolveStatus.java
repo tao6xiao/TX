@@ -5,14 +5,15 @@ package com.trs.gov.kpi.entity;
  */
 public enum SolveStatus {
 
-    UN_SOLVED(0, "待解决"),SOLVED(1,"已处理");
+    UN_SOLVED(0, "待解决"),SOLVED(1,"已解决"),UPDATE_WARNING(2,"更新预警"),UPDATE_NOT_INTIME(3,"更新不及时");
 
+    public final int value;
 
-    private final int type;
-    private final String name;
+    public final String name;
 
     SolveStatus(int type, String name) {
-        this.type = type;
+        this.value = type;
         this.name = name;
     }
+
 }

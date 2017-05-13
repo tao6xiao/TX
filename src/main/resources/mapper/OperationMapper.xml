@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.OperationMapper">
+
+    <update id="handIssueById" parameterType="int">
+        UPDATE issue
+        SET    isResolved = 1
+        WHERE  siteId = #{siteId}
+        AND    id = #{id}
+    </update>
+
+    <update id="handIssuesByIds" parameterType="java.util.List">
+        UPDATE issue
+        SET isResolved = 1
+        WHERE siteId = ${siteId}
+        AND id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+    <update id="ignoreIssueById" parameterType="int">
+        UPDATE issue
+        SET    isResolved = 2
+        WHERE  siteId = #{siteId}
+        AND    id = #{id}
+    </update>
+
+    <update id="ignoreIssuesByIds" parameterType="java.util.List">
+        UPDATE issue
+        SET isResolved = 2
+        WHERE siteId = ${siteId}
+        AND id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+    <update id="delIssueByIds" parameterType="java.util.List">
+        UPDATE issue
+        SET isDel = 1
+        WHERE siteId = ${siteId}
+        AND id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+</mapper>

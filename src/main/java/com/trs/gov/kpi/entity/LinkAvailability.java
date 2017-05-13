@@ -8,7 +8,7 @@ import java.util.Date;
  * Created by rw103 on 2017/5/11.
  */
 @Data
-public class LinkAvailability {
+public class LinkAvailability extends IssueBase{
 
     private String id;
 
