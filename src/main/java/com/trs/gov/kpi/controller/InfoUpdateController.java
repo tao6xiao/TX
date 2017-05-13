@@ -50,7 +50,7 @@ public class InfoUpdateController {
 
 
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public Data getIssueList(int currPage, int pageSize, @ModelAttribute InfoUpdate infoUpdate) {
+    public ApiPageData getIssueList(int currPage, int pageSize, @ModelAttribute InfoUpdate infoUpdate) {
         List<InfoUpdate> list = infoUpdateService.getIssueList(currPage, pageSize, infoUpdate);
         Pager pager = new Pager();
         if(infoUpdate != null){
@@ -61,7 +61,7 @@ public class InfoUpdateController {
             int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
             pager.setPageCount(pageCount);
         }
-        Data data = new Data();
+        ApiPageData data = new ApiPageData();
         data.setData(list);
         data.setPager(pager);
         return data;

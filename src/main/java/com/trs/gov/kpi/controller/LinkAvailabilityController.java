@@ -43,7 +43,7 @@ public class LinkAvailabilityController {
 
 
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public Data getIssueList(int currPage, int pageSize,@ModelAttribute LinkAvailability linkAvailability) {
+    public ApiPageData getIssueList(int currPage, int pageSize, @ModelAttribute LinkAvailability linkAvailability) {
         List<LinkAvailability> list = linkAvailabilityService.getIssueList(currPage, pageSize, linkAvailability);
         Pager pager = new Pager();
         if(linkAvailability != null){
@@ -54,7 +54,7 @@ public class LinkAvailabilityController {
             int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
             pager.setPageCount(pageCount);
         }
-        Data data = new Data();
+        ApiPageData data = new ApiPageData();
         data.setData(list);
         data.setPager(pager);
         return data;
