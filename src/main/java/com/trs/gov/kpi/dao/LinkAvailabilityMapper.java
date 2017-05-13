@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.Pager;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.Pager;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import org.springframework.stereotype.Service;
 

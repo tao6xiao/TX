@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.Pager;
 
 import java.util.List;
 

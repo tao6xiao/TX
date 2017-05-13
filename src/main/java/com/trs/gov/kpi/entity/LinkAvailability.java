@@ -10,7 +10,7 @@ import java.util.Date;
 @Data
 public class LinkAvailability {
 
-    private Integer id;
+    private String id;
 
     private Integer siteId;
 
@@ -24,14 +24,4 @@ public class LinkAvailability {
 
     private Date checkTime;
 
-    @Override
-    public String toString() {
-        return "{" +
-                "id=" + id +
-                ", issueTypeName='" + issueTypeName + '\'' +
-                ", invalidLink='" + invalidLink + '\'' +
-                ", snapshot='" + snapshot + '\'' +
-                ", checkTime=" + checkTime +
-                '}';
-    }
 }
