@@ -7,18 +7,18 @@
 
     <resultMap id="linkAvailabilityMap" type="com.trs.gov.kpi.entity.LinkAvailability">
         <id column="id" property="id"/>
-        <result column="issueTypeId" property="issueTypeId"/>
-        <result column="invalidLink" property="invalidLink"/>
-        <result column="snapshot" property="snapshot"/>
-        <result column="checkTime" property="checkTime"/>
+        <result column="subTypeId" property="issueTypeId"/>
+        <result column="detail" property="invalidLink"/>
+        <result column="customer1" property="snapshot"/>
+        <result column="issueTime" property="checkTime"/>
     </resultMap>
 
     <select id="getHandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue_link WHERE isResolved IN (1,2) AND siteId = #{siteId}
+        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId}
     </select>
 
     <select id="getUnhandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue_link WHERE isResolved = 0 AND siteId = #{siteId}
+        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId}
     </select>
 
     <!--<select id="getUnhandledIssueCountByTime" resultType="int">-->
@@ -32,28 +32,29 @@
 
     <select id="getIssueList" resultMap="linkAvailabilityMap">
         SELECT id,
-        issueTypeId,
-        invalidLink,
-        snapshot,
-        checkTime
-        FROM issue_link
+        subTypeId,
+        detail,
+        customer1,
+        issueTime
+        FROM issue
         WHERE siteId = #{linkAvailability.siteId,jdbcType=INTEGER}
         <if test="linkAvailability.id != null">
             AND id LIKE concat('%',#{linkAvailability.id,jdbcType=VARCHAR},'%')
         </if>
+        AND typeId = 1
         AND isResolved = 0
         limit #{currPage},#{pageSize}
     </select>
 
     <update id="handIssueById" parameterType="int">
-        UPDATE issue_link
+        UPDATE issue
         SET    isResolved = 1
         WHERE  siteId = #{siteId}
         AND    id = #{id}
     </update>
 
     <update id="handIssuesByIds" parameterType="java.util.List">
-        UPDATE issue_link
+        UPDATE issue
         SET isResolved = 1
         WHERE siteId = ${siteId}
         AND id IN
@@ -63,14 +64,14 @@
     </update>
 
     <update id="ignoreIssueById" parameterType="int">
-        UPDATE issue_link
+        UPDATE issue
         SET    isResolved = 2
         WHERE  siteId = #{siteId}
         AND    id = #{id}
     </update>
 
     <update id="ignoreIssuesByIds" parameterType="java.util.List">
-        UPDATE issue_link
+        UPDATE issue
         SET isResolved = 2
         WHERE siteId = ${siteId}
         AND id IN
@@ -80,7 +81,7 @@
     </update>
 
     <update id="delIssueByIds" parameterType="java.util.List">
-        UPDATE issue_link
+        UPDATE issue
         SET isDel = 1
         WHERE siteId = ${siteId}
         AND id IN
