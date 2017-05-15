@@ -34,7 +34,7 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
     }
 
     @Override
-    public List<InfoUpdate> getIssueList(int currPage, int pageSize, InfoUpdate infoUpdate) {
+    public List<InfoUpdate> getIssueList(Integer currPage, Integer pageSize, InfoUpdate infoUpdate) {
         return infoUpdateMapper.getIssueList(currPage, pageSize, infoUpdate);
     }
 }

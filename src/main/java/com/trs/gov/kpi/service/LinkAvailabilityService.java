@@ -12,6 +12,6 @@ public interface LinkAvailabilityService extends OperationService{
 
     int getUnhandledIssueCountByTime(int siteId);
 
-    List<LinkAvailability> getIssueList(int currPage, int pageSize, LinkAvailability linkAvailability);
+    List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, LinkAvailability linkAvailability);
 
 }

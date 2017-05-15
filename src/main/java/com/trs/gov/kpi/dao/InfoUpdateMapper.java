@@ -20,5 +20,5 @@ public interface InfoUpdateMapper extends OperationMapper {
      * @param infoUpdate
      * @return
      */
-    List<InfoUpdate> getIssueList(@Param("currPage") int currPage,@Param("pageSize") int pageSize,@Param("infoUpdate") InfoUpdate infoUpdate);
+    List<InfoUpdate> getIssueList(@Param("currPage") Integer currPage,@Param("pageSize") Integer pageSize,@Param("infoUpdate") InfoUpdate infoUpdate);
 }
