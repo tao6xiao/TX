@@ -74,13 +74,23 @@ CREATE TABLE frequencypreset(
 		alertFreq INT NOT NULL COMMENT '预警时限/天',
 		PRIMARY KEY(id)
 )COMMENT='更新频率及预警初设表';
+INSERT INTO frequencypreset VALUES(0,1,1,1);
+INSERT INTO frequencypreset VALUES(0,1,1,1);
+INSERT INTO frequencypreset VALUES(0,1,1,1);
+INSERT INTO frequencypreset VALUES(0,2,2,2);
+INSERT INTO frequencypreset VALUES(0,2,2,2);
+INSERT INTO frequencypreset VALUES(0,2,2,2);
+INSERT INTO frequencypreset VALUES(0,3,3,3);
+INSERT INTO frequencypreset VALUES(0,3,3,3);
+INSERT INTO frequencypreset VALUES(0,3,3,3);
 
-INSERT INTO frequencypreset VALUES(0,1,1,1);
-INSERT INTO frequencypreset VALUES(0,1,1,1);
-INSERT INTO frequencypreset VALUES(0,1,1,1);
-INSERT INTO frequencypreset VALUES(0,2,2,2);
-INSERT INTO frequencypreset VALUES(0,2,2,2);
-INSERT INTO frequencypreset VALUES(0,2,2,2);
-INSERT INTO frequencypreset VALUES(0,3,3,3);
-INSERT INTO frequencypreset VALUES(0,3,3,3);
-INSERT INTO frequencypreset VALUES(0,3,3,3);
+-- 按需更新的自查提醒周期表
+drop TABLE IF EXISTS defaultupdatefreq;
+CREATE TABLE defaultupdatefreq(
+		siteId INT NOT NULL COMMENT '站点编号',
+		value INT NOT NULL COMMENT '周期值',
+		PRIMARY KEY(siteId)
+)COMMENT='按需更新的自查提醒周期表';
+INSERT INTO defaultupdatefreq VALUES(1,1);
+INSERT INTO defaultupdatefreq VALUES(2,2);
+INSERT INTO defaultupdatefreq VALUES(3,3);
