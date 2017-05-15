@@ -91,6 +91,7 @@ public class PageInfoDeal {
     public static ApiPageData getApiPageData(Integer pageIndex, Integer pageSize, Integer itemCount){
         pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize);
         pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex);
+        pageIndex = PageInfoDeal.dealAndcheckPageIndexIsMinusOrOutOfRang(pageIndex, itemCount);
         int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);
         ApiPageData apiPageData = new ApiPageData();
         Pager pager = new Pager();

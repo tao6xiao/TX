@@ -28,9 +28,8 @@ public class FrequencyPresetController {
             throw new BizException("站点编号不能为null");
         }
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
-        pageIndex = PageInfoDeal.dealAndcheckPageIndexIsMinusOrOutOfRang(pageIndex, itemCount);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
-        List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = frequencyPresetService.getPageDataBySiteId(siteId, pageIndex, pageSize);
+        List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = frequencyPresetService.getPageDataBySiteId(siteId, apiPageData.getPager().getCurrPage()-1, apiPageData.getPager().getPageSize());
         apiPageData.setData(frequencyPresetResponseDealList);
         return apiPageData;
     }
