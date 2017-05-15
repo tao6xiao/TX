@@ -5,8 +5,6 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -59,21 +57,5 @@ public class CommonProcessor {
 
         log.error("", ex);
         return new ResponseTemplate(false, SYSTEMEXCEPTION_MESSAGE, null);
-    }
-
-    /**
-     * 用于处理data为null时的正确返回
-     * @param pj
-     * @return
-     * @throws Throwable
-     */
-    @Around("execution(* com.trs.gov.kpi.controller..* (..))")
-    public Object wrapSuccessResponse(ProceedingJoinPoint pj) throws Throwable {
-        //TODO 返回基本数据类型的处理
-        Object retVal = pj.proceed();
-        if(retVal == null) {
-            return new ResponseTemplate(true, INVOKE_SUCCESS_MESSAGE, null);
-        }
-        return retVal;
     }
 }
