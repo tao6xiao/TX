@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.utils.IssueCounter;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,22 +24,7 @@ public class LinkAvailabilityController {
 
     @RequestMapping(value = "/count", method = RequestMethod.GET)
     public List getIssueCount(int siteId) {
-
-        IssueCount unhandledIssueCount = new IssueCount();
-        unhandledIssueCount.setType(CountIndicator.UN_SOLVED.value);
-        unhandledIssueCount.setName(CountIndicator.UN_SOLVED.name);
-        unhandledIssueCount.setCount(linkAvailabilityService.getUnhandledIssueCount(siteId));
-
-        IssueCount handledIssueCount = new IssueCount();
-        handledIssueCount.setType(CountIndicator.SOLVED.value);
-        handledIssueCount.setName(CountIndicator.SOLVED.name);
-        handledIssueCount.setCount(linkAvailabilityService.getHandledIssueCount(siteId));
-
-        List list = new ArrayList();
-        list.add(unhandledIssueCount);
-        list.add(handledIssueCount);
-
-        return list;
+        return IssueCounter.getIssueCount(linkAvailabilityService, siteId);
     }
 
 
@@ -46,12 +32,12 @@ public class LinkAvailabilityController {
     public ApiPageData getIssueList(int currPage, int pageSize, @ModelAttribute LinkAvailability linkAvailability) {
         List<LinkAvailability> list = linkAvailabilityService.getIssueList(currPage, pageSize, linkAvailability);
         Pager pager = new Pager();
-        if(linkAvailability != null){
+        if (linkAvailability != null) {
             pager.setCurrPage(currPage);
             pager.setPageSize(pageSize);
             int count = linkAvailabilityService.getUnhandledIssueCount(linkAvailability.getSiteId());
             pager.setItemCount(count);
-            int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
+            int pageCount = count % pageSize == 0 ? count / pageSize : count / pageSize + 1;
             pager.setPageCount(pageCount);
         }
         ApiPageData data = new ApiPageData();
