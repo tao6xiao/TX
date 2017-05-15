@@ -38,4 +38,19 @@ public interface FrequencyPresetMapper {
      * @return
      */
     List<FrequencyPreset> selectPageDataBySiteId(@Param("siteId") int siteId, @Param("pageCalculate") int pageCalculate, @Param("pageSize") int pageSize);
+
+    /**
+     * 通过站点id和id修改更新频率和预警预设记录
+     * @param frequencyPreset
+     * @return
+     */
+    int updateFrequencyPresetBySiteIdAndId(FrequencyPreset frequencyPreset);
+
+    /**
+     * 通过站点id和id删除更新频率和预警预设记录
+     * @param siteId
+     * @param id
+     * @return
+     */
+    int deleteFrequencyPresetBySiteIdAndId(@Param("siteId") int siteId, @Param("id") int id);
 }
