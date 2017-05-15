@@ -20,39 +20,40 @@ public class PageInfoDeal {
         return pageCount;
     }
 
+//    public static int checkPageParameterIsNotNullOrNot(Integer pageParameter){
+//        if (pageParameter == null) {
+//            if(pageParameter){
+//
+//            }
+//                return PAGE_SIZE_DEFAULT;
+//        } else {
+//            return pageParameter;
+//        }
+//    }
+
     /**
-     * 检查传入的分页大小是否为null，为空直接取默认，当然也可以自己设置
+     * 检查传入的分页大小是否为null，为空直接取默认
      *
      * @param pageSize
-     * @param pageSizeSet
      * @return
      */
-    public static int checkPageSizeIsNullOrNot(Integer pageSize, Integer pageSizeSet) {
+    public static int checkPageSizeIsNullOrNot(Integer pageSize) {
         if (pageSize == null) {
-            if (pageSizeSet == null) {
-                return PAGE_SIZE_DEFAULT;
-            } else {
-                return pageSizeSet;
-            }
+            return PAGE_SIZE_DEFAULT;
         } else {
             return pageSize;
         }
     }
 
     /**
-     * 检查传入的页数（第几页）是否为null，为空直接取默认，当然也可以自己设置
+     * 检查传入的页数（第几页）是否为null，为空直接取默认
      *
      * @param pageIndex
-     * @param pageIndexSet
      * @return
      */
-    public static int checkPageIndexIsNullOrNot(Integer pageIndex, Integer pageIndexSet) {
+    public static int checkPageIndexIsNullOrNot(Integer pageIndex) {
         if (pageIndex == null) {
-            if (pageIndexSet == null) {
-                return PAGE_INDEX_DEFAULT;
-            } else {
-                return pageIndexSet;
-            }
+            return PAGE_INDEX_DEFAULT;
         } else {
             return pageIndex;
         }
@@ -60,15 +61,16 @@ public class PageInfoDeal {
 
     /**
      * 检查当前页处理后是否为负数或者是否超出最大页数，出现对应情况需要处理
+     *
      * @param pageIndex
      * @param itemCount
      * @return
      */
-    public static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer itemCount){
+    public static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer itemCount) {
         pageIndex = pageIndex - 1;//10页，最后一页为第10页
-        if(pageIndex < 0){
+        if (pageIndex < 0) {
             pageIndex = 0;
-        }else if(pageIndex >= itemCount){
+        } else if (pageIndex >= itemCount) {
             pageIndex = itemCount - 1;
         }
         return pageIndex;

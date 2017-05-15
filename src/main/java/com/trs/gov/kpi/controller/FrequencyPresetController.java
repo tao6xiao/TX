@@ -28,8 +28,8 @@ public class FrequencyPresetController {
             throw new BizException("站点编号不能为null");
         }
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
-        pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize,PageInfoDeal.PAGE_SIZE_DEFAULT);
-        pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex, PageInfoDeal.PAGE_INDEX_DEFAULT);
+        pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize);
+        pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex);
         pageIndex = PageInfoDeal.dealAndcheckPageIndexIsMinusOrOutOfRang(pageIndex, itemCount);
         int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);
         List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = frequencyPresetService.getPageDataBySiteId(siteId, pageIndex, pageSize);
