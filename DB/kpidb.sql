@@ -64,3 +64,23 @@ INSERT INTO `issue` VALUES ('54531', '100', '1', '2', 'www.dsa.com', '2017-05-18
 INSERT INTO `issue` VALUES ('65872', '100', '1', '1', 'www.dsad.com', '2017-04-30 11:07:22', '0', '0', 'www.dsad.com', null, null);
 INSERT INTO `issue` VALUES ('76915', '100', '2', '1', 'www.cdsf.com', '2017-05-12 17:04:30', '0', '0', '音乐天地', '1', null);
 INSERT INTO `issue` VALUES ('82816', '100', '2', '1', 'www.ffgh.', '2017-05-18 17:05:31', '0', '0', '电视购物', '2', null);
+
+-- 更新频率及预警初设表
+drop TABLE IF EXISTS frequencypreset;
+CREATE TABLE frequencypreset(
+		id INT NOT NULL auto_increment COMMENT '编号，自增长',
+		siteId INT NOT NULL COMMENT '站点编号',
+		updateFreq INT NOT NULL COMMENT '预设更新频率/天',
+		alertFreq INT NOT NULL COMMENT '预警时限/天',
+		PRIMARY KEY(id)
+)COMMENT='更新频率及预警初设表';
+
+INSERT INTO frequencypreset VALUES(0,1,1,1);
+INSERT INTO frequencypreset VALUES(0,1,1,1);
+INSERT INTO frequencypreset VALUES(0,1,1,1);
+INSERT INTO frequencypreset VALUES(0,2,2,2);
+INSERT INTO frequencypreset VALUES(0,2,2,2);
+INSERT INTO frequencypreset VALUES(0,2,2,2);
+INSERT INTO frequencypreset VALUES(0,3,3,3);
+INSERT INTO frequencypreset VALUES(0,3,3,3);
+INSERT INTO frequencypreset VALUES(0,3,3,3);
