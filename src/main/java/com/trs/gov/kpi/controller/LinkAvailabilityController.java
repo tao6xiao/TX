@@ -14,7 +14,7 @@ import java.util.List;
  * Created by rw103 on 2017/5/11.
  */
 @RestController
-@RequestMapping("/available/issue")
+@RequestMapping("/gov/kpi/available/issue")
 public class LinkAvailabilityController {
 
     @Resource
@@ -25,13 +25,13 @@ public class LinkAvailabilityController {
     public List getIssueCount(int siteId) {
 
         IssueCount unhandledIssueCount = new IssueCount();
-        unhandledIssueCount.setType(SolveStatus.UN_SOLVED.value);
-        unhandledIssueCount.setName(SolveStatus.UN_SOLVED.name);
+        unhandledIssueCount.setType(CountIndicator.UN_SOLVED.value);
+        unhandledIssueCount.setName(CountIndicator.UN_SOLVED.name);
         unhandledIssueCount.setCount(linkAvailabilityService.getUnhandledIssueCount(siteId));
 
         IssueCount handledIssueCount = new IssueCount();
-        handledIssueCount.setType(SolveStatus.SOLVED.value);
-        handledIssueCount.setName(SolveStatus.SOLVED.name);
+        handledIssueCount.setType(CountIndicator.SOLVED.value);
+        handledIssueCount.setName(CountIndicator.SOLVED.name);
         handledIssueCount.setCount(linkAvailabilityService.getHandledIssueCount(siteId));
 
         List list = new ArrayList();

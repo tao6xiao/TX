@@ -16,7 +16,7 @@ import java.util.List;
  * Created by rw103 on 2017/5/13.
  */
 @RestController
-@RequestMapping("/channel/issue")
+@RequestMapping("/gov/kpi/channel/issue")
 public class InfoUpdateController {
 
     @Resource
@@ -26,18 +26,18 @@ public class InfoUpdateController {
     public List getIssueCount(int siteId) {
 
         IssueCount handledIssueCount = new IssueCount();
-        handledIssueCount.setType(SolveStatus.SOLVED.value);
-        handledIssueCount.setName(SolveStatus.SOLVED.name);
+        handledIssueCount.setType(CountIndicator.SOLVED.value);
+        handledIssueCount.setName(CountIndicator.SOLVED.name);
         handledIssueCount.setCount(infoUpdateService.getHandledIssueCount(siteId));
 
         IssueCount updateNotIntimeCount = new IssueCount();
-        updateNotIntimeCount.setType(SolveStatus.UPDATE_NOT_INTIME.value);
-        updateNotIntimeCount.setName(SolveStatus.UPDATE_NOT_INTIME.name);
+        updateNotIntimeCount.setType(CountIndicator.UPDATE_NOT_INTIME.value);
+        updateNotIntimeCount.setName(CountIndicator.UPDATE_NOT_INTIME.name);
         updateNotIntimeCount.setCount(infoUpdateService.getUpdateNotIntimeCount(siteId));
 
         IssueCount updateWarningCount = new IssueCount();
-        updateWarningCount.setType(SolveStatus.UPDATE_WARNING.value);
-        updateWarningCount.setName(SolveStatus.UPDATE_WARNING.name);
+        updateWarningCount.setType(CountIndicator.UPDATE_WARNING.value);
+        updateWarningCount.setName(CountIndicator.UPDATE_WARNING.name);
         updateWarningCount.setCount(infoUpdateService.getUpdateWarningCount(siteId));
 
         List list = new ArrayList();
