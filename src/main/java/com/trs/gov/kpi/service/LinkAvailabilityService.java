@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.LinkAvailability;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,4 +18,5 @@ public interface LinkAvailabilityService extends OperationService{
 
     List<LinkAvailability> getIssueList(int currPage, int pageSize, LinkAvailability linkAvailability);
 
+    //void batchInsertLinkAvailabilities(@Param("linkAvailabilities") List<LinkAvailability> linkAvailabilities);
 }

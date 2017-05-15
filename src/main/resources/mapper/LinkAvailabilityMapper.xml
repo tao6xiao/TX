@@ -64,5 +64,15 @@
         AND isResolved = 0
         limit #{currPage},#{pageSize}
     </select>
+    
+    <insert id="batchInsertLinkAvailabilities" useGeneratedKeys="true" parameterType="java.util.List">
+        INSERT INTO issue
+        (`siteId`, `typeId`, `subTypeId`, `detail`, `issueTime`, `isResolved`, `isDel`, `customer1`, `customer2`, `customer3`)
+        VALUES 
+        <foreach collection="list" item="item" separator="," >
+            (#{siteId}, #{issueTypeId}, 1, #{issueTypeId}, #{invalidLink}, #{})
+        </foreach>
+
+    </insert>
 
 </mapper>

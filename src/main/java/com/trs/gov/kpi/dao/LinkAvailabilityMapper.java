@@ -43,4 +43,10 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      */
     List<LinkAvailability> getIssueList(@Param("currPage") int currPage,@Param("pageSize") int pageSize,@Param("linkAvailability") LinkAvailability linkAvailability);
 
+    /**
+     * 批量添加链接问题
+     * @param linkAvailabilities
+     */
+    void batchInsertLinkAvailabilities(@Param("linkAvailabilities") List<LinkAvailability> linkAvailabilities);
+
 }
