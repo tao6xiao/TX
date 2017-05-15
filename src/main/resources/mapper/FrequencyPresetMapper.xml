@@ -92,4 +92,17 @@
     where siteId = #{siteId,jdbcType=INTEGER}
     limit #{pageCalculate,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
+  <update id="updateFrequencyPresetBySiteIdAndId" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
+    update frequencypreset
+    set
+      updateFreq = #{updateFreq,jdbcType=INTEGER},
+      alertFreq = #{alertFreq,jdbcType=INTEGER}
+    where siteId = #{siteId,jdbcType=INTEGER}
+    AND id = #{id,jdbcType=INTEGER}
+  </update>
+  <delete id="deleteFrequencyPresetBySiteIdAndId" parameterType="java.lang.Integer">
+    delete from frequencypreset
+    WHERE siteId = #{siteId,jdbcType=INTEGER}
+    AND id = #{id,jdbcType=INTEGER}
+  </delete>
 </mapper>
