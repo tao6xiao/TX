@@ -9,9 +9,6 @@ import java.util.List;
  */
 public interface LinkAvailabilityService extends OperationService{
 
-    int getHandledIssueCount(int siteId);
-
-    int getUnhandledIssueCount(int siteId);
 
     int getUnhandledIssueCountByTime(int siteId);
 

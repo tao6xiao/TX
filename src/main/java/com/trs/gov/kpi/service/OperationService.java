@@ -7,6 +7,14 @@ import java.util.List;
  */
 public interface OperationService {
 
+    int getHandledIssueCount(int siteId);
+
+    int getUnhandledIssueCount(int siteId);
+
+    int getUpdateNotIntimeCount(int siteId);
+
+    int getUpdateWarningCount(int siteId);
+
     void handIssueById(int siteId, int id);
 
     void handIssuesByIds(int siteId, List<Integer> ids);

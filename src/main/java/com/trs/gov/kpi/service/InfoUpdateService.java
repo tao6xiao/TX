@@ -9,11 +9,6 @@ import java.util.List;
  */
 public interface InfoUpdateService extends OperationService{
 
-    int getHandledIssueCount(int siteId);
-
-    int getUpdateNotIntimeCount(int siteId);
-
-    int getUpdateWarningCount(int siteId);
 
     List<InfoUpdate> getIssueList(int currPage, int pageSize, InfoUpdate infoUpdate);
 }

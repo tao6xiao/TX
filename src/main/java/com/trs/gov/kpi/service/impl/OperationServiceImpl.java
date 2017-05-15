@@ -15,6 +15,26 @@ public class OperationServiceImpl implements OperationService {
     private OperationMapper operationMapper;
 
     @Override
+    public int getHandledIssueCount(int siteId) {
+        return operationMapper.getHandledIssueCount(siteId);
+    }
+
+    @Override
+    public int getUnhandledIssueCount(int siteId) {
+        return operationMapper.getUnhandledIssueCount(siteId);
+    }
+
+    @Override
+    public int getUpdateNotIntimeCount(int siteId) {
+        return getUpdateNotIntimeCount(siteId);
+    }
+
+    @Override
+    public int getUpdateWarningCount(int siteId) {
+        return operationMapper.getUpdateWarningCount(siteId);
+    }
+
+    @Override
     public void handIssueById(int siteId, int id) {
         operationMapper.handIssueById(siteId, id);
     }
