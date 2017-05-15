@@ -2,7 +2,7 @@ package com.trs.gov.kpi.controller;
 
 
 import com.trs.gov.kpi.entity.InfoError;
-import com.trs.gov.kpi.entity.Pager;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.utils.IssueCounter;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

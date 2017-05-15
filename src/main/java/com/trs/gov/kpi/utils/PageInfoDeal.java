@@ -1,9 +1,7 @@
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.entity.ApiPageData;
-import com.trs.gov.kpi.entity.Pager;
-
-import java.util.List;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 
 /**
  * 主要用于处理分页的一些数据，比如，分页的数目计算

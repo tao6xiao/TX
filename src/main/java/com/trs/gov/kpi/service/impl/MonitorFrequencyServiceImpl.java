@@ -2,9 +2,9 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.MonitorFrequencyDeal;
-import com.trs.gov.kpi.entity.MonitorFrequencyFreq;
-import com.trs.gov.kpi.entity.MonitorFrequencySetUp;
+import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
+import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
+import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.model.MonitorFrequencyType;
 import com.trs.gov.kpi.model.MonitorFrequencyTypeModel;
 import com.trs.gov.kpi.service.MonitorFrequencyService;

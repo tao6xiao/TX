@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.FrequencyPresetResponseDeal;
+import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponseDeal;
 
 import java.util.List;
 

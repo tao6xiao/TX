@@ -2,7 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
-import com.trs.gov.kpi.entity.FrequencyPresetResponseDeal;
+import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponseDeal;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import org.springframework.stereotype.Service;
 

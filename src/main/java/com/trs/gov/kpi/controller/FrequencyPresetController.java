@@ -1,8 +1,7 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.entity.ApiPageData;
-import com.trs.gov.kpi.entity.FrequencyPresetResponseDeal;
-import com.trs.gov.kpi.entity.Pager;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponseDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.utils.PageInfoDeal;

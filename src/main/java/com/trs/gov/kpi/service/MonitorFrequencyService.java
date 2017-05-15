@@ -1,9 +1,8 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.MonitorFrequencyDeal;
-import com.trs.gov.kpi.entity.MonitorFrequencySetUp;
-import org.springframework.stereotype.Service;
+import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
+import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 
 import java.util.List;
 

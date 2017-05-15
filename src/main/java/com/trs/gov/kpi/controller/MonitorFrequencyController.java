@@ -1,17 +1,15 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.MonitorFrequencyDeal;
-import com.trs.gov.kpi.entity.MonitorFrequencyFreq;
-import com.trs.gov.kpi.entity.MonitorFrequencySetUp;
+import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
+import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
+import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.model.MonitorFrequencyType;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

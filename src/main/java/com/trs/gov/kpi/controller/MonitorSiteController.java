@@ -48,7 +48,7 @@ public class MonitorSiteController {
      */
     @RequestMapping(value = "/site",method = RequestMethod.POST)
     @ResponseBody
-    public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException {
+    public Object save(@RequestBody MonitorSiteDeal monitorSiteDeal) throws BizException {
         if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getSiteIds() == null || monitorSiteDeal.getSiteIds().length == 0){
             throw new BizException();
         }
