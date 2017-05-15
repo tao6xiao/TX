@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.entity.CountIndicator;
-import com.trs.gov.kpi.entity.IssueCount;
+import com.trs.gov.kpi.entity.responsedata.IssueCount;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.OperationService;
 
