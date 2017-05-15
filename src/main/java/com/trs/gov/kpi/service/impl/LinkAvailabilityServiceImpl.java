@@ -34,7 +34,7 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     }
 
     @Override
-    public List<LinkAvailability> getIssueList(int currPage, int pageSize, LinkAvailability linkAvailability) {
+    public List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, LinkAvailability linkAvailability) {
         return linkAvailabilityMapper.getIssueList(currPage, pageSize, linkAvailability);
     }
 

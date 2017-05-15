@@ -27,6 +27,6 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      * @param linkAvailability
      * @return
      */
-    List<LinkAvailability> getIssueList(@Param("currPage") int currPage,@Param("pageSize") int pageSize,@Param("linkAvailability") LinkAvailability linkAvailability);
+    List<LinkAvailability> getIssueList(@Param("currPage") Integer currPage,@Param("pageSize") Integer pageSize,@Param("linkAvailability") LinkAvailability linkAvailability);
 
 }

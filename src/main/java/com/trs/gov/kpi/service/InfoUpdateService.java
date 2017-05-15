@@ -10,5 +10,5 @@ import java.util.List;
 public interface InfoUpdateService extends OperationService{
 
 
-    List<InfoUpdate> getIssueList(int currPage, int pageSize, InfoUpdate infoUpdate);
+    List<InfoUpdate> getIssueList(Integer currPage, Integer pageSize, InfoUpdate infoUpdate);
 }

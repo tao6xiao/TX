@@ -35,29 +35,28 @@
         SELECT id,
         subTypeId,
         detail,
-        customer1,
         issueTime
         FROM issue
-        WHERE siteId = #{linkAvailability.siteId,jdbcType=INTEGER}
-        <if test="linkAvailability.id != null">
-            AND id LIKE concat('%',#{linkAvailability.id,jdbcType=VARCHAR},'%')
+        WHERE siteId = #{infoError.siteId,jdbcType=INTEGER}
+        <if test="infoError.id != null">
+            AND id LIKE concat('%',#{infoError.id,jdbcType=VARCHAR},'%')
         </if>
-        <if test="linkAvailability.search != null">
-            AND id LIKE concat('%',#{linkAvailability.search,jdbcType=VARCHAR},'%')
+        <if test="infoError.search != null">
+            AND id LIKE concat('%',#{infoError.search,jdbcType=VARCHAR},'%')
         </if>
-        <if test="linkAvailability.beginDateTime != null">
+        <if test="infoError.beginDateTime != null">
             AND issueTime
             <![CDATA[
             >
             ]]>
-            #{linkAvailability.beginDateTime,jdbcType=DATE}
+            #{infoError.beginDateTime,jdbcType=DATE}
         </if>
-        <if test="linkAvailability.endDateTime != null">
+        <if test="infoError.endDateTime != null">
             AND issueTime
             <![CDATA[
             <
             ]]>
-            #{linkAvailability.endDateTime,jdbcType=DATE}
+            #{infoError.endDateTime,jdbcType=DATE}
         </if>
         AND typeId = 3
         AND isResolved = 0

@@ -19,5 +19,5 @@ public interface InfoErrorMapper extends OperationMapper {
      * @param infoError
      * @return
      */
-    List<InfoError> getIssueList(@Param("currPage") int currPage,@Param("pageSize") int pageSize,@Param("infoError") InfoError infoError);
+    List<InfoError> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("infoError") InfoError infoError);
 }
