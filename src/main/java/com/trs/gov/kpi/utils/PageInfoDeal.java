@@ -1,5 +1,10 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.entity.ApiPageData;
+import com.trs.gov.kpi.entity.Pager;
+
+import java.util.List;
+
 /**
  * 主要用于处理分页的一些数据，比如，分页的数目计算
  * Created by he.lang on 2017/5/15.
@@ -74,5 +79,26 @@ public class PageInfoDeal {
             pageIndex = itemCount - 1;
         }
         return pageIndex;
+    }
+
+    /**
+     * 获取返回的ApiPageData对象（不完整，所以调用方法之后需要将List再放入ApiPageData对象）
+     * @param pageIndex
+     * @param pageSize
+     * @param itemCount
+     * @return
+     */
+    public static ApiPageData getApiPageData(Integer pageIndex, Integer pageSize, Integer itemCount){
+        pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize);
+        pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex);
+        int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);
+        ApiPageData apiPageData = new ApiPageData();
+        Pager pager = new Pager();
+        pager.setCurrPage(pageIndex + 1);
+        pager.setPageSize(pageSize);
+        pager.setPageCount(pageCount);
+        pager.setItemCount(itemCount);
+        apiPageData.setPager(pager);
+        return  apiPageData;
     }
 }

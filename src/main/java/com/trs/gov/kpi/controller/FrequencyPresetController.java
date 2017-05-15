@@ -28,18 +28,9 @@ public class FrequencyPresetController {
             throw new BizException("站点编号不能为null");
         }
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
-        pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize);
-        pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex);
         pageIndex = PageInfoDeal.dealAndcheckPageIndexIsMinusOrOutOfRang(pageIndex, itemCount);
-        int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
         List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = frequencyPresetService.getPageDataBySiteId(siteId, pageIndex, pageSize);
-        ApiPageData apiPageData = new ApiPageData();
-        Pager pager = new Pager();
-        pager.setCurrPage(pageIndex + 1);
-        pager.setPageSize(pageSize);
-        pager.setPageCount(pageCount);
-        pager.setItemCount(itemCount);
-        apiPageData.setPager(pager);
         apiPageData.setData(frequencyPresetResponseDealList);
         return apiPageData;
     }
