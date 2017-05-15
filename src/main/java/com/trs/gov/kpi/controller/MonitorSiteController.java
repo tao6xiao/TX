@@ -17,7 +17,7 @@ import javax.annotation.Resource;
  * 监控站点设置Controller
  */
 @RestController
-@RequestMapping("/setting")
+@RequestMapping("/gov/kpi/setting")
 public class MonitorSiteController {
 
     @Resource @Setter

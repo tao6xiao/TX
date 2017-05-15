@@ -19,7 +19,7 @@ import java.util.List;
  * 监测频率Controller
  */
 @RestController
-@RequestMapping(value = "/setting")
+@RequestMapping(value = "/gov/kpi/setting")
 public class MonitorFrequencyController {
     @Resource
     MonitorFrequencyService monitorFrequencyService;
