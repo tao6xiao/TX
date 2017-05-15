@@ -32,3 +32,35 @@ INSERT INTO monitorfrequency VALUES(2,3,3);
 INSERT INTO monitorfrequency VALUES(3,1,1);
 INSERT INTO monitorfrequency VALUES(3,2,2);
 INSERT INTO monitorfrequency VALUES(3,3,3);
+
+-- ----------------------------
+-- Table structure for issue
+-- ----------------------------
+DROP TABLE IF EXISTS `issue`;
+CREATE TABLE `issue` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `siteId` int(255) NOT NULL,
+  `typeId` tinyint(1) NOT NULL COMMENT '1(可用性问题) 2（信息更新问题）3（信息错误问题）',
+  `subTypeId` tinyint(1) NOT NULL,
+  `detail` varchar(2050) NOT NULL,
+  `issueTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `isResolved` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-->待解决，1-->已处理，2-->已忽略',
+  `isDel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-->未删除，1-->已删除',
+  `customer1` varchar(2050) DEFAULT NULL,
+  `customer2` varchar(2050) DEFAULT NULL,
+  `customer3` varchar(2050) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of issue
+-- ----------------------------
+INSERT INTO `issue` VALUES ('13854', '100', '1', '1', 'www.baodu.com', '2017-05-10 11:06:29', '0', '0', 'www.baodu.com', null, null);
+INSERT INTO `issue` VALUES ('25687', '100', '1', '1', 'www.sohu.com', '2017-05-04 11:06:33', '0', '0', 'www.sohu.com', null, null);
+INSERT INTO `issue` VALUES ('32189', '100', '2', '1', 'www.dsf.cn', '2017-05-25 17:06:00', '0', '0', '电影天堂', '3', null);
+INSERT INTO `issue` VALUES ('35613', '100', '1', '1', 'www.sina.com', '2017-05-01 11:06:36', '0', '0', 'www.sina.com', null, null);
+INSERT INTO `issue` VALUES ('44735', '100', '1', '2', 'www.hao123.com', '2017-05-17 11:06:39', '0', '0', 'www.hao123.com', null, null);
+INSERT INTO `issue` VALUES ('54531', '100', '1', '2', 'www.dsa.com', '2017-05-18 11:07:02', '0', '0', 'www.dsa.com', null, null);
+INSERT INTO `issue` VALUES ('65872', '100', '1', '1', 'www.dsad.com', '2017-04-30 11:07:22', '0', '0', 'www.dsad.com', null, null);
+INSERT INTO `issue` VALUES ('76915', '100', '2', '1', 'www.cdsf.com', '2017-05-12 17:04:30', '0', '0', '音乐天地', '1', null);
+INSERT INTO `issue` VALUES ('82816', '100', '2', '1', 'www.ffgh.', '2017-05-18 17:05:31', '0', '0', '电视购物', '2', null);
