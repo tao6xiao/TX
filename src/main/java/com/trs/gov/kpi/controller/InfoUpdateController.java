@@ -16,7 +16,7 @@ import java.util.List;
  * Created by rw103 on 2017/5/13.
  */
 @RestController
-@RequestMapping("/channel/issue")
+@RequestMapping("/gov/kpi/channel/issue")
 public class InfoUpdateController {
 
     @Resource

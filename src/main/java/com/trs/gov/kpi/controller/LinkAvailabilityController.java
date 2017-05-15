@@ -14,7 +14,7 @@ import java.util.List;
  * Created by rw103 on 2017/5/11.
  */
 @RestController
-@RequestMapping("/available/issue")
+@RequestMapping("/gov/kpi/available/issue")
 public class LinkAvailabilityController {
 
     @Resource
