@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +15,9 @@ import java.util.List;
 @Slf4j
 @Component
 public class HomePageCheckScheduler extends AbstractScheduler {
+
+    @Resource
+    SpiderUtils spider;
 
     @Getter
     public final String name = "home_page_check";
@@ -28,7 +32,7 @@ public class HomePageCheckScheduler extends AbstractScheduler {
         public void run() {
 
             log.info("check start...");
-            SpiderUtils.homePageCheck(hosts.toArray(new String[0]));
+            //SpiderUtils.homePageCheck(hosts.toArray(new String[0]));
         }
     };
 }

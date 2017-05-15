@@ -18,5 +18,5 @@ public interface LinkAvailabilityService extends OperationService{
 
     List<LinkAvailability> getIssueList(int currPage, int pageSize, LinkAvailability linkAvailability);
 
-    //void batchInsertLinkAvailabilities(@Param("linkAvailabilities") List<LinkAvailability> linkAvailabilities);
+    void insertLinkAvailability(LinkAvailability linkAvailability);
 }

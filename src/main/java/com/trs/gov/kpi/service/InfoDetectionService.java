@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import lombok.Data;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,4 +21,18 @@ public interface InfoDetectionService {
     List<String> DETECTION_TYPE = Arrays.asList("字词", "政治");
 
     Set<String> detectText(String text) throws RemoteException;
+
+    List<String> getDocumentIdsBySiteId(Integer siteId);
+
+    Document getDocumentById(String documentId);
+
+    @Data
+    public static class Document {
+
+        String title;
+
+        String text;
+
+        String link;
+    }
 }

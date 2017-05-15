@@ -36,6 +36,6 @@ public class SchedulerManager {
 
         ScheduledExecutorService newExecutorService = new ScheduledThreadPoolExecutor(EXECUTOR_THREAD_NUMBER);
         scheduledMap.put(schedulerTask.getName(), newExecutorService);
-        newExecutorService.schedule(schedulerTask.getTask(), schedulerTask.getDelay(), schedulerTask.getTimeUnit());
+        newExecutorService.scheduleAtFixedRate(schedulerTask.getTask(), 0, schedulerTask.getDelay(), schedulerTask.getTimeUnit());
     }
 }

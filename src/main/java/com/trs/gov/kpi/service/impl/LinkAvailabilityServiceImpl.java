@@ -1,6 +1,10 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IssueType;
+import com.trs.gov.kpi.constant.LinkType;
+import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
+import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.OperationService;
@@ -17,6 +21,9 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
 
     @Resource
     private LinkAvailabilityMapper linkAvailabilityMapper;
+
+    @Resource
+    private IssueMapper issueMapper;
 
     @Override
     public int getHandledIssueCount(int siteId) {
@@ -36,6 +43,26 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     @Override
     public List<LinkAvailability> getIssueList(int currPage, int pageSize, LinkAvailability linkAvailability) {
         return linkAvailabilityMapper.getIssueList(currPage, pageSize, linkAvailability);
+    }
+
+    @Override
+    public void insertLinkAvailability(LinkAvailability linkAvailability) {
+
+        Issue issue = getIssueByLinkAvaliability(linkAvailability);
+        issueMapper.insert(issue);
+    }
+
+    private Issue getIssueByLinkAvaliability(LinkAvailability linkAvailability) {
+
+        Issue issue = new Issue();
+        issue.setId(linkAvailability.getId() == null? null : Integer.valueOf(linkAvailability.getId()));
+        issue.setSiteId(linkAvailability.getSiteId());
+        issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
+        issue.setSubTypeId(LinkType.getTypeByName(linkAvailability.getIssueTypeName()).getCode());
+        issue.setDetail(linkAvailability.getInvalidLink());
+        issue.setIssueTime(linkAvailability.getCheckTime());
+        issue.setCustomer1(linkAvailability.getSnapshot());
+        return issue;
     }
 
 

@@ -1,11 +1,14 @@
 package com.trs.gov.kpi.utils;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
@@ -18,15 +21,17 @@ import java.util.*;
  * Created by wangxuan on 2017/5/10.
  */
 @Slf4j
+@Component
+@Scope("prototype")
 public class SpiderUtils {
 
-    private static HashMap<String, Set<String>> pageParentMap = new HashMap<>();
+    private HashMap<String, Set<String>> pageParentMap = new HashMap<>();
 
-    private static Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
+    private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
 
-    private static Site site = Site.me().setRetryTimes(3).setSleepTime(1000).setTimeOut(15000);
+    private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
 
-    private static PageProcessor kpiProcessor = new PageProcessor() {
+    private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
         public void process(Page page) {
@@ -78,7 +83,7 @@ public class SpiderUtils {
         }
     };
 
-    private static Downloader recordUnavailableUrlDownloader = new HttpClientDownloader() {
+    private Downloader recordUnavailableUrlDownloader = new HttpClientDownloader() {
 
         ThreadLocal<Boolean> isUrlUnavailable = new ThreadLocal<>();
 
@@ -101,7 +106,7 @@ public class SpiderUtils {
         }
     };
 
-    private synchronized static void init() {
+    private synchronized void init() {
 
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
@@ -110,20 +115,20 @@ public class SpiderUtils {
     /**
      * 检索链接/图片/附件是否可用
      * @param threadNum 并发线程数
-     * @param baseUrls 网页入口地址
+     * @param baseUrl 网页入口地址
      * @return
      */
-    public synchronized static List<Pair<String, String>> linkCheck(int threadNum, String... baseUrls) {
+    public synchronized List<Pair<String, String>> linkCheck(int threadNum, String baseUrl) {
 
         log.info("linkCheck started!");
         init();
-        if(ArrayUtils.isEmpty(baseUrls)) {
+        if(StringUtils.isBlank(baseUrl)) {
 
             log.info("linkCheck completed, no URL has been checked!");
             return Collections.EMPTY_LIST;
         }
 
-        Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrls).thread(threadNum).run();
+        Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();
         List<Pair<String, String>> unavailableUrlAndParentUrls = new LinkedList<>();
         for(String unavailableUrl: unavailableUrls) {
 
@@ -147,7 +152,7 @@ public class SpiderUtils {
      * @param homePageUrls
      * @return
      */
-    public synchronized static List<String> homePageCheck(String... homePageUrls) {
+    public synchronized List<String> homePageCheck(String... homePageUrls) {
 
         log.info("homePageCheck started!");
         init();
@@ -169,5 +174,15 @@ public class SpiderUtils {
         }
         log.info("homePageCheck completed!");
         return new LinkedList<>(unavailableUrls);
+    }
+
+    @Data
+    public static class CheckResult {
+
+        private String baseUrl;
+
+        private String unavailableUrl;
+
+        private String parentUrl;
     }
 }
