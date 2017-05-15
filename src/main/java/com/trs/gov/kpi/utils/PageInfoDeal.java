@@ -66,15 +66,15 @@ public class PageInfoDeal {
      * 检查当前页处理后是否为负数或者是否超出最大页数，出现对应情况需要处理
      *
      * @param pageIndex
-     * @param itemCount
+     * @param pageCount
      * @return
      */
-    public static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer itemCount) {
+    public static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer pageCount) {
         pageIndex = pageIndex - 1;//10页，最后一页为第10页
         if (pageIndex < 0) {
             pageIndex = 0;
-        } else if (pageIndex >= itemCount) {
-            pageIndex = itemCount - 1;
+        } else if (pageIndex >= pageCount) {
+            pageIndex = pageCount - 1;
         }
         return pageIndex;
     }
@@ -89,8 +89,8 @@ public class PageInfoDeal {
     public static ApiPageData getApiPageData(Integer pageIndex, Integer pageSize, Integer itemCount){
         pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize);
         pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex);
-        pageIndex = PageInfoDeal.dealAndcheckPageIndexIsMinusOrOutOfRang(pageIndex, itemCount);
         int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);
+        pageIndex = PageInfoDeal.dealAndcheckPageIndexIsMinusOrOutOfRang(pageIndex, pageCount);
         ApiPageData apiPageData = new ApiPageData();
         Pager pager = new Pager();
         pager.setCurrPage(pageIndex + 1);
