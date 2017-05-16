@@ -19,7 +19,7 @@ import java.util.Map;
  * Created by helang on 2017/5/12.
  */
 @Service
-public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
+public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Resource
     MonitorFrequencyMapper monitorFrequencyMapper;
@@ -28,7 +28,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
     public List<MonitorFrequencyDeal> queryBySiteId(int siteId) {
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyMapper.queryBySiteId(siteId);
         List<MonitorFrequencyDeal> monitorFrequencyDealList = new ArrayList<>();
-        if(monitorFrequencyList != null) {
+        if (monitorFrequencyList != null) {
 //            Map<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap = MonitorFrequencyTypeModel.getTypes();//获取全部监测类型
             for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
                 MonitorFrequencyDeal monitorFrequencyDeal = getMonitorFrequencyDealFromMonitorFrequency(monitorFrequency);
@@ -62,18 +62,18 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
         int siteId = monitorFrequencySetUp.getSiteId();
         MonitorFrequencyFreq[] freqs = monitorFrequencySetUp.getFreqs();
         List<MonitorFrequency> monitorFrequencyList = new ArrayList<>();//为何创建ArrayList
-        for(int i = 0; i < freqs.length; i++ ){
+        for (int i = 0; i < freqs.length; i++) {
             MonitorFrequencyFreq monitorFrequencyFreq = freqs[i];
             MonitorFrequency monitorFrequency = new MonitorFrequency();
             monitorFrequency.setSiteId(siteId);
             monitorFrequency.setTypeId(monitorFrequencyFreq.getId());
             Short value = monitorFrequencyFreq.getValue();
-            if(value != null) {
+            if (value != null) {
                 monitorFrequency.setValue(value);
                 monitorFrequencyList.add(monitorFrequency);
             }
         }
-        return  monitorFrequencyList;
+        return monitorFrequencyList;
     }
 
     private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency) {
@@ -82,8 +82,8 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
         monitorFrequencyDeal.setValue(monitorFrequency.getValue());
         int typeId = monitorFrequency.getTypeId();
         FrequencyType frequencyType = FrequencyType.getFrequencyTypeByTypeId(typeId);
-            monitorFrequencyDeal.setName(frequencyType.getName());
-            monitorFrequencyDeal.setFreqUnit(frequencyType.getFreqUnit().getCode());
+        monitorFrequencyDeal.setName(frequencyType.getName());
+        monitorFrequencyDeal.setFreqUnit(frequencyType.getFreqUnit().getCode());
         return monitorFrequencyDeal;
     }
 }

@@ -1,12 +1,12 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.ChnlGroups;
+import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
 import com.trs.gov.kpi.service.ChnlGroupService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -31,4 +31,21 @@ public class ChnlGroupController {
         return chnlGroupService.getChnlGroupsResponseDetailArray();
     }
 
+    /**
+     * 分页查询对于siteId和groupId下面的数据记录
+     * @param siteId
+     * @param groupId
+     * @param pageSize
+     * @param pageIndex
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.GET)
+    @ResponseBody
+    public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId,@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex) throws BizException {
+        if(siteId == null || groupId == null){
+            throw new BizException("参数存在null值");
+        }
+        return null;
+    }
 }
