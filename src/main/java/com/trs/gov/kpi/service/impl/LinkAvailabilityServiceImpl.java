@@ -3,7 +3,6 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.OperationService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,8 +28,8 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     }
 
     @Override
-    public int getUnhandledIssueCountByTime(int siteId) {
-        return linkAvailabilityMapper.getUnhandledIssueCountByTime(siteId);
+    public int getIssueHistoryCount(LinkAvailability linkAvailability) {
+        return linkAvailabilityMapper.getIssueHistoryCount(linkAvailability);
     }
 
     @Override

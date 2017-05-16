@@ -7,8 +7,9 @@ import java.util.List;
 /**
  * Created by rw103 on 2017/5/13.
  */
-public interface InfoUpdateService extends OperationService{
+public interface InfoUpdateService extends OperationService {
 
+    int getIssueHistoryCount(InfoUpdate infoUpdate);
 
     List<InfoUpdate> getIssueList(Integer currPage, Integer pageSize, InfoUpdate infoUpdate);
 }

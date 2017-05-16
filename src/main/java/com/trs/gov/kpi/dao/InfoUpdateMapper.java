@@ -14,11 +14,20 @@ public interface InfoUpdateMapper extends OperationMapper {
 
 
     /**
-     *查询未解决问题集合
+     * 获取每月新增问题数
+     *
+     * @param infoUpdate
+     * @return
+     */
+    int getIssueHistoryCount(@Param("infoUpdate") InfoUpdate infoUpdate);
+
+    /**
+     * 查询未解决问题集合
+     *
      * @param currPage
      * @param pageSize
      * @param infoUpdate
      * @return
      */
-    List<InfoUpdate> getIssueList(@Param("currPage") Integer currPage,@Param("pageSize") Integer pageSize,@Param("infoUpdate") InfoUpdate infoUpdate);
+    List<InfoUpdate> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("infoUpdate") InfoUpdate infoUpdate);
 }

@@ -2,8 +2,6 @@ package com.trs.gov.kpi.entity;
 
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * Created by rw103 on 2017/5/13.
  */
@@ -11,10 +9,19 @@ import java.util.Date;
 public class IssueBase {
 
     /**
+     * 问题编号
+     */
+    private String id;
+
+    /**
+     * 站点编号
+     */
+    private Integer siteId;
+
+    /**
      * 问题记录起止时间
      */
     public String beginDateTime;
-
     public String endDateTime;
 
     /**

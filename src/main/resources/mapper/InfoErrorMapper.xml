@@ -22,13 +22,22 @@
         SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 3
     </select>
 
-    <!--<select id="getUnhandledIssueCountByTime" resultType="int">-->
-    <!--select count(1) from issue_link where checkTime-->
-    <!--<![CDATA[-->
-    <!--<-->
-    <!--]]>-->
-    <!--#{checkTime} and isResolved=0 and siteId = #{siteId}-->
-    <!--</select>-->
+    <select id="getIssueHistoryCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE issueTime
+        <![CDATA[
+    >
+    ]]>
+        #{infoError.beginDateTime}
+        AND issueTime
+        <![CDATA[
+    <
+    ]]>
+        #{infoError.endDateTime}
+        AND siteId = #{infoError.siteId}
+        AND typeId = 3
+    </select>
 
 
     <select id="getIssueList" resultMap="infoErrorMap">
