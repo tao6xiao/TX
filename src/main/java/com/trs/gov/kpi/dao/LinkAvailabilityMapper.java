@@ -13,20 +13,6 @@ import java.util.List;
 public interface LinkAvailabilityMapper extends OperationMapper {
 
     /**
-     * 获取已解决问题数
-     * @param siteId
-     * @return
-     */
-    int getHandledIssueCount(@Param("siteId") int siteId);
-
-    /**
-     * 获取未解决问题数
-     * @param siteId
-     * @return
-     */
-    int getUnhandledIssueCount(@Param("siteId") int siteId);
-
-    /**
      * 获取月末未解决问题数
      * 实现-->查询监测时间小于当月且未解决的问题
      * @param siteId
@@ -41,7 +27,7 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      * @param linkAvailability
      * @return
      */
-    List<LinkAvailability> getIssueList(@Param("currPage") int currPage,@Param("pageSize") int pageSize,@Param("linkAvailability") LinkAvailability linkAvailability);
+    List<LinkAvailability> getIssueList(@Param("currPage") Integer currPage,@Param("pageSize") Integer pageSize,@Param("linkAvailability") LinkAvailability linkAvailability);
 
     /**
      * 批量添加链接问题

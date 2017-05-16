@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.FrequencyPresetMapper">
+  <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.FrequencyPreset">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="siteId" jdbcType="INTEGER" property="siteId" />
+    <result column="updateFreq" jdbcType="INTEGER" property="updateFreq" />
+    <result column="alertFreq" jdbcType="INTEGER" property="alertFreq" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, siteId, updateFreq, alertFreq
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from frequencypreset
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from frequencypreset
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
+    insert into frequencypreset (id, siteId, updateFreq, 
+      alertFreq)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{updateFreq,jdbcType=INTEGER}, 
+      #{alertFreq,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
+    insert into frequencypreset
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        siteId,
+      </if>
+      <if test="updateFreq != null">
+        updateFreq,
+      </if>
+      <if test="alertFreq != null">
+        alertFreq,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="updateFreq != null">
+        #{updateFreq,jdbcType=INTEGER},
+      </if>
+      <if test="alertFreq != null">
+        #{alertFreq,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
+    update frequencypreset
+    <set>
+      <if test="siteId != null">
+        siteId = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="updateFreq != null">
+        updateFreq = #{updateFreq,jdbcType=INTEGER},
+      </if>
+      <if test="alertFreq != null">
+        alertFreq = #{alertFreq,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
+    update frequencypreset
+    set siteId = #{siteId,jdbcType=INTEGER},
+      updateFreq = #{updateFreq,jdbcType=INTEGER},
+      alertFreq = #{alertFreq,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectItemCountBySiteId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    select
+    COUNT(id)
+    from frequencypreset
+    where siteId = #{siteId,jdbcType=INTEGER}
+  </select>
+  <select id="selectPageDataBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from frequencypreset
+    where siteId = #{siteId,jdbcType=INTEGER}
+    limit #{pageCalculate,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+  <update id="updateFrequencyPresetBySiteIdAndId" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
+    update frequencypreset
+    set
+      updateFreq = #{updateFreq,jdbcType=INTEGER},
+      alertFreq = #{alertFreq,jdbcType=INTEGER}
+    where siteId = #{siteId,jdbcType=INTEGER}
+    AND id = #{id,jdbcType=INTEGER}
+  </update>
+  <delete id="deleteFrequencyPresetBySiteIdAndId" parameterType="java.lang.Integer">
+    delete from frequencypreset
+    WHERE siteId = #{siteId,jdbcType=INTEGER}
+    AND id = #{id,jdbcType=INTEGER}
+  </delete>
+</mapper>

@@ -1,14 +1,17 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.entity.InfoUpdate;
+import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.InfoUpdateService;
+import com.trs.gov.kpi.utils.IssueCounter;
+import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,77 +27,51 @@ public class InfoUpdateController {
 
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(int siteId) {
-
-        IssueCount handledIssueCount = new IssueCount();
-        handledIssueCount.setType(CountIndicator.SOLVED.value);
-        handledIssueCount.setName(CountIndicator.SOLVED.name);
-        handledIssueCount.setCount(infoUpdateService.getHandledIssueCount(siteId));
-
-        IssueCount updateNotIntimeCount = new IssueCount();
-        updateNotIntimeCount.setType(CountIndicator.UPDATE_NOT_INTIME.value);
-        updateNotIntimeCount.setName(CountIndicator.UPDATE_NOT_INTIME.name);
-        updateNotIntimeCount.setCount(infoUpdateService.getUpdateNotIntimeCount(siteId));
-
-        IssueCount updateWarningCount = new IssueCount();
-        updateWarningCount.setType(CountIndicator.UPDATE_WARNING.value);
-        updateWarningCount.setName(CountIndicator.UPDATE_WARNING.name);
-        updateWarningCount.setCount(infoUpdateService.getUpdateWarningCount(siteId));
-
-        List list = new ArrayList();
-        list.add(handledIssueCount);
-        list.add(updateNotIntimeCount);
-        list.add(updateWarningCount);
-
-        return list;
+        return IssueCounter.getIssueCount(infoUpdateService, siteId);
     }
 
 
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(int currPage, int pageSize, @ModelAttribute InfoUpdate infoUpdate) {
-        List<InfoUpdate> list = infoUpdateService.getIssueList(currPage, pageSize, infoUpdate);
-        Pager pager = new Pager();
-        if(infoUpdate != null){
-            pager.setCurrPage(currPage);
-            pager.setPageSize(pageSize);
-            int count = infoUpdateService.getUpdateNotIntimeCount(infoUpdate.getSiteId());
-            pager.setItemCount(count);
-            int pageCount = count%pageSize==0?count/pageSize:count/pageSize+1;
-            pager.setPageCount(pageCount);
+    public ApiPageData getIssueList(Integer currPage, Integer pageSize, @ModelAttribute InfoUpdate infoUpdate) throws BizException {
+
+        if (infoUpdate.getSiteId() == null) {
+            throw new BizException("站点编号为空");
         }
-        ApiPageData data = new ApiPageData();
-        data.setData(list);
-        data.setPager(pager);
-        return data;
+        int itemCount = infoUpdateService.getUnhandledIssueCount(infoUpdate.getSiteId());
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
+        List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoUpdate);
+        apiPageData.setData(infoUpdateList);
+        return apiPageData;
     }
 
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssueById(int siteId, int id) {
         infoUpdateService.handIssueById(siteId, id);
-        return "";
+        return null;
     }
 
-    @RequestMapping(value = "/handle/batch",method = RequestMethod.POST)
+    @RequestMapping(value = "/handle/batch", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) {
         infoUpdateService.handIssuesByIds(siteId, Arrays.asList(ids));
-        return "";
+        return null;
     }
 
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssueById(int siteId, int id) {
         infoUpdateService.ignoreIssueById(siteId, id);
-        return "";
+        return null;
     }
 
-    @RequestMapping(value = "/ignore/batch",method = RequestMethod.POST)
+    @RequestMapping(value = "/ignore/batch", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
         infoUpdateService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
-        return "";
+        return null;
     }
 
 
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public String delIssueByIds(int siteId, Integer[] ids) {
         infoUpdateService.delIssueByIds(siteId, Arrays.asList(ids));
-        return "";
+        return null;
     }
 }

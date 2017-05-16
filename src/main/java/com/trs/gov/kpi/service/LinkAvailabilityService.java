@@ -10,13 +10,10 @@ import java.util.List;
  */
 public interface LinkAvailabilityService extends OperationService{
 
-    int getHandledIssueCount(int siteId);
-
-    int getUnhandledIssueCount(int siteId);
 
     int getUnhandledIssueCountByTime(int siteId);
 
-    List<LinkAvailability> getIssueList(int currPage, int pageSize, LinkAvailability linkAvailability);
+    List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, LinkAvailability linkAvailability);
 
     void insertLinkAvailability(LinkAvailability linkAvailability);
 }

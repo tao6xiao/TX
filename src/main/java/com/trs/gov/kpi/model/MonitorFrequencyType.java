@@ -5,6 +5,7 @@ package com.trs.gov.kpi.model;
  * Created by helang on 2017/5/12.
  */
 public class MonitorFrequencyType {
+    // TODO: 2017/5/16 enum deal with
 
     public static final String HOMEPAGE_AVAILABILITY = "首页可用性";
 

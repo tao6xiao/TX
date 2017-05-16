@@ -12,6 +12,34 @@ import java.util.List;
 public interface OperationMapper {
 
     /**
+     * 获取已解决问题数
+     * @param siteId
+     * @return
+     */
+    int getHandledIssueCount(@Param("siteId") int siteId);
+
+    /**
+     * 获取未解决问题数
+     * @param siteId
+     * @return
+     */
+    int getUnhandledIssueCount(@Param("siteId") int siteId);
+
+    /**
+     * 获取更新不及时问题数
+     * @param siteId
+     * @return
+     */
+    int getUpdateNotIntimeCount(@Param("siteId") int siteId);
+
+    /**
+     * 获取更新预警问题数
+     * @param siteId
+     * @return
+     */
+    int getUpdateWarningCount(@Param("siteId") int siteId);
+
+    /**
      * 根据id处理问题
      * @param siteId
      * @param id

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.InfoErrorMapper">
+
+
+    <resultMap id="infoErrorMap" type="com.trs.gov.kpi.entity.InfoError">
+        <id column="id" property="id"/>
+        <result column="subTypeId" property="issueTypeId"/>
+        <result column="detail" property="snapshot"/>
+        <result column="issueTime" property="checkTime"/>
+        <result column="beginDateTime" property="beginDateTime"/>
+        <result column="endDateTime" property="endDateTime"/>
+    </resultMap>
+
+    <select id="getHandledIssueCount" parameterType="int" resultType="int">
+        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId} AND  typeId = 3
+    </select>
+
+    <select id="getUnhandledIssueCount" parameterType="int" resultType="int">
+        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 3
+    </select>
+
+    <!--<select id="getUnhandledIssueCountByTime" resultType="int">-->
+    <!--select count(1) from issue_link where checkTime-->
+    <!--<![CDATA[-->
+    <!--<-->
+    <!--]]>-->
+    <!--#{checkTime} and isResolved=0 and siteId = #{siteId}-->
+    <!--</select>-->
+
+
+    <select id="getIssueList" resultMap="infoErrorMap">
+        SELECT id,
+        subTypeId,
+        detail,
+        issueTime
+        FROM issue
+        WHERE siteId = #{infoError.siteId,jdbcType=INTEGER}
+        <if test="infoError.id != null">
+            AND id LIKE concat('%',#{infoError.id,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="infoError.search != null">
+            AND id LIKE concat('%',#{infoError.search,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="infoError.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{infoError.beginDateTime,jdbcType=DATE}
+        </if>
+        <if test="infoError.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{infoError.endDateTime,jdbcType=DATE}
+        </if>
+        AND typeId = 3
+        AND isResolved = 0
+        limit #{currPage},#{pageSize}
+    </select>
+
+</mapper>

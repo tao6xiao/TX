@@ -12,26 +12,6 @@ import java.util.List;
 @Mapper
 public interface InfoUpdateMapper extends OperationMapper {
 
-    /**
-     * 获取已解决问题数
-     * @param siteId
-     * @return
-     */
-    int getHandledIssueCount(@Param("siteId") int siteId);
-
-    /**
-     * 获取更新不及时问题数
-     * @param siteId
-     * @return
-     */
-    int getUpdateNotIntimeCount(@Param("siteId") int siteId);
-
-    /**
-     * 获取更新预警问题数
-     * @param siteId
-     * @return
-     */
-    int getUpdateWarningCount(@Param("siteId") int siteId);
 
     /**
      *查询未解决问题集合
@@ -40,5 +20,5 @@ public interface InfoUpdateMapper extends OperationMapper {
      * @param infoUpdate
      * @return
      */
-    List<InfoUpdate> getIssueList(@Param("currPage") int currPage,@Param("pageSize") int pageSize,@Param("infoUpdate") InfoUpdate infoUpdate);
+    List<InfoUpdate> getIssueList(@Param("currPage") Integer currPage,@Param("pageSize") Integer pageSize,@Param("infoUpdate") InfoUpdate infoUpdate);
 }
