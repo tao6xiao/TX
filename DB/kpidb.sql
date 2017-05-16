@@ -94,3 +94,19 @@ CREATE TABLE defaultupdatefreq(
 INSERT INTO defaultupdatefreq VALUES(1,1);
 INSERT INTO defaultupdatefreq VALUES(2,2);
 INSERT INTO defaultupdatefreq VALUES(3,3);
+
+-- 栏目更新频率表
+drop TABLE IF EXISTS frequencysetup;
+CREATE TABLE frequencysetup(
+		id INT NOT NULL auto_increment COMMENT '编号',
+		siteId INT NOT NULL COMMENT '站点编号',
+		presetFeqId INT NOT NULL COMMENT '预设频率编号',
+		chnlId INT NOT NULL COMMENT '栏目编号',
+		PRIMARY KEY(id)
+)COMMENT='栏目更新频率表';
+INSERT into frequencysetup VALUES(null,1,1,1);
+INSERT into frequencysetup VALUES(null,1,2,1);
+INSERT into frequencysetup VALUES(null,1,3,1);
+
+
+
