@@ -12,8 +12,18 @@ import java.util.List;
 @Mapper
 public interface InfoErrorMapper extends OperationMapper {
 
+
+    /**
+     * 获取每月新增问题数
+     *
+     * @param infoError
+     * @return
+     */
+    int getIssueHistoryCount(@Param("infoError") InfoError infoError);
+
     /**
      * 查询未解决问题集合
+     *
      * @param currPage
      * @param pageSize
      * @param infoError

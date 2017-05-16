@@ -13,21 +13,22 @@ import java.util.List;
 public interface LinkAvailabilityMapper extends OperationMapper {
 
     /**
-     * 获取月末未解决问题数
-     * 实现-->查询监测时间小于当月且未解决的问题
-     * @param siteId
+     * 获取每月新增问题数
+     *
+     * @param linkAvailability
      * @return
      */
-    int getUnhandledIssueCountByTime(@Param("siteId") int siteId);
+    int getIssueHistoryCount(@Param("linkAvailability") LinkAvailability linkAvailability);
 
     /**
      * 查询未解决问题集合
+     *
      * @param currPage
      * @param pageSize
      * @param linkAvailability
      * @return
      */
-    List<LinkAvailability> getIssueList(@Param("currPage") Integer currPage,@Param("pageSize") Integer pageSize,@Param("linkAvailability") LinkAvailability linkAvailability);
+    List<LinkAvailability> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("linkAvailability") LinkAvailability linkAvailability);
 
     /**
      * 批量添加链接问题

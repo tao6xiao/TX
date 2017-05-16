@@ -26,13 +26,22 @@
         SELECT count(1) FROM warning WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 2
     </select>
 
-    <!--<select id="getUnhandledIssueCountByTime" resultType="int">-->
-    <!--select count(1) from issue_link where checkTime-->
-    <!--<![CDATA[-->
-    <!--<-->
-    <!--]]>-->
-    <!--#{checkTime} and isResolved=0 and siteId = #{siteId}-->
-    <!--</select>-->
+    <select id="getIssueHistoryCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE issueTime
+        <![CDATA[
+    >
+    ]]>
+        #{infoUpdate.beginDateTime}
+        AND issueTime
+        <![CDATA[
+    <
+    ]]>
+        #{infoUpdate.endDateTime}
+        AND siteId = #{infoUpdate.siteId}
+        AND typeId = 2
+    </select>
 
 
     <select id="getIssueList" resultMap="infoUpdateMap">

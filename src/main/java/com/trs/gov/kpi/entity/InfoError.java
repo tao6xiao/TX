@@ -10,9 +10,6 @@ import java.util.Date;
 @Data
 public class InfoError extends IssueBase {
 
-    private String id;
-
-    private Integer siteId;
 
     private String issueTypeId;
 

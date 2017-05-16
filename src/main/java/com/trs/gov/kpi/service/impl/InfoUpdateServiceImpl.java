@@ -27,6 +27,10 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         return infoUpdateMapper.getUpdateNotIntimeCount(siteId);
     }
 
+    @Override
+    public int getIssueHistoryCount(InfoUpdate infoUpdate) {
+        return infoUpdateMapper.getIssueHistoryCount(infoUpdate);
+    }
 
     @Override
     public int getUpdateWarningCount(int siteId) {

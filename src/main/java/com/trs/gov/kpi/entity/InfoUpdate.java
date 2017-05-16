@@ -8,11 +8,7 @@ import java.util.Date;
  * Created by rw103 on 2017/5/13.
  */
 @Data
-public class InfoUpdate extends IssueBase{
-
-    private String id;
-
-    private Integer siteId;
+public class InfoUpdate extends IssueBase {
 
     private String chnlName;
 
