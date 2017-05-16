@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.service.OperationService;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,5 +59,10 @@ public class OperationServiceImpl implements OperationService {
     @Override
     public void delIssueByIds(int siteId, List<Integer> ids) {
         operationMapper.delIssueByIds(siteId, ids);
+    }
+
+    @Override
+    public Date getEarliestIssueTime() {
+        return operationMapper.getEarliestIssueTime();
     }
 }

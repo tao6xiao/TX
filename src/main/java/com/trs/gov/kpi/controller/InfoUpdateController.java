@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public class InfoUpdateController {
 
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
-        if(issueBase.getEndDateTime() != null){
+        if (issueBase.getEndDateTime() != null) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
         return IssueCounter.getIssueCount(infoUpdateService, issueBase);
@@ -41,6 +43,14 @@ public class InfoUpdateController {
 
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List getIssueHistoryCount(@ModelAttribute InfoUpdate infoUpdate) {
+        if (infoUpdate.getBeginDateTime() == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            infoUpdate.setBeginDateTime(sdf.format(infoUpdateService.getEarliestIssueTime()));
+        }
+        if (infoUpdate.getEndDateTime() == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            infoUpdate.setEndDateTime(sdf.format(new Date()));
+        }
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(infoUpdate.getBeginDateTime(), infoUpdate.getEndDateTime());
         List<HistoryCount> list = new ArrayList<>();
         for (HistoryDate date : dateList) {

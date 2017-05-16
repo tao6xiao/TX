@@ -48,4 +48,9 @@
         </foreach>
     </update>
 
+    <select id="getEarliestIssueTime" resultType="java.util.Date">
+        SELECT min(issueTime)
+        FROM issue
+    </select>
+
 </mapper>

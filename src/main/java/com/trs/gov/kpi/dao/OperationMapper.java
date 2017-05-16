@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.IssueBase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -83,4 +84,11 @@ public interface OperationMapper {
      * @param ids
      */
     void delIssueByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
+
+    /**
+     * 查询存在时间最久的问题的时间
+     *
+     * @return
+     */
+    Date getEarliestIssueTime();
 }

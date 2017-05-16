@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by rw103 on 2017/5/11.
@@ -35,7 +37,7 @@ public class LinkAvailabilityController {
 
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
-        if(issueBase.getEndDateTime() != null){
+        if (issueBase.getEndDateTime() != null) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
         return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
@@ -44,6 +46,14 @@ public class LinkAvailabilityController {
 
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List getIssueHistoryCount(@ModelAttribute LinkAvailability linkAvailability) {
+        if (linkAvailability.getBeginDateTime() == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            linkAvailability.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
+        }
+        if (linkAvailability.getEndDateTime() == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            linkAvailability.setEndDateTime(sdf.format(new Date()));
+        }
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(linkAvailability.getBeginDateTime(), linkAvailability.getEndDateTime());
         List<HistoryCount> list = new ArrayList<>();
         for (HistoryDate date : dateList) {

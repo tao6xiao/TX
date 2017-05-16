@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.IssueBase;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,4 +27,6 @@ public interface OperationService {
     void ignoreIssuesByIds(int siteId, List<Integer> ids);
 
     void delIssueByIds(int siteId, List<Integer> ids);
+
+    Date getEarliestIssueTime();
 }
