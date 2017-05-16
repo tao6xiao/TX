@@ -14,29 +14,69 @@
         <result column="endDateTime" property="endDateTime"/>
     </resultMap>
 
-    <select id="getHandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId} AND  typeId = 3
+    <select id="getHandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved IN (1,2)
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 3
+        <if test="issueBase.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{issueBase.beginDateTime}
+        </if>
+        <if test="issueBase.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{issueBase.endDateTime}
+        </if>
     </select>
 
-    <select id="getUnhandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 3
+    <select id="getUnhandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 3
+        <if test="issueBase.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{issueBase.beginDateTime}
+        </if>
+        <if test="issueBase.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{issueBase.endDateTime}
+        </if>
     </select>
 
     <select id="getIssueHistoryCount" resultType="int">
         SELECT count(1)
         FROM issue
-        WHERE issueTime
-        <![CDATA[
-    >
-    ]]>
-        #{infoError.beginDateTime}
-        AND issueTime
-        <![CDATA[
-    <
-    ]]>
-        #{infoError.endDateTime}
-        AND siteId = #{infoError.siteId}
+        WHERE siteId = #{infoError.siteId}
         AND typeId = 3
+        <if test="infoError.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{infoError.beginDateTime}
+        </if>
+        <if test="infoError.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{infoError.endDateTime}
+        </if>
     </select>
 
 

@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.IssueBase;
+
 import java.util.List;
 
 /**
@@ -7,13 +9,13 @@ import java.util.List;
  */
 public interface OperationService {
 
-    int getHandledIssueCount(int siteId);
+    int getHandledIssueCount(IssueBase issueBase);
 
-    int getUnhandledIssueCount(int siteId);
+    int getUnhandledIssueCount(IssueBase issueBase);
 
-    int getUpdateNotIntimeCount(int siteId);
+    int getUpdateNotIntimeCount(IssueBase issueBase);
 
-    int getUpdateWarningCount(int siteId);
+    int getUpdateWarningCount(IssueBase issueBase);
 
     void handIssueById(int siteId, int id);
 

@@ -2,12 +2,14 @@ package com.trs.gov.kpi.controller;
 
 
 import com.trs.gov.kpi.entity.HistoryDate;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryCount;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.DateSplitUtil;
+import com.trs.gov.kpi.utils.InitEndTime;
 import com.trs.gov.kpi.utils.IssueCounter;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by rw103 on 2017/5/11.
@@ -32,8 +34,11 @@ public class LinkAvailabilityController {
 
 
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(int siteId) {
-        return IssueCounter.getIssueCount(linkAvailabilityService, siteId);
+    public List getIssueCount(IssueBase issueBase) {
+        if(issueBase.getEndDateTime() != null){
+            issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
+        }
+        return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
     }
 
 
@@ -58,7 +63,7 @@ public class LinkAvailabilityController {
         if (linkAvailability.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability.getSiteId());
+        int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), linkAvailability);
         apiPageData.setData(linkAvailabilityList);

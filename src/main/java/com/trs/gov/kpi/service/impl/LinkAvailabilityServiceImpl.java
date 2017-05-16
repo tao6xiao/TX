@@ -5,6 +5,7 @@ import com.trs.gov.kpi.constant.LinkType;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import org.springframework.stereotype.Service;
@@ -25,13 +26,13 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     private IssueMapper issueMapper;
 
     @Override
-    public int getHandledIssueCount(int siteId) {
-        return linkAvailabilityMapper.getHandledIssueCount(siteId);
+    public int getHandledIssueCount(IssueBase issueBase) {
+        return linkAvailabilityMapper.getHandledIssueCount(issueBase);
     }
 
     @Override
-    public int getUnhandledIssueCount(int siteId) {
-        return linkAvailabilityMapper.getUnhandledIssueCount(siteId);
+    public int getUnhandledIssueCount(IssueBase issueBase) {
+        return linkAvailabilityMapper.getUnhandledIssueCount(issueBase);
     }
 
     @Override

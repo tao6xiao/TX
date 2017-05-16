@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
 import com.trs.gov.kpi.entity.InfoUpdate;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import org.springframework.stereotype.Service;
 
@@ -18,23 +19,23 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
     private InfoUpdateMapper infoUpdateMapper;
 
     @Override
-    public int getHandledIssueCount(int siteId) {
-        return infoUpdateMapper.getHandledIssueCount(siteId);
+    public int getHandledIssueCount(IssueBase issueBase) {
+        return infoUpdateMapper.getHandledIssueCount(issueBase);
     }
 
     @Override
-    public int getUpdateNotIntimeCount(int siteId) {
-        return infoUpdateMapper.getUpdateNotIntimeCount(siteId);
+    public int getUpdateNotIntimeCount(IssueBase issueBase) {
+        return infoUpdateMapper.getUpdateNotIntimeCount(issueBase);
+    }
+
+    @Override
+    public int getUpdateWarningCount(IssueBase issueBase) {
+        return infoUpdateMapper.getUpdateWarningCount(issueBase);
     }
 
     @Override
     public int getIssueHistoryCount(InfoUpdate infoUpdate) {
         return infoUpdateMapper.getIssueHistoryCount(infoUpdate);
-    }
-
-    @Override
-    public int getUpdateWarningCount(int siteId) {
-        return infoUpdateMapper.getUpdateWarningCount(siteId);
     }
 
     @Override

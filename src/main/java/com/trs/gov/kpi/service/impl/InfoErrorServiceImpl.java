@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.InfoErrorMapper;
 import com.trs.gov.kpi.entity.InfoError;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.service.InfoErrorService;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +19,13 @@ public class InfoErrorServiceImpl extends OperationServiceImpl implements InfoEr
     private InfoErrorMapper infoErrorMapper;
 
     @Override
-    public int getHandledIssueCount(int siteId) {
-        return infoErrorMapper.getHandledIssueCount(siteId);
+    public int getHandledIssueCount(IssueBase issueBase) {
+        return infoErrorMapper.getHandledIssueCount(issueBase);
     }
 
     @Override
-    public int getUnhandledIssueCount(int siteId) {
-        return infoErrorMapper.getUnhandledIssueCount(siteId);
+    public int getUnhandledIssueCount(IssueBase issueBase) {
+        return infoErrorMapper.getUnhandledIssueCount(issueBase);
     }
 
     @Override

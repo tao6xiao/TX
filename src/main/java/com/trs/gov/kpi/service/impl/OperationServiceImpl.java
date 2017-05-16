@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.OperationMapper;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.service.OperationService;
 
 import javax.annotation.Resource;
@@ -15,23 +16,23 @@ public class OperationServiceImpl implements OperationService {
     private OperationMapper operationMapper;
 
     @Override
-    public int getHandledIssueCount(int siteId) {
-        return operationMapper.getHandledIssueCount(siteId);
+    public int getHandledIssueCount(IssueBase issueBase) {
+        return operationMapper.getHandledIssueCount(issueBase);
     }
 
     @Override
-    public int getUnhandledIssueCount(int siteId) {
-        return operationMapper.getUnhandledIssueCount(siteId);
+    public int getUnhandledIssueCount(IssueBase issueBase) {
+        return operationMapper.getUnhandledIssueCount(issueBase);
     }
 
     @Override
-    public int getUpdateNotIntimeCount(int siteId) {
-        return getUpdateNotIntimeCount(siteId);
+    public int getUpdateNotIntimeCount(IssueBase issueBase) {
+        return getUpdateNotIntimeCount(issueBase);
     }
 
     @Override
-    public int getUpdateWarningCount(int siteId) {
-        return operationMapper.getUpdateWarningCount(siteId);
+    public int getUpdateWarningCount(IssueBase issueBase) {
+        return operationMapper.getUpdateWarningCount(issueBase);
     }
 
     @Override

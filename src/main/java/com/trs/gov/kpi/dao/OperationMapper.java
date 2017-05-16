@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.dao;
 
+import com.trs.gov.kpi.entity.IssueBase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,34 +14,39 @@ public interface OperationMapper {
 
     /**
      * 获取已解决问题数
-     * @param siteId
+     *
+     * @param issueBase
      * @return
      */
-    int getHandledIssueCount(@Param("siteId") int siteId);
+    int getHandledIssueCount(@Param("issueBase") IssueBase issueBase);
 
     /**
      * 获取未解决问题数
-     * @param siteId
+     *
+     * @param issueBase
      * @return
      */
-    int getUnhandledIssueCount(@Param("siteId") int siteId);
+    int getUnhandledIssueCount(@Param("issueBase") IssueBase issueBase);
 
     /**
      * 获取更新不及时问题数
-     * @param siteId
+     *
+     * @param issueBase
      * @return
      */
-    int getUpdateNotIntimeCount(@Param("siteId") int siteId);
+    int getUpdateNotIntimeCount(@Param("issueBase") IssueBase issueBase);
 
     /**
      * 获取更新预警问题数
-     * @param siteId
+     *
+     * @param issueBase
      * @return
      */
-    int getUpdateWarningCount(@Param("siteId") int siteId);
+    int getUpdateWarningCount(@Param("issueBase") IssueBase issueBase);
 
     /**
      * 根据id处理问题
+     *
      * @param siteId
      * @param id
      */
@@ -48,6 +54,7 @@ public interface OperationMapper {
 
     /**
      * 根据id批量处理问题
+     *
      * @param siteId
      * @param ids
      */
@@ -55,6 +62,7 @@ public interface OperationMapper {
 
     /**
      * 根据id忽略问题
+     *
      * @param siteId
      * @param id
      */
@@ -62,6 +70,7 @@ public interface OperationMapper {
 
     /**
      * 根据id批量忽略问题
+     *
      * @param siteId
      * @param ids
      */
@@ -69,6 +78,7 @@ public interface OperationMapper {
 
     /**
      * 根据id批量删除问题
+     *
      * @param siteId
      * @param ids
      */

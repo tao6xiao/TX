@@ -15,29 +15,65 @@
         <result column="endDateTime" property="endDateTime"/>
     </resultMap>
 
-    <select id="getHandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId} AND  typeId = 1
+    <select id="getHandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved IN (1,2)
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 1
+        AND issueTime
+        <![CDATA[
+        >
+        ]]>
+        #{issueBase.beginDateTime}
+        AND issueTime
+        <![CDATA[
+        <
+        ]]>
+        #{issueBase.endDateTime}
     </select>
 
-    <select id="getUnhandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 1
+    <select id="getUnhandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 1
+        <if test="issueBase.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{issueBase.beginDateTime}
+        </if>
+        <if test="issueBase.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{issueBase.endDateTime}
+        </if>
     </select>
 
     <select id="getIssueHistoryCount" resultType="int">
-    SELECT count(1)
-    FROM issue
-    WHERE issueTime
-    <![CDATA[
-    >
-    ]]>
-    #{linkAvailability.beginDateTime}
-    AND issueTime
-    <![CDATA[
-    <
-    ]]>
-    #{linkAvailability.endDateTime}
-    AND siteId = #{linkAvailability.siteId}
-    AND typeId = 1
+        SELECT count(1)
+        FROM issue
+        WHERE siteId = #{linkAvailability.siteId}
+        AND typeId = 1
+        <if test="linkAvailability.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{linkAvailability.beginDateTime}
+        </if>
+        <if test="linkAvailability.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{linkAvailability.endDateTime}
+        </if>
     </select>
 
 

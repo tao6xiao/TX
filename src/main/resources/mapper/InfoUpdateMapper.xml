@@ -14,33 +14,91 @@
         <result column="issueTime" property="checkTime"/>
     </resultMap>
 
-    <select id="getHandledIssueCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved IN (1,2) AND siteId = #{siteId} AND  typeId = 2
+    <select id="getHandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved IN (1,2)
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 2
+        <if test="issueBase.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{issueBase.beginDateTime}
+        </if>
+        <if test="issueBase.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{issueBase.endDateTime}
+        </if>
     </select>
 
-    <select id="getUpdateNotIntimeCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM issue WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 2
+    <select id="getUpdateNotIntimeCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 2
+        <if test="issueBase.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{issueBase.beginDateTime}
+        </if>
+        <if test="issueBase.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{issueBase.endDateTime}
+        </if>
     </select>
 
-    <select id="getUpdateWarningCount" parameterType="int" resultType="int">
-        SELECT count(1) FROM warning WHERE isResolved = 0 AND siteId = #{siteId} AND  typeId = 2
+    <select id="getUpdateWarningCount" resultType="int">
+        SELECT count(1)
+        FROM warning
+        WHERE isResolved = 0
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 2
+        <if test="issueBase.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{issueBase.beginDateTime}
+        </if>
+        <if test="issueBase.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{issueBase.endDateTime}
+        </if>
     </select>
 
     <select id="getIssueHistoryCount" resultType="int">
         SELECT count(1)
         FROM issue
-        WHERE issueTime
-        <![CDATA[
-    >
-    ]]>
-        #{infoUpdate.beginDateTime}
-        AND issueTime
-        <![CDATA[
-    <
-    ]]>
-        #{infoUpdate.endDateTime}
-        AND siteId = #{infoUpdate.siteId}
-        AND typeId = 2
+        WHERE siteId = #{infoUpdate.siteId}
+        AND typeId = 2 
+        <if test="infoUpdate.beginDateTime != null">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{infoUpdate.beginDateTime}
+        </if>
+        <if test="infoUpdate.endDateTime != null">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{infoUpdate.endDateTime}
+        </if>
     </select>
 
 
