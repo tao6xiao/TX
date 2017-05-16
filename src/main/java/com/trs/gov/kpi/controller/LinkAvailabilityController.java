@@ -27,7 +27,7 @@ public class LinkAvailabilityController {
     private LinkAvailabilityService linkAvailabilityService;
 
 
-    @RequestMapping(value = "/count", method = RequestMethod.GET)
+    @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(int siteId) {
         return IssueCounter.getIssueCount(linkAvailabilityService, siteId);
     }
