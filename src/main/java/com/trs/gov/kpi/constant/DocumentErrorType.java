@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public enum DocumentErrorType {
 
     WORD(1, "错别字", "字词"),
-    SENSITIVE(2, "敏感信息", "政治");
+    SENSITIVE(2, "敏感信息", "敏感词");
 
     @Getter
     private int code;
@@ -17,6 +17,7 @@ public enum DocumentErrorType {
     @Getter
     private String name;
 
+    @Getter
     private String keyWord;
 
     private DocumentErrorType(int code, String name, String keyWord) {

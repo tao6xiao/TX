@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.constant.DocumentErrorType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import lombok.Data;
 
@@ -18,7 +19,9 @@ public interface InfoDetectionService {
 
     String DETECTION_KEY_TEXT = "text";
 
-    List<String> DETECTION_TYPE = Arrays.asList("字词", "政治");
+    List<String> DETECTION_TYPE = Arrays.asList(
+            DocumentErrorType.WORD.getKeyWord(),
+            DocumentErrorType.SENSITIVE.getKeyWord());
 
     Set<String> detectText(String text) throws RemoteException;
 
