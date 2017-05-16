@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 public interface FrequencySetupService {
     /**
      * 查询当前站点的当前页数据
+     *
      * @param siteId
      * @param pageIndex
      * @param pageSize
@@ -22,6 +24,7 @@ public interface FrequencySetupService {
 
     /**
      * 获取当前siteId的记录总数
+     *
      * @param SiteId
      * @return
      */
@@ -29,6 +32,7 @@ public interface FrequencySetupService {
 
     /**
      * 通过站点id和栏目id获取对应的栏目更新频率记录
+     *
      * @param siteId
      * @param chnlId
      * @return
@@ -37,13 +41,23 @@ public interface FrequencySetupService {
 
     /**
      * 通过id修改对应的栏目更新频率记录
+     *
      * @param frequencySetup
      * @return
      */
-    int updateFrequencySetupById(FrequencySetup frequencySetup );
+    int updateFrequencySetupById(FrequencySetup frequencySetup);
+
+    /**
+     * 通过id修改对应的栏目更新频率记录
+     *
+     * @param frequencySetupUpdateRequestDetail
+     * @return
+     */
+    int updateFrequencySetupById(FrequencySetupUpdateRequestDetail frequencySetupUpdateRequestDetail);
 
     /**
      * 插入更新频率记录
+     *
      * @param frequencySetup
      * @return
      */
@@ -51,6 +65,7 @@ public interface FrequencySetupService {
 
     /**
      * 通过前段传入的frequencySetupSetRequestDetail对象获取想应的FrequencySetup对象
+     *
      * @param frequencySetupSetRequestDetail
      * @return
      */

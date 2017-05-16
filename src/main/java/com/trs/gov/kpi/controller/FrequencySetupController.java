@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
 import com.trs.gov.kpi.service.FrequencySetupService;
@@ -73,29 +74,17 @@ public class FrequencySetupController {
 
     /**
      * 修改更新频率
-     * @param frequencySetupSetRequestDetail
+     * @param frequencySetupUpdateRequestDetail
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/chnlfreq", method = RequestMethod.POST)
+    @RequestMapping(value = "/chnlfreq", method = RequestMethod.PUT)
     @ResponseBody
-    public Object UpdateFrequencySetup(@RequestBody FrequencySetupSetRequestDetail frequencySetupSetRequestDetail) throws BizException {
-        if (frequencySetupSetRequestDetail.getSiteId() == null || frequencySetupSetRequestDetail.getPresetFeqId() == null || frequencySetupSetRequestDetail.getChnlIds() == null || frequencySetupSetRequestDetail.getChnlIds().length == 0) {
+    public Object UpdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequestDetail frequencySetupUpdateRequestDetail) throws BizException {
+        if (frequencySetupUpdateRequestDetail.getSiteId() == null || frequencySetupUpdateRequestDetail.getId() == null || frequencySetupUpdateRequestDetail.getPresetFeqId() == null || frequencySetupUpdateRequestDetail.getChnlId() == null) {
             throw new BizException("参数存在null值");
         }
-        Integer[] chnlIds = frequencySetupSetRequestDetail.getChnlIds();
-        int siteId = frequencySetupSetRequestDetail.getSiteId();
-        for (int i = 0; i < chnlIds.length; i++){
-            FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
-            int num = 0;
-            if(frequencySetup == null){//当前站点的当前栏目未设置过更新频率，需要新增
-                frequencySetup = frequencySetupService.getFrequencySetupByFrequencySetupSetRequestDetail(frequencySetupSetRequestDetail, chnlIds[i]);
-                num = frequencySetupService.insert(frequencySetup);
-            }else{//当前站点的当前栏目设置过更新频率，需要修改
-                frequencySetup.setPresetFeqId(frequencySetupSetRequestDetail.getPresetFeqId());
-                num = frequencySetupService.updateFrequencySetupById(frequencySetup);
-            }
-        }
+        int num = frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequestDetail);
         return null;
     }
 

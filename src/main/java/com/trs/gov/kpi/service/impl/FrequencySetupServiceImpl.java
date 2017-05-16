@@ -5,6 +5,7 @@ import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,13 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     @Override
     public int updateFrequencySetupById(FrequencySetup frequencySetup) {
         int num = frequencySetupMapper.updateByPrimaryKey(frequencySetup);
+        return num;
+    }
+
+    @Override
+    public int updateFrequencySetupById(FrequencySetupUpdateRequestDetail frequencySetupUpdateRequestDetail) {
+        FrequencySetup frequencySetup = frequencySetupUpdateRequestDetail;
+        int num = frequencySetupMapper.updateBySiteIdAndidAndChnlId(frequencySetup);
         return num;
     }
 
