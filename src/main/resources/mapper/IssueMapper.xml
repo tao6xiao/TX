@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.IssueMapper">
+  <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.Issue">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="siteId" jdbcType="INTEGER" property="siteId" />
+    <result column="typeId" jdbcType="INTEGER" property="typeId" />
+    <result column="subTypeId" jdbcType="INTEGER" property="subTypeId" />
+    <result column="detail" jdbcType="VARCHAR" property="detail" />
+    <result column="issueTime" jdbcType="TIMESTAMP" property="issueTime" />
+    <result column="isResolved" jdbcType="BIT" property="isResolved" />
+    <result column="isDel" jdbcType="BIT" property="isDel" />
+    <result column="customer1" jdbcType="VARCHAR" property="customer1" />
+    <result column="customer2" jdbcType="VARCHAR" property="customer2" />
+    <result column="customer3" jdbcType="VARCHAR" property="customer3" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, siteId, typeId, subTypeId, detail, issueTime, isResolved, isDel, customer1, customer2, 
+    customer3
+  </sql>
+  <select id="selectByExample" parameterType="com.trs.gov.kpi.entity.IssueExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from issue
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from issue
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.trs.gov.kpi.entity.Issue">
+    insert into issue (id, siteId, typeId, 
+      subTypeId, detail, issueTime, 
+      isResolved, isDel, customer1, 
+      customer2, customer3)
+    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{typeId,jdbcType=BIT}, 
+      #{subTypeId,jdbcType=BIT}, #{detail,jdbcType=VARCHAR}, #{issueTime,jdbcType=TIMESTAMP}, 
+      #{isResolved,jdbcType=BIT}, #{isDel,jdbcType=BIT}, #{customer1,jdbcType=VARCHAR}, 
+      #{customer2,jdbcType=VARCHAR}, #{customer3,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.Issue">
+    insert into issue
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="siteId != null">
+        siteId,
+      </if>
+      <if test="typeId != null">
+        typeId,
+      </if>
+      <if test="subTypeId != null">
+        subTypeId,
+      </if>
+      <if test="detail != null">
+        detail,
+      </if>
+      <if test="issueTime != null">
+        issueTime,
+      </if>
+      <if test="isResolved != null">
+        isResolved,
+      </if>
+      <if test="isDel != null">
+        isDel,
+      </if>
+      <if test="customer1 != null">
+        customer1,
+      </if>
+      <if test="customer2 != null">
+        customer2,
+      </if>
+      <if test="customer3 != null">
+        customer3,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="siteId != null">
+        #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        #{typeId,jdbcType=BIT},
+      </if>
+      <if test="subTypeId != null">
+        #{subTypeId,jdbcType=BIT},
+      </if>
+      <if test="detail != null">
+        #{detail,jdbcType=VARCHAR},
+      </if>
+      <if test="issueTime != null">
+        #{issueTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isResolved != null">
+        #{isResolved,jdbcType=BIT},
+      </if>
+      <if test="isDel != null">
+        #{isDel,jdbcType=BIT},
+      </if>
+      <if test="customer1 != null">
+        #{customer1,jdbcType=VARCHAR},
+      </if>
+      <if test="customer2 != null">
+        #{customer2,jdbcType=VARCHAR},
+      </if>
+      <if test="customer3 != null">
+        #{customer3,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.trs.gov.kpi.entity.IssueExample" resultType="java.lang.Integer">
+    select count(*) from issue
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update issue
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.siteId != null">
+        siteId = #{record.siteId,jdbcType=INTEGER},
+      </if>
+      <if test="record.typeId != null">
+        typeId = #{record.typeId,jdbcType=BIT},
+      </if>
+      <if test="record.subTypeId != null">
+        subTypeId = #{record.subTypeId,jdbcType=BIT},
+      </if>
+      <if test="record.detail != null">
+        detail = #{record.detail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.issueTime != null">
+        issueTime = #{record.issueTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isResolved != null">
+        isResolved = #{record.isResolved,jdbcType=BIT},
+      </if>
+      <if test="record.isDel != null">
+        isDel = #{record.isDel,jdbcType=BIT},
+      </if>
+      <if test="record.customer1 != null">
+        customer1 = #{record.customer1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customer2 != null">
+        customer2 = #{record.customer2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customer3 != null">
+        customer3 = #{record.customer3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update issue
+    set id = #{record.id,jdbcType=INTEGER},
+      siteId = #{record.siteId,jdbcType=INTEGER},
+      typeId = #{record.typeId,jdbcType=BIT},
+      subTypeId = #{record.subTypeId,jdbcType=BIT},
+      detail = #{record.detail,jdbcType=VARCHAR},
+      issueTime = #{record.issueTime,jdbcType=TIMESTAMP},
+      isResolved = #{record.isResolved,jdbcType=BIT},
+      isDel = #{record.isDel,jdbcType=BIT},
+      customer1 = #{record.customer1,jdbcType=VARCHAR},
+      customer2 = #{record.customer2,jdbcType=VARCHAR},
+      customer3 = #{record.customer3,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.trs.gov.kpi.entity.Issue">
+    update issue
+    <set>
+      <if test="siteId != null">
+        siteId = #{siteId,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null">
+        typeId = #{typeId,jdbcType=BIT},
+      </if>
+      <if test="subTypeId != null">
+        subTypeId = #{subTypeId,jdbcType=BIT},
+      </if>
+      <if test="detail != null">
+        detail = #{detail,jdbcType=VARCHAR},
+      </if>
+      <if test="issueTime != null">
+        issueTime = #{issueTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isResolved != null">
+        isResolved = #{isResolved,jdbcType=BIT},
+      </if>
+      <if test="isDel != null">
+        isDel = #{isDel,jdbcType=BIT},
+      </if>
+      <if test="customer1 != null">
+        customer1 = #{customer1,jdbcType=VARCHAR},
+      </if>
+      <if test="customer2 != null">
+        customer2 = #{customer2,jdbcType=VARCHAR},
+      </if>
+      <if test="customer3 != null">
+        customer3 = #{customer3,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.trs.gov.kpi.entity.Issue">
+    update issue
+    set siteId = #{siteId,jdbcType=INTEGER},
+      typeId = #{typeId,jdbcType=BIT},
+      subTypeId = #{subTypeId,jdbcType=BIT},
+      detail = #{detail,jdbcType=VARCHAR},
+      issueTime = #{issueTime,jdbcType=TIMESTAMP},
+      isResolved = #{isResolved,jdbcType=BIT},
+      isDel = #{isDel,jdbcType=BIT},
+      customer1 = #{customer1,jdbcType=VARCHAR},
+      customer2 = #{customer2,jdbcType=VARCHAR},
+      customer3 = #{customer3,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

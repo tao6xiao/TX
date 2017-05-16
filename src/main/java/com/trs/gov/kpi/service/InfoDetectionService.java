@@ -30,7 +30,7 @@ public interface InfoDetectionService {
     Document getDocumentById(String documentId);
 
     @Data
-    public static class Document {
+    class Document {
 
         String title;
 
