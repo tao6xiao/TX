@@ -37,8 +37,8 @@ public class SchedulerServiceImpl implements SchedulerService {
             log.info("init scheduler model...");
 
             Map<String, Integer> testUrlMap = new HashMap<>();
-            testUrlMap.put("http://www.wusheng.gov.cn", 1);
-            testUrlMap.put("http://www.scyc.gov.cn", 2);
+            //testUrlMap.put("http://www.wusheng.gov.cn", 1);
+            //testUrlMap.put("http://www.scyc.gov.cn", 2);
 
             for(SchedulerTask schedulerTask: schedulerTasks) {
 
