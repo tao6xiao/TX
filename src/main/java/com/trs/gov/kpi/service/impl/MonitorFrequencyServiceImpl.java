@@ -1,12 +1,11 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
-import com.trs.gov.kpi.model.MonitorFrequencyType;
-import com.trs.gov.kpi.model.MonitorFrequencyTypeModel;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +29,9 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyMapper.queryBySiteId(siteId);
         List<MonitorFrequencyDeal> monitorFrequencyDealList = new ArrayList<>();
         if(monitorFrequencyList != null) {
-            Map<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap = MonitorFrequencyTypeModel.getTypes();//获取全部监测类型
+//            Map<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap = MonitorFrequencyTypeModel.getTypes();//获取全部监测类型
             for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
-                MonitorFrequencyDeal monitorFrequencyDeal = getMonitorFrequencyDealFromMonitorFrequency(monitorFrequency,monitorFrequencyTypeAllMap);
+                MonitorFrequencyDeal monitorFrequencyDeal = getMonitorFrequencyDealFromMonitorFrequency(monitorFrequency);
                 monitorFrequencyDealList.add(monitorFrequencyDeal);
             }
         }
@@ -77,16 +76,14 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
         return  monitorFrequencyList;
     }
 
-    private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency,Map<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap) {
+    private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency) {
         MonitorFrequencyDeal monitorFrequencyDeal = new MonitorFrequencyDeal();
         monitorFrequencyDeal.setId(monitorFrequency.getTypeId());
         monitorFrequencyDeal.setValue(monitorFrequency.getValue());
         int typeId = monitorFrequency.getTypeId();
-        MonitorFrequencyType monitorFrequencyType = monitorFrequencyTypeAllMap.get(typeId);
-        if(monitorFrequencyType != null){
-            monitorFrequencyDeal.setName(monitorFrequencyType.getName());
-            monitorFrequencyDeal.setFreqUnit(monitorFrequencyType.getFreqUnit());
-        }
+        FrequencyType frequencyType = FrequencyType.getFrequencyTypeByTypeId(typeId);
+            monitorFrequencyDeal.setName(frequencyType.getName());
+            monitorFrequencyDeal.setFreqUnit(frequencyType.getFreqUnit().getCode());
         return monitorFrequencyDeal;
     }
 }

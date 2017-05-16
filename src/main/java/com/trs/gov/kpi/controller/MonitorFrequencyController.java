@@ -1,11 +1,11 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.entity.exception.BizException;
-import com.trs.gov.kpi.model.MonitorFrequencyType;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,7 +62,7 @@ public class MonitorFrequencyController {
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
         int num = 0;
         if (monitorFrequencyList == null || monitorFrequencyList.size() == 0) {//siteId和typeId同时不存在，插入记录
-            if(freqs.length < MonitorFrequencyType.TYPE_NUM){
+            if(freqs.length < FrequencyType.values().length){
                 throw new BizException("添加频率设置时，缺少某些频率类型的数据");
             }
             for (int i = 0; i < freqs.length; i++) {
