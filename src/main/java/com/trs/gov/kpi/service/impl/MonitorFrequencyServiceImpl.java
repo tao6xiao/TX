@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by helang on 2017/5/12.
@@ -29,7 +30,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyMapper.queryBySiteId(siteId);
         List<MonitorFrequencyDeal> monitorFrequencyDealList = new ArrayList<>();
         if(monitorFrequencyList != null) {
-            HashMap<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap = MonitorFrequencyTypeModel.getTypes();//获取全部监测类型
+            Map<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap = MonitorFrequencyTypeModel.getTypes();//获取全部监测类型
             for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
                 MonitorFrequencyDeal monitorFrequencyDeal = getMonitorFrequencyDealFromMonitorFrequency(monitorFrequency,monitorFrequencyTypeAllMap);
                 monitorFrequencyDealList.add(monitorFrequencyDeal);
@@ -76,7 +77,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService{
         return  monitorFrequencyList;
     }
 
-    private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency,HashMap<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap) {
+    private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency,Map<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap) {
         MonitorFrequencyDeal monitorFrequencyDeal = new MonitorFrequencyDeal();
         monitorFrequencyDeal.setId(monitorFrequency.getTypeId());
         monitorFrequencyDeal.setValue(monitorFrequency.getValue());

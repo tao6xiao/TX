@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.model;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 单例模式，用于获取现在存在的所有频率类型，返回HashMap的数据
@@ -8,20 +10,24 @@ import java.util.HashMap;
  */
 public class MonitorFrequencyTypeModel {
 
-    private static HashMap<Integer, MonitorFrequencyType> types = null ;
-    private static MonitorFrequencyTypeModel monitorFrequencyTypeModel = null;
+    private static Map<Integer, MonitorFrequencyType> types;
 
-    private MonitorFrequencyTypeModel() {
+    static {
         types = new HashMap<>();
         types.put(1, new MonitorFrequencyType(1));
         types.put(2, new MonitorFrequencyType(2));
         types.put(3, new MonitorFrequencyType(3));
+        types = Collections.unmodifiableMap(types);
     }
 
-    public static HashMap<Integer, MonitorFrequencyType> getTypes() {
-        if(monitorFrequencyTypeModel == null){
-            monitorFrequencyTypeModel = new MonitorFrequencyTypeModel();
-        }
+    private static MonitorFrequencyTypeModel monitorFrequencyTypeModel = null;
+
+    private MonitorFrequencyTypeModel() {
+
+    }
+
+    public static Map<Integer, MonitorFrequencyType> getTypes() {
+
         return types;
     }
 
