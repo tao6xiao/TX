@@ -7,7 +7,7 @@ import com.trs.gov.kpi.constant.IssueType;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.service.InfoDetectionService;
+import com.trs.gov.kpi.service.DocDetectionService;
 import com.trs.gov.kpi.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,7 +23,7 @@ import java.util.*;
  */
 @Service
 @Slf4j
-public class InfoDetectionServiceImpl implements InfoDetectionService {
+public class DocDetectionServiceImpl implements DocDetectionService {
 
     @Resource
     private IssueMapper issueMapper;

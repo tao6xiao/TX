@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Created by wangxuan on 2017/5/15.
  */
-public interface InfoDetectionService {
+public interface DocDetectionService {
 
     String DETECTION_URL = "http://jiaodui.trs.cn/rs/detect";
 
