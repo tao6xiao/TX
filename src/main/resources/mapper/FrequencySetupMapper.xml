@@ -110,4 +110,8 @@
     presetFeqId = #{presetFeqId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER} AND siteId = #{siteId,jdbcType=INTEGER} AND  chnlId = #{chnlId,jdbcType=INTEGER}
   </update>
+  <delete id="deleteFrequencySetupBySiteIdAndId" parameterType="java.lang.Integer">
+    delete from frequencysetup
+    where id = #{id,jdbcType=INTEGER} AND siteId = #{siteId,jdbcType=INTEGER}
+  </delete>
 </mapper>

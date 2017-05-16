@@ -73,6 +73,12 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
         return frequencySetup;
     }
 
+    @Override
+    public int deleteFrequencySetupBySiteIdAndId(int siteId, int id) {
+        int num = frequencySetupMapper.deleteFrequencySetupBySiteIdAndId(siteId, id);
+        return num;
+    }
+
     private List<FrequencySetupResponseDetail> getFrequencySetupDetailListByFrequencySetupList(List<FrequencySetup> frequencySetupList) {
         List<FrequencySetupResponseDetail> frequencySetupResponseDetails = new ArrayList<>();
         FrequencySetupResponseDetail frequencySetupResponseDetail = null;

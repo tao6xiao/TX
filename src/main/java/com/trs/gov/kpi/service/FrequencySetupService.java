@@ -70,4 +70,12 @@ public interface FrequencySetupService {
      * @return
      */
     FrequencySetup getFrequencySetupByFrequencySetupSetRequestDetail(FrequencySetupSetRequestDetail frequencySetupSetRequestDetail, int chnlId);
+
+    /**
+     * 删除更新频率记录
+     * @param siteId
+     * @param id
+     * @return
+     */
+    int deleteFrequencySetupBySiteIdAndId(int siteId, int id);
 }

@@ -25,6 +25,7 @@ public class FrequencySetupController {
 
     /**
      * 分页查询当前站点的数数据
+     *
      * @param siteId
      * @param pageSize
      * @param pageIndex
@@ -46,6 +47,7 @@ public class FrequencySetupController {
 
     /**
      * 添加更新频率（特殊：存在插入和修改操作）
+     *
      * @param frequencySetupSetRequestDetail
      * @return
      * @throws BizException
@@ -58,13 +60,13 @@ public class FrequencySetupController {
         }
         Integer[] chnlIds = frequencySetupSetRequestDetail.getChnlIds();
         int siteId = frequencySetupSetRequestDetail.getSiteId();
-        for (int i = 0; i < chnlIds.length; i++){
+        for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
             int num = 0;
-            if(frequencySetup == null){//当前站点的当前栏目未设置过更新频率，需要新增
+            if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
                 frequencySetup = frequencySetupService.getFrequencySetupByFrequencySetupSetRequestDetail(frequencySetupSetRequestDetail, chnlIds[i]);
                 num = frequencySetupService.insert(frequencySetup);
-            }else{//当前站点的当前栏目设置过更新频率，需要修改
+            } else {//当前站点的当前栏目设置过更新频率，需要修改
                 frequencySetup.setPresetFeqId(frequencySetupSetRequestDetail.getPresetFeqId());
                 num = frequencySetupService.updateFrequencySetupById(frequencySetup);
             }
@@ -73,19 +75,39 @@ public class FrequencySetupController {
     }
 
     /**
-     * 修改更新频率
+     * 修改更新频率记录
+     *
      * @param frequencySetupUpdateRequestDetail
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.PUT)
     @ResponseBody
-    public Object UpdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequestDetail frequencySetupUpdateRequestDetail) throws BizException {
+    public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequestDetail frequencySetupUpdateRequestDetail) throws BizException {
         if (frequencySetupUpdateRequestDetail.getSiteId() == null || frequencySetupUpdateRequestDetail.getId() == null || frequencySetupUpdateRequestDetail.getPresetFeqId() == null || frequencySetupUpdateRequestDetail.getChnlId() == null) {
             throw new BizException("参数存在null值");
         }
         int num = frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequestDetail);
         return null;
     }
+
+    /**
+     * 删除更新频率记录
+     *
+     * @param siteId
+     * @param id
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/chnlfreq", method = RequestMethod.DELETE)
+    @ResponseBody
+    public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("id") Integer id) throws BizException {
+        if (siteId == null || id == null) {
+            throw new BizException("参数存在null值");
+        }
+        int num = frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
+        return null;
+    }
+
 
 }
