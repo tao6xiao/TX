@@ -5,7 +5,7 @@ import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryCount;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.utils.DateSplitUtil;
 import com.trs.gov.kpi.utils.InitEndTime;
@@ -54,14 +54,14 @@ public class InfoUpdateController {
             infoUpdate.setEndDateTime(sdf.format(new Date()));
         }
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(infoUpdate.getBeginDateTime(), infoUpdate.getEndDateTime());
-        List<HistoryCount> list = new ArrayList<>();
+        List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
-            HistoryCount historyCount = new HistoryCount();
+            HistoryStatistics historyStatistics = new HistoryStatistics();
             infoUpdate.setBeginDateTime(date.getBeginDate());
             infoUpdate.setEndDateTime(date.getEndDate());
-            historyCount.setValue(infoUpdateService.getIssueHistoryCount(infoUpdate));
-            historyCount.setTime(date.getMonth());
-            list.add(historyCount);
+            historyStatistics.setValue(infoUpdateService.getIssueHistoryCount(infoUpdate));
+            historyStatistics.setTime(date.getMonth());
+            list.add(historyStatistics);
         }
         return list;
     }

@@ -6,7 +6,7 @@ import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryCount;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.utils.DateSplitUtil;
 import com.trs.gov.kpi.utils.InitEndTime;
@@ -55,14 +55,14 @@ public class InfoErrorController {
             infoError.setEndDateTime(sdf.format(new Date()));
         }
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(infoError.getBeginDateTime(), infoError.getEndDateTime());
-        List<HistoryCount> list = new ArrayList<>();
+        List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
-            HistoryCount historyCount = new HistoryCount();
+            HistoryStatistics historyStatistics = new HistoryStatistics();
             infoError.setBeginDateTime(date.getBeginDate());
             infoError.setEndDateTime(date.getEndDate());
-            historyCount.setValue(infoErrorService.getIssueHistoryCount(infoError));
-            historyCount.setTime(date.getMonth());
-            list.add(historyCount);
+            historyStatistics.setValue(infoErrorService.getIssueHistoryCount(infoError));
+            historyStatistics.setTime(date.getMonth());
+            list.add(historyStatistics);
         }
         return list;
     }
