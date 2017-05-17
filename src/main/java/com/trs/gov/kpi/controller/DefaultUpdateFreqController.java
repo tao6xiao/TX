@@ -30,7 +30,10 @@ public class DefaultUpdateFreqController {
             throw new BizException("传入的参数存在null值");
         }
         DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
-        Integer value = defaultUpdateFreq.getValue();
+        Integer value = null;
+        if(defaultUpdateFreq == null) {
+            value  = defaultUpdateFreq.getValue();
+        }
         return value;
     }
 
