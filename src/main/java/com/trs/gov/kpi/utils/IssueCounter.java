@@ -1,8 +1,8 @@
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.entity.CountIndicator;
+import com.trs.gov.kpi.entity.SubIssueIndicator;
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.responsedata.IssueCount;
+import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.OperationService;
 
@@ -18,33 +18,33 @@ public class IssueCounter {
         List list = new ArrayList();
         //判断问题类型是否为信息更新
         if(operationService instanceof InfoUpdateService){
-            IssueCount updateNotIntimeCount = new IssueCount();
-            updateNotIntimeCount.setType(CountIndicator.UPDATE_NOT_INTIME.value);
-            updateNotIntimeCount.setName(CountIndicator.UPDATE_NOT_INTIME.name);
+            Statistics updateNotIntimeCount = new Statistics();
+            updateNotIntimeCount.setType(SubIssueIndicator.UPDATE_NOT_INTIME.value);
+            updateNotIntimeCount.setName(SubIssueIndicator.UPDATE_NOT_INTIME.name);
             updateNotIntimeCount.setCount(operationService.getUpdateNotIntimeCount(issueBase));
 
-            IssueCount updateWarningCount =new IssueCount();
-            updateWarningCount.setType(CountIndicator.UPDATE_WARNING.value);
-            updateWarningCount.setName(CountIndicator.UPDATE_WARNING.name);
+            Statistics updateWarningCount =new Statistics();
+            updateWarningCount.setType(SubIssueIndicator.UPDATE_WARNING.value);
+            updateWarningCount.setName(SubIssueIndicator.UPDATE_WARNING.name);
             updateWarningCount.setCount(operationService.getUpdateWarningCount(issueBase));
 
             list.add(updateNotIntimeCount);
             list.add(updateWarningCount);
         }else{
-            IssueCount unhandledIssueCount = new IssueCount();
-            unhandledIssueCount.setType(CountIndicator.UN_SOLVED.value);
-            unhandledIssueCount.setName(CountIndicator.UN_SOLVED.name);
-            unhandledIssueCount.setCount(operationService.getUnhandledIssueCount(issueBase));
+            Statistics unhandledStatistics = new Statistics();
+            unhandledStatistics.setType(SubIssueIndicator.UN_SOLVED.value);
+            unhandledStatistics.setName(SubIssueIndicator.UN_SOLVED.name);
+            unhandledStatistics.setCount(operationService.getUnhandledIssueCount(issueBase));
 
-            list.add(unhandledIssueCount);
+            list.add(unhandledStatistics);
 
         }
-        IssueCount handledIssueCount = new IssueCount();
-        handledIssueCount.setType(CountIndicator.SOLVED.value);
-        handledIssueCount.setName(CountIndicator.SOLVED.name);
-        handledIssueCount.setCount(operationService.getHandledIssueCount(issueBase));
+        Statistics handledStatistics = new Statistics();
+        handledStatistics.setType(SubIssueIndicator.SOLVED.value);
+        handledStatistics.setName(SubIssueIndicator.SOLVED.name);
+        handledStatistics.setCount(operationService.getHandledIssueCount(issueBase));
 
-        list.add(handledIssueCount);
+        list.add(handledStatistics);
 
         return list;
     }

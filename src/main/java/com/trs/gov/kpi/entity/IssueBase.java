@@ -26,8 +26,10 @@ public class IssueBase {
 
     /**
      * 用于模糊查询
+     * searchField-->按哪个字段查询  searchText-->查询的关键字
      */
-    public String search;
+    public String searchField;
+    public String searchText;
 
     /**
      * 查询历史记录的粒度，1-->天  2-->周  3-->月  4-->年

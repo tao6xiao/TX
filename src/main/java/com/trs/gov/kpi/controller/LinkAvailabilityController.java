@@ -6,7 +6,7 @@ import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryCount;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.DateSplitUtil;
 import com.trs.gov.kpi.utils.InitEndTime;
@@ -55,14 +55,14 @@ public class LinkAvailabilityController {
             linkAvailability.setEndDateTime(sdf.format(new Date()));
         }
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(linkAvailability.getBeginDateTime(), linkAvailability.getEndDateTime());
-        List<HistoryCount> list = new ArrayList<>();
+        List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
-            HistoryCount historyCount = new HistoryCount();
+            HistoryStatistics historyStatistics = new HistoryStatistics();
             linkAvailability.setBeginDateTime(date.getBeginDate());
             linkAvailability.setEndDateTime(date.getEndDate());
-            historyCount.setValue(linkAvailabilityService.getIssueHistoryCount(linkAvailability));
-            historyCount.setTime(date.getMonth());
-            list.add(historyCount);
+            historyStatistics.setValue(linkAvailabilityService.getIssueHistoryCount(linkAvailability));
+            historyStatistics.setTime(date.getMonth());
+            list.add(historyStatistics);
         }
         return list;
     }

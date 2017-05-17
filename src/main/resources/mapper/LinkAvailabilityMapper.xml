@@ -89,10 +89,10 @@
         issueTime
         FROM issue
         WHERE siteId = #{linkAvailability.siteId,jdbcType=INTEGER}
-        <if test="linkAvailability.id != null">
+        <if test="linkAvailability.searchField == 'id'">
             AND id LIKE concat('%',#{linkAvailability.id,jdbcType=VARCHAR},'%')
         </if>
-        <if test="linkAvailability.search != null">
+        <if test="linkAvailability.searchField == null or linkAvailability.searchField == ''">
             AND id LIKE concat('%',#{linkAvailability.search,jdbcType=VARCHAR},'%')
         </if>
         <if test="linkAvailability.beginDateTime != null and linkAvailability.endDateTime != ''">
