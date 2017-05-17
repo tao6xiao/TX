@@ -38,7 +38,7 @@ public class InfoErrorController {
 
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
-        if (issueBase.getEndDateTime() != null) {
+        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
         return IssueCounter.getIssueCount(infoErrorService, issueBase);
@@ -46,11 +46,11 @@ public class InfoErrorController {
 
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List getIssueHistoryCount(@ModelAttribute InfoError infoError) {
-        if (infoError.getBeginDateTime() == null) {
+        if (infoError.getBeginDateTime() == null || infoError.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             infoError.setBeginDateTime(sdf.format(infoErrorService.getEarliestIssueTime()));
         }
-        if (infoError.getEndDateTime() == null) {
+        if (infoError.getEndDateTime() == null || infoError.getEndDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             infoError.setEndDateTime(sdf.format(new Date()));
         }

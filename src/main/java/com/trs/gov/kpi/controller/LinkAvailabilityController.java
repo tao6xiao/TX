@@ -37,7 +37,7 @@ public class LinkAvailabilityController {
 
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
-        if (issueBase.getEndDateTime() != null) {
+        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
         return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
@@ -46,11 +46,11 @@ public class LinkAvailabilityController {
 
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List getIssueHistoryCount(@ModelAttribute LinkAvailability linkAvailability) {
-        if (linkAvailability.getBeginDateTime() == null) {
+        if (linkAvailability.getBeginDateTime() == null || linkAvailability.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             linkAvailability.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
         }
-        if (linkAvailability.getEndDateTime() == null) {
+        if (linkAvailability.getEndDateTime() == null || linkAvailability.getEndDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             linkAvailability.setEndDateTime(sdf.format(new Date()));
         }
