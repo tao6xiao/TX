@@ -18,11 +18,7 @@ public interface OperationService {
 
     int getUpdateWarningCount(IssueBase issueBase);
 
-    void handIssueById(int siteId, int id);
-
     void handIssuesByIds(int siteId, List<Integer> ids);
-
-    void ignoreIssueById(int siteId, int id);
 
     void ignoreIssuesByIds(int siteId, List<Integer> ids);
 

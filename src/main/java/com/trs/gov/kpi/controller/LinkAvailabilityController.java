@@ -100,25 +100,15 @@ public class LinkAvailabilityController {
         return apiPageData;
     }
 
-    @RequestMapping(value = "/handle", method = RequestMethod.POST)
-    public String handIssueById(int siteId, int id) {
-        linkAvailabilityService.handIssueById(siteId, id);
-        return null;
-    }
 
-    @RequestMapping(value = "/handle/batch", method = RequestMethod.POST)
+    @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
-    @RequestMapping(value = "/ignore", method = RequestMethod.POST)
-    public String ignoreIssueById(int siteId, int id) {
-        linkAvailabilityService.ignoreIssueById(siteId, id);
-        return null;
-    }
 
-    @RequestMapping(value = "/ignore/batch", method = RequestMethod.POST)
+    @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;

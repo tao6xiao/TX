@@ -37,18 +37,8 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public void handIssueById(int siteId, int id) {
-        operationMapper.handIssueById(siteId, id);
-    }
-
-    @Override
     public void handIssuesByIds(int siteId, List<Integer> ids) {
         operationMapper.handIssuesByIds(siteId, ids);
-    }
-
-    @Override
-    public void ignoreIssueById(int siteId, int id) {
-        operationMapper.ignoreIssueById(siteId, id);
     }
 
     @Override
