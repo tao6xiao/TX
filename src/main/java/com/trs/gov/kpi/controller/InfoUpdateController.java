@@ -72,7 +72,7 @@ public class InfoUpdateController {
         if (infoUpdate.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        int itemCount = infoUpdateService.getUnhandledIssueCount(infoUpdate);
+        int itemCount = infoUpdateService.getUpdateWarningCount(infoUpdate)+infoUpdateService.getUpdateNotIntimeCount(infoUpdate);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
         List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoUpdate);
         apiPageData.setData(infoUpdateList);

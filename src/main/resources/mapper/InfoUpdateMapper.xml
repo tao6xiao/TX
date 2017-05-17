@@ -20,14 +20,14 @@
         WHERE isResolved IN (1,2)
         AND siteId = #{issueBase.siteId}
         AND typeId = 2
-        <if test="issueBase.beginDateTime != null">
+        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
             ]]>
             #{issueBase.beginDateTime}
         </if>
-        <if test="issueBase.endDateTime != null">
+        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
             AND issueTime
             <![CDATA[
             <
@@ -42,14 +42,14 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 2
-        <if test="issueBase.beginDateTime != null">
+        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
             ]]>
             #{issueBase.beginDateTime}
         </if>
-        <if test="issueBase.endDateTime != null">
+        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
             AND issueTime
             <![CDATA[
             <
@@ -64,14 +64,14 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 2
-        <if test="issueBase.beginDateTime != null">
+        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
             ]]>
             #{issueBase.beginDateTime}
         </if>
-        <if test="issueBase.endDateTime != null">
+        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
             AND issueTime
             <![CDATA[
             <
@@ -117,14 +117,14 @@
         <if test="infoUpdate.search != null">
             AND id LIKE concat('%',#{infoUpdate.search,jdbcType=VARCHAR},'%')
         </if>
-        <if test="infoUpdate.beginDateTime != null">
+        <if test="infoUpdate.beginDateTime != null and infoUpdate.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
             ]]>
             #{infoUpdate.beginDateTime,jdbcType=DATE}
         </if>
-        <if test="infoUpdate.endDateTime != null">
+        <if test="infoUpdate.endDateTime != null and infoUpdate.endDateTime != ''">
             AND issueTime
             <![CDATA[
             <

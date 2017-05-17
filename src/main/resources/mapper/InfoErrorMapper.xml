@@ -20,14 +20,14 @@
         WHERE isResolved IN (1,2)
         AND siteId = #{issueBase.siteId}
         AND typeId = 3
-        <if test="issueBase.beginDateTime != null">
+        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
             ]]>
             #{issueBase.beginDateTime}
         </if>
-        <if test="issueBase.endDateTime != null">
+        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
             AND issueTime
             <![CDATA[
             <
@@ -42,14 +42,14 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 3
-        <if test="issueBase.beginDateTime != null">
+        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
             ]]>
             #{issueBase.beginDateTime}
         </if>
-        <if test="issueBase.endDateTime != null">
+        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
             AND issueTime
             <![CDATA[
             <
@@ -93,14 +93,14 @@
         <if test="infoError.search != null">
             AND id LIKE concat('%',#{infoError.search,jdbcType=VARCHAR},'%')
         </if>
-        <if test="infoError.beginDateTime != null">
+        <if test="infoError.beginDateTime != null and infoError.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
             ]]>
             #{infoError.beginDateTime,jdbcType=DATE}
         </if>
-        <if test="infoError.endDateTime != null">
+        <if test="infoError.endDateTime != null and infoError.endDateTime != ''">
             AND issueTime
             <![CDATA[
             <
