@@ -7,7 +7,7 @@
 
     <resultMap id="infoUpdateMap" type="com.trs.gov.kpi.entity.InfoUpdate">
         <id column="id" property="id"/>
-        <result column="subTypeId" property="issueTypeName"/>
+        <result column="subTypeId" property="issueTypeId"/>
         <result column="detail" property="chnlUrl"/>
         <result column="customer1" property="chnlName"/>
         <result column="customer2" property="chnlId"/>
@@ -111,11 +111,11 @@
         issueTime
         FROM issue
         WHERE siteId = #{infoUpdate.siteId,jdbcType=INTEGER}
-        <if test="infoUpdate.id != null">
-            AND id LIKE concat('%',#{infoUpdate.id,jdbcType=VARCHAR},'%')
+        <if test="infoUpdate.searchField == 'id'">
+            AND id LIKE concat('%',#{infoUpdate.searchText,jdbcType=VARCHAR},'%')
         </if>
-        <if test="infoUpdate.search != null">
-            AND id LIKE concat('%',#{infoUpdate.search,jdbcType=VARCHAR},'%')
+        <if test="infoUpdate.searchField == null or infoUpdate.searchField == ''">
+            AND id LIKE concat('%',#{infoUpdate.searchText,jdbcType=VARCHAR},'%')
         </if>
         <if test="infoUpdate.beginDateTime != null and infoUpdate.beginDateTime != ''">
             AND issueTime

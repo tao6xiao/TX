@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
+import com.trs.gov.kpi.entity.InfoErrorType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -76,6 +77,13 @@ public class InfoErrorController {
         int itemCount = infoErrorService.getUnhandledIssueCount(infoError);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
         List<InfoError> infoErrorList = infoErrorService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoError);
+        for (InfoError info : infoErrorList) {
+            if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {
+                info.setIssueTypeName(InfoErrorType.TYPOS.name);
+            } else if (info.getIssueTypeId() == InfoErrorType.SENSITIVE_WORDS.value) {
+                info.setIssueTypeName(InfoErrorType.SENSITIVE_WORDS.name);
+            }
+        }
         apiPageData.setData(infoErrorList);
         return apiPageData;
     }

@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.entity.IssueIndicator;
+import com.trs.gov.kpi.entity.IssueType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.WarningIndicator;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -47,13 +47,13 @@ public class IntegratedMonitorController {
 
         Statistics linkAvailabilityStatistics = new Statistics();
         linkAvailabilityStatistics.setCount(linkAvailabilityCount);
-        linkAvailabilityStatistics.setType(IssueIndicator.INVALID_LINK.value);
-        linkAvailabilityStatistics.setName(IssueIndicator.INVALID_LINK.name);
+        linkAvailabilityStatistics.setType(IssueType.INVALID_LINK.value);
+        linkAvailabilityStatistics.setName(IssueType.INVALID_LINK.name);
 
         Statistics infoUpdateStatistics = new Statistics();
         infoUpdateStatistics.setCount(infoUpdateCount);
-        infoUpdateStatistics.setType(IssueIndicator.UPDATE_NOT_INTIME.value);
-        infoUpdateStatistics.setName(IssueIndicator.UPDATE_NOT_INTIME.name);
+        infoUpdateStatistics.setType(IssueType.UPDATE_NOT_INTIME.value);
+        infoUpdateStatistics.setName(IssueType.UPDATE_NOT_INTIME.name);
 
         List<Statistics> list = new ArrayList<>();
         list.add(linkAvailabilityStatistics);

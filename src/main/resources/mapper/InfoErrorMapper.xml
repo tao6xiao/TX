@@ -87,11 +87,11 @@
         issueTime
         FROM issue
         WHERE siteId = #{infoError.siteId,jdbcType=INTEGER}
-        <if test="infoError.id != null">
-            AND id LIKE concat('%',#{infoError.id,jdbcType=VARCHAR},'%')
+        <if test="infoError.searchField == 'id'">
+            AND id LIKE concat('%',#{infoError.searchText,jdbcType=VARCHAR},'%')
         </if>
-        <if test="infoError.search != null">
-            AND id LIKE concat('%',#{infoError.search,jdbcType=VARCHAR},'%')
+        <if test="infoError.searchField == null or infoError.searchField == ''">
+            AND id LIKE concat('%',#{infoError.searchText,jdbcType=VARCHAR},'%')
         </if>
         <if test="infoError.beginDateTime != null and infoError.beginDateTime != ''">
             AND issueTime

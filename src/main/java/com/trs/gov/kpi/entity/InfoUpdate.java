@@ -16,6 +16,8 @@ public class InfoUpdate extends IssueBase {
 
     private String chnlUrl;
 
+    private Integer issueTypeId;
+
     private String issueTypeName;
 
     private Date checkTime;

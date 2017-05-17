@@ -4,6 +4,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.LinkIssueType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
@@ -76,6 +77,15 @@ public class LinkAvailabilityController {
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), linkAvailability);
+        for (LinkAvailability link : linkAvailabilityList) {
+            if (link.getIssueTypeId() == LinkIssueType.INVALID_LINK.value) {
+                link.setIssueTypeName(LinkIssueType.INVALID_LINK.name);
+            } else if (link.getIssueTypeId() == LinkIssueType.INVALID_IMAGE.value) {
+                link.setIssueTypeName(LinkIssueType.INVALID_IMAGE.name);
+            } else if (link.getIssueTypeId() == LinkIssueType.LINK_TIME_OUT.value) {
+                link.setIssueTypeName(LinkIssueType.LINK_TIME_OUT.name);
+            }
+        }
         apiPageData.setData(linkAvailabilityList);
         return apiPageData;
     }

@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
+import com.trs.gov.kpi.entity.InfoUpdateType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -72,9 +73,14 @@ public class InfoUpdateController {
         if (infoUpdate.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        int itemCount = infoUpdateService.getUpdateWarningCount(infoUpdate)+infoUpdateService.getUpdateNotIntimeCount(infoUpdate);
+        int itemCount = infoUpdateService.getUpdateNotIntimeCount(infoUpdate);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
         List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoUpdate);
+        for (InfoUpdate info : infoUpdateList) {
+            if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
+                info.setIssueTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);
+            }
+        }
         apiPageData.setData(infoUpdateList);
         return apiPageData;
     }

@@ -43,6 +43,12 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 1
+        <if test="issueBase.searchField == 'id'">
+            AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="issueBase.searchField == null or issueBase.searchField == ''">
+            AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
+        </if>
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
@@ -90,12 +96,12 @@
         FROM issue
         WHERE siteId = #{linkAvailability.siteId,jdbcType=INTEGER}
         <if test="linkAvailability.searchField == 'id'">
-            AND id LIKE concat('%',#{linkAvailability.id,jdbcType=VARCHAR},'%')
+            AND id LIKE concat('%',#{linkAvailability.searchText,jdbcType=VARCHAR},'%')
         </if>
         <if test="linkAvailability.searchField == null or linkAvailability.searchField == ''">
-            AND id LIKE concat('%',#{linkAvailability.search,jdbcType=VARCHAR},'%')
+            AND id LIKE concat('%',#{linkAvailability.searchText,jdbcType=VARCHAR},'%')
         </if>
-        <if test="linkAvailability.beginDateTime != null and linkAvailability.endDateTime != ''">
+        <if test="linkAvailability.beginDateTime != null and linkAvailability.beginDateTime != ''">
             AND issueTime
             <![CDATA[
             >
