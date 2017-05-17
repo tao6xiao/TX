@@ -81,10 +81,10 @@
 
     <select id="getUpdateWarningCount" resultType="int">
         SELECT count(1)
-        FROM warning
+        FROM issue
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
-        AND typeId = 2
+        AND typeId = 51
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[

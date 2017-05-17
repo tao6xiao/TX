@@ -36,6 +36,15 @@ public class InfoUpdateController {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
+        if(issueBase.getSearchText() == null){
+            issueBase.setSearchText("");
+        }
+        if(issueBase.getSearchText() == null || issueBase.getSearchText() == ""){
+            List list = new ArrayList();
+            Integer exception = 0;
+            list.add(exception);
+            issueBase.setIds(list);
+        }
         return IssueCounter.getIssueCount(infoUpdateService, issueBase);
     }
 
