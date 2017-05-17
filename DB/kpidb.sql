@@ -65,6 +65,32 @@ INSERT INTO `issue` VALUES ('65872', '100', '1', '1', 'www.dsad.com', '2017-04-3
 INSERT INTO `issue` VALUES ('76915', '100', '2', '1', 'www.cdsf.com', '2017-05-12 17:04:30', '0', '0', '音乐天地', '1', null);
 INSERT INTO `issue` VALUES ('82816', '100', '2', '1', 'www.ffgh.', '2017-05-18 17:05:31', '0', '0', '电视购物', '2', null);
 
+-- ----------------------------
+-- Table structure for warning
+-- ----------------------------
+DROP TABLE IF EXISTS `warning`;
+CREATE TABLE `warning` (
+  `id` int(255) NOT NULL AUTO_INCREMENT,
+  `siteId` int(255) NOT NULL,
+  `typeId` tinyint(1) NOT NULL COMMENT '1(可用性问题) 2（信息更新问题）3（信息错误问题）',
+  `subTypeId` tinyint(1) NOT NULL,
+  `detail` varchar(2050) NOT NULL,
+  `issueTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `isResolved` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-->待解决，1-->已处理，2-->已忽略',
+  `isDel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-->未删除，1-->已删除',
+  `customer1` varchar(2050) DEFAULT NULL,
+  `customer2` varchar(2050) DEFAULT NULL,
+  `customer3` varchar(2050) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of warning
+-- ----------------------------
+INSERT INTO `warning` VALUES ('7', '11', '2', '1', 'www.baidu.com', '2017-05-11 16:55:55', '0', '0', '搜索引擎', '10086', null);
+INSERT INTO `warning` VALUES ('8', '11', '2', '1', 'www.sohu.com', '2017-05-15 08:54:18', '0', '0', '资讯平台', '10000', null);
+INSERT INTO `warning` VALUES ('9', '11', '2', '1', 'www.4399.com', '2017-04-30 08:55:02', '0', '0', '游戏平台', '4399', null);
+
 -- 更新频率及预警初设表
 drop TABLE IF EXISTS frequencypreset;
 CREATE TABLE frequencypreset(
