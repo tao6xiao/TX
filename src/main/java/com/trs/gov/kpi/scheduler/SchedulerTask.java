@@ -12,13 +12,19 @@ public interface SchedulerTask {
 
     TimeUnit DEFAULT_TIME_UNIT = TimeUnit.DAYS;
 
-    String getName();
-
     Long getDelay();
 
     TimeUnit getTimeUnit();
 
     Runnable getTask();
+
+    String getBaseUrl();
+
+    Integer getSiteId();
+
+    void setBaseUrl(String baseUrl);
+
+    void setSiteId(Integer siteId);
 
     void setDelayAndTimeUnit(Long delay, TimeUnit timeUnit);
 }

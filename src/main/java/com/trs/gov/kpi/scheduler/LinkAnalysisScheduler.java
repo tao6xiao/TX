@@ -10,11 +10,13 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
 /**
@@ -25,18 +27,20 @@ import java.util.regex.Pattern;
 @Component
 public class LinkAnalysisScheduler extends AbstractScheduler{
 
+    private static Map<String, ScheduledExecutorService> taskAndExecutorMap =
+            Collections.synchronizedMap(new HashMap<String, ScheduledExecutorService>());
+
     @Resource
     LinkAvailabilityService linkAvailabilityService;
 
     @Resource
     SpiderUtils spider;
 
-    @Getter
-    private String name = "link_analysis";
+    @Setter @Getter
+    private Integer siteId;
 
-    //用于存放所有站点的入口url
-    @Getter @Setter
-    private Map<String, Integer> baseUrlAndSiteIdMap = new HashMap<>();
+    @Setter @Getter
+    private String baseUrl;
 
     @Getter
     private final Runnable task = new Runnable() {
@@ -45,29 +49,24 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
         public void run() {
 
             log.info("check start...");
-            for(Map.Entry<String, Integer> baseUrlAndSiteId: baseUrlAndSiteIdMap.entrySet()) {
+            try {
 
-                try {
+                List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
+                Date checkTime = new Date();
+                for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
 
-                    List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrlAndSiteId.getKey());
-                    Date checkTime = new Date();
-                    for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
-
-                        LinkAvailability linkAvailability = new LinkAvailability();
-                        linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getKey());
-                        linkAvailability.setSnapshot(unavailableUrlAndParentUrl.getValue());
-                        linkAvailability.setCheckTime(checkTime);
-                        linkAvailability.setSiteId(baseUrlAndSiteId.getValue());
-                        linkAvailability.setIssueTypeName(getTypeByLink(unavailableUrlAndParentUrl.getKey()).getName());
-                        linkAvailabilityService.insertLinkAvailability(linkAvailability);
-                    }
-                } catch (Exception e) {
-
-                    log.error("check link:{}, siteId:{} availability error!", baseUrlAndSiteId.getKey(), baseUrlAndSiteId.getValue(), e);
+                    LinkAvailability linkAvailability = new LinkAvailability();
+                    linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getKey());
+                    linkAvailability.setSnapshot(unavailableUrlAndParentUrl.getValue());
+                    linkAvailability.setCheckTime(checkTime);
+                    linkAvailability.setSiteId(siteId);
+                    linkAvailability.setIssueTypeName(getTypeByLink(unavailableUrlAndParentUrl.getKey()).getName());
+                    linkAvailabilityService.insertLinkAvailability(linkAvailability);
                 }
+            } catch (Exception e) {
 
+                log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
             }
-
         }
     };
 
@@ -96,5 +95,4 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
 
         return LinkType.PAGE;
     }
-
 }
