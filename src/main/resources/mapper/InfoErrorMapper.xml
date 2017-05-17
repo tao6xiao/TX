@@ -42,6 +42,27 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 3
+        <if test="issueBase.searchField == 'id'">
+            AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="issueBase.searchField == 'issueType'">
+            AND subTypeId IN (
+            <foreach collection="issueBase.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="issueBase.searchField == null or issueBase.searchField == ''">
+            AND (
+            id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
+            OR
+            subTypeId IN (
+            <foreach collection="issueBase.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+            )
+        </if>
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
@@ -90,8 +111,23 @@
         <if test="infoError.searchField == 'id'">
             AND id LIKE concat('%',#{infoError.searchText,jdbcType=VARCHAR},'%')
         </if>
+        <if test="infoError.searchField == 'issueType'">
+            AND subTypeId IN (
+            <foreach collection="infoError.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
         <if test="infoError.searchField == null or infoError.searchField == ''">
-            AND id LIKE concat('%',#{infoError.searchText,jdbcType=VARCHAR},'%')
+            AND (
+            id LIKE concat('%',#{infoError.searchText,jdbcType=VARCHAR},'%')
+            OR
+            subTypeId IN (
+            <foreach collection="infoError.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+            )
         </if>
         <if test="infoError.beginDateTime != null and infoError.beginDateTime != ''">
             AND issueTime

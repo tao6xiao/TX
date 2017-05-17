@@ -2,6 +2,8 @@ package com.trs.gov.kpi.entity;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Created by rw103 on 2017/5/13.
  */
@@ -30,6 +32,11 @@ public class IssueBase {
      */
     public String searchField;
     public String searchText;
+
+    /**
+     * 用于存放根据字段检索时，typeName转换为的typeId集合
+     */
+    public List<Integer> ids;
 
     /**
      * 查询历史记录的粒度，1-->天  2-->周  3-->月  4-->年

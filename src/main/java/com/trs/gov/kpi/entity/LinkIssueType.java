@@ -5,7 +5,7 @@ package com.trs.gov.kpi.entity;
  */
 public enum LinkIssueType {
 
-    INVALID_LINK(1,"失效链接"),INVALID_IMAGE(2,"失效图片"),LINK_TIME_OUT(3,"链接超时");
+    INVALID_LINK(1,"链接失效"),INVALID_IMAGE(2,"图片失效"),LINK_TIME_OUT(3,"连接超时");
 
     public final int value;
 

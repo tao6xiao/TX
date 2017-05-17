@@ -9,10 +9,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.utils.DateSplitUtil;
-import com.trs.gov.kpi.utils.InitEndTime;
-import com.trs.gov.kpi.utils.IssueCounter;
-import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.*;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,6 +71,19 @@ public class LinkAvailabilityController {
         if (linkAvailability.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
+        if(linkAvailability.getSearchText() != null && !linkAvailability.getSearchText().trim().isEmpty()){
+            List list = InitQueryFiled.init(linkAvailability.getSearchText(),linkAvailabilityService);
+            linkAvailability.setIds(list);
+        }
+        if(linkAvailability.getSearchText() == null || linkAvailability.getSearchText() == ""){
+            List list = new ArrayList();
+            Integer exception = 0;
+            list.add(exception);
+            linkAvailability.setIds(list);
+        }
+        if(linkAvailability.getSearchText() == null){
+            linkAvailability.setSearchText("");
+        }
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), linkAvailability);
@@ -115,7 +125,7 @@ public class LinkAvailabilityController {
     }
 
 
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;

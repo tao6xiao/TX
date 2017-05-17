@@ -8,10 +8,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
-import com.trs.gov.kpi.utils.DateSplitUtil;
-import com.trs.gov.kpi.utils.InitEndTime;
-import com.trs.gov.kpi.utils.IssueCounter;
-import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.*;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -73,6 +70,19 @@ public class InfoUpdateController {
         if (infoUpdate.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
+        if(infoUpdate.getSearchText() != null && !infoUpdate.getSearchText().trim().isEmpty()){
+            List list = InitQueryFiled.init(infoUpdate.getSearchText(),infoUpdateService);
+            infoUpdate.setIds(list);
+        }
+        if(infoUpdate.getSearchText() == null || infoUpdate.getSearchText() == ""){
+            List list = new ArrayList();
+            Integer exception = 0;
+            list.add(exception);
+            infoUpdate.setIds(list);
+        }
+        if(infoUpdate.getSearchText() == null){
+            infoUpdate.setSearchText("");
+        }
         int itemCount = infoUpdateService.getUpdateNotIntimeCount(infoUpdate);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
         List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoUpdate);
@@ -110,7 +120,7 @@ public class InfoUpdateController {
     }
 
 
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
         infoUpdateService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;

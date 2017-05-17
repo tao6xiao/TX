@@ -42,6 +42,27 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 2
+        <if test="issueBase.searchField == 'id'">
+            AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="issueBase.searchField == 'issueType'">
+            AND subTypeId IN (
+            <foreach collection="issueBase.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="issueBase.searchField == null or issueBase.searchField == ''">
+            AND (
+            id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
+            OR
+            subTypeId IN (
+            <foreach collection="issueBase.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+            )
+        </if>
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
@@ -84,7 +105,7 @@
         SELECT count(1)
         FROM issue
         WHERE siteId = #{infoUpdate.siteId}
-        AND typeId = 2 
+        AND typeId = 2
         <if test="infoUpdate.beginDateTime != null">
             AND issueTime
             <![CDATA[
@@ -114,8 +135,23 @@
         <if test="infoUpdate.searchField == 'id'">
             AND id LIKE concat('%',#{infoUpdate.searchText,jdbcType=VARCHAR},'%')
         </if>
+        <if test="infoUpdate.searchField == 'issueType'">
+            AND subTypeId IN (
+            <foreach collection="infoUpdate.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
         <if test="infoUpdate.searchField == null or infoUpdate.searchField == ''">
-            AND id LIKE concat('%',#{infoUpdate.searchText,jdbcType=VARCHAR},'%')
+            AND (
+            id LIKE concat('%',#{infoUpdate.searchText,jdbcType=VARCHAR},'%')
+            OR
+            subTypeId IN (
+            <foreach collection="infoUpdate.ids" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+            )
         </if>
         <if test="infoUpdate.beginDateTime != null and infoUpdate.beginDateTime != ''">
             AND issueTime
