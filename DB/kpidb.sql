@@ -135,8 +135,8 @@ CREATE TABLE frequencysetup(
 		UNIQUE KEY(siteId,chnlId)
 )COMMENT='栏目更新频率表';
 INSERT into frequencysetup VALUES(null,1,1,1);
-INSERT into frequencysetup VALUES(null,1,2,1);
-INSERT into frequencysetup VALUES(null,1,3,1);
+INSERT into frequencysetup VALUES(null,1,2,2);
+INSERT into frequencysetup VALUES(null,1,3,3);
 
 -- 栏目分类表
 drop TABLE IF EXISTS chnlgroup;
