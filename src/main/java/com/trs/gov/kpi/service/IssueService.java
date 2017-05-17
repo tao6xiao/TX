@@ -7,5 +7,5 @@ import com.alibaba.fastjson.JSONObject;
  */
 public interface IssueService {
 
-    JSONObject getIgnoredIssues(Integer siteId, Integer currPage, Integer pageSize);
+    JSONObject queryIssues(Integer siteId, Integer isResolved, Boolean isDel, Integer currPage, Integer pageSize);
 }

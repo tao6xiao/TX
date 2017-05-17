@@ -24,7 +24,16 @@ public class IssueController {
                                        @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
                                        @RequestParam(value = "currPage", required = false, defaultValue = "1") Integer currPage) {
 
-        return issueService.getIgnoredIssues(siteId, currPage, pageSize);
+        return issueService.queryIssues(siteId, 2, false, currPage, pageSize);
+
+    }
+
+    @GetMapping("/handled")
+    public JSONObject getResolvedIssues(@RequestParam("siteId") Integer siteId,
+                                       @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
+                                       @RequestParam(value = "currPage", required = false, defaultValue = "1") Integer currPage) {
+
+        return issueService.queryIssues(siteId, 1, false, currPage, pageSize);
 
     }
 }

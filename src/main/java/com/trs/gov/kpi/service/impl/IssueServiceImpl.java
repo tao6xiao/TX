@@ -21,11 +21,11 @@ public class IssueServiceImpl implements IssueService {
     private IssueMapper issueMapper;
 
     @Override
-    public JSONObject getIgnoredIssues(Integer siteId, Integer currPage, Integer pageSize) {
+    public JSONObject queryIssues(Integer siteId, Integer isResolved, Boolean isDel, Integer currPage, Integer pageSize) {
 
         Integer from = (currPage - 1) * pageSize;
-        List<Issue> issueList = issueMapper.pageQuery(siteId, 2, false, from, pageSize);
-        Integer total = issueMapper.countIssue(siteId, 2, false);
+        List<Issue> issueList = issueMapper.pageQuery(siteId, isResolved, isDel, from, pageSize);
+        Integer total = issueMapper.countIssue(siteId, isResolved, isDel);
         JSONObject result = new JSONObject();
 
         Pager pager = new Pager();
@@ -34,7 +34,7 @@ public class IssueServiceImpl implements IssueService {
         pager.setPageSize(pageSize);
         pager.setPageCount(total / pageSize + 1);
 
-        result.put("page", pager);
+        result.put("pager", pager);
         result.put("data", JSON.toJSON(issueList));
         return result;
     }
