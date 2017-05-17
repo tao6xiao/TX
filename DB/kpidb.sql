@@ -64,6 +64,9 @@ INSERT INTO `issue` VALUES ('54531', '100', '1', '2', 'www.dsa.com', '2017-05-18
 INSERT INTO `issue` VALUES ('65872', '100', '1', '1', 'www.dsad.com', '2017-04-30 11:07:22', '0', '0', 'www.dsad.com', null, null);
 INSERT INTO `issue` VALUES ('76915', '100', '2', '1', 'www.cdsf.com', '2017-05-12 17:04:30', '0', '0', '音乐天地', '1', null);
 INSERT INTO `issue` VALUES ('82816', '100', '2', '1', 'www.ffgh.', '2017-05-18 17:05:31', '0', '0', '电视购物', '2', null);
+INSERT INTO `issue` VALUES ('10584', '100', '3', '1', 'www.fdgr.com', '2017-05-15 13:48:26', '0', '0', null, null, null);
+INSERT INTO `issue` VALUES ('11786', '100', '3', '2', 'www.163.com', '2017-05-31 13:48:45', '0', '0', null, null, null);
+INSERT INTO `issue` VALUES ('12429', '100', '3', '1', 'www.zhihu.com', '2017-04-30 13:49:04', '0', '0', null, null, null);
 
 -- ----------------------------
 -- Table structure for warning
