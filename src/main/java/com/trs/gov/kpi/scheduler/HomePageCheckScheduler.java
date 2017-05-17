@@ -32,7 +32,7 @@ public class HomePageCheckScheduler extends AbstractScheduler {
     @Setter @Getter
     private Integer siteId;
 
-    @Setter
+    @Resource
     private IssueMapper issueMapper;
 
     @Getter
