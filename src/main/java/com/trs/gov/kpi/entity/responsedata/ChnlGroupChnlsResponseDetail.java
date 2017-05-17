@@ -9,5 +9,6 @@ import lombok.Data;
 @Data
 public class ChnlGroupChnlsResponseDetail {
     private Integer id;
+    private String chnlGroupName;
     private Chnl chnl;
 }

@@ -27,4 +27,13 @@ public enum ChnlGroups {
     public static ChnlGroups[] getChnlGroups(){
         return ChnlGroups.values();
     }
+
+    public static ChnlGroups getTypeById(int id){
+        for (ChnlGroups chnlGroup : ChnlGroups.values()) {
+            if(chnlGroup.getId() == id){
+                return chnlGroup;
+            }
+        }
+        return null;
+    }
 }

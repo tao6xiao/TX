@@ -59,12 +59,14 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     private Chnl getChnl(ChnlGroup chnlGroup) {
         // TODO: 2017/5/17 get chnl by siteId and chnlId from 采编中心
         Chnl chnl = new Chnl();
+        chnl.setChnlName("news");
         return chnl;
     }
 
     private ChnlGroupChnlsResponseDetail getChnlGroupChnlsResponseDetailByChnlGroup(ChnlGroup chnlGroup) {
         ChnlGroupChnlsResponseDetail chnlGroupChnlsResponseDetail = new ChnlGroupChnlsResponseDetail();
         chnlGroupChnlsResponseDetail.setId(chnlGroup.getId());
+        chnlGroupChnlsResponseDetail.setChnlGroupName(ChnlGroups.getTypeById(chnlGroup.getGroupId()).getName());
         Chnl chnl = getChnl(chnlGroup);
         chnlGroupChnlsResponseDetail.setChnl(chnl);
         return chnlGroupChnlsResponseDetail;
