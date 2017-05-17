@@ -131,7 +131,8 @@ CREATE TABLE frequencysetup(
 		siteId INT NOT NULL COMMENT '站点编号',
 		presetFeqId INT NOT NULL COMMENT '预设频率编号',
 		chnlId INT NOT NULL COMMENT '栏目编号',
-		PRIMARY KEY(id)
+		PRIMARY KEY(id),
+		UNIQUE KEY(siteId,chnlId)
 )COMMENT='栏目更新频率表';
 INSERT into frequencysetup VALUES(null,1,1,1);
 INSERT into frequencysetup VALUES(null,1,2,1);
