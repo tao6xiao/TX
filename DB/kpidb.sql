@@ -108,5 +108,28 @@ INSERT into frequencysetup VALUES(null,1,1,1);
 INSERT into frequencysetup VALUES(null,1,2,1);
 INSERT into frequencysetup VALUES(null,1,3,1);
 
+-- 栏目分类表
+drop TABLE IF EXISTS chnlgroup;
+CREATE TABLE chnlgroup(
+		id INT NOT NULL auto_increment COMMENT '编号',
+		siteId INT NOT NULL COMMENT '站点编号',
+		groupId INT NOT NULL COMMENT '分类编号',
+		chnlId INT NOT NULL COMMENT '栏目编号',
+		PRIMARY KEY(id),
+		UNIQUE KEY (siteId,groupId,chnlId)
+)COMMENT='栏目分类表';
+INSERT into chnlgroup VALUES(null,1,1,1);
+INSERT into chnlgroup VALUES(null,1,1,2);
+INSERT into chnlgroup VALUES(null,1,1,3);
+INSERT into chnlgroup VALUES(null,1,2,1);
+INSERT into chnlgroup VALUES(null,1,2,2);
+INSERT into chnlgroup VALUES(null,1,2,3);
+INSERT into chnlgroup VALUES(null,1,3,1);
+INSERT into chnlgroup VALUES(null,1,3,2);
+INSERT into chnlgroup VALUES(null,1,3,3);
+
+
+
+
 
 
