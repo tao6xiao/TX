@@ -113,7 +113,7 @@ public class InfoErrorController {
     }
 
 
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
         infoErrorService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;

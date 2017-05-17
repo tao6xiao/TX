@@ -110,7 +110,7 @@ public class InfoUpdateController {
     }
 
 
-    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
         infoUpdateService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
