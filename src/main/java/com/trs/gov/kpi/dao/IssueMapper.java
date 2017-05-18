@@ -31,7 +31,19 @@ public interface IssueMapper {
 
     List<Issue> getAllIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
 
+    /**
+     * 获取预警提醒记录总数
+     * @param issue
+     * @return
+     */
     int getAllWarningCount(@Param("issue") Issue issue);
 
+    /**
+     * 获取预警提醒当前页的分页数据
+     * @param currPage
+     * @param pageSize
+     * @param issue
+     * @return
+     */
     List<Issue> getAllWarningList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
 }
