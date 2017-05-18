@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by rw103 on 2017/5/11.
+ * 链接可用性问题
  */
 @RestController
 @RequestMapping("/gov/kpi/available/issue")
@@ -33,15 +33,21 @@ public class LinkAvailabilityController {
     private LinkAvailabilityService linkAvailabilityService;
 
 
+    /**
+     * 查询待解决和已解决问题数量
+     *
+     * @param issueBase
+     * @return
+     */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
-        if(issueBase.getSearchText() == null){
+        if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
         }
-        if(issueBase.getSearchText() == null || issueBase.getSearchText() == ""){
+        if (issueBase.getSearchText() == null || issueBase.getSearchText() == "") {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
@@ -51,6 +57,12 @@ public class LinkAvailabilityController {
     }
 
 
+    /**
+     * 查询历史记录
+     *
+     * @param linkAvailability
+     * @return
+     */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List getIssueHistoryCount(@ModelAttribute LinkAvailability linkAvailability) {
         if (linkAvailability.getBeginDateTime() == null || linkAvailability.getBeginDateTime().trim().isEmpty()) {
@@ -74,23 +86,32 @@ public class LinkAvailabilityController {
         return list;
     }
 
+    /**
+     * 查询未解决问题列表
+     *
+     * @param currPage
+     * @param pageSize
+     * @param linkAvailability
+     * @return
+     * @throws BizException
+     */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer currPage, Integer pageSize, @ModelAttribute LinkAvailability linkAvailability) throws BizException {
 
         if (linkAvailability.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if(linkAvailability.getSearchText() != null && !linkAvailability.getSearchText().trim().isEmpty()){
-            List list = InitQueryFiled.init(linkAvailability.getSearchText(),linkAvailabilityService);
+        if (linkAvailability.getSearchText() != null && !linkAvailability.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(linkAvailability.getSearchText(), linkAvailabilityService);
             linkAvailability.setIds(list);
         }
-        if(linkAvailability.getSearchText() == null || linkAvailability.getSearchText() == ""){
+        if (linkAvailability.getSearchText() == null || linkAvailability.getSearchText() == "") {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
             linkAvailability.setIds(list);
         }
-        if(linkAvailability.getSearchText() == null){
+        if (linkAvailability.getSearchText() == null) {
             linkAvailability.setSearchText("");
         }
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability);
@@ -110,6 +131,13 @@ public class LinkAvailabilityController {
     }
 
 
+    /**
+     * 批量处理
+     *
+     * @param siteId
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.handIssuesByIds(siteId, Arrays.asList(ids));
@@ -117,6 +145,13 @@ public class LinkAvailabilityController {
     }
 
 
+    /**
+     * 批量忽略
+     *
+     * @param siteId
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
@@ -124,6 +159,13 @@ public class LinkAvailabilityController {
     }
 
 
+    /**
+     * 批量删除
+     *
+     * @param siteId
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
         linkAvailabilityService.delIssueByIds(siteId, Arrays.asList(ids));

@@ -24,7 +24,7 @@ import java.util.List;
 
 
 /**
- * Created by ranwei on 2017/5/15.
+ * 信息错误问题
  */
 @RestController
 @RequestMapping("/gov/kpi/content/issue")
@@ -34,6 +34,11 @@ public class InfoErrorController {
     private InfoErrorService infoErrorService;
 
 
+    /**
+     * 查询待解决和已解决问题数量
+     * @param issueBase
+     * @return
+     */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
@@ -51,6 +56,11 @@ public class InfoErrorController {
         return IssueCounter.getIssueCount(infoErrorService, issueBase);
     }
 
+    /**
+     * 查询历史记录
+     * @param infoError
+     * @return
+     */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List getIssueHistoryCount(@ModelAttribute InfoError infoError) {
         if (infoError.getBeginDateTime() == null || infoError.getBeginDateTime().trim().isEmpty()) {
@@ -74,6 +84,14 @@ public class InfoErrorController {
         return list;
     }
 
+    /**
+     * 查询待解决问题列表
+     * @param currPage
+     * @param pageSize
+     * @param infoError
+     * @return
+     * @throws BizException
+     */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer currPage, Integer pageSize, @ModelAttribute InfoError infoError) throws BizException {
 
@@ -107,21 +125,36 @@ public class InfoErrorController {
         return apiPageData;
     }
 
-
+    /**
+     * 批量处理
+     * @param siteId
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) {
         infoErrorService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
-
+    /**
+     * 批量忽略
+     * @param siteId
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
         infoErrorService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
-
+    /**
+     * 批量删除
+     * @param siteId
+     * @param ids
+     * @return
+     */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
         infoErrorService.delIssueByIds(siteId, Arrays.asList(ids));

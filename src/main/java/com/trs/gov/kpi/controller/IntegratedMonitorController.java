@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by ranwei on 2017/5/16.
+ * 综合实时监测
  */
 @RestController
 @RequestMapping("/gov/kpi/issue")
@@ -32,6 +32,12 @@ public class IntegratedMonitorController {
     @Resource
     private InfoErrorService infoErrorService;
 
+
+    /**
+     * 查询所有问题数量
+     * @param issueBase
+     * @return
+     */
     @RequestMapping(value = "/all/count", method = RequestMethod.GET)
     public Integer getAllIssueCount(@ModelAttribute IssueBase issueBase) {
         int linkAvailabilityCount = linkAvailabilityService.getHandledIssueCount(issueBase) + linkAvailabilityService.getUnhandledIssueCount(issueBase);
@@ -40,6 +46,11 @@ public class IntegratedMonitorController {
         return linkAvailabilityCount + infoErrorCount + infoUpdateCount;
     }
 
+    /**
+     * 查询各类问题的待解决问题数
+     * @param issueBase
+     * @return
+     */
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) {
         int linkAvailabilityCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
@@ -62,6 +73,11 @@ public class IntegratedMonitorController {
         return list;
     }
 
+    /**
+     * 查询各类预警的待解决数
+     * @param issueBase
+     * @return
+     */
     @RequestMapping(value = "/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute IssueBase issueBase){
         int infoUpdateCount = infoUpdateService.getUpdateWarningCount(issueBase);
