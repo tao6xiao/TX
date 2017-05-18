@@ -70,11 +70,15 @@ public class PageInfoDeal {
      * @return
      */
     public static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer pageCount) {
-        pageIndex = pageIndex - 1;//10页，最后一页为第10页
+        pageIndex = pageIndex - 1;//10页，最后一页为第10页,index为9
         if (pageIndex < 0) {
             pageIndex = 0;
         } else if (pageIndex >= pageCount) {
-            pageIndex = pageCount - 1;
+            if(pageCount != 0) {
+                pageIndex = pageCount - 1;
+            }else{
+                pageIndex = 0;
+            }
         }
         return pageIndex;
     }
