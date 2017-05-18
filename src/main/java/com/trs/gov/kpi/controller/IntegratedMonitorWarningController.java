@@ -17,6 +17,16 @@ public class IntegratedMonitorWarningController {
     @Resource
     IntegratedMonitorWarningService integratedMonitorWarningService;
 
+    @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
+    @ResponseBody
+    public Object getPageData(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
+        if (siteId == null || ids == null || ids.length == 0) {
+            throw new BizException("参数存在null值");
+        }
+        int num = integratedMonitorWarningService.dealWithWarningBySiteIdAndId(siteId, ids);
+        return null;
+    }
+
     /**
      * 处理对应siteId和id的预警记录（批量和单个）
      *
@@ -42,7 +52,7 @@ public class IntegratedMonitorWarningController {
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/handle", method = RequestMethod.GET)
+    @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     @ResponseBody
     public Object ignoreWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
@@ -59,7 +69,7 @@ public class IntegratedMonitorWarningController {
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/handle", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {

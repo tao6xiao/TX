@@ -31,7 +31,7 @@ public class DefaultUpdateFreqController {
         }
         DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
         Integer value = null;
-        if(defaultUpdateFreq == null) {
+        if(defaultUpdateFreq != null) {
             value  = defaultUpdateFreq.getValue();
         }
         return value;
