@@ -63,12 +63,8 @@ public class SiteApiServiceImpl implements SiteApiService {
 
         try {
             Map<String, String> params = new HashMap<>();
-            if (parentId <= 0) {
-                // 获取站点一级的栏目
-                params.put("SiteId", String.valueOf(siteId));
-            } else {
-                params.put("ParentChannelId", String.valueOf(parentId));
-            }
+            params.put("SiteId", String.valueOf(siteId));
+            params.put("ParentChannelId", String.valueOf(parentId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
                     buildRequest("queryChildrenChannelsOnEditorCenter", userName, params)).execute();
