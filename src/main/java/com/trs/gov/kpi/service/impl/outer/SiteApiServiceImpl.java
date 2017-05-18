@@ -13,6 +13,7 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,7 +26,8 @@ import java.util.*;
 @Service
 public class SiteApiServiceImpl implements SiteApiService {
 
-    private static final String EDIT_CENTER_URL = "http://dev3.trs.org.cn";
+    @Value("${service.outer.editcenter.url}")
+    private String editCenterServiceUrl;
 
     private static final String SERVICE_NAME = "gov_site";
 
@@ -47,7 +49,7 @@ public class SiteApiServiceImpl implements SiteApiService {
 
                 return JSON.parseObject(result.getData(), Site.class);
             } else {
-                log.error("failed to get site, error: " + response.body().toString());
+                log.error("failed to get site, error: " + response);
                 throw new RemoteException("获取站点失败！");
             }
         } catch (IOException e) {
@@ -86,7 +88,7 @@ public class SiteApiServiceImpl implements SiteApiService {
 
                 return JSON.parseArray(pageData.getData(), Channel.class);
             } else {
-                log.error("error: " + response.body().toString());
+                log.error("error: " + response);
                 throw new RemoteException("获取子栏目失败！");
             }
         } catch (IOException e) {
@@ -111,7 +113,7 @@ public class SiteApiServiceImpl implements SiteApiService {
                 }
                 return JSON.parseObject(result.getData(), Channel.class);
             } else {
-                log.error("failed to get site, error: " + response.body().toString());
+                log.error("failed to get site, error: " + response);
                 throw new RemoteException("获取站点失败！");
             }
         } catch (IOException e) {
@@ -127,7 +129,7 @@ public class SiteApiServiceImpl implements SiteApiService {
         }
         StringBuilder url = new StringBuilder(
                 String.format("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s",
-                        EDIT_CENTER_URL, SERVICE_NAME, methodName, userName));
+                        editCenterServiceUrl, SERVICE_NAME, methodName, userName));
         if (params == null) {
             return url.toString();
         }

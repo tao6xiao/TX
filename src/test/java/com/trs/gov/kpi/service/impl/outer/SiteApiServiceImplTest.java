@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl.outer;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +13,10 @@ import static org.junit.Assert.*;
  * Created by linwei on 2017/5/18.
  */
 public class SiteApiServiceImplTest {
+
+    @Value("${service.outer.editcenter.url}")
+    private String editCenterServiceUrl;
+
     @Test
     public void getRequestUrl() throws Exception {
 
@@ -20,7 +25,7 @@ public class SiteApiServiceImplTest {
         params.put("param1", "1");
         params.put("param2", "2");
         String url = apiService.getRequestUrl("test_func", "", params);
-        String expectedUrl = "http://dev3.trs.org.cn/gov/opendata.do?serviceId=gov_site&methodname=test_func&CurrUserName=admin&param1=1&param2=2";
+        String expectedUrl = editCenterServiceUrl + "/gov/opendata.do?serviceId=gov_site&methodname=test_func&CurrUserName=admin&param1=1&param2=2";
         assertEquals(expectedUrl, url);
     }
 
