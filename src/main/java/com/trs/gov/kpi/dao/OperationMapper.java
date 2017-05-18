@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.dao;
 
+import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -68,6 +69,14 @@ public interface OperationMapper {
      * @param ids
      */
     void delIssueByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
+
+    /**
+     * 查询所有待解决问题
+     *
+     * @param issueBase
+     * @return
+     */
+    List<Issue> getAllIssueList(@Param("issueBase") IssueBase issueBase);
 
     /**
      * 查询存在时间最久的问题的时间
