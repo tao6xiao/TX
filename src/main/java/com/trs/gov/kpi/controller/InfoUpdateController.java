@@ -1,18 +1,15 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.InfoUpdateType;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
-import com.trs.gov.kpi.constant.InfoUpdateType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.utils.*;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -33,6 +30,7 @@ public class InfoUpdateController {
 
     /**
      * 查询已解决、预警和更新不及时的数量
+     *
      * @param issueBase
      * @return
      */
@@ -41,10 +39,10 @@ public class InfoUpdateController {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
-        if(issueBase.getSearchText() == null){
+        if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
         }
-        if(issueBase.getSearchText() == null || issueBase.getSearchText() == ""){
+        if (issueBase.getSearchText() == null || issueBase.getSearchText() == "") {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
@@ -55,6 +53,7 @@ public class InfoUpdateController {
 
     /**
      * 查询历史记录
+     *
      * @param infoUpdate
      * @return
      */
@@ -85,33 +84,34 @@ public class InfoUpdateController {
 
     /**
      * 查询待解决（更新不及时）的问题列表
-     * @param currPage
+     *
+     * @param pageIndex
      * @param pageSize
      * @param infoUpdate
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer currPage, Integer pageSize, @ModelAttribute InfoUpdate infoUpdate) throws BizException {
+    public ApiPageData getIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute InfoUpdate infoUpdate) throws BizException {
 
         if (infoUpdate.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if(infoUpdate.getSearchText() != null && !infoUpdate.getSearchText().trim().isEmpty()){
-            List list = InitQueryFiled.init(infoUpdate.getSearchText(),infoUpdateService);
+        if (infoUpdate.getSearchText() != null && !infoUpdate.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(infoUpdate.getSearchText(), infoUpdateService);
             infoUpdate.setIds(list);
         }
-        if(infoUpdate.getSearchText() == null || infoUpdate.getSearchText() == ""){
-            List list = new ArrayList();
+        if (infoUpdate.getSearchText() == null || infoUpdate.getSearchText() == "") {
+            List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
             infoUpdate.setIds(list);
         }
-        if(infoUpdate.getSearchText() == null){
+        if (infoUpdate.getSearchText() == null) {
             infoUpdate.setSearchText("");
         }
         int itemCount = infoUpdateService.getUpdateNotIntimeCount(infoUpdate);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
         List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoUpdate);
         for (InfoUpdate info : infoUpdateList) {
             if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
@@ -125,6 +125,7 @@ public class InfoUpdateController {
 
     /**
      * 批量处理
+     *
      * @param siteId
      * @param ids
      * @return
@@ -137,6 +138,7 @@ public class InfoUpdateController {
 
     /**
      * 批量忽略
+     *
      * @param siteId
      * @param ids
      * @return
@@ -149,6 +151,7 @@ public class InfoUpdateController {
 
     /**
      * 批量删除
+     *
      * @param siteId
      * @param ids
      * @return

@@ -10,10 +10,7 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.utils.*;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -86,14 +83,14 @@ public class InfoErrorController {
 
     /**
      * 查询待解决问题列表
-     * @param currPage
+     * @param pageIndex
      * @param pageSize
      * @param infoError
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer currPage, Integer pageSize, @ModelAttribute InfoError infoError) throws BizException {
+    public ApiPageData getIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute InfoError infoError) throws BizException {
 
         if (infoError.getSiteId() == null) {
             throw new BizException("站点编号为空");
@@ -103,7 +100,7 @@ public class InfoErrorController {
             infoError.setIds(list);
         }
         if(infoError.getSearchText() == null || infoError.getSearchText() == ""){
-            List list = new ArrayList();
+            List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
             infoError.setIds(list);
@@ -112,7 +109,7 @@ public class InfoErrorController {
             infoError.setSearchText("");
         }
         int itemCount = infoErrorService.getUnhandledIssueCount(infoError);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
         List<InfoError> infoErrorList = infoErrorService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoError);
         for (InfoError info : infoErrorList) {
             if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {

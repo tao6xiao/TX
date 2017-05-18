@@ -9,17 +9,14 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.InitQueryFiled;
 import com.trs.gov.kpi.utils.PageInfoDeal;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by wangxuan on 2017/5/17.
+ * 综合实时监测
  */
 @RestController
 @RequestMapping("/gov/kpi/issue")
@@ -28,8 +25,17 @@ public class IssueController {
     @Resource
     private IssueService issueService;
 
-    @RequestMapping(value = "/unhandled",method = RequestMethod.GET)
-    public ApiPageData getAllIssueList(Integer currPage, Integer pageSize, @ModelAttribute Issue issue) throws BizException {
+    /**
+     * 查询所有未解决问题列表
+     *
+     * @param pageSize
+     * @param pageIndex
+     * @param issue
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
+    public ApiPageData getAllIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute Issue issue) throws BizException {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
@@ -40,7 +46,7 @@ public class IssueController {
         }
         //解决searchField和searchText为null或空字符串的情况
         if (issue.getSearchText() == null || issue.getSearchText() == "") {
-            List list = new ArrayList();
+            List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
             issue.setIds(list);
@@ -53,7 +59,7 @@ public class IssueController {
         issue.setIsResolved(0);
         issue.setIsDel(0);
         int itemCount = issueService.getAllIssueCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
         List<Issue> linkAvailabilityList = issueService.getAllIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), issue);
         for (Issue is : linkAvailabilityList) {
             if (is.getTypeId() == 1) {//为可用性链接问题

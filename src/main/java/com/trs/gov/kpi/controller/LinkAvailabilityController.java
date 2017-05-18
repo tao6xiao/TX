@@ -10,10 +10,7 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.*;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -89,14 +86,14 @@ public class LinkAvailabilityController {
     /**
      * 查询未解决问题列表
      *
-     * @param currPage
+     * @param pageIndex
      * @param pageSize
      * @param linkAvailability
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer currPage, Integer pageSize, @ModelAttribute LinkAvailability linkAvailability) throws BizException {
+    public ApiPageData getIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute LinkAvailability linkAvailability) throws BizException {
 
         if (linkAvailability.getSiteId() == null) {
             throw new BizException("站点编号为空");
@@ -106,7 +103,7 @@ public class LinkAvailabilityController {
             linkAvailability.setIds(list);
         }
         if (linkAvailability.getSearchText() == null || linkAvailability.getSearchText() == "") {
-            List list = new ArrayList();
+            List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
             linkAvailability.setIds(list);
@@ -115,7 +112,7 @@ public class LinkAvailabilityController {
             linkAvailability.setSearchText("");
         }
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), linkAvailability);
         for (LinkAvailability link : linkAvailabilityList) {
             if (link.getIssueTypeId() == LinkIssueType.INVALID_LINK.value) {
