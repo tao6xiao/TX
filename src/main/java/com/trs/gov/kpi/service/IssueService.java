@@ -1,15 +1,11 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.Issue;
-
-import java.util.List;
+import com.alibaba.fastjson.JSONObject;
 
 /**
- * Created by ranwei on 2017/5/18.
+ * Created by wangxuan on 2017/5/17.
  */
-public interface IssueService extends OperationService {
+public interface IssueService {
 
-    int getAllIssueCount(Issue issue);
-
-    List<Issue> getAllIssueList(Integer currPage, Integer pageSize, Issue issue);
+    JSONObject queryIssues(Integer siteId, Integer isResolved, Boolean isDel, Integer currPage, Integer pageSize);
 }

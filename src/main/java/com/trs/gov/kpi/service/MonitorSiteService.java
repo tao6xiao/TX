@@ -4,6 +4,8 @@ import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by HLoach on 2017/5/11.
  */
@@ -36,5 +38,11 @@ public interface MonitorSiteService {
      * @return
      */
     int updateMonitorSiteBySiteId(MonitorSiteDeal monitorSiteDeal);
+
+    /**
+     * 获取全部的监控信息
+     * @return
+     */
+    List<MonitorSite> getAllMonitorSites();
 
 }
