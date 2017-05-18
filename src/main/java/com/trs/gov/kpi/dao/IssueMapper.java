@@ -26,4 +26,8 @@ public interface IssueMapper {
     int updateByPrimaryKeySelective(Issue record);
 
     int updateByPrimaryKey(Issue record);
+
+    List<Issue> pageQuery(@Param("siteId") Integer siteId, @Param("isResolved") Integer isResolved, @Param("isDel") Boolean isDel, @Param("from") Integer from, @Param("count") Integer count);
+
+    Integer countIssue(@Param("siteId") Integer siteId, @Param("isResolved") Integer isResolved, @Param("isDel") Boolean isDel);
 }

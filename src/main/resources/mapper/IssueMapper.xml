@@ -293,4 +293,29 @@
       customer3 = #{customer3,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="pageQuery" resultMap="BaseResultMap">
+    SELECT *
+    FROM issue
+    WHERE siteId = #{siteId}
+    <if test="isResolved != null">
+      AND isResolved = #{isResolved}
+    </if>
+    <if test="isDel != null">
+      AND isDel = #{isDel}
+    </if>
+    limit #{from}, #{count}
+  </select>
+
+  <select id="countIssue" resultType="java.lang.Integer">
+    SELECT count(1)
+    FROM issue
+    WHERE siteId = #{siteId}
+    <if test="isResolved != null">
+      AND isResolved = #{isResolved}
+    </if>
+    <if test="isDel != null">
+      AND isDel = #{isDel}
+    </if>
+  </select>
 </mapper>

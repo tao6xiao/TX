@@ -3,10 +3,13 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
+import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
+import com.trs.gov.kpi.service.MonitorSiteService;
+import com.trs.gov.kpi.service.SchedulerService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,7 +25,13 @@ import java.util.Map;
 public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Resource
+    MonitorSiteService monitorSiteService;
+
+    @Resource
     MonitorFrequencyMapper monitorFrequencyMapper;
+
+    @Resource
+    SchedulerService schedulerService;
 
     @Override
     public List<MonitorFrequencyDeal> queryBySiteId(int siteId) {
@@ -42,6 +51,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
+        updateMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
@@ -55,6 +65,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.updateMonitorFrequencySetUp(monitorFrequencyList);
+        updateMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
@@ -85,5 +96,20 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         monitorFrequencyDeal.setName(frequencyType.getName());
         monitorFrequencyDeal.setFreqUnit(frequencyType.getFreqUnit().getCode());
         return monitorFrequencyDeal;
+    }
+
+    private void updateMonitorScheduler(List<MonitorFrequency> monitorFrequencyList) {
+
+        for(MonitorFrequency monitorFrequency: monitorFrequencyList) {
+
+            MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(monitorFrequency.getSiteId());
+            schedulerService.registerScheduler(
+                    monitorSite.getIndexUrl(),
+                    monitorFrequency.getSiteId(),
+                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
+                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
+                    monitorFrequency.getValue().intValue()
+            );
+        }
     }
 }

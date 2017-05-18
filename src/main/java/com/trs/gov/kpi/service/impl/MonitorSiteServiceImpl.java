@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by HLoach on 2017/5/11.
@@ -57,6 +58,11 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal, siteIds);
         int num = monitorSiteMapper.updateByPrimaryKey(monitorSite);
         return num;
+    }
+
+    @Override
+    public List<MonitorSite> getAllMonitorSites() {
+        return monitorSiteMapper.getAllMonitorSites();
     }
 
     private MonitorSite getMonitorSiteFromMonitorSiteDealAndSiteIds(MonitorSiteDeal monitorSiteDeal, String siteIds) {

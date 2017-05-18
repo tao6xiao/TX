@@ -18,7 +18,7 @@ public class Issue {
 
     private Date issueTime;
 
-    private Boolean isResolved;
+    private Integer isResolved;
 
     private Boolean isDel;
 
