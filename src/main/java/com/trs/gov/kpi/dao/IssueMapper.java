@@ -30,4 +30,8 @@ public interface IssueMapper {
     int getAllIssueCount(@Param("issue") Issue issue);
 
     List<Issue> getAllIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
+
+    int getAllWarningCount(@Param("issue") Issue issue);
+
+    List<Issue> getAllWarningList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
 }

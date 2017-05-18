@@ -294,9 +294,16 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+  <sql id="Query_Issue">
+    AND typeId BETWEEN 1 AND 50
+  </sql>
+
+  <sql id="Query_Warning">
+    AND typeId BETWEEN 51 AND 100
+  </sql>
+
   <sql id="Query_Where">
     WHERE siteId = #{issue.siteId}
-    AND typeId BETWEEN 1 AND 50
     <if test="issue.isResolved != null">
       AND isResolved = #{issue.isResolved}
     </if>
@@ -344,6 +351,7 @@
     SELECT count(1)
     FROM issue
     <include refid="Query_Where"/>
+    <include refid="Query_Issue"/>
   </select>
 
   <select id="getAllIssueList" resultMap="BaseResultMap">
@@ -354,5 +362,24 @@
     issueTime
     FROM issue
     <include refid="Query_Where"/>
+    <include refid="Query_Issue"/>
+  </select>
+
+  <select id="getAllWarningCount" resultType="int">
+    SELECT count(1)
+    FROM issue
+    <include refid="Query_Where"/>
+    <include refid="Query_Warning"/>
+  </select>
+
+  <select id="getAllWarningList" resultMap="BaseResultMap">
+    SELECT id,
+    typeId,
+    subTypeId,
+    detail,
+    issueTime
+    FROM issue
+    <include refid="Query_Where"/>
+    <include refid="Query_Warning"/>
   </select>
 </mapper>
