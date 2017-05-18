@@ -1,9 +1,9 @@
 package com.trs.gov.kpi.controller;
 
 
+import com.trs.gov.kpi.constant.InfoErrorType;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
-import com.trs.gov.kpi.constant.InfoErrorType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -36,6 +36,7 @@ public class InfoErrorController {
 
     /**
      * 查询待解决和已解决问题数量
+     *
      * @param issueBase
      * @return
      */
@@ -44,10 +45,10 @@ public class InfoErrorController {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
-        if(issueBase.getSearchText() == null){
+        if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
         }
-        if(issueBase.getSearchText() == null || issueBase.getSearchText() == ""){
+        if (issueBase.getSearchText() == null || issueBase.getSearchText() == "") {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
@@ -58,6 +59,7 @@ public class InfoErrorController {
 
     /**
      * 查询历史记录
+     *
      * @param infoError
      * @return
      */
@@ -86,33 +88,34 @@ public class InfoErrorController {
 
     /**
      * 查询待解决问题列表
-     * @param currPage
+     *
+     * @param pageIndex
      * @param pageSize
      * @param infoError
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer currPage, Integer pageSize, @ModelAttribute InfoError infoError) throws BizException {
+    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute InfoError infoError) throws BizException {
 
         if (infoError.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if(infoError.getSearchText() != null && !infoError.getSearchText().trim().isEmpty()){
-            List list = InitQueryFiled.init(infoError.getSearchText(),infoErrorService);
+        if (infoError.getSearchText() != null && !infoError.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(infoError.getSearchText(), infoErrorService);
             infoError.setIds(list);
         }
-        if(infoError.getSearchText() == null || infoError.getSearchText() == ""){
-            List list = new ArrayList();
+        if (infoError.getSearchText() == null || infoError.getSearchText() == "") {
+            List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
             infoError.setIds(list);
         }
-        if(infoError.getSearchText() == null){
+        if (infoError.getSearchText() == null) {
             infoError.setSearchText("");
         }
         int itemCount = infoErrorService.getUnhandledIssueCount(infoError);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(currPage, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
         List<InfoError> infoErrorList = infoErrorService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoError);
         for (InfoError info : infoErrorList) {
             if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {
@@ -127,6 +130,7 @@ public class InfoErrorController {
 
     /**
      * 批量处理
+     *
      * @param siteId
      * @param ids
      * @return
@@ -139,6 +143,7 @@ public class InfoErrorController {
 
     /**
      * 批量忽略
+     *
      * @param siteId
      * @param ids
      * @return
@@ -151,6 +156,7 @@ public class InfoErrorController {
 
     /**
      * 批量删除
+     *
      * @param siteId
      * @param ids
      * @return
