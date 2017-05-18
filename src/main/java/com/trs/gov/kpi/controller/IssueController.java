@@ -63,7 +63,7 @@ public class IssueController {
         issue.setIsDel(0);
         int itemCount = issueService.getAllIssueCount(issue);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
-        List<Issue> linkAvailabilityList = issueService.getAllIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), issue);
+        List<Issue> linkAvailabilityList = issueService.getAllIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issue);
         for (Issue is : linkAvailabilityList) {
             if (is.getTypeId() == 1) {//为可用性链接问题
                 if (is.getSubTypeId() == LinkIssueType.INVALID_LINK.value) {

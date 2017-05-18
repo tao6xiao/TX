@@ -115,7 +115,7 @@ public class InfoUpdateController {
         }
         int itemCount = infoUpdateService.getUpdateNotIntimeCount(infoUpdate);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
-        List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList(apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize(), infoUpdate);
+        List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), infoUpdate);
         for (InfoUpdate info : infoUpdateList) {
             if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
                 info.setIssueTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);
