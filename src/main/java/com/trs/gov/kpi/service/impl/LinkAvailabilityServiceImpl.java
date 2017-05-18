@@ -55,7 +55,8 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     private Issue getIssueByLinkAvaliability(LinkAvailability linkAvailability) {
 
         Issue issue = new Issue();
-        issue.setId(linkAvailability.getId() == null? null : Integer.valueOf(linkAvailability.getId()));
+//        issue.setId(linkAvailability.getId() == null? null : Integer.valueOf(linkAvailability.getId()));
+        issue.setId(linkAvailability.getId() == null ? null : linkAvailability.getId());
         issue.setSiteId(linkAvailability.getSiteId());
         issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
         issue.setSubTypeId(LinkType.getTypeByName(linkAvailability.getIssueTypeName()).getCode());

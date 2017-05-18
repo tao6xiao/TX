@@ -4,12 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.OperationMapper">
 
-    <resultMap id="issueMap" type="com.trs.gov.kpi.entity.Issue">
-        <id column="id" property="id"/>
-        <result column="typeId" property="typeId"/>
-        <result column="detail" property="detail"/>
-        <result column="issueTime" property="issueTime"/>
-    </resultMap>
+    <!--<resultMap id="issueMap" type="com.trs.gov.kpi.entity.Issue">-->
+        <!--<id column="id" property="id"/>-->
+        <!--<result column="typeId" property="typeId"/>-->
+        <!--<result column="detail" property="detail"/>-->
+        <!--<result column="issueTime" property="issueTime"/>-->
+    <!--</resultMap>-->
 
     <update id="handIssuesByIds" parameterType="java.util.List">
         UPDATE issue
@@ -41,10 +41,6 @@
             ${item}
         </foreach>
     </update>
-
-    <select id="getAllIssueList" resultMap="issueMap">
-
-    </select>
 
     <select id="getEarliestIssueTime" resultType="java.util.Date">
         SELECT min(issueTime)

@@ -5,22 +5,24 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class Issue {
-    private Integer id;
-
-    private Integer siteId;
+public class Issue extends IssueBase{
+//    private Integer id;
+//
+//    private Integer siteId;
 
     private Integer typeId;
 
     private Integer subTypeId;
 
+    private String subTypeName;
+
     private String detail;
 
     private Date issueTime;
 
-    private Boolean isResolved;
+    private Integer isResolved;
 
-    private Boolean isDel;
+    private Integer isDel;
 
     private String customer1;
 

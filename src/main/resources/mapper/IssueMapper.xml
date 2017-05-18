@@ -293,4 +293,66 @@
       customer3 = #{customer3,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <sql id="Query_Where">
+    WHERE siteId = #{issue.siteId}
+    AND typeId BETWEEN 1 AND 50
+    <if test="issue.isResolved != null">
+      AND isResolved = #{issue.isResolved}
+    </if>
+    <if test="issue.isDel != null">
+      AND isDel = #{issue.isDel}
+    </if>
+    <if test="issue.searchField == 'id'">
+      AND id LIKE concat('%',#{issue.searchText,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="issue.searchField == 'issueType' and issue.searchText != ''">
+      AND subTypeId IN (
+      <foreach collection="issue.ids" item="item" separator=",">
+        #{item}
+      </foreach>
+      )
+    </if>
+    <if test="issue.searchField == null or issue.searchField == ''">
+      AND (
+      id LIKE concat('%',#{issue.searchText,jdbcType=VARCHAR},'%')
+      OR
+      subTypeId IN (
+      <foreach collection="issue.ids" item="item" separator=",">
+        #{item}
+      </foreach>
+      )
+      )
+    </if>
+    <if test="issue.beginDateTime != null and issue.beginDateTime != ''">
+      AND issueTime
+      <![CDATA[
+            >
+            ]]>
+      #{issue.beginDateTime}
+    </if>
+    <if test="issue.endDateTime != null and issue.endDateTime != ''">
+      AND issueTime
+      <![CDATA[
+            <
+            ]]>
+      #{issue.endDateTime}
+    </if>
+  </sql>
+
+  <select id="getAllIssueCount" resultType="int">
+    SELECT count(1)
+    FROM issue
+    <include refid="Query_Where"/>
+  </select>
+
+  <select id="getAllIssueList" resultMap="BaseResultMap">
+    SELECT id,
+    typeId,
+    subTypeId,
+    detail,
+    issueTime
+    FROM issue
+    <include refid="Query_Where"/>
+  </select>
 </mapper>
