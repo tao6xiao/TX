@@ -1,16 +1,19 @@
 package com.trs.gov.kpi.controller;
 
 
+import com.trs.gov.kpi.constant.InfoErrorType;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
-import com.trs.gov.kpi.constant.InfoErrorType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.utils.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -33,6 +36,7 @@ public class InfoErrorController {
 
     /**
      * 查询待解决和已解决问题数量
+     *
      * @param issueBase
      * @return
      */
@@ -41,10 +45,10 @@ public class InfoErrorController {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
-        if(issueBase.getSearchText() == null){
+        if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
         }
-        if(issueBase.getSearchText() == null || issueBase.getSearchText() == ""){
+        if (issueBase.getSearchText() == null || issueBase.getSearchText() == "") {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
@@ -55,6 +59,7 @@ public class InfoErrorController {
 
     /**
      * 查询历史记录
+     *
      * @param infoError
      * @return
      */
@@ -83,6 +88,7 @@ public class InfoErrorController {
 
     /**
      * 查询待解决问题列表
+     *
      * @param pageIndex
      * @param pageSize
      * @param infoError
@@ -90,22 +96,22 @@ public class InfoErrorController {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute InfoError infoError) throws BizException {
+    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute InfoError infoError) throws BizException {
 
         if (infoError.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if(infoError.getSearchText() != null && !infoError.getSearchText().trim().isEmpty()){
-            List list = InitQueryFiled.init(infoError.getSearchText(),infoErrorService);
+        if (infoError.getSearchText() != null && !infoError.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(infoError.getSearchText(), infoErrorService);
             infoError.setIds(list);
         }
-        if(infoError.getSearchText() == null || infoError.getSearchText() == ""){
+        if (infoError.getSearchText() == null || infoError.getSearchText() == "") {
             List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
             infoError.setIds(list);
         }
-        if(infoError.getSearchText() == null){
+        if (infoError.getSearchText() == null) {
             infoError.setSearchText("");
         }
         int itemCount = infoErrorService.getUnhandledIssueCount(infoError);
@@ -124,6 +130,7 @@ public class InfoErrorController {
 
     /**
      * 批量处理
+     *
      * @param siteId
      * @param ids
      * @return
@@ -136,6 +143,7 @@ public class InfoErrorController {
 
     /**
      * 批量忽略
+     *
      * @param siteId
      * @param ids
      * @return
@@ -148,6 +156,7 @@ public class InfoErrorController {
 
     /**
      * 批量删除
+     *
      * @param siteId
      * @param ids
      * @return

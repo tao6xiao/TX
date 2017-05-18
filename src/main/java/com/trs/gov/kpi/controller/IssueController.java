@@ -9,7 +9,10 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.InitQueryFiled;
 import com.trs.gov.kpi.utils.PageInfoDeal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ public class IssueController {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getAllIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute Issue issue) throws BizException {
+    public ApiPageData getAllIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute Issue issue) throws BizException {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }

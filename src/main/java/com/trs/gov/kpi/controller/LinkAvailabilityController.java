@@ -1,16 +1,19 @@
 package com.trs.gov.kpi.controller;
 
 
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -93,7 +96,7 @@ public class LinkAvailabilityController {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute LinkAvailability linkAvailability) throws BizException {
+    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute LinkAvailability linkAvailability) throws BizException {
 
         if (linkAvailability.getSiteId() == null) {
             throw new BizException("站点编号为空");

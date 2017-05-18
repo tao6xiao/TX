@@ -9,7 +9,10 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.utils.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -92,7 +95,7 @@ public class InfoUpdateController {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(@RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex, @ModelAttribute InfoUpdate infoUpdate) throws BizException {
+    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute InfoUpdate infoUpdate) throws BizException {
 
         if (infoUpdate.getSiteId() == null) {
             throw new BizException("站点编号为空");
