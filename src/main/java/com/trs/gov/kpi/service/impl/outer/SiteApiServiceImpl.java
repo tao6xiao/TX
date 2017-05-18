@@ -43,7 +43,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.toResultObj(response.body().string());
                 if (result == null) {
-                    log.error("invalid result: " + response.body().string());
+                    log.error("invalid result: " + response);
                     throw new RemoteException("获取站点失败！");
                 }
 
@@ -76,13 +76,13 @@ public class SiteApiServiceImpl implements SiteApiService {
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.toResultObj(response.body().string());
                 if (result == null || StringUtil.isEmpty(result.getData())) {
-                    log.error("invalid result: " + response.body().string());
+                    log.error("invalid result: " + response);
                     throw new RemoteException("获取子栏目失败！");
                 }
 
                 ApiPageData pageData = JSON.parseObject(result.getData(), ApiPageData.class);
                 if (StringUtil.isEmpty(result.getData())) {
-                    log.error("invalid page data: " + response.body().string());
+                    log.error("invalid page data: " + response);
                     throw new RemoteException("获取子栏目失败！");
                 }
 
@@ -108,7 +108,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.toResultObj(response.body().string());
                 if (result == null) {
-                    log.error("invalid result: " + response.body().string());
+                    log.error("invalid result: " + response);
                     throw new RemoteException("获取栏目失败！");
                 }
                 return JSON.parseObject(result.getData(), Channel.class);
