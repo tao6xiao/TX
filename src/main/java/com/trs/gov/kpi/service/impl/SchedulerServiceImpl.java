@@ -56,29 +56,29 @@ public class SchedulerServiceImpl implements SchedulerService {
 
             log.info("init scheduler model...");
 
-            List<MonitorSite> monitorSites = monitorSiteService.getAllMonitorSites();
-            for(MonitorSite monitorSite: monitorSites) {
-
-                if(monitorSite.getSiteId() != null) {
-
-                    List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper.queryBySiteId(monitorSite.getSiteId());
-                    for(MonitorFrequency monitorFrequency: monitorFrequencies) {
-
-                        try {
-
-                            registerScheduler(
-                                    monitorSite.getIndexUrl(),
-                                    monitorSite.getSiteId(),
-                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
-                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
-                                    monitorFrequency.getValue().intValue());
-                        } catch (Exception e) {
-
-                            log.error("register scheduler {} error!", JSON.toJSONString(monitorFrequency));
-                        }
-                    }
-                }
-            }
+//            List<MonitorSite> monitorSites = monitorSiteService.getAllMonitorSites();
+//            for(MonitorSite monitorSite: monitorSites) {
+//
+//                if(monitorSite.getSiteId() != null) {
+//
+//                    List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper.queryBySiteId(monitorSite.getSiteId());
+//                    for(MonitorFrequency monitorFrequency: monitorFrequencies) {
+//
+//                        try {
+//
+//                            registerScheduler(
+//                                    monitorSite.getIndexUrl(),
+//                                    monitorSite.getSiteId(),
+//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
+//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
+//                                    monitorFrequency.getValue().intValue());
+//                        } catch (Exception e) {
+//
+//                            log.error("register scheduler {} error!", JSON.toJSONString(monitorFrequency));
+//                        }
+//                    }
+//                }
+//            }
 
             log.info("init scheduler model completed!");
         } catch (Exception e) {
