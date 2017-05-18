@@ -42,7 +42,7 @@ public class IntegratedMonitorWarningController {
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/handle", method = RequestMethod.POST)
+    @RequestMapping(value = "/handle", method = RequestMethod.GET)
     @ResponseBody
     public Object ignoreWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
