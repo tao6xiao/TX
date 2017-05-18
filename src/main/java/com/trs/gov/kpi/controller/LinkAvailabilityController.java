@@ -4,7 +4,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.LinkIssueType;
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;

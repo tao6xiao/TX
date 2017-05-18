@@ -1,7 +1,7 @@
-package com.trs.gov.kpi.entity;
+package com.trs.gov.kpi.constant;
 
 /**
- * Created by ranwei on 2017/5/17.
+ * 信息错误的子类型
  */
 public enum InfoErrorType {
 

@@ -2,7 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.IssueType;
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.WarningIndicator;
+import com.trs.gov.kpi.entity.InfoWarningType;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;
@@ -83,8 +83,8 @@ public class IntegratedMonitorController {
         int infoUpdateCount = infoUpdateService.getUpdateWarningCount(issueBase);
         Statistics infoUpdateStatistics = new Statistics();
         infoUpdateStatistics.setCount(infoUpdateCount);
-        infoUpdateStatistics.setType(WarningIndicator.UPDATE_WARNING.value);
-        infoUpdateStatistics.setName(WarningIndicator.UPDATE_WARNING.name);
+        infoUpdateStatistics.setType(InfoWarningType.UPDATE_WARNING.value);
+        infoUpdateStatistics.setName(InfoWarningType.UPDATE_WARNING.name);
 
         List<Statistics> list = new ArrayList<>();
         list.add(infoUpdateStatistics);

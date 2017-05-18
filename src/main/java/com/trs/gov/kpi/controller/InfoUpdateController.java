@@ -2,7 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
-import com.trs.gov.kpi.entity.InfoUpdateType;
+import com.trs.gov.kpi.constant.InfoUpdateType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;

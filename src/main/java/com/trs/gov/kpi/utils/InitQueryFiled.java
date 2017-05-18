@@ -1,9 +1,9 @@
 package com.trs.gov.kpi.utils;
 
 
-import com.trs.gov.kpi.entity.InfoErrorType;
-import com.trs.gov.kpi.entity.InfoUpdateType;
-import com.trs.gov.kpi.entity.LinkIssueType;
+import com.trs.gov.kpi.constant.InfoErrorType;
+import com.trs.gov.kpi.constant.InfoUpdateType;
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
