@@ -51,7 +51,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
-        updateMonitorScheduler(monitorFrequencyList);
+//        updateMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
