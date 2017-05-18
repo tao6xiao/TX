@@ -1,8 +1,8 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.InfoWarningType;
 import com.trs.gov.kpi.entity.IssueType;
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.InfoWarningType;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;

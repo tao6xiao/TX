@@ -5,8 +5,8 @@ package com.trs.gov.kpi.constant;
  */
 public enum RespondWarningType {
 
-    RESPOND_WARNING(2,"咨询回应预警"),
-    FEEDBACK_WARNING(3,"征集反馈预警");
+    RESPOND_WARNING(1,"咨询回应预警"),
+    FEEDBACK_WARNING(2,"征集反馈预警");
 
     public final int value;
 
