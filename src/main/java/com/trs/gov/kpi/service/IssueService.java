@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface IssueService extends OperationService {
 
     int getAllIssueCount(Issue issue);
 
-    List<Issue> getAllIssueList(Integer currPage, Integer pageSize, Issue issue);
+    List<IssueIsNotResolvedResponseDetail> getAllIssueList(Integer currPage, Integer pageSize, Issue issue);
 }

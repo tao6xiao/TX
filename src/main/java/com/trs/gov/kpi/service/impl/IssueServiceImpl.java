@@ -2,10 +2,15 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IssueService;
+import com.trs.gov.kpi.utils.InitEndTime;
+import com.trs.gov.kpi.utils.IssueDataUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +28,24 @@ public class IssueServiceImpl extends OperationServiceImpl implements IssueServi
     }
 
     @Override
-    public List<Issue> getAllIssueList(Integer currPage, Integer pageSize, Issue issue) {
-        return issueMapper.getAllIssueList(currPage, pageSize, issue);
+    public List<IssueIsNotResolvedResponseDetail> getAllIssueList(Integer currPage, Integer pageSize, Issue issue) {
+        List<Issue> issueList = issueMapper.getAllIssueList(currPage, pageSize, issue);
+        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
+        List<IssueIsNotResolvedResponseDetail> issueIsNotResolvedResponseDetailList = new ArrayList<>();
+        IssueIsNotResolvedResponseDetail issueIsNotResolvedResponseDetail = null;
+        for (Issue is :issueList) {
+            issueIsNotResolvedResponseDetail = getIssueIsNotResolvedResponseDetailByIssue(is);
+            issueIsNotResolvedResponseDetailList.add(issueIsNotResolvedResponseDetail);
+        }
+        return issueIsNotResolvedResponseDetailList;
+    }
+
+    private IssueIsNotResolvedResponseDetail getIssueIsNotResolvedResponseDetailByIssue(Issue is) {
+        IssueIsNotResolvedResponseDetail issueIsNotResolvedResponseDetail = new IssueIsNotResolvedResponseDetail();
+        issueIsNotResolvedResponseDetail.setId(is.getId());
+        issueIsNotResolvedResponseDetail.setIssueTypeName(is.getSubTypeName());
+        issueIsNotResolvedResponseDetail.setDetail(is.getDetail());
+        issueIsNotResolvedResponseDetail.setIssueTime(InitEndTime.getStringTime(is.getIssueTime()));
+        return issueIsNotResolvedResponseDetail;
     }
 }
