@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +21,10 @@ public class IntegratedMonitorWarningController {
 
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public Object getPageData(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
-        if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数存在null值");
+    public ApiPageData getPageDataWaringList(Integer pageIndex, Integer pageSize, @ModelAttribute Issue issue) throws BizException {
+        if (issue.getSiteId() == null) {
+            throw new BizException("站点编号为空");
         }
-        int num = integratedMonitorWarningService.dealWithWarningBySiteIdAndId(siteId, ids);
         return null;
     }
 

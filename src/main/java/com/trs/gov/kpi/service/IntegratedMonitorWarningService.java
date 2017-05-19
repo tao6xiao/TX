@@ -1,5 +1,9 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.Issue;
+
+import java.util.List;
+
 /**
  * 综合实时监测预警提醒service
  * Created by he.lang on 2017/5/18.
@@ -32,4 +36,13 @@ public interface IntegratedMonitorWarningService {
      * @return
      */
     int deleteWarningBySiteIdAndId(int siteId, Integer[] ids);
+
+    /**
+     * 获取分页数据
+     * @param pageIndex
+     * @param pageSize
+     * @param issue
+     * @return
+     */
+    List<Issue> getPageDataWaringList(Integer pageIndex, Integer pageSize, Issue issue);
 }
