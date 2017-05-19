@@ -45,10 +45,13 @@ public class IssueController {
         //接受searchField和searchText，并返回对应的问题类型ID集合
         if (issue.getSearchText() != null && !issue.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issue.getSearchText(), issueService);
+            if(list.size() == 0 || list == null){
+                list.add(0);
+            }
             issue.setIds(list);
         }
         //解决searchField和searchText为null或空字符串的情况
-        if (issue.getSearchText() == null || issue.getSearchText() == "") {
+        if (issue.getSearchText() == null || "".equals(issue.getSearchText())) {
             List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);

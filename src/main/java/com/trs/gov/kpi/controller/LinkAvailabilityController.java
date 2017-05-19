@@ -103,6 +103,9 @@ public class LinkAvailabilityController {
         }
         if (linkAvailability.getSearchText() != null && !linkAvailability.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(linkAvailability.getSearchText(), linkAvailabilityService);
+            if(list.size() == 0 || list == null){
+                list.add(0);
+            }
             linkAvailability.setIds(list);
         }
         if (linkAvailability.getSearchText() == null || linkAvailability.getSearchText() == "") {

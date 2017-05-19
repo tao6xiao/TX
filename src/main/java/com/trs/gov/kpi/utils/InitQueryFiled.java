@@ -1,9 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 
-import com.trs.gov.kpi.constant.InfoErrorType;
-import com.trs.gov.kpi.constant.InfoUpdateType;
-import com.trs.gov.kpi.constant.LinkIssueType;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.service.*;
 
 import java.util.ArrayList;
@@ -47,6 +45,17 @@ public class InitQueryFiled {
             }
             for (InfoErrorType type : InfoErrorType.values()) {
                 if (type.name.contains(queryFiled)){
+                    list.add(type.value);
+                }
+            }
+        }else if(operationService instanceof IntegratedMonitorWarningService){//预警的name和对应得value匹配
+            for (InfoWarningType type : InfoWarningType.values()) {
+                if(type.name.contains(queryFiled)){
+                    list.add(type.value);
+                }
+            }
+            for (RespondWarningType type : RespondWarningType.values()) {
+                if(type.name.contains(queryFiled)){
                     list.add(type.value);
                 }
             }

@@ -25,4 +25,9 @@ public class InitEndTime {
 
         return time;
     }
+
+    public static String getStringTime(Date date){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(date);
+    }
 }

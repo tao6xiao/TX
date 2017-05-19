@@ -3,10 +3,14 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
+import com.trs.gov.kpi.utils.IssueDataUtil;
+import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 综合实时监测：预警提醒Controller
@@ -19,13 +23,26 @@ public class IntegratedMonitorWarningController {
     @Resource
     IntegratedMonitorWarningService integratedMonitorWarningService;
 
+    /**
+     * 查询预警提醒的分页数据（未处理、未忽略、未删除）
+     * @param pageIndex
+     * @param pageSize
+     * @param issue
+     * @return
+     * @throws BizException
+     */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataWaringList(Integer pageIndex, Integer pageSize, @ModelAttribute Issue issue) throws BizException {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        return null;
+        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService);
+        int itemCount = integratedMonitorWarningService.getItemCount(issue);
+        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        List<IssueWarningResponseDetail> issueList = integratedMonitorWarningService.getPageDataWaringList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(), issue);
+        apiPageData.setData(issueList);
+        return apiPageData;
     }
 
     /**

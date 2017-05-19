@@ -363,6 +363,7 @@
     FROM issue
     <include refid="Query_Where"/>
     <include refid="Query_Issue"/>
+    limit #{currPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
 
   <select id="getAllWarningCount" resultType="int">
@@ -377,9 +378,11 @@
     typeId,
     subTypeId,
     detail,
-    issueTime
+    issueTime,
+    customer1
     FROM issue
     <include refid="Query_Where"/>
     <include refid="Query_Warning"/>
+    limit #{currPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
 </mapper>

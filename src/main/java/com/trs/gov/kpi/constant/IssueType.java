@@ -10,7 +10,9 @@ public enum IssueType {
 
     AVAILABLE_ISSUE(1, "可用性问题"),
     UPDATE_ISSUE(2, "信息更新问题"),
-    INFO_ISSUE(3, "信息错误");
+    INFO_ISSUE(3, "信息错误"),
+    INFO_UPDATE_WARNING(51,"信息更新预警"),
+    RESPOND_WARNING(52, "互动回应预警");
 
     @Getter
     private int code;
