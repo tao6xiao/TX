@@ -14,12 +14,12 @@ import java.util.List;
 public class IssueDataUtil {
 
     /**
-     * 通过传入的指定的数据String类型对应指定的service将searchText转为List，给issue对象传入指定类型的List集合，以及处理其他属性
+     * 用于获取前端数据后的处理，通过传入的指定的数据String类型对应指定的service将searchText转为List，给issue对象传入指定类型的List集合，以及处理其他属性
      * @param issue
      * @param operationService
      * @return
      */
-    public static Issue getIssueToGetPageData(Issue issue, OperationService operationService){
+    public static Issue getIssueToGetPageData(Issue issue, OperationService operationService,Integer isResolved, Integer isDel){
         //接受searchField和searchText，并返回对应的问题类型ID集合
         if (issue.getSearchText() != null && !issue.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issue.getSearchText(), operationService);
@@ -40,8 +40,8 @@ public class IssueDataUtil {
             issue.setSearchText("");
         }
         //增加查询条件：未解决、未删除
-        issue.setIsResolved(0);
-        issue.setIsDel(0);
+        issue.setIsResolved(isResolved);
+        issue.setIsDel(isDel);
         return  issue;
     }
 

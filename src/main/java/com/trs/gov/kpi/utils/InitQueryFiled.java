@@ -3,6 +3,7 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.service.*;
+import com.trs.gov.kpi.service.impl.IntegratedMonitorIsResolvedServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +50,32 @@ public class InitQueryFiled {
                 }
             }
         }else if(operationService instanceof IntegratedMonitorWarningService){//预警的name和对应得value匹配
+            for (InfoWarningType type : InfoWarningType.values()) {
+                if(type.name.contains(queryFiled)){
+                    list.add(type.value);
+                }
+            }
+            for (RespondWarningType type : RespondWarningType.values()) {
+                if(type.name.contains(queryFiled)){
+                    list.add(type.value);
+                }
+            }
+        }else if(operationService instanceof IntegratedMonitorIsResolvedService){
+            for (LinkIssueType type : LinkIssueType.values()) {
+                if (type.name.contains(queryFiled)) {
+                    list.add(type.value);
+                }
+            }
+            for (InfoUpdateType type : InfoUpdateType.values()) {
+                if (type.name.contains(queryFiled)) {
+                    list.add(type.value);
+                }
+            }
+            for (InfoErrorType type : InfoErrorType.values()) {
+                if (type.name.contains(queryFiled)){
+                    list.add(type.value);
+                }
+            }
             for (InfoWarningType type : InfoWarningType.values()) {
                 if(type.name.contains(queryFiled)){
                     list.add(type.value);

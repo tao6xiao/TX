@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.IsDelType;
+import com.trs.gov.kpi.constant.IsResolvedType;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -37,7 +39,7 @@ public class IntegratedMonitorWarningController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService);
+        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
         int itemCount = integratedMonitorWarningService.getItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
         List<IssueWarningResponseDetail> issueList = integratedMonitorWarningService.getPageDataWaringList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(), issue);

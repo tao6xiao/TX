@@ -66,7 +66,7 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
         issueWarningResponseDetail.setIssueTime(InitEndTime.getStringTime(is.getIssueTime()));
         issueWarningResponseDetail.setDetail(is.getDetail());
         issueWarningResponseDetail.setChnlName(is.getCustomer1());
-        issueWarningResponseDetail.setSubTypeName(is.getSubTypeName());
+        issueWarningResponseDetail.setIssueTypeName(is.getSubTypeName());
         // TODO: 2017/5/19 add time limit（时限）? 
         return issueWarningResponseDetail;
     }

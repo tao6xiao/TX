@@ -385,4 +385,20 @@
     <include refid="Query_Warning"/>
     limit #{currPage,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
+  <select id="selectPageDataIsResolvedList" resultMap="BaseResultMap">
+    SELECT id,
+    typeId,
+    subTypeId,
+    detail,
+    issueTime
+    FROM issue
+    <include refid="Query_Where"/>
+    limit #{pageCalculate,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectPageDataIsResolvedItemCount" resultType="int">
+    SELECT count(1)
+    FROM issue
+    <include refid="Query_Where"/>
+  </select>
 </mapper>

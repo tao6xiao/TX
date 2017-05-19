@@ -46,4 +46,21 @@ public interface IssueMapper {
      * @return
      */
     List<Issue> getAllWarningList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
+
+    /**
+     * 获取已解决分页数据（通用方法，已解决，已忽略）
+     * @param pageCalculate
+     * @param pageSize
+     * @param issue
+     * @return
+     */
+    List<Issue> selectPageDataIsResolvedList(@Param("pageCalculate") Integer pageCalculate, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
+
+    /**
+     * 获取已解决的数据条数（通用方法，已解决，已忽略）
+     * @param issue
+     * @return
+     */
+    int selectPageDataIsResolvedItemCount(@Param("issue") Issue issue);
+
 }
