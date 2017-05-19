@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.IssueMapper;
+import com.trs.gov.kpi.dao.OperationMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
@@ -21,21 +22,27 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
     @Resource
     IssueMapper issueMapper;
 
+    @Resource
+    OperationMapper operationMapper;
+
     @Override
     public int dealWithWarningBySiteIdAndId(int siteId, Integer[] ids) {
         List<Integer> idList = Arrays.asList(ids);
+        operationMapper.handIssuesByIds(siteId, idList);
         return 0;
     }
 
     @Override
     public int ignoreWarningBySiteIdAndId(int siteId, Integer[] ids) {
         List<Integer> idList = Arrays.asList(ids);
+        operationMapper.ignoreIssuesByIds(siteId, idList);
         return 0;
     }
 
     @Override
     public int deleteWarningBySiteIdAndId(int siteId, Integer[] ids) {
         List<Integer> idList = Arrays.asList(ids);
+        operationMapper.delIssueByIds(siteId, idList);
         return 0;
     }
 
