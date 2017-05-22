@@ -4,6 +4,7 @@ import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.SortDBField;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
 import java.util.ArrayList;
@@ -54,6 +55,28 @@ public class LinkAvailabilityServiceHelper {
                 }
             }
         }
+
+        // sort field
+        if (param.getSortFields() != null && !param.getSortFields().trim().isEmpty()) {
+            String[] sortFields = param.getSortFields().trim().split(";");
+            for (String sortField : sortFields) {
+                String[] nameAndDirection = sortField.split(",");
+                if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
+                    if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
+                        SortDBField dbField = new SortDBField();
+                        dbField.setFieldName(nameAndDirection[0].trim());
+                        dbField.setAsc(true);
+                        filter.addSortField(dbField);
+                    } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
+                        SortDBField dbField = new SortDBField();
+                        dbField.setFieldName(nameAndDirection[0].trim());
+                        dbField.setAsc(false);
+                        filter.addSortField(dbField);
+                    }
+                }
+            }
+        }
+
         return filter;
     }
 

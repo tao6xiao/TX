@@ -263,19 +263,31 @@
 
     <select id="getIssueListBySql" resultMap="linkAvailabilityMap">
         SELECT
-        <if test="selectSql != null">
-            #{selectSql}
-        </if>
-        <if test="selectSql == null">
-            id,
-            subTypeId,
-            detail,
-            customer1,
-            issueTime
-        </if>
+        id,
+        subTypeId,
+        detail,
+        customer1,
+        issueTime
         FROM issue WHERE
         <include refid="where_cond_field"/>
          1 = 1
+
+        <if test="sortFields != null">
+          ORDER BY
+            <foreach collection="sortFields" index="index" item="item" separator=",">
+
+                <if test="item.fieldName == 'id'">
+                  id
+                    <if test="item.isAsc">
+                      ASC
+                    </if>
+                    <if test="!item.isAsc">
+                      DESC
+                    </if>
+                </if>
+            </foreach>
+        </if>
+
         <if test="pager != null">
           limit #{pager.offset},#{pager.count}
         </if>

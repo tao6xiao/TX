@@ -64,7 +64,7 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     public List<LinkAvailability> getUnsolvedIssueList(QueryFilter filter) {
         filter.addCond("isResolved", Integer.valueOf(0));
         filter.addCond("isDel", Integer.valueOf(0));
-        return linkAvailabilityMapper.getIssueListBySql(null, filter.getCondFields(), filter.getPager());
+        return linkAvailabilityMapper.getIssueListBySql(filter.getCondFields(), filter.getSortFields(), filter.getPager());
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.QueryFilterPager;
+import com.trs.gov.kpi.entity.dao.SortDBField;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -38,12 +39,12 @@ public interface LinkAvailabilityMapper extends OperationMapper {
 
     /**
      * 查询未解决问题集合
-     * @param selectSql
      * @param condFields
+     * @param sortFields
+     * @param pager
      * @return
      */
-    List<LinkAvailability> getIssueListBySql(@Param("selectSql") String selectSql, @Param("condFields") List<CondDBField> condFields, @Param("pager") QueryFilterPager pager);
-
+    List<LinkAvailability> getIssueListBySql(@Param("condFields") List<CondDBField> condFields, @Param("sortFields") List<SortDBField> sortFields, @Param("pager") QueryFilterPager pager);
 
     /**
      * 批量添加链接问题
