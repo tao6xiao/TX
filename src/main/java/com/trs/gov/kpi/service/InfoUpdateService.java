@@ -16,4 +16,6 @@ public interface InfoUpdateService extends OperationService {
     List<InfoUpdate> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
 
     List<Statistics> getIssueCountByType(IssueBase issueBase);
+
+    List<Statistics> getWarningCountByType(IssueBase issueBase);
 }

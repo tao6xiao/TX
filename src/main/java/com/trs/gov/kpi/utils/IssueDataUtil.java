@@ -15,15 +15,16 @@ public class IssueDataUtil {
 
     /**
      * 用于获取前端数据后的处理，通过传入的指定的数据String类型对应指定的service将searchText转为List，给issue对象传入指定类型的List集合，以及处理其他属性
+     *
      * @param issue
      * @param operationService
      * @return
      */
-    public static Issue getIssueToGetPageData(Issue issue, OperationService operationService,Integer isResolved, Integer isDel){
+    public static Issue getIssueToGetPageData(Issue issue, OperationService operationService, Integer isResolved, Integer isDel) {
         //接受searchField和searchText，并返回对应的问题类型ID集合
         if (issue.getSearchText() != null && !issue.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issue.getSearchText(), operationService);
-            if(list.size() == 0 || list == null){
+            if (list.size() == 0 || list == null) {
                 list.add(0);
             }
             issue.setIds(list);
@@ -42,15 +43,16 @@ public class IssueDataUtil {
         //增加查询条件：未解决、未删除
         issue.setIsResolved(isResolved);
         issue.setIsDel(isDel);
-        return  issue;
+        return issue;
     }
 
     /**
      * 用于返回数据的处理，需要用subTypeId去匹配对应得subTypeName
+     *
      * @param issueList
      * @return
      */
-    public static List<Issue> getIssueListToSetSubTypeName(List<Issue> issueList){
+    public static List<Issue> getIssueListToSetSubTypeName(List<Issue> issueList) {
         for (Issue issue : issueList) {
             if (issue.getTypeId() == IssueType.AVAILABLE_ISSUE.getCode()) {//为可用性链接问题
                 if (issue.getSubTypeId() == LinkIssueType.INVALID_LINK.value) {
@@ -71,15 +73,15 @@ public class IssueDataUtil {
                     issue.setSubTypeName(InfoErrorType.SENSITIVE_WORDS.name);
                 }
             } else if (issue.getTypeId() == IssueType.INFO_UPDATE_WARNING.getCode()) {//信息更新预警
-                if(issue.getSubTypeId() == InfoWarningType.UPDATE_WARNING.value){
-                    issue.setSubTypeName(InfoWarningType.UPDATE_WARNING.name);
-                }else if(issue.getSubTypeId() == InfoWarningType.SELF_CHECK_WARNING.value){
-                    issue.setSubTypeName(InfoWarningType.SELF_CHECK_WARNING.name);
+                if (issue.getSubTypeId() == UpdateWarningType.UPDATE_WARNING.value) {
+                    issue.setSubTypeName(UpdateWarningType.UPDATE_WARNING.name);
+                } else if (issue.getSubTypeId() == UpdateWarningType.SELF_CHECK_WARNING.value) {
+                    issue.setSubTypeName(UpdateWarningType.SELF_CHECK_WARNING.name);
                 }
-            }else if(issue.getTypeId() == IssueType.RESPOND_WARNING.getCode()){//互动回应预警
-                if(issue.getSubTypeId() == RespondWarningType.RESPOND_WARNING.value){
+            } else if (issue.getTypeId() == IssueType.RESPOND_WARNING.getCode()) {//互动回应预警
+                if (issue.getSubTypeId() == RespondWarningType.RESPOND_WARNING.value) {
                     issue.setSubTypeName(RespondWarningType.RESPOND_WARNING.name);
-                }else if(issue.getSubTypeId() == RespondWarningType.FEEDBACK_WARNING.value){
+                } else if (issue.getSubTypeId() == RespondWarningType.FEEDBACK_WARNING.value) {
                     issue.setSubTypeName(RespondWarningType.FEEDBACK_WARNING.name);
                 }
             }

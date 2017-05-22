@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.InfoUpdateType;
+import com.trs.gov.kpi.constant.UpdateWarningType;
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueBase;
@@ -57,6 +58,28 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
 
         List<Statistics> list = new ArrayList<>();
         list.add(updateNotIntimeStatistics);
+
+        return list;
+    }
+
+    @Override
+    public List<Statistics> getWarningCountByType(IssueBase issueBase) {
+
+        int updateWarningCount = infoUpdateMapper.getUpdateWarningCount(issueBase);
+        Statistics updateWarningStatistics = new Statistics();
+        updateWarningStatistics.setCount(updateWarningCount);
+        updateWarningStatistics.setType(UpdateWarningType.UPDATE_WARNING.value);
+        updateWarningStatistics.setName(UpdateWarningType.UPDATE_WARNING.name);
+
+        int selfWarningCount = infoUpdateMapper.getSelfWarningCount(issueBase);
+        Statistics selfWarningStatistics = new Statistics();
+        selfWarningStatistics.setCount(selfWarningCount);
+        selfWarningStatistics.setType(UpdateWarningType.SELF_CHECK_WARNING.value);
+        selfWarningStatistics.setName(UpdateWarningType.SELF_CHECK_WARNING.name);
+
+        List<Statistics> list = new ArrayList<>();
+        list.add(updateWarningStatistics);
+        list.add(selfWarningStatistics);
 
         return list;
     }

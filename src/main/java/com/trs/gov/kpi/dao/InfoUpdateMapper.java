@@ -39,4 +39,12 @@ public interface InfoUpdateMapper extends OperationMapper {
      * @return
      */
     int getUpdateNotIntimeCount(@Param("issueBase") IssueBase issueBase);
+
+    /**
+     * 查询信息自查的预警数
+     *
+     * @param issueBase
+     * @return
+     */
+    int getSelfWarningCount(@Param("issueBase") IssueBase issueBase);
 }

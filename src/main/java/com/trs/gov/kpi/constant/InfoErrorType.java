@@ -11,7 +11,7 @@ public enum InfoErrorType {
 
     public final String name;
 
-    InfoErrorType(int type, String name) {
+    private InfoErrorType(int type, String name) {
         this.value = type;
         this.name = name;
     }
