@@ -79,6 +79,7 @@ public class DateSplitUtil {
                 historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatDate(month));
                 list.add(historyDate);
                 currBegin.add(Calendar.MONTH, 1);// 进行当前日期月份加1
+                currBegin.set(Calendar.DAY_OF_MONTH, 1);//取当月的第一天
 
             }
 
