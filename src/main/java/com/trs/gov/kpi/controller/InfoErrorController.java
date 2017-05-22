@@ -41,45 +41,31 @@ public class InfoErrorController {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(IssueBase issueBase) {
-        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一
-        }
-        if (issueBase.getSearchText() == null) {
-            issueBase.setSearchText("");
-        }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
-            List list = new ArrayList();
-            Integer exception = 0;
-            list.add(exception);
-            issueBase.setIds(list);
-        }
+    public List getIssueCount(IssueBase issueBase) throws BizException{
+        ParamCheckUtil.paramCheck(issueBase);
         return IssueCounter.getIssueCount(infoErrorService, issueBase);
     }
 
     /**
      * 查询历史记录
      *
-     * @param infoError
+     * @param issueBase
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List getIssueHistoryCount(@ModelAttribute InfoError infoError) {
-        if (infoError.getBeginDateTime() == null || infoError.getBeginDateTime().trim().isEmpty()) {
+    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException{
+        if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            infoError.setBeginDateTime(sdf.format(infoErrorService.getEarliestIssueTime()));
+            issueBase.setBeginDateTime(sdf.format(infoErrorService.getEarliestIssueTime()));
         }
-        if (infoError.getEndDateTime() == null || infoError.getEndDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            infoError.setEndDateTime(sdf.format(new Date()));
-        }
-        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(infoError.getBeginDateTime(), infoError.getEndDateTime());
+        ParamCheckUtil.paramCheck(issueBase);
+        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            infoError.setBeginDateTime(date.getBeginDate());
-            infoError.setEndDateTime(date.getEndDate());
-            historyStatistics.setValue(infoErrorService.getIssueHistoryCount(infoError));
+            issueBase.setBeginDateTime(date.getBeginDate());
+            issueBase.setEndDateTime(date.getEndDate());
+            historyStatistics.setValue(infoErrorService.getIssueHistoryCount(issueBase));
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
         }
@@ -91,32 +77,21 @@ public class InfoErrorController {
      *
      * @param pageIndex
      * @param pageSize
-     * @param infoError
+     * @param issueBase
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute InfoError infoError) throws BizException {
+    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        if (infoError.getSiteId() == null) {
-            throw new BizException("站点编号为空");
+        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(issueBase.getSearchText(), infoErrorService);
+            issueBase.setIds(list);
         }
-        if (infoError.getSearchText() != null && !infoError.getSearchText().trim().isEmpty()) {
-            List list = InitQueryFiled.init(infoError.getSearchText(), infoErrorService);
-            infoError.setIds(list);
-        }
-        if (infoError.getSearchText() == null || infoError.getSearchText().trim().isEmpty()) {
-            List<Integer> list = new ArrayList<>();
-            Integer exception = 0;
-            list.add(exception);
-            infoError.setIds(list);
-        }
-        if (infoError.getSearchText() == null) {
-            infoError.setSearchText("");
-        }
-        int itemCount = infoErrorService.getUnhandledIssueCount(infoError);
+        ParamCheckUtil.paramCheck(issueBase);
+        int itemCount = infoErrorService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<InfoError> infoErrorList = infoErrorService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), infoError);
+        List<InfoError> infoErrorList = infoErrorService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
         for (InfoError info : infoErrorList) {
             if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {
                 info.setIssueTypeName(InfoErrorType.TYPOS.name);

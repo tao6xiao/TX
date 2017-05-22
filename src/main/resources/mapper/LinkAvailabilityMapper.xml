@@ -238,7 +238,7 @@
         <include refid="Query_Search_IssueBase"/>
     </select>
 
-    <select id="getLinkIssueHistoryCount" resultType="int">
+    <select id="getIssueHistoryCount" resultType="int">
         SELECT count(1)
         FROM issue
         WHERE 1=1
