@@ -20,7 +20,7 @@ public class ParamCheckUtil {
         }
 
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一，避免查询不到结束日期当天数据的情况
+            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一，避免查询不到结束日期当天数据的情况
         }
 
         if (issueBase.getSearchText() == null) {
