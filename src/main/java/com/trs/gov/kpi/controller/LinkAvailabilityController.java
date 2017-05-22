@@ -47,7 +47,7 @@ public class LinkAvailabilityController {
         if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
         }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText() == "") {
+        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
@@ -60,26 +60,26 @@ public class LinkAvailabilityController {
     /**
      * 查询历史记录
      *
-     * @param linkAvailability
+     * @param issueBase
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List getIssueHistoryCount(@ModelAttribute LinkAvailability linkAvailability) {
-        if (linkAvailability.getBeginDateTime() == null || linkAvailability.getBeginDateTime().trim().isEmpty()) {
+    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) {
+        if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            linkAvailability.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
+            issueBase.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
         }
-        if (linkAvailability.getEndDateTime() == null || linkAvailability.getEndDateTime().trim().isEmpty()) {
+        if (issueBase.getEndDateTime() == null || issueBase.getEndDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            linkAvailability.setEndDateTime(sdf.format(new Date()));
+            issueBase.setEndDateTime(sdf.format(new Date()));
         }
-        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(linkAvailability.getBeginDateTime(), linkAvailability.getEndDateTime());
+        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            linkAvailability.setBeginDateTime(date.getBeginDate());
-            linkAvailability.setEndDateTime(date.getEndDate());
-            historyStatistics.setValue(linkAvailabilityService.getIssueHistoryCount(linkAvailability));
+            issueBase.setBeginDateTime(date.getBeginDate());
+            issueBase.setEndDateTime(date.getEndDate());
+            historyStatistics.setValue(linkAvailabilityService.getIssueHistoryCount(issueBase));
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
         }
@@ -91,42 +91,42 @@ public class LinkAvailabilityController {
      *
      * @param pageIndex
      * @param pageSize
-     * @param linkAvailability
+     * @param issueBase
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute LinkAvailability linkAvailability) throws BizException {
+    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        if (linkAvailability.getSiteId() == null) {
+        if (issueBase.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if (linkAvailability.getSearchText() != null && !linkAvailability.getSearchText().trim().isEmpty()) {
-            List list = InitQueryFiled.init(linkAvailability.getSearchText(), linkAvailabilityService);
+        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(issueBase.getSearchText(), linkAvailabilityService);
             if(list.size() == 0 || list == null){
                 list.add(0);
             }
-            linkAvailability.setIds(list);
+            issueBase.setIds(list);
         }
-        if (linkAvailability.getSearchText() == null || linkAvailability.getSearchText() == "") {
+        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
             List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
-            linkAvailability.setIds(list);
+            issueBase.setIds(list);
         }
-        if (linkAvailability.getSearchText() == null) {
-            linkAvailability.setSearchText("");
+        if (issueBase.getSearchText() == null) {
+            issueBase.setSearchText("");
         }
-        int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability);
+        int itemCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), linkAvailability);
+        List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
         for (LinkAvailability link : linkAvailabilityList) {
             if (link.getIssueTypeId() == LinkIssueType.INVALID_LINK.value) {
                 link.setIssueTypeName(LinkIssueType.INVALID_LINK.name);
             } else if (link.getIssueTypeId() == LinkIssueType.INVALID_IMAGE.value) {
                 link.setIssueTypeName(LinkIssueType.INVALID_IMAGE.name);
-            } else if (link.getIssueTypeId() == LinkIssueType.LINK_TIME_OUT.value) {
-                link.setIssueTypeName(LinkIssueType.LINK_TIME_OUT.name);
+            } else if (link.getIssueTypeId() == LinkIssueType.CONNECTION_TIME_OUT.value) {
+                link.setIssueTypeName(LinkIssueType.CONNECTION_TIME_OUT.name);
             }
         }
         apiPageData.setData(linkAvailabilityList);

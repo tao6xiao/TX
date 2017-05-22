@@ -57,8 +57,8 @@ public class IssueDataUtil {
                     issue.setSubTypeName(LinkIssueType.INVALID_LINK.name);
                 } else if (issue.getSubTypeId() == LinkIssueType.INVALID_IMAGE.value) {
                     issue.setSubTypeName(LinkIssueType.INVALID_IMAGE.name);
-                } else if (issue.getSubTypeId() == LinkIssueType.LINK_TIME_OUT.value) {
-                    issue.setSubTypeName(LinkIssueType.LINK_TIME_OUT.name);
+                } else if (issue.getSubTypeId() == LinkIssueType.CONNECTION_TIME_OUT.value) {
+                    issue.setSubTypeName(LinkIssueType.CONNECTION_TIME_OUT.name);
                 }
             } else if (issue.getTypeId() == IssueType.UPDATE_ISSUE.getCode()) {//为信息更新问题
                 if (issue.getSubTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {

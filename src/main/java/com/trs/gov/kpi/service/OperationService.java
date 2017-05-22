@@ -14,8 +14,6 @@ public interface OperationService {
 
     int getUnhandledIssueCount(IssueBase issueBase);
 
-    int getUpdateNotIntimeCount(IssueBase issueBase);
-
     int getUpdateWarningCount(IssueBase issueBase);
 
     void handIssuesByIds(int siteId, List<Integer> ids);

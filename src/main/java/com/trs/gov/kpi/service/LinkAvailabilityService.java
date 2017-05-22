@@ -1,7 +1,8 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
-import org.apache.ibatis.annotations.Param;
+import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.util.List;
 
@@ -11,9 +12,11 @@ import java.util.List;
 public interface LinkAvailabilityService extends OperationService {
 
 
-    int getIssueHistoryCount(LinkAvailability linkAvailability);
+    int getIssueHistoryCount(IssueBase issueBase);
 
-    List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, LinkAvailability linkAvailability);
+    List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
 
     void insertLinkAvailability(LinkAvailability linkAvailability);
+
+    List<Statistics> getIssueCountByType(IssueBase issueBase);
 }

@@ -14,10 +14,7 @@
         <result column="issueTime" property="checkTime"/>
     </resultMap>
 
-    <select id="getHandledIssueCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved IN (1,2)
+    <sql id="Query_Condition_IssueBase">
         AND siteId = #{issueBase.siteId}
         AND typeId = 2
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
@@ -34,14 +31,9 @@
             ]]>
             #{issueBase.endDateTime}
         </if>
-    </select>
+    </sql>
 
-    <select id="getUpdateNotIntimeCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        AND siteId = #{issueBase.siteId}
-        AND typeId = 2
+    <sql id="Query_Search_IssueBase">
         <if test="issueBase.searchField == 'id'">
             AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
         </if>
@@ -63,20 +55,29 @@
             )
             )
         </if>
-        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            >
-            ]]>
-            #{issueBase.beginDateTime}
-        </if>
-        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{issueBase.endDateTime}
-        </if>
+    </sql>
+
+    <select id="getHandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved IN (1,2)
+        <include refid="Query_Condition_IssueBase"/>
+    </select>
+
+    <select id="getUnhandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_Search_IssueBase"/>
+    </select>
+
+    <select id="getUpdateNotIntimeCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND subTypeId = 1
+        <include refid="Query_Condition_IssueBase"/>
     </select>
 
     <select id="getUpdateWarningCount" resultType="int">
@@ -104,22 +105,8 @@
     <select id="getIssueHistoryCount" resultType="int">
         SELECT count(1)
         FROM issue
-        WHERE siteId = #{infoUpdate.siteId}
-        AND typeId = 2
-        <if test="infoUpdate.beginDateTime != null">
-            AND issueTime
-            <![CDATA[
-            >
-            ]]>
-            #{infoUpdate.beginDateTime}
-        </if>
-        <if test="infoUpdate.endDateTime != null">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{infoUpdate.endDateTime}
-        </if>
+        WHERE 1=1
+        <include refid="Query_Condition_IssueBase"/>
     </select>
 
 
@@ -131,44 +118,9 @@
         customer2,
         issueTime
         FROM issue
-        WHERE siteId = #{infoUpdate.siteId,jdbcType=INTEGER}
-        <if test="infoUpdate.searchField == 'id'">
-            AND id LIKE concat('%',#{infoUpdate.searchText,jdbcType=VARCHAR},'%')
-        </if>
-        <if test="infoUpdate.searchField == 'issueType' and infoUpdate.searchText != ''">
-            AND subTypeId IN (
-            <foreach collection="infoUpdate.ids" item="item" separator=",">
-                #{item}
-            </foreach>
-            )
-        </if>
-        <if test="infoUpdate.searchField == null or infoUpdate.searchField == ''">
-            AND (
-            id LIKE concat('%',#{infoUpdate.searchText,jdbcType=VARCHAR},'%')
-            OR
-            subTypeId IN (
-            <foreach collection="infoUpdate.ids" item="item" separator=",">
-                #{item}
-            </foreach>
-            )
-            )
-        </if>
-        <if test="infoUpdate.beginDateTime != null and infoUpdate.beginDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            >
-            ]]>
-            #{infoUpdate.beginDateTime,jdbcType=DATE}
-        </if>
-        <if test="infoUpdate.endDateTime != null and infoUpdate.endDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{infoUpdate.endDateTime,jdbcType=DATE}
-        </if>
-        AND typeId = 2
-        AND isResolved = 0
+        WHERE isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_Search_IssueBase"/>
         limit #{currPage},#{pageSize}
     </select>
 

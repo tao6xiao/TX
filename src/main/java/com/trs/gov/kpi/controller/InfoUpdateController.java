@@ -45,7 +45,7 @@ public class InfoUpdateController {
         if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
         }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText() == "") {
+        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
@@ -57,28 +57,28 @@ public class InfoUpdateController {
     /**
      * 查询历史记录
      *
-     * @param infoUpdate
+     * @param issueBase
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List getIssueHistoryCount(@ModelAttribute InfoUpdate infoUpdate) {
-        if (infoUpdate.getBeginDateTime() == null
-                || infoUpdate.getBeginDateTime().trim().isEmpty()) {
+    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) {
+        if (issueBase.getBeginDateTime() == null
+                || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            infoUpdate.setBeginDateTime(sdf.format(infoUpdateService.getEarliestIssueTime()));
+            issueBase.setBeginDateTime(sdf.format(infoUpdateService.getEarliestIssueTime()));
         }
-        if (infoUpdate.getEndDateTime() == null
-                || infoUpdate.getEndDateTime().trim().isEmpty()) {
+        if (issueBase.getEndDateTime() == null
+                || issueBase.getEndDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            infoUpdate.setEndDateTime(sdf.format(new Date()));
+            issueBase.setEndDateTime(sdf.format(new Date()));
         }
-        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(infoUpdate.getBeginDateTime(), infoUpdate.getEndDateTime());
+        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            infoUpdate.setBeginDateTime(date.getBeginDate());
-            infoUpdate.setEndDateTime(date.getEndDate());
-            historyStatistics.setValue(infoUpdateService.getIssueHistoryCount(infoUpdate));
+            issueBase.setBeginDateTime(date.getBeginDate());
+            issueBase.setEndDateTime(date.getEndDate());
+            historyStatistics.setValue(infoUpdateService.getIssueHistoryCount(issueBase));
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
         }
@@ -86,36 +86,36 @@ public class InfoUpdateController {
     }
 
     /**
-     * 查询待解决（更新不及时）的问题列表
+     * 查询待解决的问题列表
      *
      * @param pageIndex
      * @param pageSize
-     * @param infoUpdate
+     * @param issueBase
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute InfoUpdate infoUpdate) throws BizException {
+    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        if (infoUpdate.getSiteId() == null) {
+        if (issueBase.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if (infoUpdate.getSearchText() != null && !infoUpdate.getSearchText().trim().isEmpty()) {
-            List list = InitQueryFiled.init(infoUpdate.getSearchText(), infoUpdateService);
-            infoUpdate.setIds(list);
+        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(issueBase.getSearchText(), infoUpdateService);
+            issueBase.setIds(list);
         }
-        if (infoUpdate.getSearchText() == null || infoUpdate.getSearchText() == "") {
+        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
             List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);
-            infoUpdate.setIds(list);
+            issueBase.setIds(list);
         }
-        if (infoUpdate.getSearchText() == null) {
-            infoUpdate.setSearchText("");
+        if (issueBase.getSearchText() == null) {
+            issueBase.setSearchText("");
         }
-        int itemCount = infoUpdateService.getUpdateNotIntimeCount(infoUpdate);
+        int itemCount = infoUpdateService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), infoUpdate);
+        List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
         for (InfoUpdate info : infoUpdateList) {
             if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
                 info.setIssueTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);

@@ -5,6 +5,9 @@ package com.trs.gov.kpi.entity;
  */
 public enum IssueIndicator {
 
+    /**
+     * 1-->已解决问题  10-19-->待解决问题   20-29-->预警
+     */
     SOLVED(1, "已解决"),
     UN_SOLVED(10, "待解决"), UPDATE_NOT_INTIME(11, "更新不及时"),
     UPDATE_WARNING(20, "更新预警");
