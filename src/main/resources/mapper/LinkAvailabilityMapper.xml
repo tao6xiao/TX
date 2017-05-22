@@ -18,6 +18,7 @@
     <sql id="Query_Condition_IssueBase">
         AND siteId = #{issueBase.siteId}
         AND typeId = 1
+        AND isDel = 0
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
