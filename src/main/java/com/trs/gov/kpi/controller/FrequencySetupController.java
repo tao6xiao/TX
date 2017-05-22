@@ -34,9 +34,16 @@ public class FrequencySetupController {
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, @RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex) throws BizException {
+    public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException {
         if (siteId == null) {
             throw new BizException("站点编号不能为null值");
+        }
+        if (pageIndex != null && pageIndex < 1) {
+            throw new BizException("参数不合法！");
+        }
+
+        if (pageSize != null && pageSize < 1) {
+            throw new BizException("参数不合法！");
         }
         int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
@@ -62,13 +69,12 @@ public class FrequencySetupController {
         int siteId = frequencySetupSetRequestDetail.getSiteId();
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
-            int num = 0;
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
                 frequencySetup = frequencySetupService.getFrequencySetupByFrequencySetupSetRequestDetail(frequencySetupSetRequestDetail, chnlIds[i]);
-                num = frequencySetupService.insert(frequencySetup);
+                frequencySetupService.insert(frequencySetup);
             } else {//当前站点的当前栏目设置过更新频率，需要修改
                 frequencySetup.setPresetFeqId(frequencySetupSetRequestDetail.getPresetFeqId());
-                num = frequencySetupService.updateFrequencySetupById(frequencySetup);
+                frequencySetupService.updateFrequencySetupById(frequencySetup);
             }
         }
         return null;
@@ -87,7 +93,7 @@ public class FrequencySetupController {
         if (frequencySetupUpdateRequestDetail.getSiteId() == null || frequencySetupUpdateRequestDetail.getId() == null || frequencySetupUpdateRequestDetail.getPresetFeqId() == null || frequencySetupUpdateRequestDetail.getChnlId() == null) {
             throw new BizException("参数存在null值");
         }
-        int num = frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequestDetail);
+        frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequestDetail);
         return null;
     }
 
@@ -105,7 +111,7 @@ public class FrequencySetupController {
         if (siteId == null || id == null) {
             throw new BizException("参数存在null值");
         }
-        int num = frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
+        frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
         return null;
     }
 

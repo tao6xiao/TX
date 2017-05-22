@@ -32,9 +32,16 @@ public class FrequencyPresetController {
      */
     @RequestMapping(value = "/presetfreq", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, @RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex) throws BizException {
+    public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException {
         if(siteId == null){
             throw new BizException("站点编号不能为null值");
+        }
+        if (pageIndex != null && pageIndex < 1) {
+            throw new BizException("参数不合法！");
+        }
+
+        if (pageSize != null && pageSize < 1) {
+            throw new BizException("参数不合法！");
         }
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);

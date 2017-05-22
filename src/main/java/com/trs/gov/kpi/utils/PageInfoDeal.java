@@ -71,16 +71,16 @@ public class PageInfoDeal {
      */
     private static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer pageCount) {
         pageIndex = pageIndex - 1;//10页，最后一页为第10页,index为9
-        // NOTE LINWEI 参数超出下限的情况在controller进行处理，如果超出实际的页数，则可以考虑不处理。
-        if (pageIndex < 0) {
-            pageIndex = 0;
-        } else if (pageIndex >= pageCount) {
-            if(pageCount != 0) {
-                pageIndex = pageCount - 1;
-            }else{
-                pageIndex = 0;
-            }
-        }
+        // NOTE LINWEI 参数超出下限的情况在controller进行处理，如果超出实际的页数，则可以考虑不处理。削减后端对前端的限制
+//        if (pageIndex < 0) {
+//            pageIndex = 0;
+//        } else if (pageIndex >= pageCount) {
+//            if(pageCount != 0) {
+//                pageIndex = pageCount - 1;
+//            }else{
+//                pageIndex = 0;
+//            }
+//        }
         return pageIndex;
     }
 

@@ -60,7 +60,6 @@ public class MonitorFrequencyController {
         }
         int siteId = monitorFrequencySetUp.getSiteId();
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
-        int num = 0;
         if (monitorFrequencyList == null || monitorFrequencyList.size() == 0) {//siteId和typeId同时不存在，插入记录
             if(freqs.length < FrequencyType.values().length){
                 throw new BizException("添加频率设置时，缺少某些频率类型的数据");
@@ -70,9 +69,9 @@ public class MonitorFrequencyController {
                     throw new BizException("参数value存在null值");
                 }
             }
-            num = monitorFrequencyService.addMonitorFrequencySetUp(monitorFrequencySetUp);
+            monitorFrequencyService.addMonitorFrequencySetUp(monitorFrequencySetUp);
         } else {//siteId和typeId同时存在，修改对应站点的监测频率记录
-            num = monitorFrequencyService.updateMonitorFrequencySetUp(monitorFrequencySetUp);
+            monitorFrequencyService.updateMonitorFrequencySetUp(monitorFrequencySetUp);
         }
         return null;
     }

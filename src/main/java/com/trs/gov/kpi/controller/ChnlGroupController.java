@@ -46,7 +46,7 @@ public class ChnlGroupController {
      */
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, @RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex) throws BizException {
+    public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, Integer pageSize, Integer pageIndex) throws BizException {
         if (siteId == null || groupId == null) {
             throw new BizException("参数不合法！");
         }
@@ -78,7 +78,7 @@ public class ChnlGroupController {
         if (chnlGroupChnlsAddRequestDetail.getSiteId() == null || chnlGroupChnlsAddRequestDetail.getGroupId() == null || chnlGroupChnlsAddRequestDetail.getChnlIds() == null || chnlGroupChnlsAddRequestDetail.getChnlIds().length == 0) {
             throw new BizException("参数存在null值");
         }
-        int num = chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequestDetail);
+        chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequestDetail);
         return null;
     }
 
@@ -94,8 +94,8 @@ public class ChnlGroupController {
         if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null || chnlGroupChnlRequestDetail.getChnlId() == null) {
             throw new BizException("参数存在null值");
         }
-        int id = chnlGroupChnlRequestDetail.getId();
-        int num = chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
+        chnlGroupChnlRequestDetail.getId();
+        chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
         return null;
     }
 
@@ -112,7 +112,7 @@ public class ChnlGroupController {
         if (siteId == null || id == null) {
             throw new BizException("参数存在null值");
         }
-        int num = chnlGroupService.deleteBySiteIdAndId(siteId, id);
+        chnlGroupService.deleteBySiteIdAndId(siteId, id);
         return null;
     }
 }

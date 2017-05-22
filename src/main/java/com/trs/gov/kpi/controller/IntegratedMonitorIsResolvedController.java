@@ -38,6 +38,13 @@ public class IntegratedMonitorIsResolvedController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
+        if (pageIndex != null && pageIndex < 1) {
+            throw new BizException("参数不合法！");
+        }
+
+        if (pageSize != null && pageSize < 1) {
+            throw new BizException("参数不合法！");
+        }
         Integer isResolved = IsResolvedType.IS_RESOLVED.getCode();
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);

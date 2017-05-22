@@ -38,6 +38,13 @@ public class IntegratedMonitorIssueController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
+        if (pageIndex != null && pageIndex < 1) {
+            throw new BizException("参数不合法！");
+        }
+
+        if (pageSize != null && pageSize < 1) {
+            throw new BizException("参数不合法！");
+        }
         issue = IssueDataUtil.getIssueToGetPageData(issue, issueService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
         int itemCount = issueService.getAllIssueCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);

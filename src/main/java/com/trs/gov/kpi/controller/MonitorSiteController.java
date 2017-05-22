@@ -54,12 +54,11 @@ public class MonitorSiteController {
         }
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
-        int num = 0;
         if(monitorSite != null){//检测站点表中存在siteId对应记录，将修改记录
-            num = monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
+            monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
 
         }else {//检测站点表中不存在siteId对应记录，将插入记录
-            num = monitorSiteService.addMonitorSite(monitorSiteDeal);
+            monitorSiteService.addMonitorSite(monitorSiteDeal);
         }
         return null;
     }
