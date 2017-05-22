@@ -20,4 +20,6 @@ public class IssueWarningResponseDetail {
     private String issueTime;
 
     private String chnlName;
+
+    private Long limitTime;
 }
