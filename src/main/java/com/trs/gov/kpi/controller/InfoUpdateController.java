@@ -37,19 +37,8 @@ public class InfoUpdateController {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(IssueBase issueBase) {
-        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一
-        }
-        if (issueBase.getSearchText() == null) {
-            issueBase.setSearchText("");
-        }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
-            List list = new ArrayList();
-            Integer exception = 0;
-            list.add(exception);
-            issueBase.setIds(list);
-        }
+    public List getIssueCount(IssueBase issueBase) throws BizException {
+        ParamCheckUtil.paramCheck(issueBase);
         return IssueCounter.getIssueCount(infoUpdateService, issueBase);
     }
 
@@ -60,17 +49,12 @@ public class InfoUpdateController {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) {
-        if (issueBase.getBeginDateTime() == null
-                || issueBase.getBeginDateTime().trim().isEmpty()) {
+    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException {
+        if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             issueBase.setBeginDateTime(sdf.format(infoUpdateService.getEarliestIssueTime()));
         }
-        if (issueBase.getEndDateTime() == null
-                || issueBase.getEndDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            issueBase.setEndDateTime(sdf.format(new Date()));
-        }
+        ParamCheckUtil.paramCheck(issueBase);
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
@@ -96,22 +80,11 @@ public class InfoUpdateController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        if (issueBase.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
         if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), infoUpdateService);
             issueBase.setIds(list);
         }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
-            List<Integer> list = new ArrayList<>();
-            Integer exception = 0;
-            list.add(exception);
-            issueBase.setIds(list);
-        }
-        if (issueBase.getSearchText() == null) {
-            issueBase.setSearchText("");
-        }
+        ParamCheckUtil.paramCheck(issueBase);
         int itemCount = infoUpdateService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
@@ -166,6 +139,7 @@ public class InfoUpdateController {
 
     /**
      * 获取栏目信息更新不及时的统计信息
+     *
      * @param siteId
      * @param beginDateTime
      * @param endDateTime
@@ -176,10 +150,10 @@ public class InfoUpdateController {
     @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> getUpdateNotInTimeCountList(@RequestParam Integer siteId, String beginDateTime, String endDateTime) throws BizException, ParseException {
-        if(siteId == null){
+        if (siteId == null) {
             throw new BizException("站点编号存在null值");
         }
-        List<Statistics> updateNotInTimeCountList = infoUpdateService.getUpdateNotInTimeCountList(siteId,beginDateTime,endDateTime);
-        return  updateNotInTimeCountList;
+        List<Statistics> updateNotInTimeCountList = infoUpdateService.getUpdateNotInTimeCountList(siteId, beginDateTime, endDateTime);
+        return updateNotInTimeCountList;
     }
 }

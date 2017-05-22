@@ -33,13 +33,13 @@ public class InfoErrorServiceImpl extends OperationServiceImpl implements InfoEr
     }
 
     @Override
-    public int getIssueHistoryCount(InfoError infoError) {
-        return infoErrorMapper.getIssueHistoryCount(infoError);
+    public int getIssueHistoryCount(IssueBase issueBase) {
+        return infoErrorMapper.getIssueHistoryCount(issueBase);
     }
 
     @Override
-    public List<InfoError> getIssueList(Integer currPage, Integer pageSize, InfoError infoError) {
-        return infoErrorMapper.getIssueList(currPage, pageSize, infoError);
+    public List<InfoError> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase) {
+        return infoErrorMapper.getIssueList(currPage, pageSize, issueBase);
     }
 
     @Override

@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface InfoErrorService extends OperationService {
 
-    int getIssueHistoryCount(InfoError infoError);
+    int getIssueHistoryCount(IssueBase issueBase);
 
-    List<InfoError> getIssueList(Integer currPage, Integer pageSize, InfoError infoError);
+    List<InfoError> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
 
     List<Statistics> getIssueCountByType(IssueBase issueBase);
 
