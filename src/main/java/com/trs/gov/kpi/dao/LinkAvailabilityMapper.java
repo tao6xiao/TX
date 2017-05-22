@@ -110,5 +110,11 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      */
     Date getMonitorTime(@Param("indexUrl") String indexUrl, @Param("issueBase") IssueBase issueBase);
 
+    /**
+     *
+     * @param issueBase
+     * @return
+     */
+    int getInvalidLinkCount(@Param("issueBase") IssueBase issueBase);
 
 }

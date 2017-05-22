@@ -9,7 +9,9 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
 import org.springframework.stereotype.Service;
@@ -71,8 +73,6 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
         filter.addCond("isDel", Integer.valueOf(0));
         return linkAvailabilityMapper.getIssueCount(filter.getCondFields());
     }
-
-
 
     private Issue getIssueByLinkAvaliability(LinkAvailability linkAvailability) {
 
