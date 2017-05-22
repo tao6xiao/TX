@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.EnumIndexUpdateType;
 import com.trs.gov.kpi.constant.InfoUpdateType;
 import com.trs.gov.kpi.constant.UpdateWarningType;
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
@@ -7,11 +8,15 @@ import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
+import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by rw103 on 2017/5/13.
@@ -82,5 +87,52 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         list.add(selfWarningStatistics);
 
         return list;
+    }
+
+    /**
+     * 获取栏目信息更新不及时问题的统计信息
+     * @param siteId
+     * @param beginDateTime
+     * @param endDateTime
+     * @return
+     * @throws ParseException
+     */
+    @Override
+    public List<Statistics> getUpdateNotInTimeCountList(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
+        int count = 0;
+        List<Statistics> statisticsList = new ArrayList<>();
+        Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime);
+        Date endSetTime = InitTime.CheckEndDateTime(endDateTime);
+        IssueBase issueBase = new IssueBase();
+        issueBase.setSiteId(siteId);
+        issueBase.setBeginDateTime(InitTime.getStringTime(beginSetTime));
+        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
+        //获取所有
+        Map map = infoUpdateMapper.getAllUpdateNotInTime(issueBase);
+        count = map.size();
+        Statistics statistics = getStatisticsByCount(EnumIndexUpdateType.ALL.getCode(), count);
+        statisticsList.add(statistics);
+
+        // TODO: 2017/5/22  get ids Set
+        //获取A类
+        map = infoUpdateMapper.getAUpdateNotInTime(issueBase,null);
+        count = map.size();
+        statistics = getStatisticsByCount(EnumIndexUpdateType.A_TYPE.getCode(),count);
+        statisticsList.add(statistics);
+        //获取首页
+        map = infoUpdateMapper.getIndexUpdateNotInTime(issueBase, null);
+        count = map.size();
+        statistics = getStatisticsByCount(EnumIndexUpdateType.HOMEPAGE.getCode(), count);
+        statisticsList.add(statistics);
+
+        return statisticsList;
+    }
+
+    private Statistics getStatisticsByCount(int i, int count) {
+        Statistics statistics = new Statistics();
+        statistics.setCount(count);
+        statistics.setType(i);
+        statistics.setName(EnumIndexUpdateType.valueOf(i).getName());
+        return statistics;
     }
 }

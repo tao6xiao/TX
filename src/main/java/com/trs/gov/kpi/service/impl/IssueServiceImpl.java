@@ -3,9 +3,8 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IssueService;
-import com.trs.gov.kpi.utils.InitEndTime;
+import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +44,7 @@ public class IssueServiceImpl extends OperationServiceImpl implements IssueServi
         issueIsNotResolvedResponseDetail.setId(is.getId());
         issueIsNotResolvedResponseDetail.setIssueTypeName(is.getSubTypeName());
         issueIsNotResolvedResponseDetail.setDetail(is.getDetail());
-        issueIsNotResolvedResponseDetail.setIssueTime(InitEndTime.getStringTime(is.getIssueTime()));
+        issueIsNotResolvedResponseDetail.setIssueTime(InitTime.getStringTime(is.getIssueTime()));
         return issueIsNotResolvedResponseDetail;
     }
 }
