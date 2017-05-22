@@ -12,6 +12,7 @@ import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class IntegratedMonitorWarningController {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataWaringList(Integer pageIndex, Integer pageSize, @ModelAttribute Issue issue) throws BizException {
+    public ApiPageData getPageDataWaringList(Integer pageIndex, Integer pageSize, @ModelAttribute Issue issue) throws BizException, ParseException {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
