@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.dao;
 
-import com.trs.gov.kpi.entity.ChnlGroup;
+import com.trs.gov.kpi.entity.ChannelGroup;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,15 +10,15 @@ import java.util.List;
 public interface ChnlGroupMapper {
     int deleteByPrimaryKey(Integer id);
 
-    int insert(ChnlGroup record);
+    int insert(ChannelGroup record);
 
-    int insertSelective(ChnlGroup record);
+    int insertSelective(ChannelGroup record);
 
-    ChnlGroup selectByPrimaryKey(Integer id);
+    ChannelGroup selectByPrimaryKey(Integer id);
 
-    int updateByPrimaryKeySelective(ChnlGroup record);
+    int updateByPrimaryKeySelective(ChannelGroup record);
 
-    int updateByPrimaryKey(ChnlGroup record);
+    int updateByPrimaryKey(ChannelGroup record);
 
     /**
      * 获取指定siteId和groupId（分类编号）和栏目编号的对象，主要用于添加栏目到当前栏目分类时的严验证当前记录是否存在
@@ -27,7 +27,7 @@ public interface ChnlGroupMapper {
      * @param chnlId
      * @return
      */
-    ChnlGroup selectBySiteIdAndGroupIdAndChnlId(@Param("siteId") int siteId, @Param("groupId") int groupId, @Param("chnlId") int chnlId);
+    ChannelGroup selectBySiteIdAndGroupIdAndChnlId(@Param("siteId") int siteId, @Param("groupId") int groupId, @Param("chnlId") int chnlId);
 
     /**
      * 通过站点id和反分类编号做分页查询
@@ -37,7 +37,7 @@ public interface ChnlGroupMapper {
      * @param pageSize
      * @return
      */
-    List<ChnlGroup> selectPageDataBySiteIdAndGroupId(@Param("siteId") int siteId, @Param("groupId") int groupId, @Param("pageCalculate") int pageCalculate, @Param("pageSize") int pageSize);
+    List<ChannelGroup> selectPageDataBySiteIdAndGroupId(@Param("siteId") int siteId, @Param("groupId") int groupId, @Param("pageCalculate") int pageCalculate, @Param("pageSize") int pageSize);
 
     /**
      * 获取指定的站点和根分类下面的记录总数
@@ -49,10 +49,10 @@ public interface ChnlGroupMapper {
 
     /**
      * 更新当前站点、当前id记录的对应分类和栏目id
-     * @param chnlGroup
+     * @param channelGroup
      * @return
      */
-    int updateBySiteIdAndId(ChnlGroup chnlGroup);
+    int updateBySiteIdAndId(ChannelGroup channelGroup);
 
     /**
      * 删除当前站点、当前id的对应记录

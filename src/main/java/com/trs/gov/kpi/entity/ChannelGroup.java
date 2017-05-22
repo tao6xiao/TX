@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.entity;
 
-public class ChnlGroup {
+public class ChannelGroup {
     private Integer id;
 
     private Integer siteId;

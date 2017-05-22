@@ -2,13 +2,13 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumChnlGroup;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
-import com.trs.gov.kpi.entity.ChnlGroup;
+import com.trs.gov.kpi.entity.ChannelGroup;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.Chnl;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupChannelResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
 import com.trs.gov.kpi.service.ChnlGroupService;
@@ -47,88 +47,87 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     }
 
     @Override
-    public ChnlGroupChnlResponseDetail getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId) {
-        com.trs.gov.kpi.entity.ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
-        ChnlGroupChnlResponseDetail chnlGroupChnlResponseDetail = getChnlGroupByChnlGroupChnlReponseDetail(chnlGroup);
+    public ChnlGroupChannelResponseDetail getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId) {
+        ChannelGroup channelGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
+        ChnlGroupChannelResponseDetail chnlGroupChnlResponseDetail = getChnlGroupByChnlGroupChnlReponseDetail(channelGroup);
         return chnlGroupChnlResponseDetail;
     }
 
     @Override
     public List<ChnlGroupChnlsResponseDetail> getPageDataBySiteIdAndGroupId(int siteId, int groupId, int pageIndex, int pageSize) {
         int pageCalculate = pageIndex * pageSize;
-        List<com.trs.gov.kpi.entity.ChnlGroup> chnlGroupList = chnlGroupMapper.selectPageDataBySiteIdAndGroupId(siteId, groupId, pageCalculate, pageSize);
+        List<ChannelGroup> channelGroupList = chnlGroupMapper.selectPageDataBySiteIdAndGroupId(siteId, groupId, pageCalculate, pageSize);
         List<ChnlGroupChnlsResponseDetail> chnlGroupChnlsResponseDetailList = new ArrayList<>();
         ChnlGroupChnlsResponseDetail chnlGroupChnlsResponseDetail = null;
 
         Map<Integer, String> chnlNamCache = new HashMap<>();
-        for (com.trs.gov.kpi.entity.ChnlGroup chnlGroup : chnlGroupList) {
-            chnlGroupChnlsResponseDetail = getChnlGroupChnlsResponseDetailByChnlGroup(chnlGroup, chnlNamCache);
+        for (ChannelGroup channelGroup : channelGroupList) {
+            chnlGroupChnlsResponseDetail = getChnlGroupChnlsResponseDetailByChnlGroup(channelGroup, chnlNamCache);
             chnlGroupChnlsResponseDetailList.add(chnlGroupChnlsResponseDetail);
         }
         return chnlGroupChnlsResponseDetailList;
     }
 
-    private Chnl getChnl(com.trs.gov.kpi.entity.ChnlGroup chnlGroup, Map<Integer, String> chnlNamCache) {
+    private Chnl getChnl(ChannelGroup channelGroup, Map<Integer, String> chnlNamCache) {
         Chnl chnl = new Chnl();
-        chnl.setChannelId(chnlGroup.getChnlId());
-        String name = chnlNamCache.get(chnlGroup.getChnlId());
+        chnl.setChannelId(channelGroup.getChnlId());
+        String name = chnlNamCache.get(channelGroup.getChnlId());
         if (name != null) {
             chnl.setChnlName(name);
         } else {
             try {
-                Channel outerChannel = siteApiService.getChannelById(chnlGroup.getChnlId(), "");
+                Channel outerChannel = siteApiService.getChannelById(channelGroup.getChnlId(), "");
                 chnl.setChnlName(outerChannel.getChnlName());
                 chnlNamCache.put(outerChannel.getChannelId(), outerChannel.getChnlName());
             } catch (RemoteException e) {
-                log.error("failed to get channl id: " + chnlGroup.getChnlId(), e);
+                log.error("failed to get channl id: " + channelGroup.getChnlId(), e);
             }
         }
         return chnl;
     }
 
-    private ChnlGroupChnlsResponseDetail getChnlGroupChnlsResponseDetailByChnlGroup(ChnlGroup chnlGroup, Map<Integer, String> chnlNamCache) {
+    private ChnlGroupChnlsResponseDetail getChnlGroupChnlsResponseDetailByChnlGroup(ChannelGroup channelGroup, Map<Integer, String> chnlNamCache) {
         ChnlGroupChnlsResponseDetail responseChnl = new ChnlGroupChnlsResponseDetail();
-        responseChnl.setId(chnlGroup.getId());
-        responseChnl.setChnlGroupName(EnumChnlGroup.valueOf(chnlGroup.getGroupId()).getName());
-        responseChnl.setChnl(getChnl(chnlGroup, chnlNamCache));
+        responseChnl.setId(channelGroup.getId());
+        responseChnl.setChnlGroupName(EnumChnlGroup.valueOf(channelGroup.getGroupId()).getName());
+        responseChnl.setChnl(getChnl(channelGroup, chnlNamCache));
         return responseChnl;
 
     }
 
     @Override
     public int getItemCountBySiteIdAndGroupId(int siteId, int groupId) {
-        int itemCount = chnlGroupMapper.selectItemCountBySiteIdAndGroupId(siteId, groupId);
-        return itemCount;
+        return chnlGroupMapper.selectItemCountBySiteIdAndGroupId(siteId, groupId);
     }
 
     @Override
-    public int updateBySiteIdAndId(ChnlGroupChnlRequestDetail chnlGroupChnlRequestDetail) {
-        com.trs.gov.kpi.entity.ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(chnlGroupChnlRequestDetail.getSiteId(), chnlGroupChnlRequestDetail.getGroupId(), chnlGroupChnlRequestDetail.getChnlId());
+    public int updateBySiteIdAndId(ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail) {
+        ChannelGroup channelGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(chnlGroupChnlRequestDetail.getSiteId(), chnlGroupChnlRequestDetail.getGroupId(), chnlGroupChnlRequestDetail.getChnlId());
         int num = 0;
-        if (chnlGroup == null) {
-            chnlGroup = getChnlGroupByChnlGroupChnlRequestDetail(chnlGroupChnlRequestDetail);
-            num = chnlGroupMapper.updateBySiteIdAndId(chnlGroup);
-        } else {//不为null，证明修改之后的记录与数据库表中记录相同，继续修改将冲突，所以不做操作
-
+        if (channelGroup == null) {
+            channelGroup = getChnlGroupByChnlGroupChnlRequestDetail(chnlGroupChnlRequestDetail);
+            num = chnlGroupMapper.updateBySiteIdAndId(channelGroup);
+        } else {
+            //不为null，证明修改之后的记录与数据库表中记录相同，继续修改将冲突，所以不做操作
         }
         return num;
     }
 
-    private com.trs.gov.kpi.entity.ChnlGroup getChnlGroupByChnlGroupChnlRequestDetail(ChnlGroupChnlRequestDetail chnlGroupChnlRequestDetail) {
-        com.trs.gov.kpi.entity.ChnlGroup chnlGroup = new com.trs.gov.kpi.entity.ChnlGroup();
-        chnlGroup.setSiteId(chnlGroupChnlRequestDetail.getSiteId());
-        chnlGroup.setId(chnlGroupChnlRequestDetail.getId());
-        chnlGroup.setGroupId(chnlGroupChnlRequestDetail.getGroupId());
-        chnlGroup.setChnlId(chnlGroupChnlRequestDetail.getChnlId());
-        return chnlGroup;
+    private ChannelGroup getChnlGroupByChnlGroupChnlRequestDetail(ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail) {
+        ChannelGroup channelGroup = new ChannelGroup();
+        channelGroup.setSiteId(chnlGroupChnlRequestDetail.getSiteId());
+        channelGroup.setId(chnlGroupChnlRequestDetail.getId());
+        channelGroup.setGroupId(chnlGroupChnlRequestDetail.getGroupId());
+        channelGroup.setChnlId(chnlGroupChnlRequestDetail.getChnlId());
+        return channelGroup;
     }
 
-    private ChnlGroupChnlResponseDetail getChnlGroupByChnlGroupChnlReponseDetail(com.trs.gov.kpi.entity.ChnlGroup chnlGroup) {
-        ChnlGroupChnlResponseDetail chnlGroupChnlResponseDetail = new ChnlGroupChnlResponseDetail();
-        chnlGroupChnlResponseDetail.setSiteId(chnlGroup.getSiteId());
-        chnlGroupChnlResponseDetail.setId(chnlGroup.getId());
-        chnlGroupChnlResponseDetail.setGroupId(chnlGroup.getGroupId());
-        chnlGroupChnlResponseDetail.setChnlId(chnlGroup.getChnlId());
+    private ChnlGroupChannelResponseDetail getChnlGroupByChnlGroupChnlReponseDetail(ChannelGroup channelGroup) {
+        ChnlGroupChannelResponseDetail chnlGroupChnlResponseDetail = new ChnlGroupChannelResponseDetail();
+        chnlGroupChnlResponseDetail.setSiteId(channelGroup.getSiteId());
+        chnlGroupChnlResponseDetail.setId(channelGroup.getId());
+        chnlGroupChnlResponseDetail.setGroupId(channelGroup.getGroupId());
+        chnlGroupChnlResponseDetail.setChnlId(channelGroup.getChnlId());
         return chnlGroupChnlResponseDetail;
     }
 
@@ -146,16 +145,16 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         int num = 0;
         for (int i = 0; i < chnlIds.length; i++) {
             int chnlId = chnlIds[i];
-            com.trs.gov.kpi.entity.ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
-            if (chnlGroup != null) {//存在当前记录，无需添加，直接跳过
+            ChannelGroup channelGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
+            if (channelGroup != null) {//存在当前记录，无需添加，直接跳过
                 continue;
             } else {
-                chnlGroup = new com.trs.gov.kpi.entity.ChnlGroup();
-                chnlGroup.setId(null);
-                chnlGroup.setSiteId(siteId);
-                chnlGroup.setGroupId(groupId);
-                chnlGroup.setChnlId(chnlId);
-                num = chnlGroupMapper.insert(chnlGroup);
+                channelGroup = new ChannelGroup();
+                channelGroup.setId(null);
+                channelGroup.setSiteId(siteId);
+                channelGroup.setGroupId(groupId);
+                channelGroup.setChnlId(chnlId);
+                num = chnlGroupMapper.insert(channelGroup);
             }
         }
         return num;

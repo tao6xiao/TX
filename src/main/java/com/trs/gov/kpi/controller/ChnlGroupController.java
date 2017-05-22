@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
@@ -90,7 +90,7 @@ public class ChnlGroupController {
      */
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.PUT)
     @ResponseBody
-    public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChnlRequestDetail chnlGroupChnlRequestDetail) throws BizException {
+    public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail) throws BizException {
         if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null || chnlGroupChnlRequestDetail.getChnlId() == null) {
             throw new BizException("参数存在null值");
         }

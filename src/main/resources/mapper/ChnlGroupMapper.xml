@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.ChnlGroupMapper">
-    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.ChnlGroup">
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.ChannelGroup">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="siteId" jdbcType="INTEGER" property="siteId"/>
         <result column="groupId" jdbcType="INTEGER" property="groupId"/>
@@ -20,13 +20,13 @@
     delete from chnlgroup
     where id = #{id,jdbcType=INTEGER}
   </delete>
-    <insert id="insert" parameterType="com.trs.gov.kpi.entity.ChnlGroup">
+    <insert id="insert" parameterType="com.trs.gov.kpi.entity.ChannelGroup">
     insert into chnlgroup (id, siteId, groupId, 
       chnlId)
     values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{groupId,jdbcType=INTEGER}, 
       #{chnlId,jdbcType=INTEGER})
   </insert>
-    <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.ChnlGroup">
+    <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.ChannelGroup">
         insert into chnlgroup
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -57,7 +57,7 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.trs.gov.kpi.entity.ChnlGroup">
+    <update id="updateByPrimaryKeySelective" parameterType="com.trs.gov.kpi.entity.ChannelGroup">
         update chnlgroup
         <set>
             <if test="siteId != null">
@@ -72,7 +72,7 @@
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.trs.gov.kpi.entity.ChnlGroup">
+    <update id="updateByPrimaryKey" parameterType="com.trs.gov.kpi.entity.ChannelGroup">
     update chnlgroup
     set siteId = #{siteId,jdbcType=INTEGER},
       groupId = #{groupId,jdbcType=INTEGER},
@@ -99,7 +99,7 @@
     from chnlgroup
     where siteId = #{siteId,jdbcType=INTEGER} AND groupId = #{groupId,jdbcType=INTEGER}
   </select>
-    <update id="updateBySiteIdAndId" parameterType="com.trs.gov.kpi.entity.ChnlGroup">
+    <update id="updateBySiteIdAndId" parameterType="com.trs.gov.kpi.entity.ChannelGroup">
     update chnlgroup
     set
     groupId = #{groupId,jdbcType=INTEGER},

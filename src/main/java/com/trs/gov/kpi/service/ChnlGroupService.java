@@ -1,8 +1,8 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupChannelResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
 
@@ -29,7 +29,7 @@ public interface ChnlGroupService {
      * @param chnlId
      * @return
      */
-    ChnlGroupChnlResponseDetail getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId);
+    ChnlGroupChannelResponseDetail getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId);
 
     /**
      * 通过站点id和反分类编号做分页查询
@@ -57,7 +57,7 @@ public interface ChnlGroupService {
      * @param chnlGroupChnlRequestDetail
      * @return
      */
-    int updateBySiteIdAndId(ChnlGroupChnlRequestDetail chnlGroupChnlRequestDetail);
+    int updateBySiteIdAndId(ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail);
 
     /**
      * 删除当前站点、当前id的对应记录
