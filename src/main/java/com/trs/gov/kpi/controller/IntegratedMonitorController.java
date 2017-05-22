@@ -43,7 +43,7 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/all/count", method = RequestMethod.GET)
     public Integer getAllIssueCount(@ModelAttribute IssueBase issueBase) {
         int linkAvailabilityCount = linkAvailabilityService.getHandledIssueCount(issueBase) + linkAvailabilityService.getUnhandledIssueCount(issueBase);
-        int infoUpdateCount = infoUpdateService.getHandledIssueCount(issueBase) + infoUpdateService.getUpdateNotIntimeCount(issueBase) + infoUpdateService.getUpdateWarningCount(issueBase);
+        int infoUpdateCount = infoUpdateService.getHandledIssueCount(issueBase) + infoUpdateService.getUnhandledIssueCount(issueBase) + infoUpdateService.getUpdateWarningCount(issueBase);
         int infoErrorCount = infoErrorService.getHandledIssueCount(issueBase) + infoErrorService.getUnhandledIssueCount(issueBase);
         return linkAvailabilityCount + infoErrorCount + infoUpdateCount;
     }
@@ -57,7 +57,8 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) {
         List list1 = linkAvailabilityService.getIssueCountByType(issueBase);
-        List list2 = infoErrorService.getIssueCountByType(issueBase);
+        List list2 = infoUpdateService.getIssueCountByType(issueBase);
+        List list3 = infoErrorService.getIssueCountByType(issueBase);
 
         return null;
     }

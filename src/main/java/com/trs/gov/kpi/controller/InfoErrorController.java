@@ -48,7 +48,7 @@ public class InfoErrorController {
         if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
         }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText() == "") {
+        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);

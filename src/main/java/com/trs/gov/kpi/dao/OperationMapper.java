@@ -31,14 +31,6 @@ public interface OperationMapper {
     int getUnhandledIssueCount(@Param("issueBase") IssueBase issueBase);
 
     /**
-     * 获取更新不及时问题数
-     *
-     * @param issueBase
-     * @return
-     */
-    int getUpdateNotIntimeCount(@Param("issueBase") IssueBase issueBase);
-
-    /**
      * 获取更新预警问题数
      *
      * @param issueBase

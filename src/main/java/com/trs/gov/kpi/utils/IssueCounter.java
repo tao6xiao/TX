@@ -21,7 +21,7 @@ public class IssueCounter {
             Statistics updateNotIntimeCount = new Statistics();
             updateNotIntimeCount.setType(IssueIndicator.UPDATE_NOT_INTIME.value);
             updateNotIntimeCount.setName(IssueIndicator.UPDATE_NOT_INTIME.name);
-            updateNotIntimeCount.setCount(operationService.getUpdateNotIntimeCount(issueBase));
+            updateNotIntimeCount.setCount(operationService.getUnhandledIssueCount(issueBase));
 
             Statistics updateWarningCount =new Statistics();
             updateWarningCount.setType(IssueIndicator.UPDATE_WARNING.value);
