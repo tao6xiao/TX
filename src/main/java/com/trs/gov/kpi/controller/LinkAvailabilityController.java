@@ -58,7 +58,7 @@ public class LinkAvailabilityController {
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     public int getUnhandledIssueCount(IssueBase issueBase) {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
+            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
         if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
             issueBase.setSearchText("");
