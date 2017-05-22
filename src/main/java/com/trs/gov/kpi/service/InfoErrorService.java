@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.util.List;
@@ -11,9 +12,9 @@ import java.util.List;
  */
 public interface InfoErrorService extends OperationService {
 
-    int getIssueHistoryCount(IssueBase issueBase);
+    List<HistoryStatistics> getIssueHistoryCount(IssueBase issueBase);
 
-    List<InfoError> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
+    List<InfoError> getIssueList(Integer pageIndex, Integer pageSize, IssueBase issueBase);
 
     List<Statistics> getIssueCountByType(IssueBase issueBase);
 

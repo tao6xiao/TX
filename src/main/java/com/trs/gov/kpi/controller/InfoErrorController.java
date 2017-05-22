@@ -1,15 +1,16 @@
 package com.trs.gov.kpi.controller;
 
 
-import com.trs.gov.kpi.constant.InfoErrorType;
-import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoErrorService;
-import com.trs.gov.kpi.utils.*;
+import com.trs.gov.kpi.utils.InitQueryFiled;
+import com.trs.gov.kpi.utils.IssueCounter;
+import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,9 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 
@@ -41,7 +40,7 @@ public class InfoErrorController {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(IssueBase issueBase) throws BizException{
+    public List getIssueCount(IssueBase issueBase) throws BizException {
         ParamCheckUtil.paramCheck(issueBase);
         return IssueCounter.getIssueCount(infoErrorService, issueBase);
     }
@@ -53,23 +52,13 @@ public class InfoErrorController {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException{
+    public List<HistoryStatistics> getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException {
         if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             issueBase.setBeginDateTime(sdf.format(infoErrorService.getEarliestIssueTime()));
         }
         ParamCheckUtil.paramCheck(issueBase);
-        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
-        List<HistoryStatistics> list = new ArrayList<>();
-        for (HistoryDate date : dateList) {
-            HistoryStatistics historyStatistics = new HistoryStatistics();
-            issueBase.setBeginDateTime(date.getBeginDate());
-            issueBase.setEndDateTime(date.getEndDate());
-            historyStatistics.setValue(infoErrorService.getIssueHistoryCount(issueBase));
-            historyStatistics.setTime(date.getMonth());
-            list.add(historyStatistics);
-        }
-        return list;
+        return infoErrorService.getIssueHistoryCount(issueBase);
     }
 
     /**
@@ -91,14 +80,7 @@ public class InfoErrorController {
         ParamCheckUtil.paramCheck(issueBase);
         int itemCount = infoErrorService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<InfoError> infoErrorList = infoErrorService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
-        for (InfoError info : infoErrorList) {
-            if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {
-                info.setIssueTypeName(InfoErrorType.TYPOS.name);
-            } else if (info.getIssueTypeId() == InfoErrorType.SENSITIVE_WORDS.value) {
-                info.setIssueTypeName(InfoErrorType.SENSITIVE_WORDS.name);
-            }
-        }
+        List<InfoError> infoErrorList = infoErrorService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
         apiPageData.setData(infoErrorList);
         return apiPageData;
     }

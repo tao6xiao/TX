@@ -30,7 +30,7 @@ public interface InfoErrorMapper extends OperationMapper {
      * @param issueBase
      * @return
      */
-    List<InfoError> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
+    List<InfoError> getIssueList(@Param("pageIndex") Integer pageIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
 
     /**
      * 查询未解决错别字的问题数

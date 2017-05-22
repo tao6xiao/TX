@@ -1,12 +1,14 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.InfoErrorType;
-import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.dao.InfoErrorMapper;
+import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoErrorService;
+import com.trs.gov.kpi.utils.DateSplitUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,13 +35,32 @@ public class InfoErrorServiceImpl extends OperationServiceImpl implements InfoEr
     }
 
     @Override
-    public int getIssueHistoryCount(IssueBase issueBase) {
-        return infoErrorMapper.getIssueHistoryCount(issueBase);
+    public List<HistoryStatistics> getIssueHistoryCount(IssueBase issueBase) {
+        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
+        List<HistoryStatistics> list = new ArrayList<>();
+        for (HistoryDate date : dateList) {
+            HistoryStatistics historyStatistics = new HistoryStatistics();
+            issueBase.setBeginDateTime(date.getBeginDate());
+            issueBase.setEndDateTime(date.getEndDate());
+            historyStatistics.setValue(infoErrorMapper.getIssueHistoryCount(issueBase));
+            historyStatistics.setTime(date.getMonth());
+            list.add(historyStatistics);
+        }
+        return list;
     }
 
     @Override
-    public List<InfoError> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase) {
-        return infoErrorMapper.getIssueList(currPage, pageSize, issueBase);
+    public List<InfoError> getIssueList(Integer pageIndex, Integer pageSize, IssueBase issueBase) {
+        List<InfoError> infoErrorList = infoErrorMapper.getIssueList(pageIndex, pageSize, issueBase);
+        for (InfoError info : infoErrorList) {
+            if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {
+                info.setIssueTypeName(InfoErrorType.TYPOS.name);
+            } else if (info.getIssueTypeId() == InfoErrorType.SENSITIVE_WORDS.value) {
+                info.setIssueTypeName(InfoErrorType.SENSITIVE_WORDS.name);
+            }
+        }
+
+        return infoErrorList;
     }
 
     @Override
