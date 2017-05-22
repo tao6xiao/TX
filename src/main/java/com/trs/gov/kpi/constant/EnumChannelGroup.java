@@ -2,10 +2,12 @@ package com.trs.gov.kpi.constant;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 /**
  * Created by he.lang on 2017/5/16.
  */
-public enum EnumChnlGroup {
+public enum EnumChannelGroup {
     INVALID(-1, "不合法"),
     COMMON(1,"公共类栏目"),
     CONSULTATION(2,"咨询类栏目"),
@@ -21,19 +23,20 @@ public enum EnumChnlGroup {
     @Getter
     private String name;//分类名称
 
-    private EnumChnlGroup(int id, String name){
+    EnumChannelGroup(int id, String name){
         this.id = id;
         this.name = name;
     }
 
-    public static EnumChnlGroup[] getChnlGroups(){
-        return EnumChnlGroup.values();
+    public static EnumChannelGroup[] getChnlGroups(){
+        EnumChannelGroup[] allGroups = EnumChannelGroup.values();
+        return Arrays.copyOfRange(allGroups, 1, allGroups.length);
     }
 
-    public static EnumChnlGroup valueOf(int id){
-        for (EnumChnlGroup enumChnlGroup : EnumChnlGroup.values()) {
-            if(enumChnlGroup.getId() == id){
-                return enumChnlGroup;
+    public static EnumChannelGroup valueOf(int id){
+        for (EnumChannelGroup enumChannelGroup : EnumChannelGroup.values()) {
+            if(enumChannelGroup.getId() == id){
+                return enumChannelGroup;
             }
         }
         return INVALID;

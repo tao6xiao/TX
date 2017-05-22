@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.EnumChnlGroup;
+import com.trs.gov.kpi.constant.EnumChannelGroup;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChannelGroup;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -36,7 +36,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
 
     @Override
     public ChnlGroupsResponseDetail[] getChnlGroupsResponseDetailArray() {
-        EnumChnlGroup[] chnlGroups = EnumChnlGroup.getChnlGroups();
+        EnumChannelGroup[] chnlGroups = EnumChannelGroup.getChnlGroups();
         ChnlGroupsResponseDetail[] chnlGroupsResponseDetails = new ChnlGroupsResponseDetail[chnlGroups.length];
         for (int i = 0; i < chnlGroups.length; i++) {
             chnlGroupsResponseDetails[i] = new ChnlGroupsResponseDetail();
@@ -89,7 +89,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     private ChnlGroupChnlsResponseDetail getChnlGroupChnlsResponseDetailByChnlGroup(ChannelGroup channelGroup, Map<Integer, String> chnlNamCache) {
         ChnlGroupChnlsResponseDetail responseChnl = new ChnlGroupChnlsResponseDetail();
         responseChnl.setId(channelGroup.getId());
-        responseChnl.setChnlGroupName(EnumChnlGroup.valueOf(channelGroup.getGroupId()).getName());
+        responseChnl.setChnlGroupName(EnumChannelGroup.valueOf(channelGroup.getGroupId()).getName());
         responseChnl.setChnl(getChnl(channelGroup, chnlNamCache));
         return responseChnl;
 
