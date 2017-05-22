@@ -42,7 +42,7 @@ public class LinkAvailabilityController {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
+            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
         if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");

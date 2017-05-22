@@ -4,8 +4,7 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
-import com.trs.gov.kpi.service.OperationService;
-import com.trs.gov.kpi.utils.InitEndTime;
+import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -48,7 +47,7 @@ public class IntegratedMonitorIsResolvedServiceImpl extends OperationServiceImpl
         issueIsResolvedResponseDetail.setId(is.getId());
         issueIsResolvedResponseDetail.setIssueTypeName(is.getSubTypeName());
         issueIsResolvedResponseDetail.setDetail(is.getDetail());
-        issueIsResolvedResponseDetail.setIssueTime(InitEndTime.getStringTime(is.getIssueTime()));
+        issueIsResolvedResponseDetail.setIssueTime(InitTime.getStringTime(is.getIssueTime()));
         return issueIsResolvedResponseDetail;
     }
 }
