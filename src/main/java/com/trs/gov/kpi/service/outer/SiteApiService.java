@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Site;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by linwei on 2017/5/18.
@@ -52,4 +53,16 @@ public interface SiteApiService extends OuterApiService {
      * @throws RemoteException
      */
     public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException;
+
+
+    /**
+     * 获取从第一层子栏目到最底层的栏目在内的所有子栏目的id
+     * @param userName
+     * @param siteId
+     * @param channelId
+     * @param chnlIdSet
+     * @return
+     * @throws RemoteException
+     */
+    public Set<Integer> getAllChildChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException;
 }

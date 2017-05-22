@@ -80,6 +80,105 @@
         </if>
     </select>
 
+    <select id="getIssueCount" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM issue WHERE
+        <if test="condFields != null">
+            <foreach collection="condFields" item="condField">
+                <if test="condField.fieldName == 'siteId'">
+                    <if test="condField.isLike">
+                        siteId like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        siteId = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'id'">
+                    <if test="condField.isLike">
+                        id like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        id = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'typeId'">
+                    <if test="condField.isLike">
+                        typeId like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        typeId = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'subTypeId'">
+                    <if test="condField.isLike">
+                        subTypeId like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        subTypeId = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'issueTime'">
+                    <if test="condField.isBeginTime">
+                        issueTime >= #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEndTime">
+                        <![CDATA[
+                          issueTime <= #{condField.condValue} AND
+                        ]]>
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'isResolved'">
+                    <if test="condField.isLike">
+                        isResolved LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        isResolved = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'isDel'">
+                    <if test="condField.isLike">
+                        isDel LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        isDel = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'subTypeId'">
+                    <if test="condField.isLike">
+                        subTypeId LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        subTypeId = #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isCollection">
+                        subTypeId in
+                        <foreach collection="condField.condValue" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'customer2'">
+                    <if test="condField.isLike">
+                        customer2 LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        customer2 = #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isCollection">
+                        customer2 in
+                        <foreach collection="condField.condValue" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        AND
+                    </if>
+                </if>
+            </foreach>
+        </if>
+        1 = 1
+    </select>
+
     <select id="getIssueHistoryCount" resultType="int">
         SELECT count(1)
         FROM issue
@@ -148,6 +247,117 @@
         AND typeId = 1
         AND isResolved = 0
         limit #{currPage},#{pageSize}
+    </select>
+
+    <select id="getIssueListBySql" resultMap="linkAvailabilityMap">
+        SELECT
+        <if test="selectSql != null">
+            #{selectSql}
+        </if>
+        <if test="selectSql == null">
+            id,
+            subTypeId,
+            detail,
+            customer1,
+            issueTime
+        </if>
+        FROM issue WHERE
+        <if test="condFields != null">
+            <foreach collection="condFields" item="condField">
+                <if test="condField.fieldName == 'siteId'">
+                    <if test="condField.isLike">
+                        siteId like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        siteId = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'id'">
+                    <if test="condField.isLike">
+                        id like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        id = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'typeId'">
+                    <if test="condField.isLike">
+                        typeId like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        typeId = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'subTypeId'">
+                    <if test="condField.isLike">
+                        subTypeId like #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        subTypeId = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'issueTime'">
+                    <if test="condField.isBeginTime">
+                        issueTime >= #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEndTime">
+                        <![CDATA[
+                          issueTime <= #{condField.condValue} AND
+                        ]]>
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'isResolved'">
+                    <if test="condField.isLike">
+                        isResolved LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        isResolved = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'isDel'">
+                    <if test="condField.isLike">
+                        isDel LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        isDel = #{condField.condValue} AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'subTypeId'">
+                    <if test="condField.isLike">
+                        subTypeId LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        subTypeId = #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isCollection">
+                        subTypeId in
+                        <foreach collection="condField.condValue" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                         AND
+                    </if>
+                </if>
+                <if test="condField.fieldName == 'customer2'">
+                    <if test="condField.isLike">
+                        customer2 LIKE #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isEqual">
+                        customer2 = #{condField.condValue} AND
+                    </if>
+                    <if test="condField.isCollection">
+                        customer2 in
+                        <foreach collection="condField.condValue" index="index" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        AND
+                    </if>
+                </if>
+            </foreach>
+        </if>
+         1 = 1
+        <if test="pager != null">
+          limit #{pager.offset},#{pager.count}
+        </if>
     </select>
 
     <insert id="batchInsertLinkAvailabilities" useGeneratedKeys="true" parameterType="java.util.List">

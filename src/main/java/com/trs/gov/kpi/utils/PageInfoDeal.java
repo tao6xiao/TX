@@ -9,7 +9,7 @@ import com.trs.gov.kpi.entity.responsedata.Pager;
  */
 public class PageInfoDeal {
     public static final Integer PAGE_SIZE_DEFAULT = 20;//默认分页大小
-    public static final Integer PAGE_INDEX_DEFAULT = 0;//默认0，第一页
+    public static final Integer PAGE_INDEX_DEFAULT = 1;//默认1，第一页
 
     /**
      * 分页总数计算

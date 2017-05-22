@@ -1,16 +1,21 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.IssueType;
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.constant.LinkType;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,6 +56,22 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
         Issue issue = getIssueByLinkAvaliability(linkAvailability);
         issueMapper.insert(issue);
     }
+
+    @Override
+    public List<LinkAvailability> getUnsolvedIssueList(QueryFilter filter) {
+        filter.addCond("isResolved", Integer.valueOf(0));
+        filter.addCond("isDel", Integer.valueOf(0));
+        return linkAvailabilityMapper.getIssueListBySql(null, filter.getCondFields(), filter.getPager());
+    }
+
+    @Override
+    public int getUnsolvedIssueCount(QueryFilter filter) {
+        filter.addCond("isResolved", Integer.valueOf(0));
+        filter.addCond("isDel", Integer.valueOf(0));
+        return linkAvailabilityMapper.getIssueCount(filter.getCondFields());
+    }
+
+
 
     private Issue getIssueByLinkAvaliability(LinkAvailability linkAvailability) {
 

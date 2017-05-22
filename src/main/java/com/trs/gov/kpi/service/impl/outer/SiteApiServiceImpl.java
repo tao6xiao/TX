@@ -144,6 +144,24 @@ public class SiteApiServiceImpl implements SiteApiService {
         }
     }
 
+    @Override
+    public Set<Integer> getAllChildChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException {
+
+        List<Channel> channels = getChildChannel(siteId, channelId, userName);
+
+        if (channels.isEmpty()) {
+            return chnlIdSet;
+        }
+
+        for (Channel channel : channels) {
+            chnlIdSet.add(channel.getChannelId());
+            if (channel.isHasChildren()) {
+                getAllChildChnlIds(userName, siteId, channel.getChannelId(), chnlIdSet);
+            }
+        }
+        return chnlIdSet;
+    }
+
     public String getRequestUrl(String methodName, String userName, Map<String, String> params) {
         if (userName == null || userName.trim().isEmpty()) {
             userName = "admin";

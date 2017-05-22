@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.dao.QueryDBField;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 
 import java.util.Date;
 import java.util.List;
