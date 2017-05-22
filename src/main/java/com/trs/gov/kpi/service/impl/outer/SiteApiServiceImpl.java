@@ -118,6 +118,31 @@ public class SiteApiServiceImpl implements SiteApiService {
         }
     }
 
+    @Override
+    public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("SiteId", String.valueOf(siteId));
+            params.put("ChannelId", String.valueOf(channelId));
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(buildRequest("getSiteOrChannelPubUrl", userName, params)).execute();
+
+            if (response.isSuccessful()) {
+                ApiResult result = OuterApiUtil.toResultObj(response.body().string());
+                if (result == null) {
+                    log.error("invalid result: " + response);
+                    throw new RemoteException("获取栏目发布地址失败！");
+                }
+                return result.getData();
+            } else {
+                log.error("failed to get channel publish url, error: " + response);
+                throw new RemoteException("获取栏目发布地址失败！");
+            }
+        } catch (IOException e) {
+            log.error("failed to get channel publish url", e);
+            throw new RemoteException("获取栏目发布地址失败！", e);
+        }
+    }
 
     public String getRequestUrl(String methodName, String userName, Map<String, String> params) {
         if (userName == null || userName.trim().isEmpty()) {

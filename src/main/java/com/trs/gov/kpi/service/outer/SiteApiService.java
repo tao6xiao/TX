@@ -41,4 +41,15 @@ public interface SiteApiService extends OuterApiService {
      * @throws RemoteException
      */
     public Channel getChannelById(int channelId, String userName) throws RemoteException;
+
+
+    /**
+     * 获取站点或者栏目的发布地址
+     * 如果chnnelId为0，则使用siteId获取站点的发布地址，否则查询的是栏目的发布地址
+     * @param siteId
+     * @param channelId
+     * @return
+     * @throws RemoteException
+     */
+    public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException;
 }
