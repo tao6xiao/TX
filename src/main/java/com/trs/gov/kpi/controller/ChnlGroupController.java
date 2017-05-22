@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.ChnlGroups;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
@@ -9,7 +8,6 @@ import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -50,10 +48,19 @@ public class ChnlGroupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, @RequestParam("pageSize") Integer pageSize, @RequestParam("pageIndex") Integer pageIndex) throws BizException {
         if (siteId == null || groupId == null) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
+
+        if (pageIndex != null && pageIndex < 1) {
+            throw new BizException("参数不合法！");
+        }
+
+        if (pageSize != null && pageSize < 1) {
+            throw new BizException("参数不合法！");
+        }
+
         int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<ChnlGroupChnlsResponseDetail> chnlGroupChnlsResponseDetailList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
         apiPageData.setData(chnlGroupChnlsResponseDetailList);
         return apiPageData;

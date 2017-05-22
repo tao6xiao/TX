@@ -39,7 +39,7 @@ public class FrequencySetupController {
             throw new BizException("站点编号不能为null值");
         }
         int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<FrequencySetupResponseDetail> frequencySetupResponseDetails = frequencySetupService.getPageDataFrequencySetupList(siteId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
         apiPageData.setData(frequencySetupResponseDetails);
         return apiPageData;

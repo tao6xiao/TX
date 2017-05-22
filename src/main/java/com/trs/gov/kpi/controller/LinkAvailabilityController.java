@@ -118,7 +118,7 @@ public class LinkAvailabilityController {
             linkAvailability.setSearchText("");
         }
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(linkAvailability);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), linkAvailability);
         for (LinkAvailability link : linkAvailabilityList) {
             if (link.getIssueTypeId() == LinkIssueType.INVALID_LINK.value) {

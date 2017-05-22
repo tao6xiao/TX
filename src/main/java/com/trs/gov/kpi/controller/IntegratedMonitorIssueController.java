@@ -5,16 +5,12 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IssueService;
-import com.trs.gov.kpi.utils.InitQueryFiled;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,7 +40,7 @@ public class IntegratedMonitorIssueController {
         }
         issue = IssueDataUtil.getIssueToGetPageData(issue, issueService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
         int itemCount = issueService.getAllIssueCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<IssueIsNotResolvedResponseDetail> linkAvailabilityList = issueService.getAllIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issue);
         apiPageData.setData(linkAvailabilityList);
         return apiPageData;

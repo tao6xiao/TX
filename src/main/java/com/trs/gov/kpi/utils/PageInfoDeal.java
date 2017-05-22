@@ -40,7 +40,7 @@ public class PageInfoDeal {
      * @param pageSize
      * @return
      */
-    public static int checkPageSizeIsNullOrNot(Integer pageSize) {
+    private static int checkPageSizeIsNullOrNot(Integer pageSize) {
         if (pageSize == null) {
             return PAGE_SIZE_DEFAULT;
         } else {
@@ -54,7 +54,7 @@ public class PageInfoDeal {
      * @param pageIndex
      * @return
      */
-    public static int checkPageIndexIsNullOrNot(Integer pageIndex) {
+    private static int checkPageIndexIsNullOrNot(Integer pageIndex) {
         if (pageIndex == null) {
             return PAGE_INDEX_DEFAULT;
         } else {
@@ -65,12 +65,13 @@ public class PageInfoDeal {
     /**
      * 检查当前页处理后是否为负数或者是否超出最大页数，出现对应情况需要处理
      *
-     * @param pageIndex
+     * @param pageIndex 从1开始计数的页
      * @param pageCount
-     * @return
+     * @return 返回从0开始计数的页
      */
-    public static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer pageCount) {
+    private static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer pageCount) {
         pageIndex = pageIndex - 1;//10页，最后一页为第10页,index为9
+        // NOTE LINWEI 参数超出下限的情况在controller进行处理，如果超出实际的页数，则可以考虑不处理。
         if (pageIndex < 0) {
             pageIndex = 0;
         } else if (pageIndex >= pageCount) {
@@ -85,12 +86,12 @@ public class PageInfoDeal {
 
     /**
      * 获取返回的ApiPageData对象（不完整，所以调用方法之后需要将List再放入ApiPageData对象）
-     * @param pageIndex
+     * @param pageIndex 从1开始计数的页
      * @param pageSize
      * @param itemCount
      * @return
      */
-    public static ApiPageData getApiPageData(Integer pageIndex, Integer pageSize, Integer itemCount){
+    public static ApiPageData buildApiPageData(Integer pageIndex, Integer pageSize, Integer itemCount){
         pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize);
         pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex);
         int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);

@@ -5,7 +5,7 @@ import lombok.Getter;
 /**
  * Created by he.lang on 2017/5/16.
  */
-public enum ChnlGroups {
+public enum EnumChnlGroup {
     COMMON(1,"公共类栏目"),
     CONSULTATION(2,"咨询类栏目"),
     INVESTIGATION(3,"调查征集"),
@@ -19,19 +19,19 @@ public enum ChnlGroups {
     @Getter
     private String name;//分类名称
 
-    private ChnlGroups(int id,String name){
+    private EnumChnlGroup(int id, String name){
         this.id = id;
         this.name = name;
     }
 
-    public static ChnlGroups[] getChnlGroups(){
-        return ChnlGroups.values();
+    public static EnumChnlGroup[] getChnlGroups(){
+        return EnumChnlGroup.values();
     }
 
-    public static ChnlGroups getTypeById(int id){
-        for (ChnlGroups chnlGroup : ChnlGroups.values()) {
-            if(chnlGroup.getId() == id){
-                return chnlGroup;
+    public static EnumChnlGroup valueOf(int id){
+        for (EnumChnlGroup enumChnlGroup : EnumChnlGroup.values()) {
+            if(enumChnlGroup.getId() == id){
+                return enumChnlGroup;
             }
         }
         return null;

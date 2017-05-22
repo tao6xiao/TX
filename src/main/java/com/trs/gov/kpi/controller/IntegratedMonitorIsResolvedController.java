@@ -41,7 +41,7 @@ public class IntegratedMonitorIsResolvedController {
         Integer isResolved = IsResolvedType.IS_RESOLVED.getCode();
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<IssueIsResolvedResponseDetail> issueIsResolvedResponseDetailList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
         apiPageData.setData(issueIsResolvedResponseDetailList);
         return apiPageData;
@@ -64,7 +64,7 @@ public class IntegratedMonitorIsResolvedController {
         Integer isIgnored = IsResolvedType.IS_IGNORED.getCode();
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isIgnored,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<IssueIsResolvedResponseDetail> issueIsResolvedResponseDetailList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
         apiPageData.setData(issueIsResolvedResponseDetailList);
         return apiPageData;

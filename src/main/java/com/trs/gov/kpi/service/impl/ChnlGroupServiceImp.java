@@ -1,8 +1,10 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.ChnlGroups;
+import com.trs.gov.kpi.constant.EnumChnlGroup;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChnlGroup;
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.Chnl;
@@ -10,23 +12,31 @@ import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
 import com.trs.gov.kpi.service.ChnlGroupService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by he.lang on 2017/5/16.
  */
+@Slf4j
 @Service
 public class ChnlGroupServiceImp implements ChnlGroupService {
     @Resource
     ChnlGroupMapper chnlGroupMapper;
 
+    @Resource
+    SiteApiService siteApiService;
+
     @Override
     public ChnlGroupsResponseDetail[] getChnlGroupsResponseDetailArray() {
-        ChnlGroups[] chnlGroups = ChnlGroups.getChnlGroups();
+        EnumChnlGroup[] chnlGroups = EnumChnlGroup.getChnlGroups();
         ChnlGroupsResponseDetail[] chnlGroupsResponseDetails = new ChnlGroupsResponseDetail[chnlGroups.length];
         for (int i = 0; i < chnlGroups.length; i++) {
             chnlGroupsResponseDetails[i] = new ChnlGroupsResponseDetail();
@@ -38,7 +48,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
 
     @Override
     public ChnlGroupChnlResponseDetail getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId) {
-        ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
+        com.trs.gov.kpi.entity.ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
         ChnlGroupChnlResponseDetail chnlGroupChnlResponseDetail = getChnlGroupByChnlGroupChnlReponseDetail(chnlGroup);
         return chnlGroupChnlResponseDetail;
     }
@@ -46,30 +56,42 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     @Override
     public List<ChnlGroupChnlsResponseDetail> getPageDataBySiteIdAndGroupId(int siteId, int groupId, int pageIndex, int pageSize) {
         int pageCalculate = pageIndex * pageSize;
-        List<ChnlGroup> chnlGroupList = chnlGroupMapper.selectPageDataBySiteIdAndGroupId(siteId, groupId, pageCalculate, pageSize);
+        List<com.trs.gov.kpi.entity.ChnlGroup> chnlGroupList = chnlGroupMapper.selectPageDataBySiteIdAndGroupId(siteId, groupId, pageCalculate, pageSize);
         List<ChnlGroupChnlsResponseDetail> chnlGroupChnlsResponseDetailList = new ArrayList<>();
         ChnlGroupChnlsResponseDetail chnlGroupChnlsResponseDetail = null;
-        for (ChnlGroup chnlGroup : chnlGroupList) {
-            chnlGroupChnlsResponseDetail = getChnlGroupChnlsResponseDetailByChnlGroup(chnlGroup);
+
+        Map<Integer, String> chnlNamCache = new HashMap<>();
+        for (com.trs.gov.kpi.entity.ChnlGroup chnlGroup : chnlGroupList) {
+            chnlGroupChnlsResponseDetail = getChnlGroupChnlsResponseDetailByChnlGroup(chnlGroup, chnlNamCache);
             chnlGroupChnlsResponseDetailList.add(chnlGroupChnlsResponseDetail);
         }
         return chnlGroupChnlsResponseDetailList;
     }
 
-    private Chnl getChnl(ChnlGroup chnlGroup) {
-        // TODO: 2017/5/17 get chnl by siteId and chnlId from 采编中心
+    private Chnl getChnl(com.trs.gov.kpi.entity.ChnlGroup chnlGroup, Map<Integer, String> chnlNamCache) {
         Chnl chnl = new Chnl();
-        chnl.setChnlName("news");
+        chnl.setChannelId(chnlGroup.getChnlId());
+        String name = chnlNamCache.get(chnlGroup.getChnlId());
+        if (name != null) {
+            chnl.setChnlName(name);
+        } else {
+            try {
+                Channel outerChannel = siteApiService.getChannelById(chnlGroup.getChnlId(), "");
+                chnl.setChnlName(outerChannel.getChnlName());
+                chnlNamCache.put(outerChannel.getChannelId(), outerChannel.getChnlName());
+            } catch (RemoteException e) {
+                log.error("failed to get channl id: " + chnlGroup.getChnlId(), e);
+            }
+        }
         return chnl;
     }
 
-    private ChnlGroupChnlsResponseDetail getChnlGroupChnlsResponseDetailByChnlGroup(ChnlGroup chnlGroup) {
-        ChnlGroupChnlsResponseDetail chnlGroupChnlsResponseDetail = new ChnlGroupChnlsResponseDetail();
-        chnlGroupChnlsResponseDetail.setId(chnlGroup.getId());
-        chnlGroupChnlsResponseDetail.setChnlGroupName(ChnlGroups.getTypeById(chnlGroup.getGroupId()).getName());
-        Chnl chnl = getChnl(chnlGroup);
-        chnlGroupChnlsResponseDetail.setChnl(chnl);
-        return chnlGroupChnlsResponseDetail;
+    private ChnlGroupChnlsResponseDetail getChnlGroupChnlsResponseDetailByChnlGroup(ChnlGroup chnlGroup, Map<Integer, String> chnlNamCache) {
+        ChnlGroupChnlsResponseDetail responseChnl = new ChnlGroupChnlsResponseDetail();
+        responseChnl.setId(chnlGroup.getId());
+        responseChnl.setChnlGroupName(EnumChnlGroup.valueOf(chnlGroup.getGroupId()).getName());
+        responseChnl.setChnl(getChnl(chnlGroup, chnlNamCache));
+        return responseChnl;
 
     }
 
@@ -81,7 +103,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
 
     @Override
     public int updateBySiteIdAndId(ChnlGroupChnlRequestDetail chnlGroupChnlRequestDetail) {
-        ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(chnlGroupChnlRequestDetail.getSiteId(), chnlGroupChnlRequestDetail.getGroupId(), chnlGroupChnlRequestDetail.getChnlId());
+        com.trs.gov.kpi.entity.ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(chnlGroupChnlRequestDetail.getSiteId(), chnlGroupChnlRequestDetail.getGroupId(), chnlGroupChnlRequestDetail.getChnlId());
         int num = 0;
         if (chnlGroup == null) {
             chnlGroup = getChnlGroupByChnlGroupChnlRequestDetail(chnlGroupChnlRequestDetail);
@@ -92,8 +114,8 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         return num;
     }
 
-    private ChnlGroup getChnlGroupByChnlGroupChnlRequestDetail(ChnlGroupChnlRequestDetail chnlGroupChnlRequestDetail) {
-        ChnlGroup chnlGroup = new ChnlGroup();
+    private com.trs.gov.kpi.entity.ChnlGroup getChnlGroupByChnlGroupChnlRequestDetail(ChnlGroupChnlRequestDetail chnlGroupChnlRequestDetail) {
+        com.trs.gov.kpi.entity.ChnlGroup chnlGroup = new com.trs.gov.kpi.entity.ChnlGroup();
         chnlGroup.setSiteId(chnlGroupChnlRequestDetail.getSiteId());
         chnlGroup.setId(chnlGroupChnlRequestDetail.getId());
         chnlGroup.setGroupId(chnlGroupChnlRequestDetail.getGroupId());
@@ -101,7 +123,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         return chnlGroup;
     }
 
-    private ChnlGroupChnlResponseDetail getChnlGroupByChnlGroupChnlReponseDetail(ChnlGroup chnlGroup) {
+    private ChnlGroupChnlResponseDetail getChnlGroupByChnlGroupChnlReponseDetail(com.trs.gov.kpi.entity.ChnlGroup chnlGroup) {
         ChnlGroupChnlResponseDetail chnlGroupChnlResponseDetail = new ChnlGroupChnlResponseDetail();
         chnlGroupChnlResponseDetail.setSiteId(chnlGroup.getSiteId());
         chnlGroupChnlResponseDetail.setId(chnlGroup.getId());
@@ -124,11 +146,11 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         int num = 0;
         for (int i = 0; i < chnlIds.length; i++) {
             int chnlId = chnlIds[i];
-            ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
+            com.trs.gov.kpi.entity.ChnlGroup chnlGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
             if (chnlGroup != null) {//存在当前记录，无需添加，直接跳过
                 continue;
             } else {
-                chnlGroup = new ChnlGroup();
+                chnlGroup = new com.trs.gov.kpi.entity.ChnlGroup();
                 chnlGroup.setId(null);
                 chnlGroup.setSiteId(siteId);
                 chnlGroup.setGroupId(groupId);

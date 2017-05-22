@@ -1,13 +1,10 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.constant.ChnlGroups;
-import com.trs.gov.kpi.entity.ChnlGroup;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

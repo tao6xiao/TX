@@ -115,7 +115,7 @@ public class InfoErrorController {
             infoError.setSearchText("");
         }
         int itemCount = infoErrorService.getUnhandledIssueCount(infoError);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<InfoError> infoErrorList = infoErrorService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), infoError);
         for (InfoError info : infoErrorList) {
             if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {

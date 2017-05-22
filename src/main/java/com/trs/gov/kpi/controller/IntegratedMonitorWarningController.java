@@ -41,7 +41,7 @@ public class IntegratedMonitorWarningController {
         }
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
         int itemCount = integratedMonitorWarningService.getItemCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.getApiPageData(pageIndex, pageSize, itemCount);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<IssueWarningResponseDetail> issueList = integratedMonitorWarningService.getPageDataWaringList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(), issue);
         apiPageData.setData(issueList);
         return apiPageData;
