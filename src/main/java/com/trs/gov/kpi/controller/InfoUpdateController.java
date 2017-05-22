@@ -7,14 +7,13 @@ import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.utils.*;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +39,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
+            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
         if (issueBase.getSearchText() == null) {
             issueBase.setSearchText("");
@@ -163,5 +162,24 @@ public class InfoUpdateController {
     public String delIssueByIds(int siteId, Integer[] ids) {
         infoUpdateService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
+    }
+
+    /**
+     * 获取栏目信息更新不及时的统计信息
+     * @param siteId
+     * @param beginDateTime
+     * @param endDateTime
+     * @return
+     * @throws BizException
+     * @throws ParseException
+     */
+    @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Statistics> getUpdateNotInTimeCountList(@RequestParam Integer siteId, String beginDateTime, String endDateTime) throws BizException, ParseException {
+        if(siteId == null){
+            throw new BizException("站点编号存在null值");
+        }
+        List<Statistics> updateNotInTimeCountList = infoUpdateService.getUpdateNotInTimeCountList(siteId,beginDateTime,endDateTime);
+        return  updateNotInTimeCountList;
     }
 }
