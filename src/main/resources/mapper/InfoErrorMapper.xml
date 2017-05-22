@@ -14,10 +14,7 @@
         <result column="endDateTime" property="endDateTime"/>
     </resultMap>
 
-    <select id="getHandledIssueCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved IN (1,2)
+    <sql id="Query_Condition_IssueBase">
         AND siteId = #{issueBase.siteId}
         AND typeId = 3
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
@@ -34,14 +31,36 @@
             ]]>
             #{issueBase.endDateTime}
         </if>
+    </sql>
+
+    <select id="getHandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved IN (1,2)
+        <include refid="Query_Condition_IssueBase"/>
+    </select>
+
+    <select id="getTyposCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND subTypeId = 1
+        <include refid="Query_Condition_IssueBase"/>
+    </select>
+
+    <select id="getSensitiveWordsCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND subTypeId = 2
+        <include refid="Query_Condition_IssueBase"/>
     </select>
 
     <select id="getUnhandledIssueCount" resultType="int">
         SELECT count(1)
         FROM issue
         WHERE isResolved = 0
-        AND siteId = #{issueBase.siteId}
-        AND typeId = 3
+        <include refid="Query_Condition_IssueBase"/>
         <if test="issueBase.searchField == 'id'">
             AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
         </if>
@@ -62,20 +81,6 @@
             </foreach>
             )
             )
-        </if>
-        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            >
-            ]]>
-            #{issueBase.beginDateTime}
-        </if>
-        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{issueBase.endDateTime}
         </if>
     </select>
 

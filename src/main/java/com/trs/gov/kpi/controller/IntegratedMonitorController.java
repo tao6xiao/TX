@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.InfoWarningType;
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueType;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -55,22 +56,7 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) {
-        int linkAvailabilityCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
-        int infoUpdateCount = infoUpdateService.getUpdateNotIntimeCount(issueBase);
-
-        Statistics linkAvailabilityStatistics = new Statistics();
-        linkAvailabilityStatistics.setCount(linkAvailabilityCount);
-        linkAvailabilityStatistics.setType(IssueType.INVALID_LINK.value);
-        linkAvailabilityStatistics.setName(IssueType.INVALID_LINK.name);
-
-        Statistics infoUpdateStatistics = new Statistics();
-        infoUpdateStatistics.setCount(infoUpdateCount);
-        infoUpdateStatistics.setType(IssueType.UPDATE_NOT_INTIME.value);
-        infoUpdateStatistics.setName(IssueType.UPDATE_NOT_INTIME.name);
-
-        List<Statistics> list = new ArrayList<>();
-        list.add(linkAvailabilityStatistics);
-        list.add(infoUpdateStatistics);
+        List list = linkAvailabilityService.getIssueCountByType(issueBase);
 
         return list;
     }
