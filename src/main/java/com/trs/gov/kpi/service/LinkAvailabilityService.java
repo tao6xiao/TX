@@ -19,4 +19,6 @@ public interface LinkAvailabilityService extends OperationService {
     void insertLinkAvailability(LinkAvailability linkAvailability);
 
     List<Statistics> getIssueCountByType(IssueBase issueBase);
+
+    int getIndexAvailability(IssueBase issueBase);
 }

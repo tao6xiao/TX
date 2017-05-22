@@ -97,4 +97,16 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
 
         return list;
     }
+
+    @Override
+    public int getIndexAvailability(IssueBase issueBase) {
+        int flag = linkAvailabilityMapper.getIndexAvailability(issueBase);
+
+        //返回0表示不可用，1表示可用
+        if (flag > 0) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
 }

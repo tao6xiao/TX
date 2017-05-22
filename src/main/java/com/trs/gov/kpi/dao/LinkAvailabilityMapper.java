@@ -62,4 +62,12 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      */
     int getConnTimeoutCount(@Param("issueBase") IssueBase issueBase);
 
+    /**
+     * 查询问题中是否包含首页不可用
+     *
+     * @param issueBase
+     * @return
+     */
+    int getIndexAvailability(@Param("issueBase") IssueBase issueBase);
+
 }

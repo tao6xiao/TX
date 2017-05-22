@@ -19,6 +19,9 @@
         AND siteId = #{issueBase.siteId}
         AND typeId = 1
         AND isDel = 0
+    </sql>
+
+    <sql id="Query_StartEndTime_IssueBase">
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
@@ -58,12 +61,13 @@
             )
         </if>
     </sql>
-    
+
     <select id="getHandledIssueCount" resultType="int">
         SELECT count(1)
         FROM issue
         WHERE isResolved IN (1,2)
         <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
     <select id="getInvalidLinkCount" resultType="int">
@@ -72,6 +76,7 @@
         WHERE isResolved = 0
         AND subTypeId = 1
         <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
     <select id="getInvalidImageCount" resultType="int">
@@ -80,6 +85,7 @@
         WHERE isResolved = 0
         AND subTypeId = 2
         <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
     <select id="getConnTimeoutCount" resultType="int">
@@ -88,6 +94,7 @@
         WHERE isResolved = 0
         AND subTypeId = 3
         <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
     <select id="getUnhandledIssueCount" resultType="int">
@@ -95,6 +102,7 @@
         FROM issue
         WHERE isResolved = 0
         <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
         <include refid="Query_Search_IssueBase"/>
     </select>
 
@@ -103,6 +111,7 @@
         FROM issue
         WHERE 1=1
         <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
 
@@ -115,6 +124,7 @@
         FROM issue
         WHERE isResolved = 0
         <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
         <include refid="Query_Search_IssueBase"/>
         limit #{currPage},#{pageSize}
     </select>
@@ -129,5 +139,18 @@
         </foreach>
 
     </insert>
+
+    <select id="getIndexAvailability" resultType="int">
+        SELECT count(1)
+        FROM issue,(
+        SELECT indexUrl
+        FROM monitorsite
+        WHERE siteId = #{issueBase.siteId}
+        ) url
+        WHERE issue.detail = url.indexUrl
+        AND isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
 
 </mapper>

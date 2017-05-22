@@ -103,7 +103,7 @@ public class LinkAvailabilityController {
         }
         if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), linkAvailabilityService);
-            if(list.size() == 0 || list == null){
+            if (list.size() == 0 || list == null) {
                 list.add(0);
             }
             issueBase.setIds(list);
@@ -119,7 +119,7 @@ public class LinkAvailabilityController {
         }
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
+        List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
         for (LinkAvailability link : linkAvailabilityList) {
             if (link.getIssueTypeId() == LinkIssueType.INVALID_LINK.value) {
                 link.setIssueTypeName(LinkIssueType.INVALID_LINK.name);
@@ -131,6 +131,17 @@ public class LinkAvailabilityController {
         }
         apiPageData.setData(linkAvailabilityList);
         return apiPageData;
+    }
+
+    /**
+     * 获取网站可用性
+     *
+     * @param issueBase
+     * @return
+     */
+    @RequestMapping(value = "/indexpage/status", method = RequestMethod.GET)
+    public Integer getIndexAvailability(@ModelAttribute IssueBase issueBase) {
+        return linkAvailabilityService.getIndexAvailability(issueBase);
     }
 
 
