@@ -46,9 +46,7 @@ public class QueryFilter {
         if (condFields == null) {
             condFields = new ArrayList<>();
         }
-        CondDBField field = new CondDBField();
-        field.setFieldName(fieldName);
-        field.setCondValue(value);
+        CondDBField field = new CondDBField(fieldName, value);
         condFields.add(field);
         return field;
     }
