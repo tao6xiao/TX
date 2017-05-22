@@ -106,7 +106,7 @@
         WHERE isResolved = 0
         <include refid="Query_Condition_IssueBase"/>
         <include refid="Query_Search_IssueBase"/>
-        limit #{currPage},#{pageSize}
+        limit #{pageIndex},#{pageSize}
     </select>
 
 </mapper>

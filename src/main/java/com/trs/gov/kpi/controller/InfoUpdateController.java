@@ -1,23 +1,21 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.InfoUpdateType;
-import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
-import com.trs.gov.kpi.utils.*;
+import com.trs.gov.kpi.utils.InitQueryFiled;
+import com.trs.gov.kpi.utils.IssueCounter;
+import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,17 +53,7 @@ public class InfoUpdateController {
             issueBase.setBeginDateTime(sdf.format(infoUpdateService.getEarliestIssueTime()));
         }
         ParamCheckUtil.paramCheck(issueBase);
-        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
-        List<HistoryStatistics> list = new ArrayList<>();
-        for (HistoryDate date : dateList) {
-            HistoryStatistics historyStatistics = new HistoryStatistics();
-            issueBase.setBeginDateTime(date.getBeginDate());
-            issueBase.setEndDateTime(date.getEndDate());
-            historyStatistics.setValue(infoUpdateService.getIssueHistoryCount(issueBase));
-            historyStatistics.setTime(date.getMonth());
-            list.add(historyStatistics);
-        }
-        return list;
+        return infoUpdateService.getIssueHistoryCount(issueBase);
     }
 
     /**
@@ -88,11 +76,6 @@ public class InfoUpdateController {
         int itemCount = infoUpdateService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
-        for (InfoUpdate info : infoUpdateList) {
-            if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
-                info.setIssueTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);
-            }
-        }
         apiPageData.setData(infoUpdateList);
         return apiPageData;
     }

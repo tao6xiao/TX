@@ -146,7 +146,7 @@
         WHERE isResolved = 0
         <include refid="Query_Condition_IssueBase"/>
         <include refid="Query_Search_IssueBase"/>
-        limit #{currPage},#{pageSize}
+        limit #{pageIndex},#{pageSize}
     </select>
 
     <select id="getAllUpdateNotInTime" resultType="java.util.Map">
@@ -235,21 +235,21 @@
         GROUP BY customer2
     </select>
 
-<!--    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.Issue">
-        <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="siteId" jdbcType="INTEGER" property="siteId" />
-        <result column="typeId" jdbcType="INTEGER" property="typeId" />
-        <result column="subTypeId" jdbcType="INTEGER" property="subTypeId" />
-        <result column="detail" jdbcType="VARCHAR" property="detail" />
-        <result column="issueTime" jdbcType="TIMESTAMP" property="issueTime" />
-        <result column="isResolved" jdbcType="BIT" property="isResolved" />
-        <result column="isDel" jdbcType="BIT" property="isDel" />
-        <result column="customer1" jdbcType="VARCHAR" property="customer1" />
-        <result column="customer2" jdbcType="VARCHAR" property="customer2" />
-        <result column="customer3" jdbcType="VARCHAR" property="customer3" />
-    </resultMap>
-    <sql id="Base_Column_List">
-        id, siteId, typeId, subTypeId, detail, issueTime, isResolved, isDel, customer1, customer2,
-        customer3
-    </sql>-->
+    <!--    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.Issue">
+            <id column="id" jdbcType="INTEGER" property="id" />
+            <result column="siteId" jdbcType="INTEGER" property="siteId" />
+            <result column="typeId" jdbcType="INTEGER" property="typeId" />
+            <result column="subTypeId" jdbcType="INTEGER" property="subTypeId" />
+            <result column="detail" jdbcType="VARCHAR" property="detail" />
+            <result column="issueTime" jdbcType="TIMESTAMP" property="issueTime" />
+            <result column="isResolved" jdbcType="BIT" property="isResolved" />
+            <result column="isDel" jdbcType="BIT" property="isDel" />
+            <result column="customer1" jdbcType="VARCHAR" property="customer1" />
+            <result column="customer2" jdbcType="VARCHAR" property="customer2" />
+            <result column="customer3" jdbcType="VARCHAR" property="customer3" />
+        </resultMap>
+        <sql id="Base_Column_List">
+            id, siteId, typeId, subTypeId, detail, issueTime, isResolved, isDel, customer1, customer2,
+            customer3
+        </sql>-->
 </mapper>
