@@ -1,10 +1,12 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,14 +40,9 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/all/count", method = RequestMethod.GET)
-    public Integer getAllIssueCount(@ModelAttribute IssueBase issueBase) {
+    public Integer getAllIssueCount(@ModelAttribute IssueBase issueBase) throws BizException{
 
-        //重置查询条件，使查询所有
-        List<Integer> list = new ArrayList<>();
-        Integer exception = 0;
-        list.add(exception);
-        issueBase.setIds(list);
-        issueBase.setSearchText("");
+        ParamCheckUtil.paramCheck(issueBase);
 
         int linkAvailabilityCount = linkAvailabilityService.getHandledIssueCount(issueBase) + linkAvailabilityService.getUnhandledIssueCount(issueBase);
         int infoUpdateCount = infoUpdateService.getHandledIssueCount(issueBase) + infoUpdateService.getUnhandledIssueCount(issueBase) + infoUpdateService.getUpdateWarningCount(issueBase);
@@ -60,7 +57,9 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
-    public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) {
+    public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) throws BizException{
+
+        ParamCheckUtil.paramCheck(issueBase);
         List linkAvailabilityList = linkAvailabilityService.getIssueCountByType(issueBase);
         List infoUpdateList = infoUpdateService.getIssueCountByType(issueBase);
         List infoErrorList = infoErrorService.getIssueCountByType(issueBase);
@@ -78,7 +77,9 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/warning/bytype/count")
-    public List<Statistics> getWarningCount(@ModelAttribute IssueBase issueBase) {
+    public List<Statistics> getWarningCount(@ModelAttribute IssueBase issueBase) throws BizException{
+        ParamCheckUtil.paramCheck(issueBase);
+
         List<Statistics> list = infoUpdateService.getWarningCountByType(issueBase);
 
         return list;
