@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.*;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -54,8 +55,8 @@ public class LinkAvailabilityController {
         return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
     }
 
-    @RequestMapping(value = "/unhandled/count",method = RequestMethod.GET)
-    public int getUnhandledIssueCount(IssueBase issueBase){
+    @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
+    public int getUnhandledIssueCount(IssueBase issueBase) {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
@@ -154,7 +155,25 @@ public class LinkAvailabilityController {
      */
     @RequestMapping(value = "/indexpage/status", method = RequestMethod.GET)
     public Integer getIndexAvailability(@ModelAttribute IssueBase issueBase) {
-        return linkAvailabilityService.getIndexAvailability(issueBase);
+        String indexUrl = linkAvailabilityService.getIndexUrl(issueBase);
+        return linkAvailabilityService.getIndexAvailability(indexUrl, issueBase);
+    }
+
+    @RequestMapping(value = "/check/index", method = RequestMethod.GET)
+    public IndexPage showIndexAvailability(@ModelAttribute IssueBase issueBase) {
+        String indexUrl = linkAvailabilityService.getIndexUrl(issueBase);
+        IndexPage indexPage = new IndexPage();
+        indexPage.setIndexUrl(indexUrl);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if (linkAvailabilityService.getIndexAvailability(indexUrl, issueBase) == 1) {
+            indexPage.setIndexAvailable(true);
+            indexPage.setMonitorTime(sdf.format(new Date()));
+        } else {
+            indexPage.setIndexAvailable(false);
+            indexPage.setMonitorTime(sdf.format(linkAvailabilityService.getMonitorTime(indexUrl, issueBase)));
+        }
+
+        return indexPage;
     }
 
 

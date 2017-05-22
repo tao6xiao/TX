@@ -142,12 +142,23 @@
 
     <select id="getIndexAvailability" resultType="int">
         SELECT count(1)
-        FROM issue,(
+        FROM issue
+        WHERE issue.detail = #{indexUrl}
+        AND isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
+
+    <select id="getIndexUrl" resultType="String">
         SELECT indexUrl
         FROM monitorsite
         WHERE siteId = #{issueBase.siteId}
-        ) url
-        WHERE issue.detail = url.indexUrl
+    </select>
+
+    <select id="getMonitorTime" resultType="java.sql.Date">
+        SELECT issueTime
+        FROM issue
+        WHERE issue.detail = #{indexUrl}
         AND isResolved = 0
         <include refid="Query_Condition_IssueBase"/>
         <include refid="Query_StartEndTime_IssueBase"/>

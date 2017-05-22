@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -99,8 +100,8 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     }
 
     @Override
-    public int getIndexAvailability(IssueBase issueBase) {
-        int flag = linkAvailabilityMapper.getIndexAvailability(issueBase);
+    public int getIndexAvailability(String indexUrl, IssueBase issueBase) {
+        int flag = linkAvailabilityMapper.getIndexAvailability(indexUrl, issueBase);
 
         //返回0表示不可用，1表示可用
         if (flag > 0) {
@@ -108,5 +109,15 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
         } else {
             return 1;
         }
+    }
+
+    @Override
+    public String getIndexUrl(IssueBase issueBase) {
+        return linkAvailabilityMapper.getIndexUrl(issueBase);
+    }
+
+    @Override
+    public Date getMonitorTime(String indexUrl, IssueBase issueBase) {
+        return linkAvailabilityMapper.getMonitorTime(indexUrl, issueBase);
     }
 }

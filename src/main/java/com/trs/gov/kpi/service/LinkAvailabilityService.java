@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,5 +21,9 @@ public interface LinkAvailabilityService extends OperationService {
 
     List<Statistics> getIssueCountByType(IssueBase issueBase);
 
-    int getIndexAvailability(IssueBase issueBase);
+    int getIndexAvailability(String indexUrl, IssueBase issueBase);
+
+    String getIndexUrl(IssueBase issueBase);
+
+    Date getMonitorTime(String indexUrl, IssueBase issueBase);
 }

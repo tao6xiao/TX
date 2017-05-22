@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.LinkAvailability;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,11 +64,28 @@ public interface LinkAvailabilityMapper extends OperationMapper {
     int getConnTimeoutCount(@Param("issueBase") IssueBase issueBase);
 
     /**
-     * 查询问题中是否包含首页不可用
+     * 根据站点编号获取首页
      *
      * @param issueBase
      * @return
      */
-    int getIndexAvailability(@Param("issueBase") IssueBase issueBase);
+    String getIndexUrl(@Param("issueBase") IssueBase issueBase);
+
+    /**
+     * 查询问题中是否包含首页不可用
+     *
+     * @param indexUrl
+     * @return
+     */
+    int getIndexAvailability(@Param("indexUrl") String indexUrl, @Param("issueBase") IssueBase issueBase);
+
+    /**
+     * 查询首页不可用问题的监测时间
+     *
+     * @param indexUrl
+     * @return
+     */
+    Date getMonitorTime(@Param("indexUrl") String indexUrl, @Param("issueBase") IssueBase issueBase);
+
 
 }
