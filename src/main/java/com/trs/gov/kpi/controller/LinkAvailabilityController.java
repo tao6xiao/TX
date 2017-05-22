@@ -41,32 +41,16 @@ public class LinkAvailabilityController {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(IssueBase issueBase) {
-        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一
-        }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
-            issueBase.setSearchText("");
-            List list = new ArrayList();
-            Integer exception = 0;
-            list.add(exception);
-            issueBase.setIds(list);
-        }
+    public List getIssueCount(IssueBase issueBase) throws BizException{
+        ParamCheckUtil.paramCheck(issueBase);
+
         return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
     }
 
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
-    public int getUnhandledIssueCount(IssueBase issueBase) {
-        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一
-        }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
-            issueBase.setSearchText("");
-            List list = new ArrayList();
-            Integer exception = 0;
-            list.add(exception);
-            issueBase.setIds(list);
-        }
+    public int getUnhandledIssueCount(IssueBase issueBase) throws BizException{
+        ParamCheckUtil.paramCheck(issueBase);
+
         return linkAvailabilityService.getUnhandledIssueCount(issueBase);
     }
 
@@ -78,15 +62,12 @@ public class LinkAvailabilityController {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) {
+    public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException{
         if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             issueBase.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
         }
-        if (issueBase.getEndDateTime() == null || issueBase.getEndDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            issueBase.setEndDateTime(sdf.format(new Date()));
-        }
+        ParamCheckUtil.paramCheck(issueBase);
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
@@ -112,25 +93,12 @@ public class LinkAvailabilityController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        if (issueBase.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
         if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), linkAvailabilityService);
-            if (list.size() == 0 || list == null) {
-                list.add(0);
-            }
             issueBase.setIds(list);
         }
-        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
-            List<Integer> list = new ArrayList<>();
-            Integer exception = 0;
-            list.add(exception);
-            issueBase.setIds(list);
-        }
-        if (issueBase.getSearchText() == null) {
-            issueBase.setSearchText("");
-        }
+        ParamCheckUtil.paramCheck(issueBase);
+
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
@@ -154,7 +122,9 @@ public class LinkAvailabilityController {
      * @return
      */
     @RequestMapping(value = "/indexpage/status", method = RequestMethod.GET)
-    public Integer getIndexAvailability(@ModelAttribute IssueBase issueBase) {
+    public Integer getIndexAvailability(@ModelAttribute IssueBase issueBase) throws BizException{
+
+        ParamCheckUtil.paramCheck(issueBase);
         String indexUrl = linkAvailabilityService.getIndexUrl(issueBase);
         return linkAvailabilityService.getIndexAvailability(indexUrl, issueBase);
     }
