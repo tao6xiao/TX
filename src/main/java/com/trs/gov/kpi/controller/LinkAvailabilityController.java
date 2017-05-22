@@ -44,16 +44,29 @@ public class LinkAvailabilityController {
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
         }
-        if (issueBase.getSearchText() == null) {
-            issueBase.setSearchText("");
-        }
         if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
+            issueBase.setSearchText("");
             List list = new ArrayList();
             Integer exception = 0;
             list.add(exception);
             issueBase.setIds(list);
         }
         return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
+    }
+
+    @RequestMapping(value = "/unhandled/count",method = RequestMethod.GET)
+    public int getUnhandledIssueCount(IssueBase issueBase){
+        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
+            issueBase.setEndDateTime(InitEndTime.initTime(issueBase.getEndDateTime()));//结束日期加一
+        }
+        if (issueBase.getSearchText() == null || issueBase.getSearchText().trim().isEmpty()) {
+            issueBase.setSearchText("");
+            List list = new ArrayList();
+            Integer exception = 0;
+            list.add(exception);
+            issueBase.setIds(list);
+        }
+        return linkAvailabilityService.getUnhandledIssueCount(issueBase);
     }
 
 
@@ -134,7 +147,7 @@ public class LinkAvailabilityController {
     }
 
     /**
-     * 获取网站可用性
+     * 获取网站首页可用性
      *
      * @param issueBase
      * @return
