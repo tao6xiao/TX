@@ -56,19 +56,20 @@ public interface InfoUpdateMapper extends OperationMapper {
      * @param issueBase
      * @return
      */
-    Map<Integer, Integer> getAllUpdateNotInTime(@Param("issueBase") IssueBase issueBase);
+    List<Map<Integer, Integer>> getAllUpdateNotInTime(@Param("issueBase") IssueBase issueBase);
 
     /**
-     * 获取A类栏目跟性格不及时的栏目数
+     * 获取更新不及时的栏目id（通用）
      * @param issueBase
      * @return
      */
-    Map<Integer, Integer> getAUpdateNotInTime(@Param("issueBase") IssueBase issueBase, @Param("chnlSet") Set chnlSet);
+    List<Integer> getIdsUpdateNotInTime(@Param("issueBase") IssueBase issueBase);
 
     /**
-     * 获取首页栏目更新不及时数量
+     * 获取更新不及时的栏目数（通用）
      * @param issueBase
      * @return
      */
-    Map<Integer, Integer> getIndexUpdateNotInTime(@Param("issueBase") IssueBase issueBase, @Param("chnlSet") Set chnlSet);
+    List<Map<Integer, Integer>> getUpdateNotInTime(@Param("issueBase") IssueBase issueBase, @Param("childChnlIds") Set childChnlIds);
+
 }

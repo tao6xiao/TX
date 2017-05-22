@@ -12,8 +12,6 @@ import java.util.Date;
  * Created by ranwei on 2017/5/16.
  */
 public class InitTime {
-    @Resource
-    private static OperationService operationService;
 
     public static String initTime(String endTime) {
         String time = null;
@@ -52,9 +50,8 @@ public class InitTime {
      * @return
      * @throws ParseException
      */
-    public static Date CheckBeginDateTime(String beginDateTime) throws ParseException {
+    public static Date CheckBeginDateTime(String beginDateTime, Date ealiestTime) throws ParseException {
         if(beginDateTime == null){
-            Date ealiestTime = operationService.getEarliestIssueTime();
             return ealiestTime;
         }else {
             Date setTime = getNowTimeFormat(beginDateTime);

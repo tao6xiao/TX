@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -172,10 +173,11 @@ public class InfoUpdateController {
      * @return
      * @throws BizException
      * @throws ParseException
+     * @throws RemoteException
      */
     @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
     @ResponseBody
-    public List<Statistics> getUpdateNotInTimeCountList(@RequestParam Integer siteId, String beginDateTime, String endDateTime) throws BizException, ParseException {
+    public List<Statistics> getUpdateNotInTimeCountList(@RequestParam Integer siteId, String beginDateTime, String endDateTime) throws BizException, ParseException, RemoteException {
         if(siteId == null){
             throw new BizException("站点编号存在null值");
         }
