@@ -3,9 +3,10 @@ package com.trs.gov.kpi.service;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
 public interface LinkAvailabilityService extends OperationService {
 
 
-    int getIssueHistoryCount(IssueBase issueBase);
+    List<HistoryStatistics> getIssueHistoryCount(IssueBase issueBase);
 
     List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
 
@@ -26,7 +27,7 @@ public interface LinkAvailabilityService extends OperationService {
 
     String getIndexUrl(IssueBase issueBase);
 
-    Date getMonitorTime(String indexUrl, IssueBase issueBase);
+    IndexPage showIndexAvailability(IssueBase issueBase);
 
     List<LinkAvailability> getUnsolvedIssueList(QueryFilter filter);
 

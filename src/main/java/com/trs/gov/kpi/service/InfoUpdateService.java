@@ -3,6 +3,7 @@ package com.trs.gov.kpi.service;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.text.ParseException;
@@ -13,9 +14,9 @@ import java.util.List;
  */
 public interface InfoUpdateService extends OperationService {
 
-    int getIssueHistoryCount(IssueBase issueBase);
+    List<HistoryStatistics> getIssueHistoryCount(IssueBase issueBase);
 
-    List<InfoUpdate> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
+    List<InfoUpdate> getIssueList(Integer pageIndex, Integer pageSize, IssueBase issueBase);
 
     List<Statistics> getIssueCountByType(IssueBase issueBase);
 
@@ -23,6 +24,7 @@ public interface InfoUpdateService extends OperationService {
 
     /**
      * 获取栏目信息更新不及时问题的统计信息
+     *
      * @param siteId
      * @param beginDateTime
      * @param endDateTime

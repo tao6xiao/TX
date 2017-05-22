@@ -2,10 +2,9 @@ package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.CondDBField;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.QueryFilterPager;
+import com.trs.gov.kpi.entity.dao.SortDBField;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,20 +28,22 @@ public interface LinkAvailabilityMapper extends OperationMapper {
     /**
      * 查询未解决问题集合
      *
-     * @param currPage
+     * @param startIndex
      * @param pageSize
      * @param issueBase
      * @return
      */
-    List<LinkAvailability> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
+    List<LinkAvailability> getIssueList(@Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
 
     /**
-     * 查询未解决问题集合
-     * @param selectSql
+     * 获取符合条件的链接问题数量
+     *
      * @param condFields
+     * @param sortFields
+     * @param pager
      * @return
      */
-    List<LinkAvailability> getIssueListBySql(@Param("selectSql") String selectSql, @Param("condFields") List<CondDBField> condFields, @Param("pager") QueryFilterPager pager);
+    List<LinkAvailability> getIssueListBySql(@Param("condFields") List<CondDBField> condFields, @Param("sortFields") List<SortDBField> sortFields, @Param("pager") QueryFilterPager pager);
 
 
     /**
@@ -56,20 +57,10 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      * 获取符合条件的链接问题数量
      *
      * @param condFields
-     * 查询未解决失效链接的问题数
-     *
-     * @param issueBase
-     * @return
-     */
-
-	/**
-     * 获取符合条件的链接问题数量
-     *
-     * @param condFields
      * @return
      */
     int getIssueCount(@Param("condFields") List<CondDBField> condFields);
-	
+
     /**
      * 查询未解决失效图片的问题数
      *
@@ -111,7 +102,6 @@ public interface LinkAvailabilityMapper extends OperationMapper {
     Date getMonitorTime(@Param("indexUrl") String indexUrl, @Param("issueBase") IssueBase issueBase);
 
     /**
-     *
      * @param issueBase
      * @return
      */

@@ -12,6 +12,11 @@ public class CondDBField {
     private boolean isEndTime = false;
     private boolean isCollection = false;
 
+    public CondDBField(String fieldName, Object condValue) {
+        this.fieldName = fieldName;
+        this.condValue = condValue;
+    }
+
     public String getFieldName() {
         return fieldName;
     }

@@ -5,18 +5,20 @@ import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.constant.LinkType;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
+import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
+import com.trs.gov.kpi.utils.DateSplitUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,13 +46,38 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     }
 
     @Override
-    public int getIssueHistoryCount(IssueBase issueBase) {
-        return linkAvailabilityMapper.getIssueHistoryCount(issueBase);
+    public List<HistoryStatistics> getIssueHistoryCount(IssueBase issueBase) {
+
+        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
+        List<HistoryStatistics> list = new ArrayList<>();
+        for (HistoryDate date : dateList) {
+            HistoryStatistics historyStatistics = new HistoryStatistics();
+            issueBase.setBeginDateTime(date.getBeginDate());
+            issueBase.setEndDateTime(date.getEndDate());
+            historyStatistics.setValue(linkAvailabilityMapper.getIssueHistoryCount(issueBase));
+            historyStatistics.setTime(date.getMonth());
+            list.add(historyStatistics);
+        }
+
+        return list;
     }
 
     @Override
-    public List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase) {
-        return linkAvailabilityMapper.getIssueList(currPage, pageSize, issueBase);
+    public List<LinkAvailability> getIssueList(Integer startIndex, Integer pageSize, IssueBase issueBase) {
+
+
+        List<LinkAvailability> linkAvailabilityList = linkAvailabilityMapper.getIssueList(startIndex, pageSize, issueBase);
+        for (LinkAvailability link : linkAvailabilityList) {
+            if (link.getIssueTypeId() == LinkIssueType.INVALID_LINK.value) {
+                link.setIssueTypeName(LinkIssueType.INVALID_LINK.name);
+            } else if (link.getIssueTypeId() == LinkIssueType.INVALID_IMAGE.value) {
+                link.setIssueTypeName(LinkIssueType.INVALID_IMAGE.name);
+            } else if (link.getIssueTypeId() == LinkIssueType.CONNECTION_TIME_OUT.value) {
+                link.setIssueTypeName(LinkIssueType.CONNECTION_TIME_OUT.name);
+            }
+        }
+
+        return linkAvailabilityList;
     }
 
     @Override
@@ -64,7 +91,7 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     public List<LinkAvailability> getUnsolvedIssueList(QueryFilter filter) {
         filter.addCond("isResolved", Integer.valueOf(0));
         filter.addCond("isDel", Integer.valueOf(0));
-        return linkAvailabilityMapper.getIssueListBySql(null, filter.getCondFields(), filter.getPager());
+        return linkAvailabilityMapper.getIssueListBySql(filter.getCondFields(), filter.getSortFields(), filter.getPager());
     }
 
     @Override
@@ -135,7 +162,19 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     }
 
     @Override
-    public Date getMonitorTime(String indexUrl, IssueBase issueBase) {
-        return linkAvailabilityMapper.getMonitorTime(indexUrl, issueBase);
+    public IndexPage showIndexAvailability(IssueBase issueBase) {
+
+        String indexUrl = getIndexUrl(issueBase);
+        IndexPage indexPage = new IndexPage();
+        indexPage.setIndexUrl(indexUrl);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if (getIndexAvailability(indexUrl, issueBase) == 1) {
+            indexPage.setIndexAvailable(true);
+            indexPage.setMonitorTime(sdf.format(new Date()));
+        } else {
+            indexPage.setIndexAvailable(false);
+            indexPage.setMonitorTime(sdf.format(linkAvailabilityMapper.getMonitorTime(indexUrl, issueBase)));
+        }
+        return indexPage;
     }
 }

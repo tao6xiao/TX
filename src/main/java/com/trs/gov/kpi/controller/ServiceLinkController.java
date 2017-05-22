@@ -114,6 +114,30 @@ public class ServiceLinkController {
         return apiPageData;
     }
 
+    /**
+     * 查询未解决问题总数
+     * @param requestParam
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/count", method = RequestMethod.GET)
+    public Integer getIssueCount(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
+
+        if (requestParam.getSiteId() == null) {
+            throw new BizException("参数不合法");
+        }
+
+        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(requestParam);
+        filter.addCond("typeId", Integer.valueOf(IssueType.AVAILABLE_ISSUE.getCode()));
+
+        Set<Integer> ids = getChannelIdsOfHandleGuide(requestParam.getSiteId());
+        if (!ids.isEmpty()) {
+            filter.addCond("customer2", ids).setCollection(true);
+        }
+
+        return linkAvailabilityService.getUnsolvedIssueCount(filter);
+    }
+
     private Set<Integer> getChannelIdsOfHandleGuide(int siteId) throws RemoteException {
         List<ChannelGroup> channelGroupList = chnlGroupMapper.selectPageDataBySiteIdAndGroupId(
                 siteId, EnumChannelGroup.HANDLE_GUIDE.getId(), 0, 10000);

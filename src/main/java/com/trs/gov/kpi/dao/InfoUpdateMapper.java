@@ -5,7 +5,6 @@ import com.trs.gov.kpi.entity.IssueBase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +32,7 @@ public interface InfoUpdateMapper extends OperationMapper {
      * @param issueBase
      * @return
      */
-    List<InfoUpdate> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
+    List<InfoUpdate> getIssueList(@Param("pageIndex") Integer pageIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
 
     /**
      * 查询更新不及时的问题数
@@ -53,6 +52,7 @@ public interface InfoUpdateMapper extends OperationMapper {
 
     /**
      * 查询信息更新不及时的所有栏目数
+     *
      * @param issueBase
      * @return
      */
@@ -60,6 +60,7 @@ public interface InfoUpdateMapper extends OperationMapper {
 
     /**
      * 获取更新不及时的栏目id（通用）
+     *
      * @param issueBase
      * @return
      */
@@ -67,6 +68,7 @@ public interface InfoUpdateMapper extends OperationMapper {
 
     /**
      * 获取更新不及时的栏目数（通用）
+     *
      * @param issueBase
      * @return
      */

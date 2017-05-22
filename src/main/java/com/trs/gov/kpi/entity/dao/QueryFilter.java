@@ -10,11 +10,8 @@ import java.util.List;
  */
 public class QueryFilter {
 
-//    private List<QueryDBField> sortFields;
-//    private List<QueryDBField> condFields;
-    private List<String> sortFields;
+    private List<SortDBField> sortFields;
     private List<CondDBField> condFields;
-    private List<String> selectFields;
     private QueryFilterPager pager;
 
     public void addSortField(String filedName, boolean isAsc) {
@@ -24,18 +21,25 @@ public class QueryFilter {
         if (sortFields == null) {
             sortFields = new ArrayList<>();
         }
-        String field = filedName;
-//        QueryDBField field = new QueryDBField();
-//        field.setName(filedName);
-        if (isAsc) {
-            field += " asc";
-//            field.setSort("asc");
-        } else {
-//            field.setSort("desc");
-            field += " desc";
-        }
 
+        SortDBField field = new SortDBField();
+        field.setFieldName(filedName);
+        field.setAsc(isAsc);
         sortFields.add(field);
+    }
+
+    public void addSortField(SortDBField sortField) {
+        if (sortField == null) {
+            return;
+        }
+        if (sortFields == null) {
+            sortFields = new ArrayList<>();
+        }
+        sortFields.add(sortField);
+    }
+
+    public List<SortDBField> getSortFields() {
+        return sortFields;
     }
 
     public CondDBField addCond(String fieldName, Object value) {
@@ -46,9 +50,7 @@ public class QueryFilter {
         if (condFields == null) {
             condFields = new ArrayList<>();
         }
-        CondDBField field = new CondDBField();
-        field.setFieldName(fieldName);
-        field.setCondValue(value);
+        CondDBField field = new CondDBField(fieldName, value);
         condFields.add(field);
         return field;
     }
@@ -60,55 +62,8 @@ public class QueryFilter {
         condFields.add(field);
     }
 
-    public void addSelectField(String fieldName) {
-        if (fieldName == null || fieldName.trim().isEmpty()) {
-            return;
-        }
-        if (selectFields == null) {
-            selectFields = new ArrayList<>();
-        }
-
-        selectFields.add(fieldName);
-    }
-
     public List<CondDBField> getCondFields() {
         return condFields;
-
-//        return condFields;
-//
-//        StringBuilder whereSql = new StringBuilder();
-//        if (condFields != null) {
-//            for (String cond : condFields) {
-//                whereSql.append(cond);
-//                whereSql.append(" AND ");
-//            }
-//            whereSql.setLength(whereSql.length() - " AND ".length());
-//            whereSql = new StringBuilder(whereSql.toString());
-//        }
-//
-//        if (sortFields != null) {
-//            whereSql.append(" order by ");
-//            for (String cond : sortFields) {
-//                whereSql.append(cond);
-//                whereSql.append(",");
-//            }
-//            whereSql.setLength(whereSql.length() - ",".length());
-//        }
-//        return whereSql.toString();
-    }
-
-    public String getSelectSql() {
-        if (selectFields == null) {
-            return "*";
-        } else {
-            StringBuilder selectSql = new StringBuilder();
-            for (String field : selectFields) {
-                selectSql.append(field);
-                selectSql.append(",");
-            }
-            selectSql.setLength(selectSql.length()-1);
-            return selectSql.toString();
-        }
     }
 
     public void setPager(Pager pager) {
