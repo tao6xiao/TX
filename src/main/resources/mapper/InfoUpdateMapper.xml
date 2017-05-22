@@ -86,6 +86,30 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 51
+        AND subTypeId = 1
+        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
+            AND issueTime
+            <![CDATA[
+            >
+            ]]>
+            #{issueBase.beginDateTime}
+        </if>
+        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
+            AND issueTime
+            <![CDATA[
+            <
+            ]]>
+            #{issueBase.endDateTime}
+        </if>
+    </select>
+
+    <select id="getSelfWarningCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND siteId = #{issueBase.siteId}
+        AND typeId = 51
+        AND subTypeId = 2
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[

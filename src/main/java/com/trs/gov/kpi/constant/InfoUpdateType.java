@@ -11,7 +11,7 @@ public enum InfoUpdateType {
 
     public final String name;
 
-    InfoUpdateType(int type, String name) {
+    private InfoUpdateType(int type, String name) {
         this.value = type;
         this.name = name;
     }
