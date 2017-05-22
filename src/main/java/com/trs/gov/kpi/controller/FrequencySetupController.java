@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -11,6 +12,7 @@ import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ public class FrequencySetupController {
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException {
+    public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
         if (siteId == null) {
             throw new BizException("站点编号不能为null值");
         }
@@ -61,7 +63,7 @@ public class FrequencySetupController {
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.POST)
     @ResponseBody
-    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequestDetail frequencySetupSetRequestDetail) throws BizException {
+    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequestDetail frequencySetupSetRequestDetail) throws BizException, ParseException {
         if (frequencySetupSetRequestDetail.getSiteId() == null || frequencySetupSetRequestDetail.getPresetFeqId() == null || frequencySetupSetRequestDetail.getChnlIds() == null || frequencySetupSetRequestDetail.getChnlIds().length == 0) {
             throw new BizException("参数存在null值");
         }

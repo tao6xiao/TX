@@ -96,11 +96,12 @@ drop TABLE IF EXISTS defaultupdatefreq;
 CREATE TABLE defaultupdatefreq(
 		siteId INT NOT NULL COMMENT '站点编号',
 		value INT NOT NULL COMMENT '周期值',
+		setTime datetime NOT NULL COMMENT '设置时间',
 		PRIMARY KEY(siteId)
 )COMMENT='按需更新的自查提醒周期表';
-INSERT INTO defaultupdatefreq VALUES(1,1);
-INSERT INTO defaultupdatefreq VALUES(2,2);
-INSERT INTO defaultupdatefreq VALUES(3,3);
+INSERT INTO defaultupdatefreq VALUES(1,1,'2017-5-17 10:20:20');
+INSERT INTO defaultupdatefreq VALUES(2,2,'2017-5-17 10:21:21');
+INSERT INTO defaultupdatefreq VALUES(3,3,'2017-5-17 10:22:22');
 
 -- 栏目更新频率表
 drop TABLE IF EXISTS frequencysetup;
@@ -109,12 +110,13 @@ CREATE TABLE frequencysetup(
 		siteId INT NOT NULL COMMENT '站点编号',
 		presetFeqId INT NOT NULL COMMENT '预设频率编号',
 		chnlId INT NOT NULL COMMENT '栏目编号',
+		setTime datetime NOT NULL COMMENT '设置时间',
 		PRIMARY KEY(id),
 		UNIQUE KEY(siteId,chnlId)
 )COMMENT='栏目更新频率表';
-INSERT into frequencysetup VALUES(null,1,1,1);
-INSERT into frequencysetup VALUES(null,1,2,2);
-INSERT into frequencysetup VALUES(null,1,3,3);
+INSERT into frequencysetup VALUES(null,1,1,1,'2017-5-22 10:20:20');
+INSERT into frequencysetup VALUES(null,1,2,2,'2017-5-22 10:20:20');
+INSERT into frequencysetup VALUES(null,1,3,3,'2017-5-22 10:20:20');
 
 -- 栏目分类表
 drop TABLE IF EXISTS chnlgroup;

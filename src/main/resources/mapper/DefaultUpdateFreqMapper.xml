@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.DefaultUpdateFreq">
     <id column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="value" jdbcType="INTEGER" property="value" />
+    <result column="setTime" jdbcType="TIMESTAMP" property="setTime" />
   </resultMap>
   <sql id="Base_Column_List">
     siteId, value
@@ -19,8 +20,8 @@
     where siteId = #{siteId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.trs.gov.kpi.entity.DefaultUpdateFreq">
-    insert into defaultupdatefreq (siteId, value)
-    values (#{siteId,jdbcType=INTEGER}, #{value,jdbcType=INTEGER})
+    insert into defaultupdatefreq (siteId, value, setTime)
+    values (#{siteId,jdbcType=INTEGER}, #{value,jdbcType=INTEGER}, #{setTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.DefaultUpdateFreq">
     insert into defaultupdatefreq
@@ -31,6 +32,9 @@
       <if test="value != null">
         value,
       </if>
+      <if test="setTime != null">
+        setTime
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="siteId != null">
@@ -38,6 +42,9 @@
       </if>
       <if test="value != null">
         #{value,jdbcType=INTEGER},
+      </if>
+      <if test="setTime != null">
+        #{setTime,jdbcType=TIMESTAMP}
       </if>
     </trim>
   </insert>
