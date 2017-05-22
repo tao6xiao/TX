@@ -4,10 +4,13 @@ import com.trs.gov.kpi.constant.EnumIndexUpdateType;
 import com.trs.gov.kpi.constant.InfoUpdateType;
 import com.trs.gov.kpi.constant.UpdateWarningType;
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
+import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
+import com.trs.gov.kpi.utils.DateSplitUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
@@ -43,13 +46,31 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
     }
 
     @Override
-    public int getIssueHistoryCount(IssueBase issueBase) {
-        return infoUpdateMapper.getIssueHistoryCount(issueBase);
+    public List<HistoryStatistics> getIssueHistoryCount(IssueBase issueBase) {
+
+        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(issueBase.getBeginDateTime(), issueBase.getEndDateTime());
+        List<HistoryStatistics> list = new ArrayList<>();
+        for (HistoryDate date : dateList) {
+            HistoryStatistics historyStatistics = new HistoryStatistics();
+            issueBase.setBeginDateTime(date.getBeginDate());
+            issueBase.setEndDateTime(date.getEndDate());
+            historyStatistics.setValue(infoUpdateMapper.getIssueHistoryCount(issueBase));
+            historyStatistics.setTime(date.getMonth());
+            list.add(historyStatistics);
+        }
+        return list;
     }
 
     @Override
-    public List<InfoUpdate> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase) {
-        return infoUpdateMapper.getIssueList(currPage, pageSize, issueBase);
+    public List<InfoUpdate> getIssueList(Integer pageIndex, Integer pageSize, IssueBase issueBase) {
+
+        List<InfoUpdate> infoUpdateList = infoUpdateMapper.getIssueList(pageIndex, pageSize, issueBase);
+        for (InfoUpdate info : infoUpdateList) {
+            if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
+                info.setIssueTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);
+            }
+        }
+        return infoUpdateList;
     }
 
     @Override
