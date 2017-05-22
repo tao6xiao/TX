@@ -79,7 +79,7 @@ public class LinkAvailabilityController {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             issueBase.setBeginDateTime(date.getBeginDate());
             issueBase.setEndDateTime(date.getEndDate());
-            historyStatistics.setValue(linkAvailabilityService.getLinkIssueHistoryCount(issueBase));
+            historyStatistics.setValue(linkAvailabilityService.getIssueHistoryCount(issueBase));
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
         }

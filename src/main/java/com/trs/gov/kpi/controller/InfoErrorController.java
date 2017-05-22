@@ -105,7 +105,7 @@ public class InfoErrorController {
             List list = InitQueryFiled.init(infoError.getSearchText(), infoErrorService);
             infoError.setIds(list);
         }
-        if (infoError.getSearchText() == null || infoError.getSearchText() == "") {
+        if (infoError.getSearchText() == null || infoError.getSearchText().trim().isEmpty()) {
             List<Integer> list = new ArrayList<>();
             Integer exception = 0;
             list.add(exception);

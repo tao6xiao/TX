@@ -12,7 +12,7 @@ import java.util.List;
 public interface LinkAvailabilityService extends OperationService {
 
 
-    int getLinkIssueHistoryCount(IssueBase issueBase);
+    int getIssueHistoryCount(IssueBase issueBase);
 
     List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
 

@@ -39,8 +39,8 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     }
 
     @Override
-    public int getLinkIssueHistoryCount(IssueBase issueBase) {
-        return linkAvailabilityMapper.getLinkIssueHistoryCount(issueBase);
+    public int getIssueHistoryCount(IssueBase issueBase) {
+        return linkAvailabilityMapper.getIssueHistoryCount(issueBase);
     }
 
     @Override

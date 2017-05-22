@@ -17,20 +17,20 @@ public interface InfoErrorMapper extends OperationMapper {
     /**
      * 获取每月新增问题数
      *
-     * @param infoError
+     * @param issueBase
      * @return
      */
-    int getIssueHistoryCount(@Param("infoError") InfoError infoError);
+    int getIssueHistoryCount(@Param("issueBase") IssueBase issueBase);
 
     /**
      * 查询未解决问题集合
      *
      * @param currPage
      * @param pageSize
-     * @param infoError
+     * @param issueBase
      * @return
      */
-    List<InfoError> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("infoError") InfoError infoError);
+    List<InfoError> getIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
 
     /**
      * 查询未解决错别字的问题数

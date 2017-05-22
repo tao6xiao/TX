@@ -19,7 +19,7 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      * @param issueBase
      * @return
      */
-    int getLinkIssueHistoryCount(@Param("issueBase") IssueBase issueBase);
+    int getIssueHistoryCount(@Param("issueBase") IssueBase issueBase);
 
     /**
      * 查询未解决问题集合

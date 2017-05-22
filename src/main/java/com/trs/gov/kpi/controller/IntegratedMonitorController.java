@@ -56,9 +56,10 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) {
-        List list = linkAvailabilityService.getIssueCountByType(issueBase);
+        List list1 = linkAvailabilityService.getIssueCountByType(issueBase);
+        List list2 = infoErrorService.getIssueCountByType(issueBase);
 
-        return list;
+        return null;
     }
 
     /**
