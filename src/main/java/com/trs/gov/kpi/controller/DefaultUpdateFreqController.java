@@ -6,6 +6,7 @@ import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 
 /**
  * 按需更新的自查提醒Controller
@@ -45,17 +46,16 @@ public class DefaultUpdateFreqController {
      */
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.PUT)
     @ResponseBody
-    public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException {
+    public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException {
         if(defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null){
             throw new BizException("传入的参数存在null值");
         }
         int siteId = defaultUpdateFreq.getSiteId();
         DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
-        int num = 0;
         if(defaultUpdateFreqCheck == null){//不存在对应siteId的自查提醒记录，需要新增记录
-            num = defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
+            defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
         }else{//存在当前siteId对应自查提醒记录，修改记录
-            num = defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
+             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
         }
         return null;
     }

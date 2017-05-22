@@ -27,11 +27,6 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public int getUpdateNotIntimeCount(IssueBase issueBase) {
-        return getUpdateNotIntimeCount(issueBase);
-    }
-
-    @Override
     public int getUpdateWarningCount(IssueBase issueBase) {
         return operationMapper.getUpdateWarningCount(issueBase);
     }

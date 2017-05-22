@@ -15,12 +15,13 @@
         <result column="endDateTime" property="endDateTime"/>
     </resultMap>
 
-    <select id="getHandledIssueCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved IN (1,2)
+     <sql id="Query_Condition_IssueBase">
         AND siteId = #{issueBase.siteId}
         AND typeId = 1
+        AND isDel = 0
+    </sql>
+
+    <sql id="Query_StartEndTime_IssueBase">
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
@@ -35,14 +36,9 @@
             ]]>
             #{issueBase.endDateTime}
         </if>
-    </select>
+    </sql>
 
-    <select id="getUnhandledIssueCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        AND siteId = #{issueBase.siteId}
-        AND typeId = 1
+    <sql id="Query_Search_IssueBase">
         <if test="issueBase.searchField == 'id'">
             AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
         </if>
@@ -64,20 +60,14 @@
             )
             )
         </if>
-        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            >
-            ]]>
-            #{issueBase.beginDateTime}
-        </if>
-        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{issueBase.endDateTime}
-        </if>
+    </sql>
+
+    <select id="getHandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved IN (1,2)
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
     <select id="getIssueCount" resultType="int">
@@ -179,25 +169,48 @@
         1 = 1
     </select>
 
-    <select id="getIssueHistoryCount" resultType="int">
+    <select id="getInvalidLinkCount" resultType="int">
         SELECT count(1)
         FROM issue
-        WHERE siteId = #{linkAvailability.siteId}
-        AND typeId = 1
-        <if test="linkAvailability.beginDateTime != null">
-            AND issueTime
-            <![CDATA[
-            >
-            ]]>
-            #{linkAvailability.beginDateTime}
-        </if>
-        <if test="linkAvailability.endDateTime != null">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{linkAvailability.endDateTime}
-        </if>
+        WHERE isResolved = 0
+        AND subTypeId = 1
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
+
+    <select id="getInvalidImageCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND subTypeId = 2
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
+
+    <select id="getConnTimeoutCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND subTypeId = 3
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
+
+    <select id="getUnhandledIssueCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+        <include refid="Query_Search_IssueBase"/>
+    </select>
+
+    <select id="getLinkIssueHistoryCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE 1=1
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
 
@@ -208,44 +221,10 @@
         customer1,
         issueTime
         FROM issue
-        WHERE siteId = #{linkAvailability.siteId,jdbcType=INTEGER}
-        <if test="linkAvailability.searchField == 'id'">
-            AND id LIKE concat('%',#{linkAvailability.searchText,jdbcType=VARCHAR},'%')
-        </if>
-        <if test="linkAvailability.searchField == 'issueType' and linkAvailability.searchText != ''" >
-            AND subTypeId IN (
-            <foreach collection="linkAvailability.ids" item="item" separator=",">
-                #{item}
-            </foreach>
-            )
-        </if>
-        <if test="linkAvailability.searchField == null or linkAvailability.searchField == ''">
-            AND (
-            id LIKE concat('%',#{linkAvailability.searchText,jdbcType=VARCHAR},'%')
-            OR
-            subTypeId IN (
-            <foreach collection="linkAvailability.ids" item="item" separator=",">
-                #{item}
-            </foreach>
-            )
-            )
-        </if>
-        <if test="linkAvailability.beginDateTime != null and linkAvailability.beginDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            >
-            ]]>
-            #{linkAvailability.beginDateTime,jdbcType=DATE}
-        </if>
-        <if test="linkAvailability.endDateTime != null and linkAvailability.endDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{linkAvailability.endDateTime,jdbcType=DATE}
-        </if>
-        AND typeId = 1
-        AND isResolved = 0
+        WHERE isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+        <include refid="Query_Search_IssueBase"/>
         limit #{currPage},#{pageSize}
     </select>
 
@@ -370,5 +349,29 @@
         </foreach>
 
     </insert>
+
+    <select id="getIndexAvailability" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE issue.detail = #{indexUrl}
+        AND isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
+
+    <select id="getIndexUrl" resultType="String">
+        SELECT indexUrl
+        FROM monitorsite
+        WHERE siteId = #{issueBase.siteId}
+    </select>
+
+    <select id="getMonitorTime" resultType="java.sql.Date">
+        SELECT issueTime
+        FROM issue
+        WHERE issue.detail = #{indexUrl}
+        AND isResolved = 0
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
 
 </mapper>

@@ -7,8 +7,8 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,13 +42,13 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     }
 
     @Override
-    public int getIssueHistoryCount(LinkAvailability linkAvailability) {
-        return linkAvailabilityMapper.getIssueHistoryCount(linkAvailability);
+    public int getIssueHistoryCount(IssueBase issueBase) {
+        return linkAvailabilityMapper.getIssueHistoryCount(issueBase);
     }
 
     @Override
-    public List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, LinkAvailability linkAvailability) {
-        return linkAvailabilityMapper.getIssueList(currPage, pageSize, linkAvailability);
+    public List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase) {
+        return linkAvailabilityMapper.getIssueList(currPage, pageSize, issueBase);
     }
 
     @Override
@@ -87,5 +88,54 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
         return issue;
     }
 
+    @Override
+    public List<Statistics> getIssueCountByType(IssueBase issueBase) {
 
+        int invalidLinkCount = linkAvailabilityMapper.getInvalidLinkCount(issueBase);
+        Statistics invalidLinkStatistics = new Statistics();
+        invalidLinkStatistics.setCount(invalidLinkCount);
+        invalidLinkStatistics.setType(LinkIssueType.INVALID_LINK.value);
+        invalidLinkStatistics.setName(LinkIssueType.INVALID_LINK.name);
+
+        int invalidImageCount = linkAvailabilityMapper.getInvalidImageCount(issueBase);
+        Statistics invalidImageStatistics = new Statistics();
+        invalidImageStatistics.setCount(invalidImageCount);
+        invalidImageStatistics.setType(LinkIssueType.INVALID_IMAGE.value);
+        invalidImageStatistics.setName(LinkIssueType.INVALID_IMAGE.name);
+
+        int connTimeoutCount = linkAvailabilityMapper.getConnTimeoutCount(issueBase);
+        Statistics connTimeoutStatistics = new Statistics();
+        connTimeoutStatistics.setCount(connTimeoutCount);
+        connTimeoutStatistics.setType(LinkIssueType.CONNECTION_TIME_OUT.value);
+        connTimeoutStatistics.setName(LinkIssueType.CONNECTION_TIME_OUT.name);
+
+        List<Statistics> list = new ArrayList<>();
+        list.add(invalidLinkStatistics);
+        list.add(invalidImageStatistics);
+        list.add(connTimeoutStatistics);
+
+        return list;
+    }
+
+    @Override
+    public int getIndexAvailability(String indexUrl, IssueBase issueBase) {
+        int flag = linkAvailabilityMapper.getIndexAvailability(indexUrl, issueBase);
+
+        //返回0表示不可用，1表示可用
+        if (flag > 0) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    @Override
+    public String getIndexUrl(IssueBase issueBase) {
+        return linkAvailabilityMapper.getIndexUrl(issueBase);
+    }
+
+    @Override
+    public Date getMonitorTime(String indexUrl, IssueBase issueBase) {
+        return linkAvailabilityMapper.getMonitorTime(indexUrl, issueBase);
+    }
 }

@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.responsedata.Pager;
  * 主要用于处理分页的一些数据，比如，分页的数目计算
  * Created by he.lang on 2017/5/15.
  */
+ */
 public class PageInfoDeal {
     public static final Integer PAGE_SIZE_DEFAULT = 20;//默认分页大小
     public static final Integer PAGE_INDEX_DEFAULT = 1;//默认1，第一页

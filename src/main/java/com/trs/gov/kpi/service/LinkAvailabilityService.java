@@ -1,10 +1,12 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import org.apache.ibatis.annotations.Param;
+import com.trs.gov.kpi.entity.responsedata.Statistics;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,13 +14,19 @@ import java.util.List;
  */
 public interface LinkAvailabilityService extends OperationService {
 
-    int getIssueHistoryCount(LinkAvailability linkAvailability);
 
-    List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, LinkAvailability linkAvailability);
+    int getIssueHistoryCount(IssueBase issueBase);
+
+    List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
 
     void insertLinkAvailability(LinkAvailability linkAvailability);
 
-    List<LinkAvailability> getUnsolvedIssueList(QueryFilter filter);
+    List<Statistics> getIssueCountByType(IssueBase issueBase);
 
-    int getUnsolvedIssueCount(QueryFilter filter);
+    int getIndexAvailability(String indexUrl, IssueBase issueBase);
+
+    String getIndexUrl(IssueBase issueBase);
+
+    Date getMonitorTime(String indexUrl, IssueBase issueBase);
+	
 }

@@ -6,6 +6,7 @@
     <result column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="presetFeqId" jdbcType="INTEGER" property="presetFeqId" />
     <result column="chnlId" jdbcType="INTEGER" property="chnlId" />
+    <result column="setTime" jdbcType="TIMESTAMP" property="setTime" />
   </resultMap>
   <sql id="Base_Column_List">
     id, siteId, presetFeqId, chnlId
@@ -22,9 +23,9 @@
   </delete>
   <insert id="insert" parameterType="com.trs.gov.kpi.entity.FrequencySetup">
     insert into frequencysetup (id, siteId, presetFeqId, 
-      chnlId)
+      chnlId,siteId)
     values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{presetFeqId,jdbcType=INTEGER}, 
-      #{chnlId,jdbcType=INTEGER})
+      #{chnlId,jdbcType=INTEGER},#{setTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.FrequencySetup">
     insert into frequencysetup
@@ -41,6 +42,9 @@
       <if test="chnlId != null">
         chnlId,
       </if>
+      <if test="setTime != null">
+        setTime
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -54,6 +58,9 @@
       </if>
       <if test="chnlId != null">
         #{chnlId,jdbcType=INTEGER},
+      </if>
+      <if test="setTime != null">
+        #{setTime,jdbcType=TIMESTAMP}
       </if>
     </trim>
   </insert>

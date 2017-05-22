@@ -1,10 +1,12 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ public interface FrequencySetupService {
      * @param pageSize
      * @return
      */
-    List<FrequencySetupResponseDetail> getPageDataFrequencySetupList(int siteId, int pageIndex, int pageSize);
+    List<FrequencySetupResponseDetail> getPageDataFrequencySetupList(int siteId, int pageIndex, int pageSize) throws RemoteException;
 
     /**
      * 获取当前siteId的记录总数
@@ -61,7 +63,7 @@ public interface FrequencySetupService {
      * @param frequencySetup
      * @return
      */
-    int insert(FrequencySetup frequencySetup);
+    int insert(FrequencySetup frequencySetup) throws ParseException;
 
     /**
      * 通过前段传入的frequencySetupSetRequestDetail对象获取想应的FrequencySetup对象

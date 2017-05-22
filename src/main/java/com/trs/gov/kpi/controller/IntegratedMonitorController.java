@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.InfoWarningType;
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.IssueType;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;
@@ -41,8 +39,16 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/all/count", method = RequestMethod.GET)
     public Integer getAllIssueCount(@ModelAttribute IssueBase issueBase) {
+
+        //重置查询条件，使查询所有
+        List<Integer> list = new ArrayList<>();
+        Integer exception = 0;
+        list.add(exception);
+        issueBase.setIds(list);
+        issueBase.setSearchText("");
+
         int linkAvailabilityCount = linkAvailabilityService.getHandledIssueCount(issueBase) + linkAvailabilityService.getUnhandledIssueCount(issueBase);
-        int infoUpdateCount = infoUpdateService.getHandledIssueCount(issueBase) + infoUpdateService.getUpdateNotIntimeCount(issueBase) + infoUpdateService.getUpdateWarningCount(issueBase);
+        int infoUpdateCount = infoUpdateService.getHandledIssueCount(issueBase) + infoUpdateService.getUnhandledIssueCount(issueBase) + infoUpdateService.getUpdateWarningCount(issueBase);
         int infoErrorCount = infoErrorService.getHandledIssueCount(issueBase) + infoErrorService.getUnhandledIssueCount(issueBase);
         return linkAvailabilityCount + infoErrorCount + infoUpdateCount;
     }
@@ -55,24 +61,14 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) {
-        int linkAvailabilityCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
-        int infoUpdateCount = infoUpdateService.getUpdateNotIntimeCount(issueBase);
+        List linkAvailabilityList = linkAvailabilityService.getIssueCountByType(issueBase);
+        List infoUpdateList = infoUpdateService.getIssueCountByType(issueBase);
+        List infoErrorList = infoErrorService.getIssueCountByType(issueBase);
 
-        Statistics linkAvailabilityStatistics = new Statistics();
-        linkAvailabilityStatistics.setCount(linkAvailabilityCount);
-        linkAvailabilityStatistics.setType(IssueType.INVALID_LINK.value);
-        linkAvailabilityStatistics.setName(IssueType.INVALID_LINK.name);
+        linkAvailabilityList.addAll(infoUpdateList);
+        linkAvailabilityList.addAll(infoErrorList);
 
-        Statistics infoUpdateStatistics = new Statistics();
-        infoUpdateStatistics.setCount(infoUpdateCount);
-        infoUpdateStatistics.setType(IssueType.UPDATE_NOT_INTIME.value);
-        infoUpdateStatistics.setName(IssueType.UPDATE_NOT_INTIME.name);
-
-        List<Statistics> list = new ArrayList<>();
-        list.add(linkAvailabilityStatistics);
-        list.add(infoUpdateStatistics);
-
-        return list;
+        return linkAvailabilityList;
     }
 
     /**
@@ -83,14 +79,7 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute IssueBase issueBase) {
-        int infoUpdateCount = infoUpdateService.getUpdateWarningCount(issueBase);
-        Statistics infoUpdateStatistics = new Statistics();
-        infoUpdateStatistics.setCount(infoUpdateCount);
-        infoUpdateStatistics.setType(InfoWarningType.UPDATE_WARNING.value);
-        infoUpdateStatistics.setName(InfoWarningType.UPDATE_WARNING.name);
-
-        List<Statistics> list = new ArrayList<>();
-        list.add(infoUpdateStatistics);
+        List<Statistics> list = infoUpdateService.getWarningCountByType(issueBase);
 
         return list;
     }

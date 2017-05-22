@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.entity;
 
+import java.util.Date;
+
 public class FrequencySetup {
     private Integer id;
 
@@ -8,6 +10,8 @@ public class FrequencySetup {
     private Integer presetFeqId;
 
     private Integer chnlId;
+
+    private Date setTime;
 
     public Integer getId() {
         return id;
@@ -39,5 +43,13 @@ public class FrequencySetup {
 
     public void setChnlId(Integer chnlId) {
         this.chnlId = chnlId;
+    }
+
+    public Date getSetTime() {
+        return setTime;
+    }
+
+    public void setSetTime(Date setTime) {
+        this.setTime = setTime;
     }
 }
