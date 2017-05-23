@@ -52,7 +52,7 @@ public class InitTime {
      * @throws ParseException
      */
     public static Date CheckBeginDateTime(String beginDateTime, Date ealiestTime) throws ParseException {
-        if(beginDateTime == null || beginDateTime == "" || beginDateTime.isEmpty()){
+        if(beginDateTime == null){
             return ealiestTime;
         }else {
             Date setTime = getNowTimeFormat(beginDateTime);
@@ -67,7 +67,7 @@ public class InitTime {
      * @throws ParseException
      */
     public static Date CheckEndDateTime(String endDateTime) throws ParseException {
-        if(endDateTime == null || endDateTime == "" || endDateTime.isEmpty()){
+        if(endDateTime == null){
             Date nowTime = new Date();
             String nowTimeStr = getNowTimeFormat(nowTime);
             nowTime = getNowTimeFormat(nowTimeStr);
