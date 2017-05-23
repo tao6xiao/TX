@@ -19,7 +19,7 @@ public abstract class AbstractScheduler implements SchedulerTask {
     @Override
     public void setDelayAndTimeUnit(Long delay, TimeUnit timeUnit) {
 
-        Assert.isTrue(delay != null && timeUnit != null);
+        Assert.isTrue(delay != null && timeUnit != null, "invalid param!");
         this.delay = delay;
         this.timeUnit = timeUnit;
     }

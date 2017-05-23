@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 @Component
+@Scope("prototype")
 public class LinkAnalysisScheduler extends AbstractScheduler{
 
     private static Map<String, ScheduledExecutorService> taskAndExecutorMap =

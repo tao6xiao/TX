@@ -92,6 +92,13 @@
     where siteId = #{siteId,jdbcType=INTEGER}
     limit #{pageCalculate,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
+  <select id="selectById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from frequencypreset
+    where siteId = #{siteId,jdbcType=INTEGER}
+    AND id = #{id,jdbcType=INTEGER}
+  </select>
   <update id="updateFrequencyPresetBySiteIdAndId" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
     update frequencypreset
     set

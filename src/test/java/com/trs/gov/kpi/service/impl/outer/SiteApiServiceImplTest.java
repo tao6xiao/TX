@@ -28,6 +28,7 @@ public class SiteApiServiceImplTest {
         params.put("param1", "1");
         params.put("param2", "2");
 
+        // TODO fix test
 //        Request req = new OuterApiServiceUtil.ServiceRequestBuilder()
 //                .setParams(params)
 //                .setMethodName("test_func")

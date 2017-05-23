@@ -231,6 +231,13 @@
         GROUP BY customer2
     </select>
 
+    <insert id="insert">
+        INSERT INTO issue
+        (`siteId`, `typeId`, `subTypeId`, `detail`, `issueTime`, `isResolved`, `isDel`,  `customer2`)
+        VALUES
+            (#{infoUpdate.siteId}, #{typeId}, #{infoUpdate.issueTypeId}, #{infoUpdate.chnlUrl}, #{infoUpdate.checkTime}, 0, 0,  #{infoUpdate.chnlId})
+    </insert>
+
     <!--    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.Issue">
             <id column="id" jdbcType="INTEGER" property="id" />
             <result column="siteId" jdbcType="INTEGER" property="siteId" />

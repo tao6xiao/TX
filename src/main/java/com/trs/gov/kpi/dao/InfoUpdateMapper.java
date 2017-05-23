@@ -74,4 +74,14 @@ public interface InfoUpdateMapper extends OperationMapper {
      */
     List<Map<Integer, Integer>> getUpdateNotInTime(@Param("issueBase") IssueBase issueBase, @Param("childChnlIds") Set childChnlIds);
 
+
+    /**
+     * 插入预警或者问题
+     *
+     * @param typeId
+     * @param infoUpdate
+     * @return
+     */
+    int insert(@Param("typeId") Integer typeId, @Param("infoUpdate") InfoUpdate infoUpdate);
+
 }
