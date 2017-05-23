@@ -8,7 +8,7 @@ import java.util.List;
  */
 public enum LinkIssueType {
 
-    INVALID_LINK(1, "链接失效"), INVALID_IMAGE(2, "图片失效"), CONNECTION_TIME_OUT(3, "连接超时");
+    INVALID_LINK(11, "链接失效"), INVALID_IMAGE(12, "图片失效"), CONNECTION_TIME_OUT(13, "连接超时");
 
     public final int value;
 

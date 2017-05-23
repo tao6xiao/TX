@@ -5,8 +5,8 @@ package com.trs.gov.kpi.constant;
  */
 public enum UpdateWarningType {
 
-    UPDATE_WARNING(1, "栏目更新预警"),
-    SELF_CHECK_WARNING(2, "信息自查预警");
+    UPDATE_WARNING(511, "栏目更新预警"),
+    SELF_CHECK_WARNING(512, "信息自查预警");
 
     public final int value;
 

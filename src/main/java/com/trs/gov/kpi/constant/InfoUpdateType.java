@@ -5,7 +5,7 @@ package com.trs.gov.kpi.constant;
  */
 public enum InfoUpdateType {
 
-    UPDATE_NOT_INTIME(1,"更新不及时");
+    UPDATE_NOT_INTIME(21,"更新不及时");
 
     public final int value;
 
