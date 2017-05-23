@@ -5,7 +5,7 @@ package com.trs.gov.kpi.constant;
  */
 public enum InfoErrorType {
 
-    TYPOS(1,"错别字"),SENSITIVE_WORDS(2,"敏感词");
+    TYPOS(31,"错别字"),SENSITIVE_WORDS(32,"敏感词");
 
     public final int value;
 

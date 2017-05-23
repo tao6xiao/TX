@@ -8,10 +8,7 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.utils.InitQueryFiled;
-import com.trs.gov.kpi.utils.IssueCounter;
-import com.trs.gov.kpi.utils.PageInfoDeal;
-import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.*;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -88,8 +85,9 @@ public class LinkAvailabilityController {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issueBase) throws BizException {
+    public ApiPageData getIssueList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issueBase) throws BizException {
 
+        PagerCheckUtil.check(pageIndex, pageSize);
         if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), linkAvailabilityService);
             issueBase.setIds(list);

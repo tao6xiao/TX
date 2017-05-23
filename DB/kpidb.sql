@@ -70,6 +70,7 @@ INSERT INTO `issue` VALUES ('12429', '11', '3', '1', 'www.zhihu.com', '2017-04-3
 INSERT INTO `issue` VALUES ('88425', '11', '51', '1', 'www.sohu.com', '2017-05-15 08:54:18', '0', '0', '资讯平台', '10000', null);
 INSERT INTO `issue` VALUES ('96842', '11', '51', '1', 'www.4399.com', '2017-04-30 08:55:02', '0', '0', '游戏平台', '4399', null);
 INSERT INTO `issue` VALUES ('75175', '11', '51', '1', 'www.baidu.com', '2017-05-11 16:55:55', '0', '0', '搜索引擎', '10086', null);
+update issue SET subTypeId = typeId*10+subTypeId;
 
 
 -- 更新频率及预警初设表
