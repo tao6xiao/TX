@@ -34,6 +34,11 @@ public class ParamCheckUtil {
             }
         }
 
+        if(issueBase.getEndDateTime() ==null || issueBase.getEndDateTime().trim().isEmpty()){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            issueBase.setEndDateTime(sdf.format(new Date()));
+        }
+
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
             issueBase.setEndDateTime(InitTime.initTime(issueBase.getEndDateTime()));//结束日期加一，避免查询不到结束日期当天数据的情况
         }
