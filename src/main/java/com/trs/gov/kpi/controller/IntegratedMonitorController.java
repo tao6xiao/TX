@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -60,12 +61,18 @@ public class IntegratedMonitorController {
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) throws BizException{
 
         ParamCheckUtil.paramCheck(issueBase);
-        List linkAvailabilityList = linkAvailabilityService.getIssueCountByType(issueBase);
-        List infoUpdateList = infoUpdateService.getIssueCountByType(issueBase);
-        List infoErrorList = infoErrorService.getIssueCountByType(issueBase);
+        List<Statistics> linkAvailabilityList = linkAvailabilityService.getIssueCountByType(issueBase);
+        List<Statistics> infoUpdateList = infoUpdateService.getIssueCountByType(issueBase);
+        List<Statistics> infoErrorList = infoErrorService.getIssueCountByType(issueBase);
 
         linkAvailabilityList.addAll(infoUpdateList);
         linkAvailabilityList.addAll(infoErrorList);
+
+        for(Iterator<Statistics> iterator = linkAvailabilityList.iterator();iterator.hasNext();){
+            if(iterator.next().getCount() == 0){
+                iterator.remove();
+            }
+        }
 
         return linkAvailabilityList;
     }
@@ -81,6 +88,12 @@ public class IntegratedMonitorController {
         ParamCheckUtil.paramCheck(issueBase);
 
         List<Statistics> list = infoUpdateService.getWarningCountByType(issueBase);
+
+        for(Iterator<Statistics> iterator = list.iterator();iterator.hasNext();){
+            if(iterator.next().getCount() == 0){
+                iterator.remove();
+            }
+        }
 
         return list;
     }

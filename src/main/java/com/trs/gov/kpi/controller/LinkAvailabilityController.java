@@ -117,6 +117,13 @@ public class LinkAvailabilityController {
         return linkAvailabilityService.getIndexAvailability(indexUrl, issueBase);
     }
 
+    /**
+     * 首页可用性校验显示
+     *
+     * @param issueBase
+     * @return
+     * @throws BizException
+     */
     @RequestMapping(value = "/check/index", method = RequestMethod.GET)
     public IndexPage showIndexAvailability(@ModelAttribute IssueBase issueBase) throws BizException {
         ParamCheckUtil.paramCheck(issueBase);
