@@ -19,6 +19,6 @@ public interface DocumentApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    List<Integer> getPublishDocIds(String useName, int siteId, int channelId, Date beginTime) throws RemoteException;
+    List<Integer> getPublishDocIds(String useName, int siteId, int channelId, String beginTime) throws RemoteException;
 
 }

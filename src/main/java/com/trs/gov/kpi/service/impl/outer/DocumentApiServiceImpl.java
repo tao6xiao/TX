@@ -10,6 +10,7 @@ import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,14 +23,18 @@ import java.util.*;
 @Service
 public class DocumentApiServiceImpl implements DocumentApiService {
 
+    @Value("${service.outer.editcenter.url}")
+    private String editCenterServiceUrl;
+
     private static final String SERVICE_NAME = "gov_commondocument";
 
     @Override
-    public List<Integer> getPublishDocIds(String useName, int siteId, int channelId, Date beginTime) throws RemoteException {
+    public List<Integer> getPublishDocIds(String useName, int siteId, int channelId, String beginTime) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
             params.put("SiteId", String.valueOf(siteId));
             params.put("ChannelId", String.valueOf(channelId));
+            params.put("OperTimeStart", beginTime);
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
                     buildRequest("queryAllPublishedDocIds", useName, params)).execute();
@@ -61,10 +66,10 @@ public class DocumentApiServiceImpl implements DocumentApiService {
 
     }
 
-
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
         return new OuterApiServiceUtil.ServiceRequestBuilder()
                 .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")
+                .setServiceUrl(editCenterServiceUrl)
                 .setServiceName(SERVICE_NAME)
                 .setMethodName(methodName)
                 .setUserName(userName)

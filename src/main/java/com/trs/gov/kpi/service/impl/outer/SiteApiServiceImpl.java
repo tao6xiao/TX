@@ -166,6 +166,7 @@ public class SiteApiServiceImpl implements SiteApiService {
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
         return new OuterApiServiceUtil.ServiceRequestBuilder()
                 .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")
+                .setServiceUrl(editCenterServiceUrl)
                 .setServiceName(SERVICE_NAME)
                 .setMethodName(methodName)
                 .setUserName(userName)
