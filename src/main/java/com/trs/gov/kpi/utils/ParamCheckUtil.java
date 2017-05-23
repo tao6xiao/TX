@@ -25,21 +25,18 @@ public class ParamCheckUtil {
             issueBase.setSearchText("");
         }
 
-//        if (issueBase.getEndDateTime() == null || issueBase.getEndDateTime().trim().isEmpty()) {
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//            issueBase.setEndDateTime(sdf.format(new Date()));
-//        }
-
         if (issueBase.getBeginDateTime() != null && !issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date d = null;
-            String da = null;
             try {
-                d = sdf.parse(issueBase.getBeginDateTime());
-                da = sdf.format(new Date(issueBase.getBeginDateTime()));
+                sdf.parse(issueBase.getBeginDateTime());
             } catch (ParseException e) {
                 throw new BizException("参数不合法");
             }
+        }
+
+        if(issueBase.getEndDateTime() ==null || issueBase.getEndDateTime().trim().isEmpty()){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            issueBase.setEndDateTime(sdf.format(new Date()));
         }
 
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
