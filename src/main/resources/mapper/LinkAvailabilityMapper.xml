@@ -209,7 +209,7 @@
         SELECT count(1)
         FROM issue
         WHERE isResolved = 0
-        AND subTypeId = 1
+        AND subTypeId = 11
         <include refid="Query_Condition_IssueBase"/>
         <include refid="Query_StartEndTime_IssueBase"/>
     </select>
@@ -218,7 +218,7 @@
         SELECT count(1)
         FROM issue
         WHERE isResolved = 0
-        AND subTypeId = 2
+        AND subTypeId = 12
         <include refid="Query_Condition_IssueBase"/>
         <include refid="Query_StartEndTime_IssueBase"/>
     </select>
@@ -227,7 +227,7 @@
         SELECT count(1)
         FROM issue
         WHERE isResolved = 0
-        AND subTypeId = 3
+        AND subTypeId = 13
         <include refid="Query_Condition_IssueBase"/>
         <include refid="Query_StartEndTime_IssueBase"/>
     </select>

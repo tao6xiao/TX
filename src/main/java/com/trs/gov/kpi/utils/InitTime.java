@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.OperationService;
 
 import javax.annotation.Resource;
@@ -13,7 +14,7 @@ import java.util.Date;
  */
 public class InitTime {
 
-    public static String initTime(String endTime) {
+    public static String initTime(String endTime) throws BizException{
         String time = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -23,7 +24,7 @@ public class InitTime {
             calender.add(Calendar.DAY_OF_MONTH, 1);
             time = sdf.format(calender.getTime());
         } catch (ParseException e) {
-            e.printStackTrace();
+            throw new BizException("参数不合法");
         }
 
         return time;

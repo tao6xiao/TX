@@ -77,7 +77,7 @@
         SELECT count(1)
         FROM issue
         WHERE isResolved = 0
-        AND subTypeId = 1
+        AND subTypeId = 21
         <include refid="Query_Condition_IssueBase"/>
     </select>
 
@@ -87,7 +87,7 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 51
-        AND subTypeId = 1
+        AND subTypeId = 511
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[
@@ -110,7 +110,7 @@
         WHERE isResolved = 0
         AND siteId = #{issueBase.siteId}
         AND typeId = 51
-        AND subTypeId = 2
+        AND subTypeId =512
         <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
             AND issueTime
             <![CDATA[

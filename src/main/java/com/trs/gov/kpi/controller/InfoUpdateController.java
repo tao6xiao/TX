@@ -7,7 +7,10 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
-import com.trs.gov.kpi.utils.*;
+import com.trs.gov.kpi.utils.InitQueryFiled;
+import com.trs.gov.kpi.utils.IssueCounter;
+import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -66,7 +69,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        PagerCheckUtil.check(pageIndex, pageSize);
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), infoUpdateService);
             issueBase.setIds(list);
