@@ -40,4 +40,13 @@ public interface InfoUpdateService extends OperationService {
      * @return
      */
     int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException;
+
+    /**
+     * 获取更新不及时的数据条数
+     * @param siteId
+     * @param beginDateTime
+     * @param endDateTime
+     * @return
+     */
+    int getAllDateUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException;
 }

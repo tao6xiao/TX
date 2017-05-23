@@ -83,5 +83,13 @@ public interface InfoUpdateMapper extends OperationMapper {
      * @return
      */
     int insert(@Param("typeId") Integer typeId, @Param("infoUpdate") InfoUpdate infoUpdate);
+	
+	/**
+     * 获取更新不及时的数据条数
+     * @param issueBase
+     * @return
+     */
+    int getAllDateUpdateNotInTime(@Param("issueBase") IssueBase issueBase);
+
 
 }

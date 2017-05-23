@@ -177,11 +177,14 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
 
     @Override
     public int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
-        int count = 0;
+        return 0;
+    }
+
+    @Override
+    public int getAllDateUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
        IssueBase issueBase = getIssueBase(siteId,beginDateTime, endDateTime);
         //获取所有
-        List<Map<Integer, Integer>> map = infoUpdateMapper.getAllUpdateNotInTime(issueBase);
-        count = map.size();
+       int count  = infoUpdateMapper.getAllDateUpdateNotInTime(issueBase);
         return count;
     }
 
