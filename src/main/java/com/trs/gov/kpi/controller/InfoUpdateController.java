@@ -149,7 +149,7 @@ public class InfoUpdateController {
         if (siteId == null) {
             throw new BizException("站点编号存在null值");
         }
-        Integer count = infoUpdateService.getAllUpdateNotInTime(siteId, beginDateTime, endDateTime);
+        Integer count = infoUpdateService.getAllDateUpdateNotInTime(siteId, beginDateTime, endDateTime);
         return count;
     }
 }
