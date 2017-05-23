@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,9 +25,21 @@ public class ParamCheckUtil {
             issueBase.setSearchText("");
         }
 
-        if (issueBase.getEndDateTime() == null || issueBase.getEndDateTime().trim().isEmpty()) {
+//        if (issueBase.getEndDateTime() == null || issueBase.getEndDateTime().trim().isEmpty()) {
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//            issueBase.setEndDateTime(sdf.format(new Date()));
+//        }
+
+        if (issueBase.getBeginDateTime() != null && !issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            issueBase.setEndDateTime(sdf.format(new Date()));
+            Date d = null;
+            String da = null;
+            try {
+                d = sdf.parse(issueBase.getBeginDateTime());
+                da = sdf.format(new Date(issueBase.getBeginDateTime()));
+            } catch (ParseException e) {
+                throw new BizException("参数不合法");
+            }
         }
 
         if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
@@ -40,6 +53,16 @@ public class ParamCheckUtil {
             issueBase.setIds(list);
         }
 
+    }
+
+    public static void pagerCheck(Integer pageIndex, Integer pageSize) throws BizException{
+        if (pageIndex != null && pageIndex < 1) {
+            throw new BizException("参数不合法");
+        }
+
+        if (pageSize != null && pageSize < 1) {
+            throw new BizException("参数不合法");
+        }
     }
 
     public static void paramCheck(PageDataRequestParam param) throws BizException {
