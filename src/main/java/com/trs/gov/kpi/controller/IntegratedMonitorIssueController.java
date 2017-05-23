@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,13 +39,7 @@ public class IntegratedMonitorIssueController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if (pageIndex != null && pageIndex < 1) {
-            throw new BizException("参数不合法！");
-        }
-
-        if (pageSize != null && pageSize < 1) {
-            throw new BizException("参数不合法！");
-        }
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         issue = IssueDataUtil.getIssueToGetPageData(issue, issueService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
         int itemCount = issueService.getAllIssueCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
@@ -67,6 +62,7 @@ public class IntegratedMonitorIssueController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
@@ -84,6 +80,7 @@ public class IntegratedMonitorIssueController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
@@ -101,6 +98,7 @@ public class IntegratedMonitorIssueController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
     }

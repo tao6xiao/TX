@@ -23,7 +23,7 @@
   </delete>
   <insert id="insert" parameterType="com.trs.gov.kpi.entity.FrequencySetup">
     insert into frequencysetup (id, siteId, presetFeqId, 
-      chnlId,siteId)
+      chnlId,setTime)
     values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{presetFeqId,jdbcType=INTEGER}, 
       #{chnlId,jdbcType=INTEGER},#{setTime,jdbcType=TIMESTAMP})
   </insert>
