@@ -18,6 +18,7 @@ import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.InitQueryFiled;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -87,9 +88,7 @@ public class ServiceLinkController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
 
-        if (requestParam.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
+        ParamCheckUtil.paramCheck(requestParam);
 
         QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(requestParam);
         filter.addCond("typeId", Integer.valueOf(IssueType.AVAILABLE_ISSUE.getCode()));

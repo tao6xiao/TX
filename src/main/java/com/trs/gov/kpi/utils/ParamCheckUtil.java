@@ -2,6 +2,7 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +38,21 @@ public class ParamCheckUtil {
             List list = new ArrayList();
             list.add(0);
             issueBase.setIds(list);
+        }
+
+    }
+
+    public static void paramCheck(PageDataRequestParam param) throws BizException {
+
+        if (param.getSiteId() == null) {
+            throw new BizException("参数不合法");
+        }
+
+        if (param.getPageSize() != null && param.getPageSize() <= 0) {
+            throw new BizException("参数不合法");
+        }
+        if (param.getPageIndex() != null && param.getPageIndex() <= 0) {
+            throw new BizException("参数不合法");
         }
 
     }
