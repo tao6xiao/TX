@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,13 +41,7 @@ public class IntegratedMonitorWarningController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if (pageIndex != null && pageIndex < 1) {
-            throw new BizException("参数不合法！");
-        }
-
-        if (pageSize != null && pageSize < 1) {
-            throw new BizException("参数不合法！");
-        }
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
         int itemCount = integratedMonitorWarningService.getItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);

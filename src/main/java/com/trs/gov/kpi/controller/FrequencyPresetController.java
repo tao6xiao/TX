@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponseDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,13 +37,7 @@ public class FrequencyPresetController {
         if(siteId == null){
             throw new BizException("站点编号不能为null值");
         }
-        if (pageIndex != null && pageIndex < 1) {
-            throw new BizException("参数不合法！");
-        }
-
-        if (pageSize != null && pageSize < 1) {
-            throw new BizException("参数不合法！");
-        }
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = frequencyPresetService.getPageDataBySiteId(siteId, apiPageData.getPager().getCurrPage()-1, apiPageData.getPager().getPageSize());
@@ -62,7 +57,7 @@ public class FrequencyPresetController {
         if(frequencyPresetRequestDeal.getSiteId() == null || frequencyPresetRequestDeal.getUpdateFreq() == null || frequencyPresetRequestDeal.getAlertFreq() == null){
             throw new BizException("传入的参数存在null值");
         }
-        int num = frequencyPresetService.addFrequencyPreset(frequencyPresetRequestDeal);
+        frequencyPresetService.addFrequencyPreset(frequencyPresetRequestDeal);
         return null;
     }
 
@@ -78,7 +73,7 @@ public class FrequencyPresetController {
         if(frequencyPreset.getSiteId() == null || frequencyPreset.getId() == null || frequencyPreset.getUpdateFreq() == null || frequencyPreset.getAlertFreq() == null){
             throw new BizException("传入的参数存在null值");
         }
-        int num = frequencyPresetService.updateFrequencyPresetBySiteIdAndId(frequencyPreset);
+        frequencyPresetService.updateFrequencyPresetBySiteIdAndId(frequencyPreset);
         return null;
     }
 
@@ -95,7 +90,7 @@ public class FrequencyPresetController {
         if(siteId == null || id == null){
             throw new BizException("传入的参数存在null值");
         }
-        int num = frequencyPresetService.deleteFrequencyPresetBySiteIdAndId(siteId, id);
+        frequencyPresetService.deleteFrequencyPresetBySiteIdAndId(siteId, id);
         return null;
     }
 }

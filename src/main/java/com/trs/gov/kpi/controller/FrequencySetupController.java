@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,13 +41,7 @@ public class FrequencySetupController {
         if (siteId == null) {
             throw new BizException("站点编号不能为null值");
         }
-        if (pageIndex != null && pageIndex < 1) {
-            throw new BizException("参数不合法！");
-        }
-
-        if (pageSize != null && pageSize < 1) {
-            throw new BizException("参数不合法！");
-        }
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<FrequencySetupResponseDetail> frequencySetupResponseDetails = frequencySetupService.getPageDataFrequencySetupList(siteId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
@@ -68,6 +63,11 @@ public class FrequencySetupController {
             throw new BizException("参数存在null值");
         }
         Integer[] chnlIds = frequencySetupSetRequestDetail.getChnlIds();
+        for (int i = 0; i < chnlIds.length; i++) {
+            if(chnlIds[i] == null){
+                throw new BizException("参数chnlIds[]中存在null值");
+            }
+        }
         int siteId = frequencySetupSetRequestDetail.getSiteId();
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);

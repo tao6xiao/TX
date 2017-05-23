@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,13 +39,7 @@ public class IntegratedMonitorIsResolvedController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        if (pageIndex != null && pageIndex < 1) {
-            throw new BizException("参数不合法！");
-        }
-
-        if (pageSize != null && pageSize < 1) {
-            throw new BizException("参数不合法！");
-        }
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         Integer isResolved = IsResolvedType.IS_RESOLVED.getCode();
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
