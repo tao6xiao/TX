@@ -6,9 +6,6 @@ import java.util.Date;
 
 @Data
 public class Issue extends IssueBase{
-//    private Integer id;
-//
-//    private Integer siteId;
 
     private Integer typeId;
 
