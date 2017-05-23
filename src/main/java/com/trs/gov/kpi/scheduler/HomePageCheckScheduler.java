@@ -50,6 +50,7 @@ public class HomePageCheckScheduler extends AbstractScheduler {
                 issue.setSubTypeId(LinkType.HOME_PAGE.getCode());
                 issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
                 issue.setDetail(baseUrl);
+                issue.setCustomer1(baseUrl);
                 issue.setIssueTime(new Date());
                 issueMapper.insert(issue);
             }

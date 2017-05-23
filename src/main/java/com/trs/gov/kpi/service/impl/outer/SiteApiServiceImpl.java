@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -162,28 +163,12 @@ public class SiteApiServiceImpl implements SiteApiService {
         return chnlIdSet;
     }
 
-    public String getRequestUrl(String methodName, String userName, Map<String, String> params) {
-        if (userName == null || userName.trim().isEmpty()) {
-            userName = "admin";
-        }
-        StringBuilder url = new StringBuilder(
-                String.format("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s",
-                        editCenterServiceUrl, SERVICE_NAME, methodName, userName));
-        if (params == null) {
-            return url.toString();
-        }
-        Iterator<String> iter = params.keySet().iterator();
-        while (iter.hasNext()) {
-            String paramKey = iter.next();
-            url.append("&").append(paramKey).append("=").append(params.get(paramKey));
-        }
-        return url.toString();
-    }
-
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
-        return new Request.Builder()
-                .url(getRequestUrl(methodName, userName, params))
-                .addHeader("Accept", "application/json; charset=utf-8")
-                .build();
+        return new OuterApiServiceUtil.ServiceRequestBuilder()
+                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")
+                .setServiceName(SERVICE_NAME)
+                .setMethodName(methodName)
+                .setUserName(userName)
+                .setParams(params).build();
     }
 }
