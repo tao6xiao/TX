@@ -53,9 +53,20 @@ public class MonitorFrequencyController {
         if (monitorFrequencySetUp.getSiteId() == null || freqs.length == 0 || freqs == null) {
             throw new BizException("参数存在null值");
         }
+        boolean idIsExist = true;
         for (int i = 0; i < freqs.length; i++) {
             if (freqs[i].getId() == null) {
-                throw new BizException("参数siteId存在null值");
+                throw new BizException("参数freqs[]中id（类型编号）存在null值");
+            }
+            int num = -1;
+            for(int j = 0; j < FrequencyType.values().length; j++){
+                if(freqs[i].getId() == FrequencyType.values()[j].getTypeId()){
+                    num++;
+                    break;
+                }
+            }
+            if(num < 0){
+                throw new BizException("参数freqs[]中id（类型编号）无对应的频率设置类型");
             }
         }
         int siteId = monitorFrequencySetUp.getSiteId();
@@ -66,7 +77,7 @@ public class MonitorFrequencyController {
             }
             for (int i = 0; i < freqs.length; i++) {
                 if (freqs[i].getValue() == null) {
-                    throw new BizException("参数value存在null值");
+                    throw new BizException("添加频率设置时，参数value存在null值");
                 }
             }
             monitorFrequencyService.addMonitorFrequencySetUp(monitorFrequencySetUp);
