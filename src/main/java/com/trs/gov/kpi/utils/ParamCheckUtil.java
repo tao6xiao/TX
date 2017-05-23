@@ -28,7 +28,18 @@ public class ParamCheckUtil {
         if (issueBase.getBeginDateTime() != null && !issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             try {
+                sdf.setLenient(false);
                 sdf.parse(issueBase.getBeginDateTime());
+            } catch (ParseException e) {
+                throw new BizException("参数不合法");
+            }
+        }
+
+        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                sdf.setLenient(false);
+                sdf.parse(issueBase.getEndDateTime());
             } catch (ParseException e) {
                 throw new BizException("参数不合法");
             }
