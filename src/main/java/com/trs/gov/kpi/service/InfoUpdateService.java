@@ -31,4 +31,13 @@ public interface InfoUpdateService extends OperationService {
      * @return
      */
     List<Statistics> getUpdateNotInTimeCountList(Integer siteId, String beginDateTime, String endDateTime) throws ParseException, RemoteException;
+
+    /**
+     * 获取栏目更新不及时的总数
+     * @param siteId
+     * @param beginDateTime
+     * @param endDateTime
+     * @return
+     */
+    int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException;
 }

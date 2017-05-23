@@ -141,4 +141,14 @@ public class InfoUpdateController {
         List<Statistics> updateNotInTimeCountList = infoUpdateService.getUpdateNotInTimeCountList(siteId, beginDateTime, endDateTime);
         return updateNotInTimeCountList;
     }
+
+    @RequestMapping(value = "/bygroup/all/count", method = RequestMethod.GET)
+    @ResponseBody
+    public Integer getUpdateNotInTimeAllCount(@RequestParam Integer siteId, String beginDateTime, String endDateTime) throws BizException, ParseException, RemoteException {
+        if (siteId == null) {
+            throw new BizException("站点编号存在null值");
+        }
+        Integer count = infoUpdateService.getAllUpdateNotInTime(siteId, beginDateTime, endDateTime);
+        return count;
+    }
 }
