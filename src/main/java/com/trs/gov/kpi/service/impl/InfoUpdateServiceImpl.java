@@ -125,7 +125,7 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
      */
     @Override
     public List<Statistics> getUpdateNotInTimeCountList(Integer siteId, String beginDateTime, String endDateTime) throws ParseException, RemoteException {
-        int count = 0;
+               int count = 0;
         List<Statistics> statisticsList = new ArrayList<>();
         Date ealiestTime = getEarliestIssueTime();
         Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime, ealiestTime);
@@ -171,6 +171,27 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         statisticsList.add(statistics);
 
         return statisticsList;
+    }
+
+    @Override
+    public int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
+        int count = 0;
+       IssueBase issueBase = getIssueBase(siteId,beginDateTime, endDateTime);
+        //获取所有
+        List<Map<Integer, Integer>> map = infoUpdateMapper.getAllUpdateNotInTime(issueBase);
+        count = map.size();
+        return count;
+    }
+
+    private IssueBase getIssueBase(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
+        Date ealiestTime = getEarliestIssueTime();
+        Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime, ealiestTime);
+        Date endSetTime = InitTime.CheckEndDateTime(endDateTime);
+        IssueBase issueBase = new IssueBase();
+        issueBase.setSiteId(siteId);
+        issueBase.setBeginDateTime(InitTime.getStringTime(beginSetTime));
+        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
+        return issueBase;
     }
 
     private Statistics getStatisticsByCount(int i, int count) {
