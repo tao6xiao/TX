@@ -13,9 +13,7 @@ public class OuterApiServiceUtil {
 
     public static class ServiceRequestBuilder {
 
-        @Value("${service.outer.editcenter.url}")
-        private String editCenterServiceUrl;
-
+        private String serviceUrl;
         private String urlFormat;
         private String serviceName;
         private String methodName;
@@ -50,12 +48,17 @@ public class OuterApiServiceUtil {
             return this;
         }
 
+        public ServiceRequestBuilder setServiceUrl(String serviceUrl) {
+            this.serviceUrl = serviceUrl;
+            return this;
+        }
+
         public Request build() {
             if (userName == null || userName.trim().isEmpty()) {
                 userName = "admin";
             }
             StringBuilder url = new StringBuilder(
-                    String.format(urlFormat, editCenterServiceUrl, serviceName, methodName, userName));
+                    String.format(urlFormat, serviceUrl, serviceName, methodName, userName));
             if (params != null && !params.isEmpty()) {
                 Iterator<String> iter = params.keySet().iterator();
                 while (iter.hasNext()) {
