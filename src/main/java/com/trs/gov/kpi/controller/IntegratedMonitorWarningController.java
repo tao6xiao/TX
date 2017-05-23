@@ -64,6 +64,7 @@ public class IntegratedMonitorWarningController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         integratedMonitorWarningService.dealWithWarningBySiteIdAndId(siteId, ids);
         return null;
     }
@@ -81,6 +82,7 @@ public class IntegratedMonitorWarningController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         integratedMonitorWarningService.ignoreWarningBySiteIdAndId(siteId, ids);
         return null;
     }
@@ -98,6 +100,7 @@ public class IntegratedMonitorWarningController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         integratedMonitorWarningService.deleteWarningBySiteIdAndId(siteId, ids);
         return null;
     }

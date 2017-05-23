@@ -63,6 +63,7 @@ public class IntegratedMonitorIsResolvedController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         Integer isIgnored = IsResolvedType.IS_IGNORED.getCode();
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isIgnored,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);

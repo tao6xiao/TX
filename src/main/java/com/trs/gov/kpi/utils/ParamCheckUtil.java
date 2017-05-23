@@ -79,4 +79,17 @@ public class ParamCheckUtil {
         }
 
     }
+
+    /**
+     * 用于判断Integer型数组中是否存在null值
+     * @param array
+     * @throws BizException
+     */
+    public static void integerArrayParamCheck(Integer[] array) throws BizException {
+        for (int i= 0; i < array.length; i++){
+            if(array[i] == null){
+                throw new BizException("参数不合法");
+            }
+        }
+    }
 }

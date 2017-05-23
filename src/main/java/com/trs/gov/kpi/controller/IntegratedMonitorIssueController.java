@@ -62,6 +62,7 @@ public class IntegratedMonitorIssueController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
@@ -79,6 +80,7 @@ public class IntegratedMonitorIssueController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
@@ -96,6 +98,7 @@ public class IntegratedMonitorIssueController {
         if (siteId == null || ids == null || ids.length == 0) {
             throw new BizException("参数存在null值");
         }
+        ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
     }
