@@ -33,7 +33,7 @@ public class MonitorSiteController {
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
         if(siteId == null){
-            throw new BizException();
+            throw new BizException("参数siteId存在null值");
         }
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
 
@@ -50,7 +50,13 @@ public class MonitorSiteController {
     @ResponseBody
     public Object save(@RequestBody MonitorSiteDeal monitorSiteDeal) throws BizException {
         if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getSiteIds() == null || monitorSiteDeal.getSiteIds().length == 0){
-            throw new BizException();
+            throw new BizException("参数存在null值");
+        }
+        Integer[] siteIds = monitorSiteDeal.getSiteIds();
+        for(int i = 0; i < siteIds.length; i++){
+            if(siteIds[i] == null){
+                throw new BizException("参数存在null值");
+            }
         }
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
