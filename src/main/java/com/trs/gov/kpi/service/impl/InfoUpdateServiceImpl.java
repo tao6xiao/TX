@@ -147,8 +147,10 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         if (!chnlIds.isEmpty()) {
             childChnlIds = new HashSet<>();
             for (Integer chnlId : chnlIds) {
-                childChnlIds.add(chnlId);
-                childChnlIds = siteApiService.getAllChildChnlIds(null, siteId, chnlId, childChnlIds);
+                if (chnlId != null) {
+                    childChnlIds.add(chnlId);
+                    childChnlIds = siteApiService.getAllChildChnlIds(null, siteId, chnlId, childChnlIds);
+                }
             }
         }
         map = infoUpdateMapper.getUpdateNotInTime(issueBase, childChnlIds);
