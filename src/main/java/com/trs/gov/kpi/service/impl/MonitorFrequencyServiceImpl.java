@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
@@ -35,9 +36,9 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyMapper.queryBySiteId(siteId);
         List<MonitorFrequencyDeal> monitorFrequencyDealList = new ArrayList<>();
         if (monitorFrequencyList != null) {
-//            Map<Integer, MonitorFrequencyType> monitorFrequencyTypeAllMap = MonitorFrequencyTypeModel.getTypes();//获取全部监测类型
             for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
-                MonitorFrequencyDeal monitorFrequencyDeal = getMonitorFrequencyDealFromMonitorFrequency(monitorFrequency);
+                MonitorFrequencyDeal monitorFrequencyDeal =
+                        getMonitorFrequencyDealFromMonitorFrequency(monitorFrequency);
                 monitorFrequencyDealList.add(monitorFrequencyDeal);
             }
         }
@@ -46,7 +47,8 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Override
     public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
-        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
+        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList
+                (monitorFrequencySetUp);
         int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
         updateMonitorScheduler(monitorFrequencyList);
         return num;
@@ -60,13 +62,15 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Override
     public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
-        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
+        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList
+                (monitorFrequencySetUp);
         int num = monitorFrequencyMapper.updateMonitorFrequencySetUp(monitorFrequencyList);
         updateMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
-    private List<MonitorFrequency> addFrequencySetUpToList(MonitorFrequencySetUp monitorFrequencySetUp) {
+    private List<MonitorFrequency> addFrequencySetUpToList(MonitorFrequencySetUp
+                                                                   monitorFrequencySetUp) {
         int siteId = monitorFrequencySetUp.getSiteId();
         MonitorFrequencyFreq[] freqs = monitorFrequencySetUp.getFreqs();
         List<MonitorFrequency> monitorFrequencyList = new ArrayList<>();//为何创建ArrayList
@@ -84,7 +88,8 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         return monitorFrequencyList;
     }
 
-    private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency) {
+    private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency
+                                                                                     monitorFrequency) {
         MonitorFrequencyDeal monitorFrequencyDeal = new MonitorFrequencyDeal();
         monitorFrequencyDeal.setId(monitorFrequency.getTypeId());
         monitorFrequencyDeal.setValue(monitorFrequency.getValue());
@@ -95,18 +100,36 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         return monitorFrequencyDeal;
     }
 
+    /**
+     * 更新检测任务
+     *
+     * @param monitorFrequencyList
+     */
     private void updateMonitorScheduler(List<MonitorFrequency> monitorFrequencyList) {
 
-//        for(MonitorFrequency monitorFrequency: monitorFrequencyList) {
-//
-//            MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(monitorFrequency.getSiteId());
-//            schedulerService.registerScheduler(
-//                    monitorSite.getIndexUrl(),
-//                    monitorFrequency.getSiteId(),
-//                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
-//                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
-//                    monitorFrequency.getValue().intValue()
-//            );
-//        }
+        if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {
+            return;
+        }
+
+        for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
+            if (monitorFrequency.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
+                schedulerService.removeCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
+                        .CHECK_LINK);
+                schedulerService.addCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
+                        .CHECK_LINK);
+            } else if (monitorFrequency.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY
+                    .getTypeId()) {
+                schedulerService.removeCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
+                        .CHECK_HOME_PAGE);
+                schedulerService.addCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
+                        .CHECK_HOME_PAGE);
+            } else if (monitorFrequency.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId
+                    ()) {
+                schedulerService.removeCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
+                        .CHECK_CONTENT);
+                schedulerService.addCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
+                        .CHECK_CONTENT);
+            }
+        }
     }
 }
