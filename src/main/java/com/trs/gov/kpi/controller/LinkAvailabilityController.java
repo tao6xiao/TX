@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -100,6 +101,16 @@ public class LinkAvailabilityController {
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
+
+        if (linkAvailabilityList != null && !linkAvailabilityList.isEmpty()) {
+            for (LinkAvailability link : linkAvailabilityList) {
+                LinkIssueType issueType = LinkIssueType.valueOf(link.getIssueTypeId());
+                if (issueType != null) {
+                    link.setIssueTypeName(issueType.name);
+                }
+            }
+        }
+
         apiPageData.setData(linkAvailabilityList);
         return apiPageData;
     }

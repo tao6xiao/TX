@@ -13,7 +13,7 @@ public class LinkAvailability extends IssueBase {
 
     private Integer issueTypeId;
 
-    private String issueTypeName;
+    private String issueTypeName = "";
 
     private String invalidLink;
 
