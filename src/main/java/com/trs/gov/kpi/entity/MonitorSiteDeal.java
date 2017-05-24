@@ -21,7 +21,7 @@ public class MonitorSiteDeal {
 
     private String indexUrl;
 
-    private Integer[] siteIds;
+//    private Integer[] siteIds;
 
 }
 

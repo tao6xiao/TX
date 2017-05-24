@@ -26,9 +26,9 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         MonitorSite monitorSite = monitorSiteMapper.selectByPrimaryKey(siteId);
         MonitorSiteDeal monitorSiteDeal = null;
         if (monitorSite != null) {
-            String siteIds = monitorSite.getSiteIds();
-            Integer[] siteIdsArrayForInteger = DataTypeConversion.stringToIntegerArray(siteIds);
-            monitorSiteDeal = getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(monitorSite, siteIdsArrayForInteger);
+//            String siteIds = monitorSite.getSiteIds();
+//            Integer[] siteIdsArrayForInteger = DataTypeConversion.stringToIntegerArray(siteIds);
+            monitorSiteDeal = getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(monitorSite);
         }
         return monitorSiteDeal;
     }
@@ -41,21 +41,21 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
 
     @Override
     public int addMonitorSite(MonitorSiteDeal monitorSiteDeal) {
-        Integer[] siteIdsForInteger = monitorSiteDeal.getSiteIds();
-        String siteIdsForString = DataTypeConversion.integerArrayToString(siteIdsForInteger);
+//        Integer[] siteIdsForInteger = monitorSiteDeal.getSiteIds();
+//        String siteIdsForString = DataTypeConversion.integerArrayToString(siteIdsForInteger);
         int num = 0;
-        if (siteIdsForString != null) {
-            MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal, siteIdsForString);
+//        if (siteIdsForString != null) {
+            MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
             num = monitorSiteMapper.insert(monitorSite);
-        }
+//        }
         return num;
     }
 
     @Override
     public int updateMonitorSiteBySiteId(MonitorSiteDeal monitorSiteDeal) {
-        Integer[] siteIdsForIntegerArray = monitorSiteDeal.getSiteIds();
-        String siteIds = DataTypeConversion.integerArrayToString(siteIdsForIntegerArray);
-        MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal, siteIds);
+//        Integer[] siteIdsForIntegerArray = monitorSiteDeal.getSiteIds();
+//        String siteIds = DataTypeConversion.integerArrayToString(siteIdsForIntegerArray);
+        MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
         int num = monitorSiteMapper.updateByPrimaryKey(monitorSite);
         return num;
     }
@@ -65,7 +65,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         return monitorSiteMapper.getAllMonitorSites();
     }
 
-    private MonitorSite getMonitorSiteFromMonitorSiteDealAndSiteIds(MonitorSiteDeal monitorSiteDeal, String siteIds) {
+    private MonitorSite getMonitorSiteFromMonitorSiteDealAndSiteIds(MonitorSiteDeal monitorSiteDeal) {
         MonitorSite monitorSite = new MonitorSite();
         monitorSite.setSiteId(monitorSiteDeal.getSiteId());
         monitorSite.setDepartmentName(monitorSiteDeal.getDepartmentName());
@@ -73,7 +73,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSite.setGuarderAccount(monitorSiteDeal.getGuarderAccount());
         monitorSite.setGuarderPhone(monitorSiteDeal.getGuarderPhone());
         monitorSite.setIndexUrl(monitorSiteDeal.getIndexUrl());
-        monitorSite.setSiteIds(siteIds);
+//        monitorSite.setSiteIds(siteIds);
         return monitorSite;
     }
 
@@ -84,7 +84,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
 //        return  siteIdsArrayForString;
 //    }
 
-    private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite, Integer[] siteIdsArrayForInteger) {
+    private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite) {
         MonitorSiteDeal monitorSiteDeal = new MonitorSiteDeal();
         monitorSiteDeal.setSiteId(monitorSite.getSiteId());
         monitorSiteDeal.setDepartmentName(monitorSite.getDepartmentName());
@@ -92,7 +92,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSiteDeal.setGuarderAccount(monitorSite.getGuarderAccount());
         monitorSiteDeal.setGuarderPhone(monitorSite.getGuarderPhone());
         monitorSiteDeal.setIndexUrl(monitorSite.getIndexUrl());
-        monitorSiteDeal.setSiteIds(siteIdsArrayForInteger);
+//        monitorSiteDeal.setSiteIds(siteIdsArrayForInteger);
         return monitorSiteDeal;
     }
 
