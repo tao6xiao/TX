@@ -197,10 +197,10 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         return statisticsList;
     }
 
-    @Override
-    public int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
-        return 0;
-    }
+//    @Override
+//    public int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
+//        return 0;
+//    }
 
     @Override
     public int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException {

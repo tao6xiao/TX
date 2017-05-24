@@ -143,7 +143,7 @@ public class InfoUpdateController {
     }
 
     private void prepareIssueBase(IssueBase issueBase) throws BizException {
-        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
+        if (issueBase.getSearchText() != null && !issueBase.getSearchText().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), infoUpdateService);
             issueBase.setIds(list);
         }

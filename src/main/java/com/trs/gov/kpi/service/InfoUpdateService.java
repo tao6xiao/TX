@@ -25,27 +25,24 @@ public interface InfoUpdateService extends OperationService {
     /**
      * 获取栏目信息更新不及时问题的统计信息
      *
-     * @param siteId
-     * @param beginDateTime
-     * @param endDateTime
+     * @param issueBase
      * @return
      */
     List<Statistics> getUpdateNotInTimeCountList(IssueBase issueBase) throws ParseException, RemoteException;
 
-    /**
-     * 获取栏目更新不及时的总数
-     * @param siteId
-     * @param beginDateTime
-     * @param endDateTime
-     * @return
-     */
-    int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException;
+//    /**
+//     * 获取栏目更新不及时的总数
+//     * @param siteId
+//     * @param beginDateTime
+//     * @param endDateTime
+//     * @return
+//     */
+//    int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException;
 
     /**
      * 获取更新不及时的数据条数
-     * @param siteId
-     * @param beginDateTime
-     * @param endDateTime
+     *
+     * @param issueBase
      * @return
      */
     int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException;
