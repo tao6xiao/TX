@@ -18,10 +18,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -54,57 +52,6 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
     @Resource
     ApplicationContext applicationContext;
 
-    /**
-     * 初始化scheduler
-     * TODO:按照数据库配置进行装配
-     */
-    @PostConstruct
-    public void init() {
-
-        try {
-
-            log.info("init scheduler model...");
-
-//            List<MonitorSite> monitorSites = monitorSiteService.getAllMonitorSites();
-//            for(MonitorSite monitorSite: monitorSites) {
-//
-//                if(monitorSite.getSiteId() != null) {
-//
-//                    List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper.queryBySiteId(monitorSite.getSiteId());
-//                    for(MonitorFrequency monitorFrequency: monitorFrequencies) {
-//
-//                        try {
-//
-//                            registerScheduler(
-//                                    monitorSite.getIndexUrl(),
-//                                    monitorSite.getSiteId(),
-//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
-//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
-//                                    monitorFrequency.getValue().intValue());
-//                        } catch (Exception e) {
-//
-//                            log.error("register scheduler {} error!", JSON.toJSONString(monitorFrequency));
-//                        }
-//                    }
-//                }
-//            }
-
-            log.info("init scheduler model completed!");
-        } catch (Exception e) {
-
-            log.error("init scheduler model error!", e);
-        }
-    }
-
-    public void registerScheduler(String baseUrl, Integer siteId, FrequencyType frequencyType, FreqUnit freqUnit, Integer freq) {
-
-        SchedulerTask schedulerTask = applicationContext.getBean(frequencyType.getScheduler());
-        schedulerTask.setBaseUrl(baseUrl);
-        schedulerTask.setSiteId(siteId);
-        addFreqUnitAndFreq(freqUnit, freq, schedulerTask);
-        schedulerManager.registerScheduler(schedulerTask);
-    }
-
     @Override
     public void addHomePageCheckJob(int siteId, String indexUrl) {
 
@@ -130,18 +77,18 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
             log.error("", e);
         }
     }
-
-    private void addFreqUnitAndFreq(FreqUnit freqUnit, Integer freq, SchedulerTask schedulerTask) {
-
-        if(FreqUnit.DAYS_PER_TIME == freqUnit) {
-
-            schedulerTask.setDelayAndTimeUnit(freq.longValue(), TimeUnit.DAYS);
-        } else if(FreqUnit.TIMES_PER_DAY == freqUnit) {
-
-            Long totalMinutesPerDay = TimeUnit.DAYS.toMinutes(1);
-            schedulerTask.setDelayAndTimeUnit(totalMinutesPerDay / freq, TimeUnit.MINUTES);
-        }
-    }
+//
+//    private void addFreqUnitAndFreq(FreqUnit freqUnit, Integer freq, SchedulerTask schedulerTask) {
+//
+//        if(FreqUnit.DAYS_PER_TIME == freqUnit) {
+//
+//            schedulerTask.setDelayAndTimeUnit(freq.longValue(), TimeUnit.DAYS);
+//        } else if(FreqUnit.TIMES_PER_DAY == freqUnit) {
+//
+//            Long totalMinutesPerDay = TimeUnit.DAYS.toMinutes(1);
+//            schedulerTask.setDelayAndTimeUnit(totalMinutesPerDay / freq, TimeUnit.MINUTES);
+//        }
+//    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {

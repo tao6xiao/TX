@@ -77,7 +77,7 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
         @Override
         public void run() {
 
-            log.info("InfoUpdateCheckScheduler start...");
+            log.info("InfoUpdateCheckScheduler " + String.valueOf(siteId) + " start...");
             try {
                 List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
@@ -96,7 +96,7 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
             } catch (Exception e) {
                 log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
             } finally {
-                log.info("InfoUpdateCheckScheduler end...");
+                log.info("InfoUpdateCheckScheduler " + String.valueOf(siteId) + " end...");
             }
         }
     };

@@ -63,9 +63,9 @@ public class CKMScheduler extends AbstractScheduler {
     private final Runnable task = new Runnable() {
         @Override
         public void run() {
-            log.info("CKMScheduler start...");
-            List<Issue> issueList = new ArrayList<>();
+            log.info("CKMScheduler " + String.valueOf(siteId) + " start...");
             try {
+                List<Issue> issueList = new ArrayList<>();
                 List<Document> documentList = contentCheckApiService.getPublishDocuments(getSiteId());
                 for (Document document : documentList) {
                     if("".equals(document.getDocTitle()) || "".equals(document.getDocContent()) || document.getDocPubUrl() == null){
@@ -105,13 +105,12 @@ public class CKMScheduler extends AbstractScheduler {
                     }
                 }
             } catch (RemoteException e) {
-                log.info("");
+                log.error("", e);
             } catch (ParseException e) {
-                e.printStackTrace();
+                log.error("", e);
             } finally {
-                log.info("CKMScheduler end...");
+                log.info("CKMScheduler " + String.valueOf(siteId) + " end...");
             }
-
         }
     };
 
