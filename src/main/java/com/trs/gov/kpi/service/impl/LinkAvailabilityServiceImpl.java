@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.IssueType;
 import com.trs.gov.kpi.constant.LinkIssueType;
-import com.trs.gov.kpi.constant.LinkType;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
@@ -65,15 +64,11 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     @Override
     public List<LinkAvailability> getIssueList(Integer startIndex, Integer pageSize, IssueBase issueBase) {
 
-
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityMapper.getIssueList(startIndex, pageSize, issueBase);
         for (LinkAvailability link : linkAvailabilityList) {
-            if (link.getIssueTypeId() == LinkIssueType.INVALID_LINK.value) {
-                link.setIssueTypeName(LinkIssueType.INVALID_LINK.name);
-            } else if (link.getIssueTypeId() == LinkIssueType.INVALID_IMAGE.value) {
-                link.setIssueTypeName(LinkIssueType.INVALID_IMAGE.name);
-            } else if (link.getIssueTypeId() == LinkIssueType.CONNECTION_TIME_OUT.value) {
-                link.setIssueTypeName(LinkIssueType.CONNECTION_TIME_OUT.name);
+            LinkIssueType issueType = LinkIssueType.valueOf(link.getIssueTypeId());
+            if (issueType != null) {
+                link.setIssueTypeName(issueType.name);
             }
         }
 
@@ -104,11 +99,10 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
     private Issue getIssueByLinkAvaliability(LinkAvailability linkAvailability) {
 
         Issue issue = new Issue();
-//        issue.setId(linkAvailability.getId() == null? null : Integer.valueOf(linkAvailability.getId()));
         issue.setId(linkAvailability.getId() == null ? null : linkAvailability.getId());
         issue.setSiteId(linkAvailability.getSiteId());
         issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
-        issue.setSubTypeId(LinkType.getTypeByName(linkAvailability.getIssueTypeName()).getCode());
+        issue.setSubTypeId(linkAvailability.getIssueTypeId());
         issue.setDetail(linkAvailability.getInvalidLink());
         issue.setIssueTime(linkAvailability.getCheckTime());
         issue.setCustomer1(linkAvailability.getSnapshot());

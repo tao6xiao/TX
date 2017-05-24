@@ -328,6 +328,7 @@
         AND isResolved = 0
         <include refid="Query_Condition_IssueBase"/>
         <include refid="Query_StartEndTime_IssueBase"/>
+        ORDER BY issueTime DESC LIMIT 1
     </select>
 
 </mapper>

@@ -101,16 +101,6 @@ public class LinkAvailabilityController {
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
-
-        if (linkAvailabilityList != null && !linkAvailabilityList.isEmpty()) {
-            for (LinkAvailability link : linkAvailabilityList) {
-                LinkIssueType issueType = LinkIssueType.valueOf(link.getIssueTypeId());
-                if (issueType != null) {
-                    link.setIssueTypeName(issueType.name);
-                }
-            }
-        }
-
         apiPageData.setData(linkAvailabilityList);
         return apiPageData;
     }

@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.IssueType;
-import com.trs.gov.kpi.constant.LinkType;
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.utils.SpiderUtils;
@@ -48,7 +48,7 @@ public class HomePageCheckScheduler extends AbstractScheduler {
 
                     Issue issue = new Issue();
                     issue.setSiteId(siteId);
-                    issue.setSubTypeId(LinkType.HOME_PAGE.getCode());
+                    issue.setSubTypeId(LinkIssueType.INVALID_HOME_PAGE.value);
                     issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
                     issue.setDetail(baseUrl);
                     issue.setCustomer1(baseUrl);
