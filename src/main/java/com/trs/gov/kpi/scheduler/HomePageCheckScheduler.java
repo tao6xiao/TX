@@ -41,19 +41,24 @@ public class HomePageCheckScheduler extends AbstractScheduler {
         @Override
         public void run() {
 
-            log.info("check start...");
-            List<String> unavailableUrls = spider.homePageCheck(baseUrl);
-            if(unavailableUrls.contains(baseUrl)) {
+            log.info("HomePageCheckScheduler " + String.valueOf(siteId) + " start...");
+            try {
+                List<String> unavailableUrls = spider.homePageCheck(baseUrl);
+                if(unavailableUrls.contains(baseUrl)) {
 
-                Issue issue = new Issue();
-                issue.setSiteId(siteId);
-                issue.setSubTypeId(LinkType.HOME_PAGE.getCode());
-                issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
-                issue.setDetail(baseUrl);
-                issue.setCustomer1(baseUrl);
-                issue.setIssueTime(new Date());
-                issueMapper.insert(issue);
+                    Issue issue = new Issue();
+                    issue.setSiteId(siteId);
+                    issue.setSubTypeId(LinkType.HOME_PAGE.getCode());
+                    issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
+                    issue.setDetail(baseUrl);
+                    issue.setCustomer1(baseUrl);
+                    issue.setIssueTime(new Date());
+                    issueMapper.insert(issue);
+                }
+            } finally {
+                log.info("HomePageCheckScheduler " + String.valueOf(siteId) + " end...");
             }
+
         }
     };
 }

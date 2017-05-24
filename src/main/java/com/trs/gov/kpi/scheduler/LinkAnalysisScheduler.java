@@ -49,7 +49,7 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
         @Override
         public void run() {
 
-            log.info("check start...");
+            log.info("LinkAnalysisScheduler " + String.valueOf(siteId) + " start...");
             try {
 
                 List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
@@ -65,8 +65,9 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
                     linkAvailabilityService.insertLinkAvailability(linkAvailability);
                 }
             } catch (Exception e) {
-
                 log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
+            } finally {
+                log.info("LinkAnalysisScheduler " + String.valueOf(siteId) + " end...");
             }
         }
     };

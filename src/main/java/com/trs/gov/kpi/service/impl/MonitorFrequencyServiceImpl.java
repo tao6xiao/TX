@@ -3,10 +3,9 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.MonitorSite;
-import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
+import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
@@ -14,9 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by helang on 2017/5/12.
@@ -51,7 +48,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
-//        updateMonitorScheduler(monitorFrequencyList);
+        updateMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
@@ -65,7 +62,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.updateMonitorFrequencySetUp(monitorFrequencyList);
-//        updateMonitorScheduler(monitorFrequencyList);
+        updateMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
@@ -100,16 +97,16 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     private void updateMonitorScheduler(List<MonitorFrequency> monitorFrequencyList) {
 
-        for(MonitorFrequency monitorFrequency: monitorFrequencyList) {
-
-            MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(monitorFrequency.getSiteId());
-            schedulerService.registerScheduler(
-                    monitorSite.getIndexUrl(),
-                    monitorFrequency.getSiteId(),
-                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
-                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
-                    monitorFrequency.getValue().intValue()
-            );
-        }
+//        for(MonitorFrequency monitorFrequency: monitorFrequencyList) {
+//
+//            MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(monitorFrequency.getSiteId());
+//            schedulerService.registerScheduler(
+//                    monitorSite.getIndexUrl(),
+//                    monitorFrequency.getSiteId(),
+//                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
+//                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
+//                    monitorFrequency.getValue().intValue()
+//            );
+//        }
     }
 }

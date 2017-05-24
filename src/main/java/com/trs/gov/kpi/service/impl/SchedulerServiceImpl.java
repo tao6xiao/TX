@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.FreqUnit;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
@@ -11,20 +12,15 @@ import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -57,66 +53,43 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
     @Resource
     ApplicationContext applicationContext;
 
-    /**
-     * 初始化scheduler
-     * TODO:按照数据库配置进行装配
-     */
-    @PostConstruct
-    public void init() {
+
+    @Override
+    public void addCheckJob(int siteId, EnumCheckJobType checkType) {
 
         try {
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            final MonitorSite site = monitorSiteService.getMonitorSiteBySiteId
+                    (siteId);
 
-            log.info("init scheduler model...");
+            switch (checkType) {
+                case CHECK_HOME_PAGE:
+                    scheduleCheckJob(scheduler, site, FrequencyType.HOMEPAGE_AVAILABILITY, EnumCheckJobType.CHECK_HOME_PAGE);
+                    break;
+                case CHECK_CONTENT:
+                    scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_HOME_PAGE);
+                    break;
+                case CHECK_INFO_UPDATE:
+                    scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 24 * 60 * 60);
+                    break;
+                case CHECK_LINK:
+                    scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_HOME_PAGE);
+                    break;
+            }
 
-//            List<MonitorSite> monitorSites = monitorSiteService.getAllMonitorSites();
-//            for(MonitorSite monitorSite: monitorSites) {
-//
-//                if(monitorSite.getSiteId() != null) {
-//
-//                    List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper.queryBySiteId(monitorSite.getSiteId());
-//                    for(MonitorFrequency monitorFrequency: monitorFrequencies) {
-//
-//                        try {
-//
-//                            registerScheduler(
-//                                    monitorSite.getIndexUrl(),
-//                                    monitorSite.getSiteId(),
-//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
-//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
-//                                    monitorFrequency.getValue().intValue());
-//                        } catch (Exception e) {
-//
-//                            log.error("register scheduler {} error!", JSON.toJSONString(monitorFrequency));
-//                        }
-//                    }
-//                }
-//            }
-
-            log.info("init scheduler model completed!");
-        } catch (Exception e) {
-
-            log.error("init scheduler model error!", e);
+        } catch (SchedulerException e) {
+            log.error("", e);
         }
     }
 
-    public void registerScheduler(String baseUrl, Integer siteId, FrequencyType frequencyType, FreqUnit freqUnit, Integer freq) {
-
-        SchedulerTask schedulerTask = applicationContext.getBean(frequencyType.getScheduler());
-        schedulerTask.setBaseUrl(baseUrl);
-        schedulerTask.setSiteId(siteId);
-        addFreqUnitAndFreq(freqUnit, freq, schedulerTask);
-        schedulerManager.registerScheduler(schedulerTask);
-    }
-
-    private void addFreqUnitAndFreq(FreqUnit freqUnit, Integer freq, SchedulerTask schedulerTask) {
-
-        if(FreqUnit.DAYS_PER_TIME == freqUnit) {
-
-            schedulerTask.setDelayAndTimeUnit(freq.longValue(), TimeUnit.DAYS);
-        } else if(FreqUnit.TIMES_PER_DAY == freqUnit) {
-
-            Long totalMinutesPerDay = TimeUnit.DAYS.toMinutes(1);
-            schedulerTask.setDelayAndTimeUnit(totalMinutesPerDay / freq, TimeUnit.MINUTES);
+    @Override
+    public void removeCheckJob(int siteId, EnumCheckJobType checkType) {
+        try {
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            JobKey key = new JobKey(getJobName(siteId, checkType), getJobGroupName(checkType));
+            scheduler.deleteJob(key);
+        } catch (SchedulerException e) {
+            log.error("", e);
         }
     }
 
@@ -139,6 +112,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                 // 全站链接有效性检查
                 initLinkCheckJob(scheduler);
 
+                // 文档内容错误检测
                 initContentCheckJob(scheduler);
 
             } catch (SchedulerException e) {
@@ -162,7 +136,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         // 每一个站点一个job
         for (MonitorSite site : allMonitorSites) {
-            scheduleJob(scheduler, CHECK_INFO_UPDATE_TYPE, site, 24 * 60 * 60);
+            scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 24 * 60 * 60);
         }
     }
 
@@ -179,30 +153,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-
-            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
-                    .queryBySiteId(site.getSiteId());
-            if (StringUtil.isEmpty(site.getIndexUrl())
-                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-                continue;
-            }
-
-            for (MonitorFrequency freq : monitorFrequencies) {
-                if (freq != null && freq.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY.getTypeId()) {
-
-                    int interval = 0;
-                    if (FrequencyType.HOMEPAGE_AVAILABILITY.getFreqUnit() == FreqUnit
-                            .DAYS_PER_TIME) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 * freq.getValue();
-                    } else if (FrequencyType.HOMEPAGE_AVAILABILITY.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 / freq.getValue();
-                    }
-
-                    scheduleJob(scheduler, CHECK_HOMEPAGE_TYPE, site, interval);
-                }
-            }
+            scheduleCheckJob(scheduler, site, FrequencyType.HOMEPAGE_AVAILABILITY, EnumCheckJobType.CHECK_HOME_PAGE);
         }
     }
 
@@ -220,28 +171,21 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         for (MonitorSite site : allMonitorSites) {
 
-            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
-                    .queryBySiteId(site.getSiteId());
-            if (StringUtil.isEmpty(site.getIndexUrl())
-                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-                continue;
-            }
-
-            for (MonitorFrequency freq : monitorFrequencies) {
-                if (freq != null && freq.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
-
-                    int interval = 0;
-                    if (FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit() == FreqUnit
-                            .DAYS_PER_TIME) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 * freq.getValue();
-                    } else if (FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 / freq.getValue();
-                    }
-                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
-                }
-            }
+            scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
+//
+//            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+//                    .queryBySiteId(site.getSiteId());
+//            if (StringUtil.isEmpty(site.getIndexUrl())
+//                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
+//                continue;
+//            }
+//
+//            for (MonitorFrequency freq : monitorFrequencies) {
+//                if (freq != null && freq.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
+//                    int interval = getInterval(FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit(), freq.getValue());
+//                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
+//                }
+//            }
         }
     }
 
@@ -259,70 +203,77 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         for (MonitorSite site : allMonitorSites) {
 
-            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
-                    .queryBySiteId(site.getSiteId());
-            if (StringUtil.isEmpty(site.getIndexUrl())
-                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-                continue;
-            }
+            scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_CONTENT);
 
-            for (MonitorFrequency freq : monitorFrequencies) {
-                if (freq != null && freq.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
+//            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+//                    .queryBySiteId(site.getSiteId());
+//            if (StringUtil.isEmpty(site.getIndexUrl())
+//                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
+//                continue;
+//            }
+//
+//            for (MonitorFrequency freq : monitorFrequencies) {
+//                if (freq != null && freq.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
+//                    int interval = getInterval(FrequencyType.WRONG_INFORMATION.getFreqUnit(), freq.getValue());
+//                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
+//                }
+//            }
+        }
+    }
 
-                    int interval = 0;
-                    if (FrequencyType.WRONG_INFORMATION.getFreqUnit() == FreqUnit
-                            .DAYS_PER_TIME) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 * freq.getValue();
-                    } else if (FrequencyType.WRONG_INFORMATION.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 / freq.getValue();
-                    }
-                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
-                }
+    private void scheduleCheckJob(Scheduler scheduler, MonitorSite site, FrequencyType freqType, EnumCheckJobType jobType) {
+        final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+                .queryBySiteId(site.getSiteId());
+        if (StringUtil.isEmpty(site.getIndexUrl())
+                || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
+            return;
+        }
+
+        for (MonitorFrequency freq : monitorFrequencies) {
+            if (freq != null && freq.getTypeId() == freqType.getTypeId()) {
+                int interval = getInterval(freqType.getFreqUnit(), freq.getValue());
+                scheduleJob(scheduler, jobType, site, interval);
             }
         }
+    }
+
+    /**
+     * 获取间隔时间
+     *
+     * @param unit
+     * @param value
+     * @return
+     */
+    private int getInterval(FreqUnit unit, Short value) {
+        int interval = 0;
+        if (unit == FreqUnit.DAYS_PER_TIME) {
+            // 计算间隔的时间，秒
+            interval = 24 * 60 * 60 * value;
+        } else if (unit == FreqUnit.TIMES_PER_DAY) {
+            // 计算间隔的时间，秒
+            interval = 24 * 60 * 60 / value;
+        }
+        return interval;
     }
 
     /**
      * 注册调度任务
      *
      * @param scheduler
-     * @param checkType
+     * @param jobType
      * @param site
      * @param interval
      */
-    private void scheduleJob(Scheduler scheduler, int checkType, MonitorSite site, int interval) {
+    private void scheduleJob(Scheduler scheduler,  EnumCheckJobType jobType, MonitorSite site, int interval) {
 
-        String name = "";
-        SchedulerTask task = null;
-        switch (checkType) {
-            case CHECK_HOMEPAGE_TYPE:
-                name = "homePage";
-                task = applicationContext.getBean
-                        (HomePageCheckScheduler.class);
-                break;
-            case CHECK_INFO_UPDATE_TYPE:
-                name = "infoUpdate";
-                task = applicationContext.getBean
-                        (InfoUpdateCheckScheduler.class);
-                break;
-            case CHECK_LINK_TYPE:
-                name = "link";
-                task = applicationContext.getBean
-                        (LinkAnalysisScheduler.class);
-                break;
-            case CHECK_CONTENT_TYPE:
-                name = "content";
-                task = applicationContext.getBean
-                        (CKMScheduler.class);
-                break;
-            default:
-                return;
+        String name = jobType.name;
+        SchedulerTask task = newTask(jobType);
+        if (task == null) {
+            return;
         }
 
         JobDetail job = newJob(CheckJob.class)
-                .withIdentity(name + "CheckJob" + String.valueOf(site.getSiteId()), "group-" + name + "-check")
+                .withIdentity(getJobName(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .build();
 
         // 真正的执行任务
@@ -332,7 +283,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         // 每天执行一次
         Trigger trigger = newTrigger()
-                .withIdentity(name + "CheckJobTrigger" + String.valueOf(site.getSiteId()), "group-" + name +  "-check")
+                .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .startNow()
                 .withSchedule(simpleSchedule()
                         .withIntervalInSeconds(interval)
@@ -345,6 +296,34 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
     }
 
+    private String getJobName(int siteId, EnumCheckJobType checkType) {
+        return checkType.name + "CheckJob" + String.valueOf(siteId);
+    }
 
+    private String getJobGroupName(EnumCheckJobType checkType) {
+        return "group-" + checkType.name + "-check";
+    }
 
+    private String getJobTrigger(int siteId, EnumCheckJobType jobType) {
+        return jobType.name + "CheckJobTrigger" + String.valueOf(siteId);
+    }
+
+    private SchedulerTask newTask(EnumCheckJobType jobType) {
+        switch (jobType) {
+            case CHECK_HOME_PAGE:
+                return applicationContext.getBean
+                        (HomePageCheckScheduler.class);
+            case CHECK_INFO_UPDATE:
+                return applicationContext.getBean
+                        (InfoUpdateCheckScheduler.class);
+            case CHECK_LINK:
+                return applicationContext.getBean
+                        (LinkAnalysisScheduler.class);
+            case CHECK_CONTENT:
+                return applicationContext.getBean
+                        (CKMScheduler.class);
+            default:
+                return null;
+        }
+    }
 }
