@@ -98,14 +98,14 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                 Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
                 scheduler.start();
 
-//                // 栏目更新检查
-//                initInfoUpdateCheckJob(scheduler);
-//
-//                // 首页有效性检查
-//                initHomepageCheckJob(scheduler);
-//
-//                // 全站链接有效性检查
-//                initLinkCheckJob(scheduler);
+                // 栏目更新检查
+                initInfoUpdateCheckJob(scheduler);
+
+                // 首页有效性检查
+                initHomepageCheckJob(scheduler);
+
+                // 全站链接有效性检查
+                initLinkCheckJob(scheduler);
 
                 // 文档内容错误检测
                 initContentCheckJob(scheduler);
