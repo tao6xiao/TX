@@ -22,7 +22,7 @@
     </Appenders>
     <Loggers>
         <!-- 输出info级别信息 -->
-        <Root level="DEBUG">
+        <Root level="INFO">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
         </Root>

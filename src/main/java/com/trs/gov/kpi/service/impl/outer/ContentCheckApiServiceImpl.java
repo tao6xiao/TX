@@ -15,7 +15,7 @@ import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DataTypeConversion;
 import com.trs.gov.kpi.utils.InitTime;
-import org.testng.annotations.Test;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
@@ -24,6 +24,7 @@ import java.util.*;
 /**
  * Created by he.lang on 2017/5/24.
  */
+@Service
 public class ContentCheckApiServiceImpl implements ContentCheckApiService {
 
     @Resource
@@ -36,13 +37,13 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
     private DocumentApiService documentApiService;
 
     @Override
-    public List<Document> getPublishDocuments() throws RemoteException, ParseException {
+    public List<Document> getPublishDocuments(int siteId) throws RemoteException, ParseException {
         List<Document> documentList = new ArrayList<>();
         //get all monitorSite object
-        List<MonitorSite> monitorSiteList = monitorSiteMapper.getAllMonitorSites();
-        for (MonitorSite monitorSite : monitorSiteList) {
+//        List<MonitorSite> monitorSiteList = monitorSiteMapper.getAllMonitorSites();
+//        for (MonitorSite monitorSite : monitorSiteList) {
             //get siteId
-            int siteId = monitorSite.getSiteId();
+//            int siteId = monitorSite.getSiteId();
             // TODO: 2017/5/24  set userName
             List<Channel> channelList = siteApiService.getChildChannel(siteId, 0, null);
             Set<Integer> allChnlIds = new HashSet<>();
@@ -71,7 +72,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                     documentList.add(document);
                 }
             }
-        }
+//        }
         return documentList;
     }
 
