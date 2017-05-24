@@ -1,10 +1,12 @@
 package com.trs.gov.kpi.service.impl.outer;
 
+import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
+import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
@@ -29,7 +31,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
     private static final String SERVICE_NAME = "gov_documentapi";
 
     @Override
-    public List<Integer> getPublishDocIds(String useName, int siteId, int channelId, String beginTime) throws RemoteException {
+    public List<Integer> getPublishDocIds(String userName, int siteId, int channelId, String beginTime) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
             params.put("SiteId", String.valueOf(siteId));
@@ -39,19 +41,10 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("queryAllPublishedDocIds", useName, params)).execute();
+                    buildRequest("queryAllPublishedDocIds", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = OuterApiUtil.toResultObj(response.body().string());
-                if (result == null) {
-                    log.error("invalid result: " + response);
-                    throw new RemoteException("获取发布文档ID失败！");
-                }
-                if (!result.isOk()) {
-                    log.error("fail result: " + result.getMsg());
-                    throw new RemoteException("获取发布文档ID失败！[" + result.getMsg() + "]");
-                }
-
+                ApiResult result = getValidResult(response, "获取发布文档ID");
                 List<Integer> ids = new ArrayList<>();
                 if (result.getData() != null && !result.getData().trim().isEmpty()) {
                     String[] idArray = result.getData().trim().split(",");
@@ -70,6 +63,47 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             throw new RemoteException("获取发布文档ID失败！", e);
         }
 
+    }
+
+    @Override
+    public Document getDocument(String userName, int channelId, int documentId) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("ChannelId", String.valueOf(channelId));
+            params.put("DocId", String.valueOf(documentId));
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(
+                    buildRequest("findDocumentById", userName, params)).execute();
+
+            if (response.isSuccessful()) {
+                ApiResult result = getValidResult(response, "获取发布文档");
+                if (result.getData() != null && !result.getData().trim().isEmpty()) {
+                    return JSON.parseObject(result.getData(), Document.class);
+                }
+
+                return null;
+            } else {
+                log.error("error: " + response);
+                throw new RemoteException("获取文档失败！");
+            }
+        } catch (IOException e) {
+            log.error("", e);
+            throw new RemoteException("获取文档失败！", e);
+        }
+    }
+
+    private ApiResult getValidResult(Response response, String errMsg) throws RemoteException,
+            IOException {
+        ApiResult result = OuterApiUtil.toResultObj(response.body().string());
+        if (result == null) {
+            log.error("invalid result: " + response);
+            throw new RemoteException(errMsg + "失败！");
+        }
+        if (!result.isOk()) {
+            log.error("fail result: " + result.getMsg());
+            throw new RemoteException(errMsg + "失败！[" + result.getMsg() + "]");
+        }
+        return result;
     }
 
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
