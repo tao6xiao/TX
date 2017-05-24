@@ -131,13 +131,13 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                 scheduler.start();
 
                 // 栏目更新检查
-//                initInfoUpdateCheckJob(scheduler);
-//
-//                // 首页有效性检查
-//                initHomepageCheckJob(scheduler);
-//
-//                // 全站链接有效性检查
-//                initLinkCheckJob(scheduler);
+                initInfoUpdateCheckJob(scheduler);
+
+                // 首页有效性检查
+                initHomepageCheckJob(scheduler);
+
+                // 全站链接有效性检查
+                initLinkCheckJob(scheduler);
 
                 initContentCheckJob(scheduler);
 
