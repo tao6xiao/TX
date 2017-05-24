@@ -17,9 +17,9 @@ public class Issue extends IssueBase{
 
     private Date issueTime;
 
-    private Integer isResolved;
+    private Integer isResolved = 0;
 
-    private Integer isDel;
+    private Integer isDel = 0;
 
     private String customer1;
 
