@@ -101,7 +101,7 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
         }
     };
 
-    private List<SimpleTree<CheckingChannel>> buildChannelTree() {
+    private List<SimpleTree<CheckingChannel>> buildChannelTree() throws RemoteException {
 
         // 获取栏目的更新设置
         final List<FrequencySetup> frequencySetups = frequencySetupMapper
@@ -121,21 +121,10 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
                 .getDefaultUpdateFreqBySiteId(siteId);
 
         // 获取监控站点
-        MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
         List<SimpleTree<CheckingChannel>> trees = new ArrayList<>();
-        if (monitorSite.getSiteIds() != null && !monitorSite.getSiteIds().trim().isEmpty()) {
-            String[] sites = monitorSite.getSiteIds().trim().split(",");
-            for (String siteId : sites) {
-                Integer id = Integer.valueOf(siteId);
-                try {
-                    SimpleTree<CheckingChannel> tree = buildOneChannelTree(id);
-                    if (tree != null) {
-                        trees.add(tree);
-                    }
-                } catch (RemoteException e) {
-                    log.error("", e);
-                }
-            }
+        SimpleTree<CheckingChannel> tree = buildOneChannelTree(siteId);
+        if (tree != null) {
+            trees.add(tree);
         }
 
         return trees;
