@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueExample;
 import java.util.List;
 
@@ -27,16 +28,16 @@ public interface IssueMapper {
 
     int updateByPrimaryKey(Issue record);
 
-    int getAllIssueCount(@Param("issue") Issue issue);
+    int getAllIssueCount(@Param("issue") IssueBase issue);
 
-    List<Issue> getAllIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
+    List<Issue> getAllIssueList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") IssueBase issue);
 
     /**
      * 获取预警提醒记录总数
      * @param issue
      * @return
      */
-    int getAllWarningCount(@Param("issue") Issue issue);
+    int getAllWarningCount(@Param("issue") IssueBase issue);
 
     /**
      * 获取预警提醒当前页的分页数据
@@ -45,7 +46,7 @@ public interface IssueMapper {
      * @param issue
      * @return
      */
-    List<Issue> getAllWarningList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
+    List<Issue> getAllWarningList(@Param("currPage") Integer currPage, @Param("pageSize") Integer pageSize,@Param("issue") IssueBase issue);
 
     /**
      * 获取已解决分页数据（通用方法，已解决，已忽略）
@@ -54,13 +55,13 @@ public interface IssueMapper {
      * @param issue
      * @return
      */
-    List<Issue> selectPageDataIsResolvedList(@Param("pageCalculate") Integer pageCalculate, @Param("pageSize") Integer pageSize,@Param("issue") Issue issue);
+    List<Issue> selectPageDataIsResolvedList(@Param("pageCalculate") Integer pageCalculate, @Param("pageSize") Integer pageSize,@Param("issue") IssueBase issue);
 
     /**
      * 获取已解决的数据条数（通用方法，已解决，已忽略）
      * @param issue
      * @return
      */
-    int selectPageDataIsResolvedItemCount(@Param("issue") Issue issue);
+    int selectPageDataIsResolvedItemCount(@Param("issue") IssueBase issue);
 
 }

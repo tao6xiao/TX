@@ -2,6 +2,7 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.service.OperationService;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class IssueDataUtil {
      * @param operationService
      * @return
      */
-    public static Issue getIssueToGetPageData(Issue issue, OperationService operationService, Integer isResolved, Integer isDel) {
+    public static IssueBase getIssueToGetPageData(IssueBase issue, OperationService operationService, Integer isResolved, Integer isDel) {
         //接受searchField和searchText，并返回对应的问题类型ID集合
         if (issue.getSearchText() != null && !issue.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issue.getSearchText(), operationService);

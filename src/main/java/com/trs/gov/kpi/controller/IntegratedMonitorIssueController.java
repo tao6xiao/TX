@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
@@ -35,7 +36,7 @@ public class IntegratedMonitorIssueController {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getAllIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute Issue issue) throws BizException {
+    public ApiPageData getAllIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issue) throws BizException {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }

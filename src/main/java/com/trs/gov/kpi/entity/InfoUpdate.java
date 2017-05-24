@@ -8,13 +8,23 @@ import java.util.Date;
  * Created by rw103 on 2017/5/13.
  */
 @Data
-public class InfoUpdate extends IssueBase {
+public class InfoUpdate {
 
-    private String chnlName;
+    /**
+     * 问题编号
+     */
+    private String id;
+
+    /**
+     * 站点编号
+     */
+    private Integer siteId;
+
+    private String chnlName = "";
 
     private Integer chnlId;
 
-    private String chnlUrl;
+    private String chnlUrl = "";
 
     private Integer issueTypeId;
 

@@ -5,7 +5,17 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class Issue extends IssueBase{
+public class Issue {
+
+    /**
+     * 问题编号
+     */
+    private String id;
+
+    /**
+     * 站点编号
+     */
+    private Integer siteId;
 
     private Integer typeId;
 

@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.IsDelType;
 import com.trs.gov.kpi.constant.IsResolvedType;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
@@ -37,7 +38,7 @@ public class IntegratedMonitorWarningController {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataWaringList(Integer pageIndex, Integer pageSize, @ModelAttribute Issue issue) throws BizException, ParseException {
+    public ApiPageData getPageDataWaringList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue) throws BizException, ParseException {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }

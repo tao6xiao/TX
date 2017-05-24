@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.InitTime;
@@ -22,12 +23,12 @@ public class IssueServiceImpl extends OperationServiceImpl implements IssueServi
     private IssueMapper issueMapper;
 
     @Override
-    public int getAllIssueCount(Issue issue) {
+    public int getAllIssueCount(IssueBase issue) {
         return issueMapper.getAllIssueCount(issue);
     }
 
     @Override
-    public List<IssueIsNotResolvedResponseDetail> getAllIssueList(Integer currPage, Integer pageSize, Issue issue) {
+    public List<IssueIsNotResolvedResponseDetail> getAllIssueList(Integer currPage, Integer pageSize, IssueBase issue) {
         List<Issue> issueList = issueMapper.getAllIssueList(currPage, pageSize, issue);
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueIsNotResolvedResponseDetail> issueIsNotResolvedResponseDetailList = new ArrayList<>();

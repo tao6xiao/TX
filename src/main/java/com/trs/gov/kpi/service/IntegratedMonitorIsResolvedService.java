@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service;
 
 
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponseDetail;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -20,13 +21,13 @@ public interface IntegratedMonitorIsResolvedService extends OperationService{
      * @param issue
      * @return
      */
-    List<IssueIsResolvedResponseDetail> getPageDataIsResolvedList(Integer pageIndex, Integer pageSize, @ModelAttribute Issue issue);
+    List<IssueIsResolvedResponseDetail> getPageDataIsResolvedList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue);
 
     /**
      * 获取已解决的数据条数（通用方法，已解决，已忽略）
      * @param issue
      * @return
      */
-    int getPageDataIsResolvedItemCount(Issue issue);
+    int getPageDataIsResolvedItemCount(IssueBase issue);
 
 }

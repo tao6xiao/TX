@@ -16,6 +16,8 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.DateSplitUtil;
 import com.trs.gov.kpi.utils.InitTime;
+import com.trs.gov.kpi.utils.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,6 +27,7 @@ import java.util.*;
 /**
  * Created by rw103 on 2017/5/13.
  */
+@Slf4j
 @Service
 public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoUpdateService {
 
@@ -75,6 +78,18 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         for (InfoUpdate info : infoUpdateList) {
             if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
                 info.setIssueTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);
+            }
+
+            // get channl name
+            try {
+                if (info.getChnlId() != null) {
+                    Channel chnl = siteApiService.getChannelById(info.getChnlId(), "");
+                    if (chnl != null && !StringUtil.isEmpty(chnl.getChnlName())) {
+                        info.setChnlName(chnl.getChnlName());
+                    }
+                }
+            } catch (RemoteException e) {
+                log.error("", e);
             }
         }
         return infoUpdateList;

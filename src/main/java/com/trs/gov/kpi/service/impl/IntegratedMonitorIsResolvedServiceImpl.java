@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.utils.InitTime;
@@ -23,7 +24,7 @@ public class IntegratedMonitorIsResolvedServiceImpl extends OperationServiceImpl
     IssueMapper issueMapper;
 
     @Override
-    public List<IssueIsResolvedResponseDetail> getPageDataIsResolvedList(Integer pageIndex, Integer pageSize, @ModelAttribute Issue issue) {
+    public List<IssueIsResolvedResponseDetail> getPageDataIsResolvedList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue) {
         int pageCalculate = pageIndex * pageSize;
         List<Issue> issueList = issueMapper.selectPageDataIsResolvedList(pageCalculate, pageSize, issue);
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
@@ -37,7 +38,7 @@ public class IntegratedMonitorIsResolvedServiceImpl extends OperationServiceImpl
     }
 
     @Override
-    public int getPageDataIsResolvedItemCount(Issue issue) {
+    public int getPageDataIsResolvedItemCount(IssueBase issue) {
         int num = issueMapper.selectPageDataIsResolvedItemCount(issue);
         return num;
     }

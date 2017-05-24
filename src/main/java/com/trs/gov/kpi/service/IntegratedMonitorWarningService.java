@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 
 import java.text.ParseException;
@@ -46,12 +47,12 @@ public interface IntegratedMonitorWarningService extends OperationService{
      * @param issue
      * @return
      */
-    List<IssueWarningResponseDetail> getPageDataWaringList(Integer pageIndex, Integer pageSize, Issue issue) throws ParseException;
+    List<IssueWarningResponseDetail> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException;
 
     /**
      * 获取数据总条数
      * @param issue
      * @return
      */
-    int getItemCount(Issue issue);
+    int getItemCount(IssueBase issue);
 }

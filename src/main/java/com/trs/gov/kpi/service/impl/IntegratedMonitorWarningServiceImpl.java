@@ -3,6 +3,7 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.OperationMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.utils.InitTime;
@@ -49,7 +50,7 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
     }
 
     @Override
-    public List<IssueWarningResponseDetail> getPageDataWaringList(Integer pageIndex, Integer pageSize, Issue issue) throws ParseException {
+    public List<IssueWarningResponseDetail> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException {
         int pageCalculate = pageIndex * pageSize;
         List<Issue> issueList = issueMapper.getAllWarningList(pageCalculate, pageSize, issue);
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
@@ -80,7 +81,7 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
     }
 
     @Override
-    public int getItemCount(Issue issue) {
+    public int getItemCount(IssueBase issue) {
         int itemCount = issueMapper.getAllWarningCount(issue);
         return itemCount;
     }

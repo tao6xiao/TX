@@ -42,4 +42,8 @@ public class IssueBase {
      * 查询历史记录的粒度，1-->天  2-->周  3-->月  4-->年
      */
     public Integer granularity;
+
+    private Integer isResolved = 0;
+
+    private Integer isDel = 0;
 }
