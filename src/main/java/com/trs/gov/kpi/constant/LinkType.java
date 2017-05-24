@@ -8,10 +8,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum LinkType {
 
-    PAGE(1, "链接失效"),
-    IMAGE(2, "图片失效"),
-    FILE(3, "附件失效"),
-    HOME_PAGE(4, "首页失效");
+    PAGE(11, "链接失效"),
+    IMAGE(12, "图片失效"),
+    FILE(13, "附件失效"),
+    HOME_PAGE(14, "首页失效");
 
     @Getter
     private int code;
