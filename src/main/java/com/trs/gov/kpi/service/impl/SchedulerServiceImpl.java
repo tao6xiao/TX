@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.FreqUnit;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
@@ -52,15 +53,29 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
     @Resource
     ApplicationContext applicationContext;
 
+
     @Override
-    public void addHomePageCheckJob(int siteId, String indexUrl) {
+    public void addCheckJob(int siteId, EnumCheckJobType checkType) {
 
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             final MonitorSite site = monitorSiteService.getMonitorSiteBySiteId
                     (siteId);
 
-            scheduleHomePageCheckJob(scheduler, site);
+            switch (checkType) {
+                case CHECK_HOME_PAGE:
+                    scheduleCheckJob(scheduler, site, FrequencyType.HOMEPAGE_AVAILABILITY, EnumCheckJobType.CHECK_HOME_PAGE);
+                    break;
+                case CHECK_CONTENT:
+                    scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_HOME_PAGE);
+                    break;
+                case CHECK_INFO_UPDATE:
+                    scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 24 * 60 * 60);
+                    break;
+                case CHECK_LINK:
+                    scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_HOME_PAGE);
+                    break;
+            }
 
         } catch (SchedulerException e) {
             log.error("", e);
@@ -68,27 +83,15 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
     }
 
     @Override
-    public void removeHomePageCheckJob(int siteId, String indexUrl) {
+    public void removeCheckJob(int siteId, EnumCheckJobType checkType) {
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            JobKey key = new JobKey(getJobName(siteId, CHECK_HOMEPAGE_TYPE), getJobGroupName(CHECK_HOMEPAGE_TYPE));
+            JobKey key = new JobKey(getJobName(siteId, checkType), getJobGroupName(checkType));
             scheduler.deleteJob(key);
         } catch (SchedulerException e) {
             log.error("", e);
         }
     }
-//
-//    private void addFreqUnitAndFreq(FreqUnit freqUnit, Integer freq, SchedulerTask schedulerTask) {
-//
-//        if(FreqUnit.DAYS_PER_TIME == freqUnit) {
-//
-//            schedulerTask.setDelayAndTimeUnit(freq.longValue(), TimeUnit.DAYS);
-//        } else if(FreqUnit.TIMES_PER_DAY == freqUnit) {
-//
-//            Long totalMinutesPerDay = TimeUnit.DAYS.toMinutes(1);
-//            schedulerTask.setDelayAndTimeUnit(totalMinutesPerDay / freq, TimeUnit.MINUTES);
-//        }
-//    }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
@@ -133,7 +136,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         // 每一个站点一个job
         for (MonitorSite site : allMonitorSites) {
-            scheduleJob(scheduler, CHECK_INFO_UPDATE_TYPE, site, 24 * 60 * 60);
+            scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 24 * 60 * 60);
         }
     }
 
@@ -150,7 +153,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-            scheduleHomePageCheckJob(scheduler, site);
+            scheduleCheckJob(scheduler, site, FrequencyType.HOMEPAGE_AVAILABILITY, EnumCheckJobType.CHECK_HOME_PAGE);
         }
     }
 
@@ -168,19 +171,21 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         for (MonitorSite site : allMonitorSites) {
 
-            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
-                    .queryBySiteId(site.getSiteId());
-            if (StringUtil.isEmpty(site.getIndexUrl())
-                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-                continue;
-            }
-
-            for (MonitorFrequency freq : monitorFrequencies) {
-                if (freq != null && freq.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
-                    int interval = getInterval(FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit(), freq.getValue());
-                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
-                }
-            }
+            scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
+//
+//            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+//                    .queryBySiteId(site.getSiteId());
+//            if (StringUtil.isEmpty(site.getIndexUrl())
+//                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
+//                continue;
+//            }
+//
+//            for (MonitorFrequency freq : monitorFrequencies) {
+//                if (freq != null && freq.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
+//                    int interval = getInterval(FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit(), freq.getValue());
+//                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
+//                }
+//            }
         }
     }
 
@@ -198,23 +203,25 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         for (MonitorSite site : allMonitorSites) {
 
-            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
-                    .queryBySiteId(site.getSiteId());
-            if (StringUtil.isEmpty(site.getIndexUrl())
-                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-                continue;
-            }
+            scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_CONTENT);
 
-            for (MonitorFrequency freq : monitorFrequencies) {
-                if (freq != null && freq.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
-                    int interval = getInterval(FrequencyType.WRONG_INFORMATION.getFreqUnit(), freq.getValue());
-                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
-                }
-            }
+//            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+//                    .queryBySiteId(site.getSiteId());
+//            if (StringUtil.isEmpty(site.getIndexUrl())
+//                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
+//                continue;
+//            }
+//
+//            for (MonitorFrequency freq : monitorFrequencies) {
+//                if (freq != null && freq.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
+//                    int interval = getInterval(FrequencyType.WRONG_INFORMATION.getFreqUnit(), freq.getValue());
+//                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
+//                }
+//            }
         }
     }
 
-    private void scheduleHomePageCheckJob(Scheduler scheduler, MonitorSite site) {
+    private void scheduleCheckJob(Scheduler scheduler, MonitorSite site, FrequencyType freqType, EnumCheckJobType jobType) {
         final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
                 .queryBySiteId(site.getSiteId());
         if (StringUtil.isEmpty(site.getIndexUrl())
@@ -223,9 +230,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorFrequency freq : monitorFrequencies) {
-            if (freq != null && freq.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY.getTypeId()) {
-                int interval = getInterval(FrequencyType.HOMEPAGE_AVAILABILITY.getFreqUnit(), freq.getValue());
-                scheduleJob(scheduler, CHECK_HOMEPAGE_TYPE, site, interval);
+            if (freq != null && freq.getTypeId() == freqType.getTypeId()) {
+                int interval = getInterval(freqType.getFreqUnit(), freq.getValue());
+                scheduleJob(scheduler, jobType, site, interval);
             }
         }
     }
@@ -253,20 +260,20 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
      * 注册调度任务
      *
      * @param scheduler
-     * @param checkType
+     * @param jobType
      * @param site
      * @param interval
      */
-    private void scheduleJob(Scheduler scheduler, int checkType, MonitorSite site, int interval) {
+    private void scheduleJob(Scheduler scheduler,  EnumCheckJobType jobType, MonitorSite site, int interval) {
 
-        String name = getTypeName(checkType);
-        SchedulerTask task = newTask(checkType);
+        String name = jobType.name;
+        SchedulerTask task = newTask(jobType);
         if (task == null) {
             return;
         }
 
         JobDetail job = newJob(CheckJob.class)
-                .withIdentity(getJobName(site.getSiteId(), checkType), getJobGroupName(checkType))
+                .withIdentity(getJobName(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .build();
 
         // 真正的执行任务
@@ -276,7 +283,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         // 每天执行一次
         Trigger trigger = newTrigger()
-                .withIdentity(getJobTrigger(site.getSiteId(), checkType), getJobGroupName(checkType))
+                .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .startNow()
                 .withSchedule(simpleSchedule()
                         .withIntervalInSeconds(interval)
@@ -289,45 +296,30 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
     }
 
-    private String getJobName(int siteId, int checkType) {
-        return getTypeName(checkType) + "CheckJob" + String.valueOf(siteId);
+    private String getJobName(int siteId, EnumCheckJobType checkType) {
+        return checkType.name + "CheckJob" + String.valueOf(siteId);
     }
 
-    private String getJobGroupName(int checkType) {
-        return "group-" + getTypeName(checkType) + "-check";
+    private String getJobGroupName(EnumCheckJobType checkType) {
+        return "group-" + checkType.name + "-check";
     }
 
-    private String getJobTrigger(int siteId, int checkType) {
-        return getTypeName(checkType) + "CheckJobTrigger" + String.valueOf(siteId);
+    private String getJobTrigger(int siteId, EnumCheckJobType jobType) {
+        return jobType.name + "CheckJobTrigger" + String.valueOf(siteId);
     }
 
-    private String getTypeName(int checkType) {
-        switch (checkType) {
-            case CHECK_HOMEPAGE_TYPE:
-                return "homePage";
-            case CHECK_INFO_UPDATE_TYPE:
-                return "infoUpdate";
-            case CHECK_LINK_TYPE:
-                return "link";
-			case CHECK_CONTENT_TYPE:
-                return "content";
-            default:
-                return null;
-        }
-    }
-
-    private SchedulerTask newTask(int checkType) {
-        switch (checkType) {
-            case CHECK_HOMEPAGE_TYPE:
+    private SchedulerTask newTask(EnumCheckJobType jobType) {
+        switch (jobType) {
+            case CHECK_HOME_PAGE:
                 return applicationContext.getBean
                         (HomePageCheckScheduler.class);
-            case CHECK_INFO_UPDATE_TYPE:
+            case CHECK_INFO_UPDATE:
                 return applicationContext.getBean
                         (InfoUpdateCheckScheduler.class);
-            case CHECK_LINK_TYPE:
+            case CHECK_LINK:
                 return applicationContext.getBean
                         (LinkAnalysisScheduler.class);
-			case CHECK_CONTENT_TYPE:
+            case CHECK_CONTENT:
                 return applicationContext.getBean
                         (CKMScheduler.class);
             default:

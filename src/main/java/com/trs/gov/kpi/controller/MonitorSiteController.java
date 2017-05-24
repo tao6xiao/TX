@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -63,17 +64,17 @@ public class MonitorSiteController {
             monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
 
             if (monitorSite.getIndexUrl() != null && !monitorSite.getIndexUrl().trim().isEmpty()) {
-                schedulerService.removeHomePageCheckJob(siteId, monitorSite.getIndexUrl());
+                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }
             if (monitorSiteDeal.getIndexUrl() != null && !monitorSiteDeal.getIndexUrl().trim().isEmpty()) {
-                schedulerService.addHomePageCheckJob(siteId, monitorSiteDeal.getIndexUrl());
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }
 
         }else {//检测站点表中不存在siteId对应记录，将插入记录
             monitorSiteService.addMonitorSite(monitorSiteDeal);
 
             // 触发监控
-            schedulerService.addHomePageCheckJob(siteId, monitorSiteDeal.getIndexUrl());
+            schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
         }
         return null;
     }
