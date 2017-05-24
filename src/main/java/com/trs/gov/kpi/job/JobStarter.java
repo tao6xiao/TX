@@ -7,6 +7,8 @@ import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.scheduler.HomePageCheckScheduler;
 import com.trs.gov.kpi.scheduler.InfoUpdateCheckScheduler;
+import com.trs.gov.kpi.scheduler.LinkAnalysisScheduler;
+import com.trs.gov.kpi.scheduler.SchedulerTask;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +23,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-
 import java.util.List;
 
 import static org.quartz.JobBuilder.newJob;
@@ -34,6 +35,10 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @Slf4j
 @Service
 public class JobStarter implements ApplicationListener<ContextRefreshedEvent> {
+
+    private static final int CHECK_HOMEPAGE_TYPE = 1;
+    private static final int CHECK_LINK_TYPE = 2;
+    private static final int CHECK_INFO_UPDATE_TYPE = 3;
 
     @Resource
     ApplicationContext applicationContext;
@@ -60,6 +65,9 @@ public class JobStarter implements ApplicationListener<ContextRefreshedEvent> {
                 // 首页有效性检查
                 initHomepageCheckJob(scheduler);
 
+                // 全站链接有效性检查
+                initLinkCheckJob(scheduler);
+
             } catch (SchedulerException e) {
                 log.error("", e);
             }
@@ -81,31 +89,7 @@ public class JobStarter implements ApplicationListener<ContextRefreshedEvent> {
 
         // 每一个站点一个job
         for (MonitorSite site : allMonitorSites) {
-            JobDetail job = newJob(CheckJob.class)
-                    .withIdentity("infoUpdateCheckJob" + String.valueOf(site.getSiteId()), "group-check")
-                    .build();
-
-            // 真正的执行任务
-            InfoUpdateCheckScheduler checkScheduler = applicationContext.getBean
-                    (InfoUpdateCheckScheduler.class);
-            checkScheduler.setSiteId(site.getSiteId());
-            checkScheduler.setBaseUrl(site.getIndexUrl());
-            job.getJobDataMap().put("task", checkScheduler);
-
-            // 每天执行一次
-            Trigger trigger = newTrigger()
-                    .withIdentity("infoUpdateCheckJobTrigger" + String.valueOf(site.getSiteId()), "group-check")
-                    .startNow()
-                    .withSchedule(simpleSchedule()
-                            .withIntervalInSeconds(24 * 60 * 60)
-                            .repeatForever())
-                    .build();
-
-            try {
-                scheduler.scheduleJob(job, trigger);
-            } catch (SchedulerException e) {
-                log.error("failed to schedule info update check of site " + String.valueOf(site.getSiteId()), e);
-            }
+            scheduleJob(scheduler, CHECK_INFO_UPDATE_TYPE, site, 24 * 60 * 60);
         }
     }
 
@@ -143,32 +127,104 @@ public class JobStarter implements ApplicationListener<ContextRefreshedEvent> {
                         interval = 24 * 60 * 60 / freq.getValue();
                     }
 
-                    JobDetail job = newJob(CheckJob.class)
-                            .withIdentity("homePageCheckJob" + String.valueOf(site.getSiteId()), "group-check")
-                            .build();
-
-                    // 真正的执行任务
-                    HomePageCheckScheduler checkScheduler = applicationContext.getBean
-                            (HomePageCheckScheduler.class);
-                    checkScheduler.setSiteId(site.getSiteId());
-                    checkScheduler.setBaseUrl(site.getIndexUrl());
-                    job.getJobDataMap().put("task", checkScheduler);
-
-                    // 每天执行一次
-                    Trigger trigger = newTrigger()
-                            .withIdentity("homePageCheckJobTrigger" + String.valueOf(site.getSiteId()), "group-check")
-                            .startNow()
-                            .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(interval)
-                                    .repeatForever())
-                            .build();
-                    try {
-                        scheduler.scheduleJob(job, trigger);
-                    } catch (SchedulerException e) {
-                        log.error("failed to schedule home page check of site " + String.valueOf(site.getSiteId()), e);
-                    }
+                    scheduleJob(scheduler, CHECK_HOMEPAGE_TYPE, site, interval);
                 }
             }
+        }
+    }
+
+    /**
+     * 链接有效性检测
+     *
+     * @param scheduler
+     */
+    private void initLinkCheckJob(Scheduler scheduler) {
+        // 查询数据库里面的所有站点
+        final List<MonitorSite> allMonitorSites = monitorSiteService.getAllMonitorSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        for (MonitorSite site : allMonitorSites) {
+
+            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+                    .queryBySiteId(site.getSiteId());
+            if (StringUtil.isEmpty(site.getIndexUrl())
+                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
+                continue;
+            }
+
+            for (MonitorFrequency freq : monitorFrequencies) {
+                if (freq != null && freq.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
+
+                    int interval = 0;
+                    if (FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit() == FreqUnit
+                            .DAYS_PER_TIME) {
+                        // 计算间隔的时间，秒
+                        interval = 24 * 60 * 60 * freq.getValue();
+                    } else if (FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
+                        // 计算间隔的时间，秒
+                        interval = 24 * 60 * 60 / freq.getValue();
+                    }
+                    scheduleJob(scheduler, CHECK_LINK_TYPE, site, interval);
+                }
+            }
+        }
+    }
+
+    /**
+     * 注册调度任务
+     *
+     * @param scheduler
+     * @param checkType
+     * @param site
+     * @param interval
+     */
+    private void scheduleJob(Scheduler scheduler, int checkType, MonitorSite site, int interval) {
+
+        String name = "";
+        SchedulerTask task = null;
+        switch (checkType) {
+            case CHECK_HOMEPAGE_TYPE:
+                name = "homePage";
+                task = applicationContext.getBean
+                        (HomePageCheckScheduler.class);
+                break;
+            case CHECK_INFO_UPDATE_TYPE:
+                name = "infoUpdate";
+                task = applicationContext.getBean
+                        (InfoUpdateCheckScheduler.class);
+                break;
+            case CHECK_LINK_TYPE:
+                name = "link";
+                task = applicationContext.getBean
+                        (LinkAnalysisScheduler.class);
+                break;
+            default:
+                return;
+        }
+
+        JobDetail job = newJob(CheckJob.class)
+                .withIdentity(name + "CheckJob" + String.valueOf(site.getSiteId()), "group-" + name + "-check")
+                .build();
+
+        // 真正的执行任务
+        task.setSiteId(site.getSiteId());
+        task.setBaseUrl(site.getIndexUrl());
+        job.getJobDataMap().put("task", task);
+
+        // 每天执行一次
+        Trigger trigger = newTrigger()
+                .withIdentity(name + "CheckJobTrigger" + String.valueOf(site.getSiteId()), "group-" + name +  "-check")
+                .startNow()
+                .withSchedule(simpleSchedule()
+                        .withIntervalInSeconds(interval)
+                        .repeatForever())
+                .build();
+        try {
+            scheduler.scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            log.error("failed to schedule " + name + " check of site " + String.valueOf(site.getSiteId()), e);
         }
     }
 }
