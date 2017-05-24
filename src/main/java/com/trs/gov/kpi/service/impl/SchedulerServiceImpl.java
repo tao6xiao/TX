@@ -161,8 +161,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
                 // 全站链接有效性检查
                 initLinkCheckJob(scheduler);
-				
-				initContentCheckJob(scheduler);
+
+                // 文档内容错误检测
+                initContentCheckJob(scheduler);
 
             } catch (SchedulerException e) {
                 log.error("", e);
@@ -229,16 +230,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
             for (MonitorFrequency freq : monitorFrequencies) {
                 if (freq != null && freq.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
-
-                    int interval = 0;
-                    if (FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit() == FreqUnit
-                            .DAYS_PER_TIME) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 * freq.getValue();
-                    } else if (FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 / freq.getValue();
-                    }
+                    int interval = getInterval(FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit(), freq.getValue());
                     scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
                 }
             }
@@ -268,16 +260,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
             for (MonitorFrequency freq : monitorFrequencies) {
                 if (freq != null && freq.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
-
-                    int interval = 0;
-                    if (FrequencyType.WRONG_INFORMATION.getFreqUnit() == FreqUnit
-                            .DAYS_PER_TIME) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 * freq.getValue();
-                    } else if (FrequencyType.WRONG_INFORMATION.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
-                        // 计算间隔的时间，秒
-                        interval = 24 * 60 * 60 / freq.getValue();
-                    }
+                    int interval = getInterval(FrequencyType.WRONG_INFORMATION.getFreqUnit(), freq.getValue());
                     scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
                 }
             }
@@ -294,20 +277,29 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         for (MonitorFrequency freq : monitorFrequencies) {
             if (freq != null && freq.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY.getTypeId()) {
-
-                int interval = 0;
-                if (FrequencyType.HOMEPAGE_AVAILABILITY.getFreqUnit() == FreqUnit
-                        .DAYS_PER_TIME) {
-                    // 计算间隔的时间，秒
-                    interval = 24 * 60 * 60 * freq.getValue();
-                } else if (FrequencyType.HOMEPAGE_AVAILABILITY.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
-                    // 计算间隔的时间，秒
-                    interval = 24 * 60 * 60 / freq.getValue();
-                }
-
+                int interval = getInterval(FrequencyType.HOMEPAGE_AVAILABILITY.getFreqUnit(), freq.getValue());
                 scheduleJob(scheduler, CHECK_HOMEPAGE_TYPE, site, interval);
             }
         }
+    }
+
+    /**
+     * 获取间隔时间
+     *
+     * @param unit
+     * @param value
+     * @return
+     */
+    private int getInterval(FreqUnit unit, Short value) {
+        int interval = 0;
+        if (unit == FreqUnit.DAYS_PER_TIME) {
+            // 计算间隔的时间，秒
+            interval = 24 * 60 * 60 * value;
+        } else if (unit == FreqUnit.TIMES_PER_DAY) {
+            // 计算间隔的时间，秒
+            interval = 24 * 60 * 60 / value;
+        }
+        return interval;
     }
 
     /**
