@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.LinkType;
-import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.constant.LinkIssueType;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.SpiderUtils;
@@ -15,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.regex.Pattern;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -55,13 +52,12 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
                 List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
                 Date checkTime = new Date();
                 for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
-
                     LinkAvailability linkAvailability = new LinkAvailability();
                     linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getKey());
                     linkAvailability.setSnapshot(unavailableUrlAndParentUrl.getValue());
                     linkAvailability.setCheckTime(checkTime);
                     linkAvailability.setSiteId(siteId);
-                    linkAvailability.setIssueTypeName(getTypeByLink(unavailableUrlAndParentUrl.getKey()).getName());
+                    linkAvailability.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
                     linkAvailabilityService.insertLinkAvailability(linkAvailability);
                 }
             } catch (Exception e) {
@@ -76,14 +72,14 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
 
     private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
 
-    private LinkType getTypeByLink(String url) {
+    private LinkIssueType getTypeByLink(String url) {
 
         String suffix = url.substring(url.lastIndexOf(".") + 1);
         for(String imageSuffix: imageSuffixs) {
 
             if(StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
 
-                return LinkType.IMAGE;
+                return LinkIssueType.INVALID_IMAGE;
             }
         }
 
@@ -91,10 +87,10 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
 
             if(StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
 
-                return LinkType.FILE;
+                return LinkIssueType.INVALID_FILE;
             }
         }
 
-        return LinkType.PAGE;
+        return LinkIssueType.INVALID_LINK;
     }
 }
