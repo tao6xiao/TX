@@ -11,7 +11,7 @@ import java.util.Date;
  */
 @Slf4j
 public class DateUtil {
-    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // 一天的毫秒数
     private static final long MS_ONE_DAY = 24 * 60 * 60 * 1000;

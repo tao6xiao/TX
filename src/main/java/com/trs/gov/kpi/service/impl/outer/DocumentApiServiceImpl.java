@@ -26,7 +26,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
     @Value("${service.outer.editcenter.url}")
     private String editCenterServiceUrl;
 
-    private static final String SERVICE_NAME = "gov_commondocument";
+    private static final String SERVICE_NAME = "gov_documentapi";
 
     @Override
     public List<Integer> getPublishDocIds(String useName, int siteId, int channelId, String beginTime) throws RemoteException {
@@ -34,16 +34,22 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             Map<String, String> params = new HashMap<>();
             params.put("SiteId", String.valueOf(siteId));
             params.put("ChannelId", String.valueOf(channelId));
-            params.put("OperTimeStart", beginTime);
+            if (beginTime != null && !beginTime.trim().isEmpty()) {
+                params.put("OperTimeStart", beginTime);
+            }
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
                     buildRequest("queryAllPublishedDocIds", useName, params)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.toResultObj(response.body().string());
-                if (result == null || StringUtil.isEmpty(result.getData())) {
+                if (result == null) {
                     log.error("invalid result: " + response);
                     throw new RemoteException("获取发布文档ID失败！");
+                }
+                if (!result.isOk()) {
+                    log.error("fail result: " + result.getMsg());
+                    throw new RemoteException("获取发布文档ID失败！[" + result.getMsg() + "]");
                 }
 
                 List<Integer> ids = new ArrayList<>();

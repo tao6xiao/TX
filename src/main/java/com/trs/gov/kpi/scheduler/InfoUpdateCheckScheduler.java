@@ -33,7 +33,7 @@ import java.util.*;
 public class InfoUpdateCheckScheduler extends AbstractScheduler {
 
     // 开始检查的第一个周期起始点
-    private static final String BEGIN_CHECK_DAY = "207-05-01 00:00:00";
+    private static final String BEGIN_CHECK_DAY = "2017-05-01 00:00:00";
 
     @Resource
     SiteApiService siteApiService;
@@ -83,7 +83,13 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
 
                 // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
                 for (SimpleTree<CheckingChannel> tree : siteTrees) {
-                    checkChannelTreeUpdate(tree.getRoot());
+                    List<SimpleTree.Node<CheckingChannel>> children = tree.getRoot().getChildren();
+                    if (children == null) {
+                        continue;
+                    }
+                    for (SimpleTree.Node<CheckingChannel> child : children) {
+                        checkChannelTreeUpdate(child);
+                    }
                 }
 
                 insertIssueAndWarning(siteTrees);
@@ -151,7 +157,7 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
             return null;
         }
 
-        SimpleTree<CheckingChannel> tree = new SimpleTree<>(new CheckingChannel());
+        SimpleTree<CheckingChannel> tree = new SimpleTree<>(null);
         final SimpleTree.Node<CheckingChannel> parent = tree.getRoot();
         for (Channel chnl : childChannel) {
             try {
@@ -199,10 +205,12 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
                 newCheckingChannel.setSelfCheckDay(parentChecking.getSelfCheckDay());
             } else {
                 // 设置自查提醒
-                newCheckingChannel.setShouldSelfCheck(true);
-                Date beginDate = getSelfCheckBeginDate(defaultUpdateFreq.getValue());
-                newCheckingChannel.setBeginDateTime(DateUtil.toString(beginDate));
-                newCheckingChannel.setEndDateTime(DateUtil.toString(DateUtil.addDay(beginDate, defaultUpdateFreq.getValue())));
+                if (defaultUpdateFreq != null) {
+                    newCheckingChannel.setShouldSelfCheck(true);
+                    Date beginDate = getSelfCheckBeginDate(defaultUpdateFreq.getValue());
+                    newCheckingChannel.setBeginDateTime(DateUtil.toString(beginDate));
+                    newCheckingChannel.setEndDateTime(DateUtil.toString(DateUtil.addDay(beginDate, defaultUpdateFreq.getValue())));
+                }
             }
         } else {
             // 设置
@@ -257,8 +265,9 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
         CheckingChannel checkingChannel = root.getData();
         if (checkingChannel.getChannel() != null) {
 
-            boolean isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getBeginDateTime());
+            boolean isUpdated = false;
             if (checkingChannel.isShouldIssueCheck()) {
+                isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getBeginDateTime());
                 // 检查超时未更新和预警
                 if (!isUpdated) {
                     // 超过时间就更新不及时
@@ -276,8 +285,8 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
             }
 
             if (checkingChannel.isShouldSelfCheck()) {
-                // 自查更新提醒
-                if (!isUpdated) {
+                // 前一个周期已经更新，才对当前周期做自查更新
+                if (isUpdated) {
                     Date endDate = DateUtil.toDate(checkingChannel.getEndDateTime());
                     Date now = new Date();
                     if (now.compareTo(endDate) > 0) {
@@ -398,18 +407,27 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
 
         if (node.getData() != null && node.getData().getChannel() != null) {
             CheckingChannel checking = node.getData();
-            if (checking.isShouldIssueCheck() && checking.isIssue()
+            if (checking.isShouldIssueCheck()
                     && setupCache.get(checking.getChannel().getChannelId()) != null) {
-                if (!isChildChannelUpdated(node)) {
-                    // 插入一条更新不及时的记录
-                    insertToDB(checking.getChannel().getChannelId(),
-                            IssueType.UPDATE_ISSUE.getCode(), InfoUpdateType.UPDATE_NOT_INTIME.value);
+
+                if (checking.isIssue()) {
+                    // 查看子栏目是否更新了，如果子栏目更新，则父栏目也算更新了
+                    if (!isChildChannelUpdated(node)) {
+                        // 插入一条更新不及时的记录
+                        insertToDB(checking.getChannel().getChannelId(),
+                                IssueType.UPDATE_ISSUE.getCode(), InfoUpdateType.UPDATE_NOT_INTIME.value);
+                    }
+                } else if (checking.isWarning()) {
+                    // 插入一条更新预警的记录，1. 预警时间，父栏目和子栏目的预警时间是一致的，更新周期也一样。
+                    // 2. 只要父栏目及子栏目有一个没有预警，就算没有预警
+                    if (!hasNoWarningChildChannel(node)) {
+                        insertToDB(checking.getChannel().getChannelId(),
+                                IssueType.INFO_UPDATE_WARNING.getCode(), UpdateWarningType.UPDATE_WARNING.value);
+                    }
+                } else {
+                    // 父栏目有更新，无预警，不插入任何记录
                 }
-            } else if (checking.isShouldIssueCheck() && checking.isWarning()
-                    && setupCache.get(checking.getChannel().getChannelId()) != null) {
-                // 插入一条更新预警的记录
-                insertToDB(checking.getChannel().getChannelId(),
-                        IssueType.INFO_UPDATE_WARNING.getCode(), UpdateWarningType.UPDATE_WARNING.value);
+
             } else if (checking.isShouldSelfCheck() && checking.isSelfWarning()) {
                 // 插入一条自查提醒
                 insertToDB(checking.getChannel().getChannelId(),
@@ -451,9 +469,11 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
         }
 
         for (SimpleTree.Node<CheckingChannel> child : parent.getChildren()) {
-
             if (child != null && child.getData() != null) {
-                if (child.getData().isShouldIssueCheck() && !child.getData().isIssue()) {
+                // 只判定没有单独设置监控频率的子栏目
+                if (setupCache.get(child.getData().getChannel().getChannelId()) == null
+                        && child.getData().isShouldIssueCheck()
+                        && !child.getData().isIssue()) {
                     return true;
                 } else {
                     return isChildChannelUpdated(child);
@@ -462,6 +482,32 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
         }
 
         return false;
+    }
+
+    /**
+     * 递归判定子栏目是否有不预警的
+     * @param parent
+     * @return
+     */
+    private boolean hasNoWarningChildChannel(SimpleTree.Node<CheckingChannel> parent) {
+
+        if (parent.getChildren() == null || parent.getChildren().isEmpty()) {
+            return true;
+        }
+
+        for (SimpleTree.Node<CheckingChannel> child : parent.getChildren()) {
+            if (child != null && child.getData() != null) {
+                // 只判定没有单独设置监控频率的子栏目
+                if ( setupCache.get(child.getData().getChannel().getChannelId()) == null
+                        && child.getData().isShouldIssueCheck() && !child.getData().isWarning()) {
+                    return true;
+                } else {
+                    return isChildChannelUpdated(child);
+                }
+            }
+        }
+
+        return true;
     }
 
 }
