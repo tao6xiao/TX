@@ -50,7 +50,8 @@ public class CKMScheduler extends AbstractScheduler {
     @Getter
     private String baseUrl;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private Integer siteId;
 
     @Resource
@@ -68,7 +69,7 @@ public class CKMScheduler extends AbstractScheduler {
                 List<Issue> issueList = new ArrayList<>();
                 List<Document> documentList = contentCheckApiService.getPublishDocuments(getSiteId());
                 for (Document document : documentList) {
-                    if("".equals(document.getDocTitle()) || "".equals(document.getDocContent()) || document.getDocPubUrl() == null){
+                    if ("".equals(document.getDocTitle()) || "".equals(document.getDocContent()) || document.getDocPubUrl() == null) {
                         continue;
                     }
                     String checkText = document.getDocTitle() + "。" + document.getDocContent();
@@ -78,7 +79,7 @@ public class CKMScheduler extends AbstractScheduler {
                         JSONObject checkResult = resultObj.getJSONObject("result");
                         Set<String> keySet = checkResult.keySet();
                         for (String key : keySet) {
-                            if(key == null){
+                            if (key == null) {
                                 continue;
                             }
                             String value = checkResult.getString(key);
@@ -104,6 +105,10 @@ public class CKMScheduler extends AbstractScheduler {
                         }
                     }
                 }
+                //插入监测出的信息错误数据
+//                for (Issue issue : issueList) {
+//                    issueMapper.insert(issue);
+//                }
             } catch (RemoteException e) {
                 log.error("", e);
             } catch (ParseException e) {
