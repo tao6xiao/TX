@@ -1,15 +1,10 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.trs.gov.kpi.constant.FreqUnit;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
-import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.MonitorSite;
-import com.trs.gov.kpi.scheduler.LinkAnalysisScheduler;
 import com.trs.gov.kpi.scheduler.SchedulerManager;
 import com.trs.gov.kpi.scheduler.SchedulerTask;
-import com.trs.gov.kpi.service.MonitorFrequencyService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,29 +48,29 @@ public class SchedulerServiceImpl implements SchedulerService {
 
             log.info("init scheduler model...");
 
-            List<MonitorSite> monitorSites = monitorSiteService.getAllMonitorSites();
-            for(MonitorSite monitorSite: monitorSites) {
-
-                if(monitorSite.getSiteId() != null) {
-
-                    List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper.queryBySiteId(monitorSite.getSiteId());
-                    for(MonitorFrequency monitorFrequency: monitorFrequencies) {
-
-                        try {
-
-                            registerScheduler(
-                                    monitorSite.getIndexUrl(),
-                                    monitorSite.getSiteId(),
-                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
-                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
-                                    monitorFrequency.getValue().intValue());
-                        } catch (Exception e) {
-
-                            log.error("register scheduler {} error!", JSON.toJSONString(monitorFrequency));
-                        }
-                    }
-                }
-            }
+//            List<MonitorSite> monitorSites = monitorSiteService.getAllMonitorSites();
+//            for(MonitorSite monitorSite: monitorSites) {
+//
+//                if(monitorSite.getSiteId() != null) {
+//
+//                    List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper.queryBySiteId(monitorSite.getSiteId());
+//                    for(MonitorFrequency monitorFrequency: monitorFrequencies) {
+//
+//                        try {
+//
+//                            registerScheduler(
+//                                    monitorSite.getIndexUrl(),
+//                                    monitorSite.getSiteId(),
+//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()),
+//                                    FrequencyType.getFrequencyTypeByTypeId(monitorFrequency.getTypeId()).getFreqUnit(),
+//                                    monitorFrequency.getValue().intValue());
+//                        } catch (Exception e) {
+//
+//                            log.error("register scheduler {} error!", JSON.toJSONString(monitorFrequency));
+//                        }
+//                    }
+//                }
+//            }
 
             log.info("init scheduler model completed!");
         } catch (Exception e) {
