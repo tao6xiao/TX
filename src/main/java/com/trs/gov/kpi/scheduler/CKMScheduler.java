@@ -2,12 +2,12 @@ package com.trs.gov.kpi.scheduler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.xml.internal.messaging.saaj.util.Base64;
 import com.trs.gov.kpi.constant.InfoErrorType;
 import com.trs.gov.kpi.constant.IsDelType;
 import com.trs.gov.kpi.constant.IsResolvedType;
 import com.trs.gov.kpi.constant.IssueType;
 import com.trs.gov.kpi.dao.IssueMapper;
-import com.trs.gov.kpi.dao.MonitorSiteMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Document;
@@ -29,11 +29,15 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by he.lang on 2017/5/24.
@@ -68,12 +72,21 @@ public class CKMScheduler extends AbstractScheduler {
             List<Issue> issueList = new ArrayList<>();
             try {
                 List<Document> documentList = contentCheckApiService.getPublishDocuments(getSiteId());
+                documentList = null;
+                documentList = new ArrayList<>();
+                Document document1 = new Document();
+                document1.setSiteId(11);
+                document1.setChannelId(144);
+                document1.setDocContent("我们化夏子孙，建成的小别野");
+                document1.setDocPubUrl("www.112.com");
+                document1.setDocTitle("检测文档");
+                documentList.add(document1);
                 for (Document document : documentList) {
                     if ("".equals(document.getDocTitle()) || "".equals(document.getDocContent()) || document.getDocPubUrl() == null) {
                         continue;
                     }
                     String checkText = document.getDocTitle() + "。" + document.getDocContent();
-                    String result = check(checkText, "字词,敏感词");
+                    String result = check(checkText, "字词;敏感词");
                     JSONObject resultObj = JSON.parseObject(result);
                     if (resultObj.getInteger("code") == 1) {
                         JSONObject checkResult = resultObj.getJSONObject("result");
@@ -122,15 +135,13 @@ public class CKMScheduler extends AbstractScheduler {
 
 
     private String check(String text, String type) {
-
         try {
 
             CloseableHttpClient httpClient = HttpClients.createDefault();
 
             HttpPost httpPost = new HttpPost(CKMUrl);
 
-
-            List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+            List<NameValuePair> parameters = new ArrayList<>();
 
             parameters.add(new BasicNameValuePair("text", text));
 
@@ -139,6 +150,13 @@ public class CKMScheduler extends AbstractScheduler {
             HttpEntity entity1 = new UrlEncodedFormEntity(parameters, "utf-8");
 
             httpPost.setEntity(entity1);
+
+            String base = new BASE64Encoder().encode("admin:trsadmin".getBytes());
+
+//            String authorization = "Basic " + new String(base);
+
+            String authorization = "Basic " + base;
+            httpPost.setHeader("Authorization", authorization);
 
             HttpResponse response = httpClient.execute(httpPost);
 
@@ -150,9 +168,8 @@ public class CKMScheduler extends AbstractScheduler {
 
                 HttpEntity entity2 = response.getEntity();
 
-//                System.out.println(EntityUtils.toString(entity2, "utf-8"));
-
                 return EntityUtils.toString(entity2, "utf-8");//直接返回检查的结果
+
             }
 
         } catch (IOException e) {
@@ -160,6 +177,7 @@ public class CKMScheduler extends AbstractScheduler {
             e.printStackTrace();
 
         }
+
         return null;
     }
 
