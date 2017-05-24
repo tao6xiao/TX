@@ -1,9 +1,13 @@
 package com.trs.gov.kpi.entity.outerapi;
 
+import lombok.Data;
+
 /**
  * Created by linwei on 2017/5/24.
  */
+@Data
 public class Document {
+    private Integer siteId;
 
     private int channelId;
 
@@ -13,7 +17,7 @@ public class Document {
 
     private String docTitle;
 
-
+    private String docLink;
 //    "CHANNELID" : "19",
 //            "WCMMETATABLEGOVDOCWEBSITEID" : "7",
 //            "DOCRELTIME" : "2017-04-25 15:00:00", // 撰写时间
