@@ -17,4 +17,21 @@ public interface SchedulerService {
      * @param freq 检测频率值
      */
     void registerScheduler(String baseUrl, Integer siteId, FrequencyType frequencyType, FreqUnit freqUnit, Integer freq);
+
+
+    /**
+     * 添加一个首页监测任务
+     *
+     * @param siteId
+     * @param indexUrl
+     */
+    void addHomePageCheckJob(int siteId, String indexUrl);
+
+    /**
+     * 移除一个首页监测任务
+     *
+     * @param siteId
+     * @param indexUrl
+     */
+    void removeHomePageCheckJob(int siteId, String indexUrl);
 }
