@@ -37,6 +37,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
     private static final int CHECK_HOMEPAGE_TYPE = 1;
     private static final int CHECK_LINK_TYPE = 2;
     private static final int CHECK_INFO_UPDATE_TYPE = 3;
+    private static final int CHECK_CONTENT_TYPE = 4;
 
     @Resource
     SchedulerTask[] schedulerTasks;
@@ -160,6 +161,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
                 // 全站链接有效性检查
                 initLinkCheckJob(scheduler);
+				
+				initContentCheckJob(scheduler);
 
             } catch (SchedulerException e) {
                 log.error("", e);
@@ -236,7 +239,46 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                         // 计算间隔的时间，秒
                         interval = 24 * 60 * 60 / freq.getValue();
                     }
-                    scheduleJob(scheduler, CHECK_LINK_TYPE, site, interval);
+                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
+                }
+            }
+        }
+    }
+
+    /**
+     * 文档内容有效性检测
+     *
+     * @param scheduler
+     */
+    private void initContentCheckJob(Scheduler scheduler) {
+        // 查询数据库里面的所有站点
+        final List<MonitorSite> allMonitorSites = monitorSiteService.getAllMonitorSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        for (MonitorSite site : allMonitorSites) {
+
+            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+                    .queryBySiteId(site.getSiteId());
+            if (StringUtil.isEmpty(site.getIndexUrl())
+                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
+                continue;
+            }
+
+            for (MonitorFrequency freq : monitorFrequencies) {
+                if (freq != null && freq.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
+
+                    int interval = 0;
+                    if (FrequencyType.WRONG_INFORMATION.getFreqUnit() == FreqUnit
+                            .DAYS_PER_TIME) {
+                        // 计算间隔的时间，秒
+                        interval = 24 * 60 * 60 * freq.getValue();
+                    } else if (FrequencyType.WRONG_INFORMATION.getFreqUnit() == FreqUnit.TIMES_PER_DAY) {
+                        // 计算间隔的时间，秒
+                        interval = 24 * 60 * 60 / freq.getValue();
+                    }
+                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
                 }
             }
         }
@@ -328,6 +370,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                 return "infoUpdate";
             case CHECK_LINK_TYPE:
                 return "link";
+			case CHECK_CONTENT_TYPE:
+                return "content";
             default:
                 return null;
         }
@@ -344,6 +388,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
             case CHECK_LINK_TYPE:
                 return applicationContext.getBean
                         (LinkAnalysisScheduler.class);
+			case CHECK_CONTENT_TYPE:
+                return applicationContext.getBean
+                        (CKMScheduler.class);
             default:
                 return null;
         }

@@ -1,19 +1,75 @@
 package com.trs.gov.kpi.entity.outerapi;
 
+import lombok.Data;
+
 /**
  * Created by linwei on 2017/5/24.
  */
 public class Document {
 
+    private Integer siteId;
+
     private int channelId;
 
     private int metaDataId;
 
-    private String  docContent;
+    private String  docContent = "";
 
-    private String docTitle;
+    private String docTitle = "";
 
+    private String docPubUrl;
 
+    public Integer getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(Integer siteId) {
+        this.siteId = siteId;
+    }
+
+    public int getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(int channelId) {
+        this.channelId = channelId;
+    }
+
+    public int getMetaDataId() {
+        return metaDataId;
+    }
+
+    public void setMetaDataId(int metaDataId) {
+        this.metaDataId = metaDataId;
+    }
+
+    public String getDocContent() {
+        return docContent;
+    }
+
+    public void setDocContent(String docContent) {
+        if (docContent != null) {
+            this.docContent = docContent;
+        }
+    }
+
+    public String getDocTitle() {
+        return docTitle;
+    }
+
+    public void setDocTitle(String docTitle) {
+        if (docTitle != null) {
+            this.docTitle = docTitle;
+        }
+    }
+
+    public String getDocPubUrl() {
+        return docPubUrl;
+    }
+
+    public void setDocPubUrl(String docPubUrl) {
+        this.docPubUrl = docPubUrl;
+    }
 //    "CHANNELID" : "19",
 //            "WCMMETATABLEGOVDOCWEBSITEID" : "7",
 //            "DOCRELTIME" : "2017-04-25 15:00:00", // 撰写时间

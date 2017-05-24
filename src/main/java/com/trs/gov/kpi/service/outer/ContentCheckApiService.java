@@ -2,7 +2,9 @@ package com.trs.gov.kpi.service.outer;
 
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Document;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -10,6 +12,6 @@ import java.util.List;
  */
 public interface ContentCheckApiService extends OuterApiService {
 
-    List<Issue> check(String content) throws RemoteException;
+    List<Document> getPublishDocuments(int siteId) throws RemoteException, ParseException;
 
 }
