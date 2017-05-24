@@ -106,9 +106,9 @@ public class CKMScheduler extends AbstractScheduler {
                     }
                 }
                 //插入监测出的信息错误数据
-                for (Issue issue : issueList) {
-                    issueMapper.insert(issue);
-                }
+//                for (Issue issue : issueList) {
+//                    issueMapper.insert(issue);
+//                }
             } catch (RemoteException e) {
                 log.info("");
             } catch (ParseException e) {
