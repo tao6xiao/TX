@@ -8,10 +8,9 @@
     <result column="guarderAccount" jdbcType="VARCHAR" property="guarderAccount" />
     <result column="guarderPhone" jdbcType="VARCHAR" property="guarderPhone" />
     <result column="indexUrl" jdbcType="VARCHAR" property="indexUrl" />
-    <result column="siteIds" jdbcType="VARCHAR" property="siteIds" />
   </resultMap>
   <sql id="Base_Column_List">
-    siteId, departmentName, guarderName, guarderAccount, guarderPhone, indexUrl, siteIds
+    siteId, departmentName, guarderName, guarderAccount, guarderPhone, indexUrl
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -30,11 +29,9 @@
   </delete>
   <insert id="insert" parameterType="com.trs.gov.kpi.entity.MonitorSite">
     insert into monitorsite (siteId, departmentName, guarderName, 
-      guarderAccount, guarderPhone, indexUrl, 
-      siteIds)
+      guarderAccount, guarderPhone, indexUrl)
     values (#{siteId,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{guarderName,jdbcType=VARCHAR}, 
-      #{guarderAccount,jdbcType=VARCHAR}, #{guarderPhone,jdbcType=VARCHAR}, #{indexUrl,jdbcType=VARCHAR}, 
-      #{siteIds,jdbcType=VARCHAR})
+      #{guarderAccount,jdbcType=VARCHAR}, #{guarderPhone,jdbcType=VARCHAR}, #{indexUrl,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.MonitorSite">
     insert into monitorsite
@@ -57,9 +54,6 @@
       <if test="indexUrl != null">
         indexUrl,
       </if>
-      <if test="siteIds != null">
-        siteIds,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="siteId != null">
@@ -79,9 +73,6 @@
       </if>
       <if test="indexUrl != null">
         #{indexUrl,jdbcType=VARCHAR},
-      </if>
-      <if test="siteIds != null">
-        #{siteIds,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -103,9 +94,6 @@
       <if test="indexUrl != null">
         indexUrl = #{indexUrl,jdbcType=VARCHAR},
       </if>
-      <if test="siteIds != null">
-        siteIds = #{siteIds,jdbcType=VARCHAR},
-      </if>
     </set>
     where siteId = #{siteId,jdbcType=INTEGER}
   </update>
@@ -115,8 +103,7 @@
       guarderName = #{guarderName,jdbcType=VARCHAR},
       guarderAccount = #{guarderAccount,jdbcType=VARCHAR},
       guarderPhone = #{guarderPhone,jdbcType=VARCHAR},
-      indexUrl = #{indexUrl,jdbcType=VARCHAR},
-      siteIds = #{siteIds,jdbcType=VARCHAR}
+      indexUrl = #{indexUrl,jdbcType=VARCHAR}
     where siteId = #{siteId,jdbcType=INTEGER}
   </update>
 </mapper>

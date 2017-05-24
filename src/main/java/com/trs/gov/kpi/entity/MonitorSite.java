@@ -13,8 +13,6 @@ public class MonitorSite {
 
     private String indexUrl;
 
-    private String siteIds;
-
     public Integer getSiteId() {
         return siteId;
     }
@@ -63,11 +61,4 @@ public class MonitorSite {
         this.indexUrl = indexUrl == null ? null : indexUrl.trim();
     }
 
-    public String getSiteIds() {
-        return siteIds;
-    }
-
-    public void setSiteIds(String siteIds) {
-        this.siteIds = siteIds == null ? null : siteIds.trim();
-    }
 }

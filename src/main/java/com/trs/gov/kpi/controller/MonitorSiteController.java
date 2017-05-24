@@ -49,15 +49,15 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site",method = RequestMethod.POST)
     @ResponseBody
     public Object save(@RequestBody MonitorSiteDeal monitorSiteDeal) throws BizException {
-        if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getSiteIds() == null || monitorSiteDeal.getSiteIds().length == 0){
+        if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null){
             throw new BizException("参数存在null值");
         }
-        Integer[] siteIds = monitorSiteDeal.getSiteIds();
-        for(int i = 0; i < siteIds.length; i++){
-            if(siteIds[i] == null){
-                throw new BizException("参数存在null值");
-            }
-        }
+//        Integer[] siteIds = monitorSiteDeal.getSiteIds();
+//        for(int i = 0; i < siteIds.length; i++){
+//            if(siteIds[i] == null){
+//                throw new BizException("参数存在null值");
+//            }
+//        }
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
         if(monitorSite != null){//检测站点表中存在siteId对应记录，将修改记录

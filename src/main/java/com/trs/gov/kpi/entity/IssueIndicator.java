@@ -10,7 +10,7 @@ public enum IssueIndicator {
      */
     SOLVED(1, "已解决"),
     UN_SOLVED(10, "待解决"), UPDATE_NOT_INTIME(11, "更新不及时"),
-    UPDATE_WARNING(20, "更新预警");
+    WARNING(20, "预警"), UPDATE_WARNING(21, "更新预警");
 
     public final int value;
 
