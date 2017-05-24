@@ -65,4 +65,16 @@ public interface SiteApiService extends OuterApiService {
      * @throws RemoteException
      */
     public Set<Integer> getAllChildChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException;
+
+
+    /**
+     * 获取所有最底层的栏目
+     * @param userName
+     * @param siteId
+     * @param channelId
+     * @param chnlIdSet
+     * @return
+     * @throws RemoteException
+     */
+    public Set<Integer> getAllLeafChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException;
 }

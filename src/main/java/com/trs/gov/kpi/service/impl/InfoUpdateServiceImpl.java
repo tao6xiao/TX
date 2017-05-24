@@ -13,6 +13,7 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.DateSplitUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
 
     @Resource
     private SiteApiService siteApiService;
+
+    @Resource
+    private SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Override
     public int getHandledIssueCount(IssueBase issueBase) {
@@ -125,7 +129,7 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
      */
     @Override
     public List<Statistics> getUpdateNotInTimeCountList(Integer siteId, String beginDateTime, String endDateTime) throws ParseException, RemoteException {
-               int count = 0;
+        int count = 0;
         List<Statistics> statisticsList = new ArrayList<>();
         Date ealiestTime = getEarliestIssueTime();
         Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime, ealiestTime);
@@ -172,6 +176,11 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         statistics = getStatisticsByCount(EnumIndexUpdateType.HOMEPAGE.getCode(), count);
         statisticsList.add(statistics);
 
+        //获取空白栏目
+        count = siteChannelServiceHelper.getEmptyChannel(siteId).size();
+        statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL.getCode(), count);
+        statisticsList.add(statistics);
+
         return statisticsList;
     }
 
@@ -182,9 +191,9 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
 
     @Override
     public int getAllDateUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
-       IssueBase issueBase = getIssueBase(siteId,beginDateTime, endDateTime);
+        IssueBase issueBase = getIssueBase(siteId, beginDateTime, endDateTime);
         //获取所有
-       int count  = infoUpdateMapper.getAllDateUpdateNotInTime(issueBase);
+        int count = infoUpdateMapper.getAllDateUpdateNotInTime(issueBase);
         return count;
     }
 

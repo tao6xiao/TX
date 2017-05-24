@@ -163,6 +163,25 @@ public class SiteApiServiceImpl implements SiteApiService {
         return chnlIdSet;
     }
 
+    @Override
+    public Set<Integer> getAllLeafChnlIds(String userName, int siteId, int channelId,
+                                          Set<Integer> chnlIdSet) throws RemoteException {
+        List<Channel> channels = getChildChannel(siteId, channelId, userName);
+
+        if (channels.isEmpty()) {
+            return chnlIdSet;
+        }
+
+        for (Channel channel : channels) {
+            if (channel.isHasChildren()) {
+                getAllChildChnlIds(userName, siteId, channel.getChannelId(), chnlIdSet);
+            } else {
+                chnlIdSet.add(channel.getChannelId());
+            }
+        }
+        return chnlIdSet;
+    }
+
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
         return new OuterApiServiceUtil.ServiceRequestBuilder()
                 .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")

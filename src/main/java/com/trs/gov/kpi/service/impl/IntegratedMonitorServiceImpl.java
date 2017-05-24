@@ -69,12 +69,6 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         linkAvailabilityList.addAll(infoUpdateList);
         linkAvailabilityList.addAll(infoErrorList);
 
-        for (Iterator<Statistics> iterator = linkAvailabilityList.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().getCount() == 0) {
-                iterator.remove();
-            }
-        }
-
         return linkAvailabilityList;
     }
 
@@ -82,12 +76,6 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     public List<Statistics> getWarningCount(IssueBase issueBase) {
 
         List<Statistics> list = infoUpdateService.getWarningCountByType(issueBase);
-
-        for (Iterator<Statistics> iterator = list.iterator(); iterator.hasNext(); ) {
-            if (iterator.next().getCount() == 0) {
-                iterator.remove();
-            }
-        }
 
         return list;
     }
