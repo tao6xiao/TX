@@ -33,11 +33,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @Service
 public class SchedulerServiceImpl implements SchedulerService, ApplicationListener<ContextRefreshedEvent> {
 
-    private static final int CHECK_HOMEPAGE_TYPE = 1;
-    private static final int CHECK_LINK_TYPE = 2;
-    private static final int CHECK_INFO_UPDATE_TYPE = 3;
-    private static final int CHECK_CONTENT_TYPE = 4;
-
     @Resource
     SchedulerTask[] schedulerTasks;
 
