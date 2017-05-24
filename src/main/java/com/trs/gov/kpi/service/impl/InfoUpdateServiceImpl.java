@@ -135,24 +135,22 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
     /**
      * 获取栏目信息更新不及时问题的统计信息
      *
-     * @param siteId
-     * @param beginDateTime
-     * @param endDateTime
+     * @param issueBase
      * @return
      * @throws ParseException
      * @throws RemoteException
      */
     @Override
-    public List<Statistics> getUpdateNotInTimeCountList(Integer siteId, String beginDateTime, String endDateTime) throws ParseException, RemoteException {
+    public List<Statistics> getUpdateNotInTimeCountList(IssueBase issueBase) throws ParseException, RemoteException {
         int count = 0;
         List<Statistics> statisticsList = new ArrayList<>();
-        Date ealiestTime = getEarliestIssueTime();
-        Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime, ealiestTime);
-        Date endSetTime = InitTime.CheckEndDateTime(endDateTime);
-        IssueBase issueBase = new IssueBase();
-        issueBase.setSiteId(siteId);
-        issueBase.setBeginDateTime(InitTime.getStringTime(beginSetTime));
-        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
+//        Date ealiestTime = getEarliestIssueTime();
+//        Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime, ealiestTime);
+//        Date endSetTime = InitTime.CheckEndDateTime(endDateTime);
+//        IssueBase issueBase = new IssueBase();
+//        issueBase.setSiteId(siteId);
+//        issueBase.setBeginDateTime(InitTime.getStringTime(beginSetTime));
+//        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
 
         //获取所有
         List<Map<Integer, Integer>> map = infoUpdateMapper.getAllUpdateNotInTime(issueBase);
@@ -168,7 +166,7 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
             for (Integer chnlId : chnlIds) {
                 if (chnlId != null) {
                     childChnlIds.add(chnlId);
-                    childChnlIds = siteApiService.getAllChildChnlIds(null, siteId, chnlId, childChnlIds);
+                    childChnlIds = siteApiService.getAllChildChnlIds(null, issueBase.getSiteId(), chnlId, childChnlIds);
                 }
             }
         }
@@ -179,7 +177,7 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
 
         //获取首页
         Set<Integer> childChnlIds2 = null;
-        List<Channel> channelList = siteApiService.getChildChannel(siteId, 0, null);
+        List<Channel> channelList = siteApiService.getChildChannel(issueBase.getSiteId(), 0, null);
         if (!channelList.isEmpty()) {
             childChnlIds2 = new HashSet<>();
             for (Channel channel : channelList) {
@@ -192,7 +190,7 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         statisticsList.add(statistics);
 
         //获取空白栏目
-        count = siteChannelServiceHelper.getEmptyChannel(siteId).size();
+        count = siteChannelServiceHelper.getEmptyChannel(issueBase.getSiteId()).size();
         statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL.getCode(), count);
         statisticsList.add(statistics);
 
@@ -205,8 +203,8 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
     }
 
     @Override
-    public int getAllDateUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
-        IssueBase issueBase = getIssueBase(siteId, beginDateTime, endDateTime);
+    public int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException {
+//        IssueBase issueBase = getIssueBase(siteId, beginDateTime, endDateTime);
         //获取所有
         int count = infoUpdateMapper.getAllDateUpdateNotInTime(issueBase);
         return count;

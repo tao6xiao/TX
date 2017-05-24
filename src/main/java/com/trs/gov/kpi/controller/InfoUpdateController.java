@@ -36,8 +36,8 @@ public class InfoUpdateController {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(IssueBase issueBase) throws BizException {
-        ParamCheckUtil.paramCheck(issueBase);
+    public List getIssueCount(@ModelAttribute IssueBase issueBase) throws BizException {
+        prepareIssueBase(issueBase);
         return IssueCounter.getIssueCount(infoUpdateService, issueBase);
     }
 
@@ -49,11 +49,11 @@ public class InfoUpdateController {
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException {
+        prepareIssueBase(issueBase);
         if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             issueBase.setBeginDateTime(sdf.format(infoUpdateService.getEarliestIssueTime()));
         }
-        ParamCheckUtil.paramCheck(issueBase);
         return infoUpdateService.getIssueHistoryCount(issueBase);
     }
 
@@ -68,13 +68,8 @@ public class InfoUpdateController {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issueBase) throws BizException {
-
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
-            List list = InitQueryFiled.init(issueBase.getSearchText(), infoUpdateService);
-            issueBase.setIds(list);
-        }
-        ParamCheckUtil.paramCheck(issueBase);
+        prepareIssueBase(issueBase);
         int itemCount = infoUpdateService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<InfoUpdate> infoUpdateList = infoUpdateService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
@@ -125,9 +120,7 @@ public class InfoUpdateController {
     /**
      * 获取栏目信息更新不及时的统计信息
      *
-     * @param siteId
-     * @param beginDateTime
-     * @param endDateTime
+     * @param issueBase
      * @return
      * @throws BizException
      * @throws ParseException
@@ -135,21 +128,25 @@ public class InfoUpdateController {
      */
     @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
     @ResponseBody
-    public List<Statistics> getUpdateNotInTimeCountList(@RequestParam Integer siteId, String beginDateTime, String endDateTime) throws BizException, ParseException, RemoteException {
-        if (siteId == null) {
-            throw new BizException("站点编号存在null值");
-        }
-        List<Statistics> updateNotInTimeCountList = infoUpdateService.getUpdateNotInTimeCountList(siteId, beginDateTime, endDateTime);
+    public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute IssueBase issueBase) throws BizException, ParseException, RemoteException {
+        prepareIssueBase(issueBase);
+        List<Statistics> updateNotInTimeCountList = infoUpdateService.getUpdateNotInTimeCountList(issueBase);
         return updateNotInTimeCountList;
     }
 
     @RequestMapping(value = "/bygroup/all/count", method = RequestMethod.GET)
     @ResponseBody
-    public Integer getUpdateNotInTimeAllCount(@RequestParam Integer siteId, String beginDateTime, String endDateTime) throws BizException, ParseException, RemoteException {
-        if (siteId == null) {
-            throw new BizException("站点编号存在null值");
-        }
-        Integer count = infoUpdateService.getAllDateUpdateNotInTime(siteId, beginDateTime, endDateTime);
+    public Integer getUpdateNotInTimeAllCount(@ModelAttribute IssueBase issueBase) throws BizException, ParseException, RemoteException {
+        prepareIssueBase(issueBase);
+        Integer count = infoUpdateService.getAllDateUpdateNotInTime(issueBase);
         return count;
+    }
+
+    private void prepareIssueBase(IssueBase issueBase) throws BizException {
+        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
+            List list = InitQueryFiled.init(issueBase.getSearchText(), infoUpdateService);
+            issueBase.setIds(list);
+        }
+        ParamCheckUtil.paramCheck(issueBase);
     }
 }
