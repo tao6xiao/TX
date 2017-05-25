@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.*;
-import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -41,7 +40,7 @@ public class IntegratedMonitorIssueController {
             throw new BizException("站点编号为空");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        issue = IssueDataUtil.getIssueToGetPageData(issue, issueService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
+        issue = IssueDataUtil.getIssueToGetPageData(issue, issueService, ResolveStatus.UN_RESOLVED.getCode(), DelType.IS_NOT_DEL.getCode());
         int itemCount = issueService.getAllIssueCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<IssueIsNotResolvedResponseDetail> linkAvailabilityList = issueService.getAllIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issue);

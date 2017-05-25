@@ -3,13 +3,13 @@ package com.trs.gov.kpi.constant;
 import lombok.Getter;
 
 /**
- * 枚举是否解决
+ * 枚举是否删除
  * Created by he.lang on 2017/5/19.
  */
-public enum IsResolvedType {
-    IS_NOT_RESOLVED(0, "未解决"),
-    IS_RESOLVED(1, "已处理"),
-    IS_IGNORED(2, "已忽略");
+public enum DelType {
+
+    IS_NOT_DEL(0, "未删除"),
+    IS_DEL(1, "已删除");
 
     @Getter
     private int code;
@@ -17,7 +17,7 @@ public enum IsResolvedType {
     @Getter
     private String name;
 
-    private IsResolvedType(int code, String name) {
+    private DelType(int code, String name) {
         this.code = code;
         this.name = name;
     }

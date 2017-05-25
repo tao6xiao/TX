@@ -1,8 +1,7 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.IsDelType;
-import com.trs.gov.kpi.constant.IsResolvedType;
-import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.constant.DelType;
+import com.trs.gov.kpi.constant.ResolveStatus;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -43,7 +42,7 @@ public class IntegratedMonitorWarningController {
             throw new BizException("站点编号为空");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService, IsResolvedType.IS_NOT_RESOLVED.getCode(), IsDelType.IS_NOT_DEL.getCode());
+        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService, ResolveStatus.UN_RESOLVED.getCode(), DelType.IS_NOT_DEL.getCode());
         int itemCount = integratedMonitorWarningService.getItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<IssueWarningResponseDetail> issueList = integratedMonitorWarningService.getPageDataWaringList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(), issue);

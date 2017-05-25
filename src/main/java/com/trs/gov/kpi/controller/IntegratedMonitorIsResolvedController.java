@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.IsResolvedType;
-import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.constant.ResolveStatus;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -41,7 +40,7 @@ public class IntegratedMonitorIsResolvedController {
             throw new BizException("站点编号为空");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        Integer isResolved = IsResolvedType.IS_RESOLVED.getCode();
+        Integer isResolved = ResolveStatus.RESOLVED.getCode();
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
@@ -65,7 +64,7 @@ public class IntegratedMonitorIsResolvedController {
             throw new BizException("站点编号为空");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        Integer isIgnored = IsResolvedType.IS_IGNORED.getCode();
+        Integer isIgnored = ResolveStatus.IGNORED.getCode();
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isIgnored,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);

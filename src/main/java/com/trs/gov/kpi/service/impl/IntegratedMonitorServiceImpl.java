@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.IsDelType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueIndicator;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**

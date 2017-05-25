@@ -1,26 +1,16 @@
 package com.trs.gov.kpi.constant;
 
-import com.trs.gov.kpi.utils.StringUtil;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by linwei on 2017/5/25.
  */
 public final class Types {
-
-    public interface CheckIssueType {
-    }
-
     /**
      * 问题类型
      */
-    public enum IssueType implements CheckIssueType {
+    public enum IssueType {
         INVALID(-1, "未知问题"),
         LINK_AVAILABLE_ISSUE(1, "可用性问题"),
         INFO_UPDATE_ISSUE(2, "信息更新问题"),
@@ -32,7 +22,7 @@ public final class Types {
 
         public final String name;
 
-        private IssueType(int value, String name) {
+        IssueType(int value, String name) {
 
             this.value = value;
             this.name = name;
@@ -50,19 +40,6 @@ public final class Types {
             }
             return INVALID;
         }
-
-        public static IssueType getIssueTypeByName(String name) {
-
-            for(IssueType issueType: IssueType.values()) {
-
-                if(StringUtils.equals(issueType.name, name)) {
-
-                    return issueType;
-                }
-            }
-            return null;
-        }
-
 
     }
 
@@ -82,21 +59,10 @@ public final class Types {
 
         public final String name;
 
-        private LinkAvailableIssueType(int type, String name) {
+        LinkAvailableIssueType(int type, String name) {
             this.value = type;
             this.name = name;
         }
-
-//        public static List<LinkAvailableIssueType> findTypesByName(String name) {
-//            List<LinkAvailableIssueType> matchedType = new ArrayList<>();
-//            LinkAvailableIssueType[] types = LinkAvailableIssueType.values();
-//            for (LinkAvailableIssueType type : types) {
-//                if (type.name.indexOf(name) >= 0) {
-//                    matchedType.add(type);
-//                }
-//            }
-//            return matchedType;
-//        }
 
         public static LinkAvailableIssueType valueOf(int value) {
             if (value <= 0) {
@@ -282,7 +248,7 @@ public final class Types {
 
         public final String name;
 
-        private InfoUpdateWarningType(int type, String name) {
+        InfoUpdateWarningType(int type, String name) {
             this.value = type;
             this.name = name;
         }
