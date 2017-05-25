@@ -42,15 +42,13 @@ public class SiteApiServiceImpl implements SiteApiService {
                     buildRequest("findSiteById", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = OuterApiUtil.toResultObj(response.body().string());
-                if (result == null) {
-                    log.error("invalid result: " + response);
-                    throw new RemoteException("获取站点失败！");
+                ApiResult result = getValidResult(response, "获取站点");
+                if (StringUtil.isEmpty(result.getData())) {
+                    return null;
                 }
-
                 return JSON.parseObject(result.getData(), Site.class);
             } else {
-                log.error("failed to get site, error: " + response);
+                log.error("failed to getSiteById, error: " + response);
                 throw new RemoteException("获取站点失败！");
             }
         } catch (IOException e) {
@@ -71,16 +69,15 @@ public class SiteApiServiceImpl implements SiteApiService {
                     buildRequest("queryChildrenChannelsOnEditorCenter", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = OuterApiUtil.toResultObj(response.body().string());
-                if (result == null || StringUtil.isEmpty(result.getData())) {
-                    log.error("invalid result: " + response);
-                    throw new RemoteException("获取子栏目失败！");
+                ApiResult result = getValidResult(response, "获取子栏目");
+
+                if (StringUtil.isEmpty(result.getData())) {
+                    return new ArrayList<>();
                 }
 
                 ApiPageData pageData = JSON.parseObject(result.getData(), ApiPageData.class);
                 if (StringUtil.isEmpty(result.getData())) {
-                    log.error("invalid page data: " + response);
-                    throw new RemoteException("获取子栏目失败！");
+                    return new ArrayList<>();
                 }
 
                 return JSON.parseArray(pageData.getData(), Channel.class);
@@ -103,19 +100,18 @@ public class SiteApiServiceImpl implements SiteApiService {
             Response response = client.newCall(buildRequest("findChannelById", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = OuterApiUtil.toResultObj(response.body().string());
-                if (result == null) {
-                    log.error("invalid result: " + response);
-                    throw new RemoteException("获取栏目失败！");
+                ApiResult result = getValidResult(response, "获取栏目");
+                if (StringUtil.isEmpty(result.getData())) {
+                    return null;
                 }
                 return JSON.parseObject(result.getData(), Channel.class);
             } else {
-                log.error("failed to get site, error: " + response);
-                throw new RemoteException("获取站点失败！");
+                log.error("failed to getChannelById, error: " + response);
+                throw new RemoteException("获取栏目失败！");
             }
         } catch (IOException e) {
-            log.error("failed getSiteById", e);
-            throw new RemoteException("获取站点失败！", e);
+            log.error("failed getChannelById", e);
+            throw new RemoteException("获取栏目失败！", e);
         }
     }
 
@@ -129,11 +125,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             Response response = client.newCall(buildRequest("getSiteOrChannelPubUrl", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = OuterApiUtil.toResultObj(response.body().string());
-                if (result == null) {
-                    log.error("invalid result: " + response);
-                    throw new RemoteException("获取栏目发布地址失败！");
-                }
+                ApiResult result = getValidResult(response, "获取栏目发布地址");
                 return result.getData();
             } else {
                 log.error("failed to get channel publish url, error: " + response);
@@ -190,5 +182,20 @@ public class SiteApiServiceImpl implements SiteApiService {
                 .setMethodName(methodName)
                 .setUserName(userName)
                 .setParams(params).build();
+    }
+
+    private ApiResult getValidResult(Response response, String errMsg) throws RemoteException,
+            IOException {
+        String ret = response.body().string();
+        ApiResult result = OuterApiUtil.toResultObj(ret);
+        if (result == null) {
+            log.error("invalid result msg: " + ret + ", response: " + response);
+            throw new RemoteException(errMsg + "失败！");
+        }
+        if (!result.isOk()) {
+            log.error("fail result: " + result.getMsg());
+            throw new RemoteException(errMsg + "失败！[" + result.getMsg() + "]");
+        }
+        return result;
     }
 }
