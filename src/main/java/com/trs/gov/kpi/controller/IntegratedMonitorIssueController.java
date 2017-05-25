@@ -40,7 +40,8 @@ public class IntegratedMonitorIssueController {
             throw new BizException("站点编号为空");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        issue = IssueDataUtil.getIssueToGetPageData(issue, issueService, ResolveStatus.UN_RESOLVED.value, DelStatus.UN_DELETE.value);
+        issue = IssueDataUtil.getIssueToGetPageData(issue, issueService,
+                Status.Resolve.UN_RESOLVED.value, Status.Delete.UN_DELETE.value);
         int itemCount = issueService.getAllIssueCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<IssueIsNotResolvedResponseDetail> linkAvailabilityList = issueService.getAllIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issue);
