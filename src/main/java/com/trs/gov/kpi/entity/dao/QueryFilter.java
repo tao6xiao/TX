@@ -12,6 +12,7 @@ public class QueryFilter {
 
     private List<SortDBField> sortFields;
     private List<CondDBField> condFields;
+    private List<String> fieldNames;
     private QueryFilterPager pager;
 
     public void addSortField(String filedName, boolean isAsc) {
@@ -59,6 +60,9 @@ public class QueryFilter {
         if (field == null) {
             return;
         }
+        if (condFields == null) {
+            condFields = new ArrayList<>();
+        }
         condFields.add(field);
     }
 
@@ -76,5 +80,13 @@ public class QueryFilter {
 
     public QueryFilterPager getPager() {
         return this.pager;
+    }
+
+    public void setFieldNames(List<String> nameList) {
+        this.fieldNames = nameList;
+    }
+
+    public List<String> getFieldNames() {
+        return this.fieldNames;
     }
 }
