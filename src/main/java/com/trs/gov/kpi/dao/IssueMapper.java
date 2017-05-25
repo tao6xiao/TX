@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueExample;
 import java.util.List;
 
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -63,5 +64,14 @@ public interface IssueMapper {
      * @return
      */
     int selectPageDataIsResolvedItemCount(@Param("issue") IssueBase issue);
+
+
+    /**
+     * 查询问题
+     *
+     * @param filter
+     * @return
+     */
+    List<Issue> select(QueryFilter filter);
 
 }

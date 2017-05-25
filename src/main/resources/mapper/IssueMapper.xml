@@ -401,4 +401,99 @@
     FROM issue
     <include refid="Query_Where"/>
   </select>
+
+  <sql id="where_field_sql">
+      <if test="condField.isLike">
+        ${field} like #{condField.condValue}
+      </if>
+      <if test="condField.isEqual">
+        ${field} = #{condField.condValue}
+      </if>
+    <if test="condField.isBeginTime">
+      ${field} >= #{condField.condValue}
+    </if>
+    <if test="condField.isEndTime">
+      <![CDATA[
+        ${field} <= #{condField.condValue}
+      ]]>
+    </if>
+    <if test="condField.isCollection">
+      ${field} in
+      <foreach collection="condField.condValue" index="index" item="item" open="(" separator=","
+               close=")">
+        #{item}
+      </foreach>
+    </if>
+  </sql>
+
+  <sql id="where_all_field_sql">
+    <if test='condField.fieldName == "id"'>
+      <include refid="where_field_sql"><property name="field" value="id"/></include>
+    </if>
+    <if test='condField.fieldName == "siteId"'>
+      <include refid="where_field_sql"><property name="field" value="siteId"/></include>
+    </if>
+    <if test='condField.fieldName == "typeId"'>
+      <include refid="where_field_sql"><property name="field" value="typeId"/></include>
+    </if>
+    <if test='condField.fieldName == "subTypeId"'>
+      <include refid="where_field_sql"><property name="field" value="subTypeId"/></include>
+    </if>
+    <if test='condField.fieldName == "detail"'>
+      <include refid="where_field_sql"><property name="field" value="detail"/></include>
+    </if>
+    <if test='condField.fieldName == "issueTime"'>
+      <include refid="where_field_sql"><property name="field" value="issueTime"/></include>
+    </if>
+    <if test='condField.fieldName == "isResolved"'>
+      <include refid="where_field_sql"><property name="field" value="isResolved"/></include>
+    </if>
+    <if test='condField.fieldName == "isDel"'>
+      <include refid="where_field_sql"><property name="field" value="isDel"/></include>
+    </if>
+    <if test='condField.fieldName == "customer1"'>
+      <include refid="where_field_sql"><property name="field" value="customer1"/></include>
+    </if>
+    <if test='condField.fieldName == "customer2"'>
+      <include refid="where_field_sql"><property name="field" value="customer2"/></include>
+    </if>
+    <if test='condField.fieldName == "customer3"'>
+      <include refid="where_field_sql"><property name="field" value="customer3"/></include>
+    </if>
+  </sql>
+
+  <sql id="where_sql">
+    <if test="condFields != null">
+      AND
+      <foreach collection="condFields" item="condField" separator=" AND ">
+        <include refid="where_all_field_sql"></include>
+        <if test='condField.fieldName == "OR_COMPLEX_FIELD"'>
+          <foreach collection="condField.condValue.fields" index="index" item="condField" open="("
+                   separator=" OR " close=")">
+            <include refid="where_all_field_sql"></include>
+          </foreach>
+        </if>
+      </foreach>
+    </if>
+  </sql>
+
+  <sql id="order_sql">
+
+  </sql>
+
+  <sql id="groupby_sql">
+
+  </sql>
+
+  <sql id="page_sql">
+
+  </sql>
+
+  <select id="select" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="com.trs.gov.kpi.entity.Issue">
+    SELECT
+    *
+    FROM issue WHERE 1=1
+    <include refid="where_sql"/>
+  </select>
+
 </mapper>
