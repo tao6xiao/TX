@@ -130,10 +130,24 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
         connTimeoutStatistics.setType(LinkIssueType.CONNECTION_TIME_OUT.value);
         connTimeoutStatistics.setName(LinkIssueType.CONNECTION_TIME_OUT.name);
 
+        int invalidFileCount = linkAvailabilityMapper.getInvalidFileCount(issueBase);
+        Statistics invalidFileStatistics = new Statistics();
+        invalidFileStatistics.setCount(invalidFileCount);
+        invalidFileStatistics.setType(LinkIssueType.INVALID_FILE.value);
+        invalidFileStatistics.setName(LinkIssueType.INVALID_FILE.name);
+
+        int invalidHomepageCount = linkAvailabilityMapper.getInvalidHomepageCount(issueBase);
+        Statistics invalidHomepageStatistics = new Statistics();
+        invalidHomepageStatistics.setCount(invalidHomepageCount);
+        invalidHomepageStatistics.setType(LinkIssueType.INVALID_HOME_PAGE.value);
+        invalidHomepageStatistics.setName(LinkIssueType.INVALID_HOME_PAGE.name);
+
         List<Statistics> list = new ArrayList<>();
         list.add(invalidLinkStatistics);
         list.add(invalidImageStatistics);
         list.add(connTimeoutStatistics);
+        list.add(invalidFileStatistics);
+        list.add(invalidHomepageStatistics);
 
         return list;
     }
