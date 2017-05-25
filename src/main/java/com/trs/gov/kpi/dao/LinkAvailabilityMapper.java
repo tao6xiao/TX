@@ -78,6 +78,22 @@ public interface LinkAvailabilityMapper extends OperationMapper {
     int getConnTimeoutCount(@Param("issueBase") IssueBase issueBase);
 
     /**
+     * 查询未解决失效附件的问题数
+     *
+     * @param issueBase
+     * @return
+     */
+    int getInvalidFileCount(@Param("issueBase") IssueBase issueBase);
+
+    /**
+     * 查询未解决失效首页的问题数
+     *
+     * @param issueBase
+     * @return
+     */
+    int getInvalidHomepageCount(@Param("issueBase") IssueBase issueBase);
+
+    /**
      * 根据站点编号获取首页
      *
      * @param issueBase

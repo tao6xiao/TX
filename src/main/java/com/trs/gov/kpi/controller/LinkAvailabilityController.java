@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -72,6 +73,10 @@ public class LinkAvailabilityController {
         if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             issueBase.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
+        }
+        if(issueBase.getEndDateTime() ==null || issueBase.getEndDateTime().trim().isEmpty()){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            issueBase.setEndDateTime(sdf.format(new Date()));
         }
         ParamCheckUtil.paramCheck(issueBase);
 

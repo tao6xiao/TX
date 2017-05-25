@@ -51,7 +51,7 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
 
     @Override
     public int getUpdateWarningCount(IssueBase issueBase) {
-        return infoUpdateMapper.getUpdateWarningCount(issueBase);
+        return infoUpdateMapper.getUpdateWarningCount(issueBase) + infoUpdateMapper.getSelfWarningCount(issueBase);
     }
 
     @Override

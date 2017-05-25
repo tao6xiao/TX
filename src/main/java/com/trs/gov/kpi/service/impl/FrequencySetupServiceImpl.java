@@ -5,6 +5,7 @@ import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
@@ -104,9 +105,14 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
             }
             frequencySetupResponseDetail.setChnlId(frequencySetup.getChnlId());
             //TODO add userName to validate
-            String chnlName = siteApiService.getChannelById(frequencySetup.getChnlId(),null).getChnlName();
-            frequencySetupResponseDetail.setChnlName(chnlName);
-            frequencySetupResponseDetails.add(frequencySetupResponseDetail);
+            Integer chnlId = frequencySetup.getChnlId();
+            if (chnlId != null) {
+                Channel childChnl = siteApiService.getChannelById(chnlId, null);
+                if(childChnl != null && childChnl.getChnlName() != null){
+                    frequencySetupResponseDetail.setChnlName(childChnl.getChnlName());
+                    frequencySetupResponseDetails.add(frequencySetupResponseDetail);
+                }
+            }
         }
         return frequencySetupResponseDetails;
     }

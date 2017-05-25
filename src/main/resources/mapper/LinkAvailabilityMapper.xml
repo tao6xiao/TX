@@ -5,7 +5,6 @@
 <mapper namespace="com.trs.gov.kpi.dao.LinkAvailabilityMapper">
 
 
-
     <resultMap id="linkAvailabilityMap" type="com.trs.gov.kpi.entity.LinkAvailability">
         <id column="id" property="id"/>
         <result column="subTypeId" property="issueTypeId"/>
@@ -167,7 +166,8 @@
                 </if>
                 <if test="condField.fieldName == 'OR_COMPLEX_FIELD'">
 
-                    <foreach collection="condField.condValue.fields" index="index" item="orField" open="(" separator=" OR " close=")">
+                    <foreach collection="condField.condValue.fields" index="index" item="orField" open="("
+                             separator=" OR " close=")">
                         <if test="orField.fieldName == 'subTypeId'">
                             <if test="orField.isLike">
                                 subTypeId LIKE #{condField.condValue}
@@ -177,7 +177,8 @@
                             </if>
                             <if test="orField.isCollection">
                                 subTypeId in
-                                <foreach collection="orField.condValue" index="index" item="item" open="(" separator="," close=")">
+                                <foreach collection="orField.condValue" index="index" item="item" open="(" separator=","
+                                         close=")">
                                     #{item}
                                 </foreach>
                             </if>
@@ -232,6 +233,24 @@
         <include refid="Query_StartEndTime_IssueBase"/>
     </select>
 
+    <select id="getInvalidFileCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND subTypeId = 14
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
+
+    <select id="getInvalidHomepageCount" resultType="int">
+        SELECT count(1)
+        FROM issue
+        WHERE isResolved = 0
+        AND subTypeId = 15
+        <include refid="Query_Condition_IssueBase"/>
+        <include refid="Query_StartEndTime_IssueBase"/>
+    </select>
+
     <select id="getUnhandledIssueCount" resultType="int">
         SELECT count(1)
         FROM issue
@@ -273,18 +292,18 @@
         issueTime
         FROM issue WHERE
         <include refid="where_cond_field"/>
-         1 = 1
+        1 = 1
 
         <if test="sortFields != null">
-          ORDER BY
+            ORDER BY
             <foreach collection="condField.condValue" index="index" item="item" open="(" separator="," close=")">
                 <if test="item.fieldName == 'id'">
-                  id
+                    id
                     <if test="item.isAsc">
-                      ASC
+                        ASC
                     </if>
                     <if test="!item.isAsc">
-                      DESC
+                        DESC
                     </if>
                 </if>
             </foreach>

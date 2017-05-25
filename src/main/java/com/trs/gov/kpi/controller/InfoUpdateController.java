@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,6 +54,10 @@ public class InfoUpdateController {
         if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             issueBase.setBeginDateTime(sdf.format(infoUpdateService.getEarliestIssueTime()));
+        }
+        if(issueBase.getEndDateTime() ==null || issueBase.getEndDateTime().trim().isEmpty()){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            issueBase.setEndDateTime(sdf.format(new Date()));
         }
         return infoUpdateService.getIssueHistoryCount(issueBase);
     }
