@@ -11,12 +11,12 @@ public enum ResolveStatus {
     RESOLVED(1, "已处理"),
     IGNORED(2, "已忽略");
 
-    public final int code;
+    public final int value;
 
     public final String name;
 
-    ResolveStatus(int code, String name) {
-        this.code = code;
+    ResolveStatus(int value, String name) {
+        this.value = value;
         this.name = name;
     }
 }

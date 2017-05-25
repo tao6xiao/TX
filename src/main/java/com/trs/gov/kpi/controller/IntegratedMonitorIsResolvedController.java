@@ -40,7 +40,7 @@ public class IntegratedMonitorIsResolvedController {
             throw new BizException("站点编号为空");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        Integer isResolved = ResolveStatus.RESOLVED.getCode();
+        Integer isResolved = ResolveStatus.RESOLVED.value;
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
@@ -64,7 +64,7 @@ public class IntegratedMonitorIsResolvedController {
             throw new BizException("站点编号为空");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        Integer isIgnored = ResolveStatus.IGNORED.getCode();
+        Integer isIgnored = ResolveStatus.IGNORED.value;
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isIgnored,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
