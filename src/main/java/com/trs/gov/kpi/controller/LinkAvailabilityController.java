@@ -71,11 +71,11 @@ public class LinkAvailabilityController {
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public List<HistoryStatistics> getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException {
         if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             issueBase.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
         }
         if(issueBase.getEndDateTime() ==null || issueBase.getEndDateTime().trim().isEmpty()){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             issueBase.setEndDateTime(sdf.format(new Date()));
         }
         ParamCheckUtil.paramCheck(issueBase);
