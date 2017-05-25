@@ -14,22 +14,6 @@ import java.util.Date;
  */
 public class InitTime {
 
-    public static String initTime(String endTime) throws BizException{
-        String time = null;
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = sdf.parse(endTime);
-            Calendar calender = Calendar.getInstance();
-            calender.setTime(date);
-            calender.add(Calendar.DAY_OF_MONTH, 1);
-            time = sdf.format(calender.getTime());
-        } catch (ParseException e) {
-            throw new BizException("参数不合法");
-        }
-
-        return time;
-    }
-
     public static String getStringTime(Date date){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         return format.format(date);
