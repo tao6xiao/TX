@@ -1,13 +1,12 @@
 package com.trs.gov.kpi.service.helper;
 
-import com.trs.gov.kpi.constant.LinkIssueType;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.SortDBField;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,18 +80,13 @@ public class LinkAvailabilityServiceHelper {
     }
 
     private static CondDBField buildIssueTypeCond(String issueName) {
-        List<LinkIssueType> matchedTypes = LinkIssueType.findTypesByName(issueName);
+        List<Integer> matchedTypes = Types.LinkAvailableIssueType.findByName(issueName);
         CondDBField field = null;
         if (!matchedTypes.isEmpty()) {
-            List<Integer> ids = new ArrayList<>();
-            for (LinkIssueType type : matchedTypes) {
-                ids.add(type.value);
-            }
-
-            if (ids.size() == 1) {
-                field = new CondDBField("subTypeId", ids.get(0));
+            if (matchedTypes.size() == 1) {
+                field = new CondDBField("subTypeId", matchedTypes.get(0));
             } else {
-                field = new CondDBField("subTypeId", ids);
+                field = new CondDBField("subTypeId", matchedTypes);
                 field.setCollection(true);
             }
         }

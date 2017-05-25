@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.entity.outerapi;
 
-import com.trs.gov.kpi.constant.InfoErrorType;
+import com.trs.gov.kpi.constant.Types;
 import lombok.Data;
 
 /**
@@ -8,6 +8,6 @@ import lombok.Data;
  */
 @Data
 public class ContentCheckResult {
-    private InfoErrorType type;
+    private Types.InfoErrorIssueType type;
     private String errorInfo;
 }

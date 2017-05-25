@@ -1,8 +1,7 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumIndexUpdateType;
-import com.trs.gov.kpi.constant.InfoUpdateType;
-import com.trs.gov.kpi.constant.UpdateWarningType;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
@@ -76,10 +75,9 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
 
         List<InfoUpdate> infoUpdateList = infoUpdateMapper.getIssueList(pageIndex, pageSize, issueBase);
         for (InfoUpdate info : infoUpdateList) {
-            if (info.getIssueTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
-                info.setIssueTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);
+            if (info.getIssueTypeId() != null) {
+                info.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(info.getIssueTypeId()).name);
             }
-
             // get channl name
             try {
                 if (info.getChnlId() != null) {
@@ -101,8 +99,8 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         int updateNotIntimeCount = infoUpdateMapper.getUpdateNotIntimeCount(issueBase);
         Statistics updateNotIntimeStatistics = new Statistics();
         updateNotIntimeStatistics.setCount(updateNotIntimeCount);
-        updateNotIntimeStatistics.setType(InfoUpdateType.UPDATE_NOT_INTIME.value);
-        updateNotIntimeStatistics.setName(InfoUpdateType.UPDATE_NOT_INTIME.name);
+        updateNotIntimeStatistics.setType(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        updateNotIntimeStatistics.setName(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.name);
 
         List<Statistics> list = new ArrayList<>();
         list.add(updateNotIntimeStatistics);
@@ -116,14 +114,14 @@ public class InfoUpdateServiceImpl extends OperationServiceImpl implements InfoU
         int updateWarningCount = infoUpdateMapper.getUpdateWarningCount(issueBase);
         Statistics updateWarningStatistics = new Statistics();
         updateWarningStatistics.setCount(updateWarningCount);
-        updateWarningStatistics.setType(UpdateWarningType.UPDATE_WARNING.value);
-        updateWarningStatistics.setName(UpdateWarningType.UPDATE_WARNING.name);
+        updateWarningStatistics.setType(Types.InfoUpdateWarningType.UPDATE_WARNING.value);
+        updateWarningStatistics.setName(Types.InfoUpdateWarningType.UPDATE_WARNING.name);
 
         int selfWarningCount = infoUpdateMapper.getSelfWarningCount(issueBase);
         Statistics selfWarningStatistics = new Statistics();
         selfWarningStatistics.setCount(selfWarningCount);
-        selfWarningStatistics.setType(UpdateWarningType.SELF_CHECK_WARNING.value);
-        selfWarningStatistics.setName(UpdateWarningType.SELF_CHECK_WARNING.name);
+        selfWarningStatistics.setType(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
+        selfWarningStatistics.setName(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.name);
 
         List<Statistics> list = new ArrayList<>();
         list.add(updateWarningStatistics);

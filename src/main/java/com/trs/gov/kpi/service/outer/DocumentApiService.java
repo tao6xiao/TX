@@ -3,6 +3,7 @@ package com.trs.gov.kpi.service.outer;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Document;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -32,5 +33,15 @@ public interface DocumentApiService extends OuterApiService {
      * @throws RemoteException
      */
     Document getDocument(String userName, int channelId, int docmentId) throws RemoteException;
+
+
+    /**
+     *
+     * @param siteId
+     * @return
+     * @throws RemoteException
+     * @throws ParseException
+     */
+    List<Document> getPublishDocuments(int siteId) throws RemoteException, ParseException;
 
 }

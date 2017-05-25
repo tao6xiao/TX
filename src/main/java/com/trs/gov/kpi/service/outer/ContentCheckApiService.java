@@ -12,6 +12,15 @@ import java.util.List;
  */
 public interface ContentCheckApiService extends OuterApiService {
 
-    List<Document> getPublishDocuments(int siteId) throws RemoteException, ParseException;
+
+    /**
+     * 检查文本内容
+     *
+     * @param text
+     * @param type
+     * @return
+     * @throws RemoteException
+     */
+    String check(String text, String type) throws RemoteException;
 
 }

@@ -1,12 +1,10 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IsDelType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueIndicator;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
-import com.trs.gov.kpi.service.InfoErrorService;
-import com.trs.gov.kpi.service.InfoUpdateService;
-import com.trs.gov.kpi.service.IntegratedMonitorService;
-import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,11 +27,20 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     @Resource
     private InfoErrorService infoErrorService;
 
+    @Resource
+    private IssueService issueService;
+
     @Override
     public List<Statistics> getAllIssueCount(IssueBase issueBase) {
 
+
+
         int handledCount = linkAvailabilityService.getHandledIssueCount(issueBase) + infoUpdateService.getHandledIssueCount(issueBase) + infoErrorService.getHandledIssueCount(issueBase);
+
+
+        issueService.getAllIssueCount(issueBase);
         int unhandledCount = linkAvailabilityService.getUnhandledIssueCount(issueBase) + infoUpdateService.getUnhandledIssueCount(issueBase) + infoErrorService.getUnhandledIssueCount(issueBase);
+
         int warningCount = infoUpdateService.getUpdateWarningCount(issueBase);
 
         Statistics handledStatistics = new Statistics();

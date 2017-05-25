@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.*;
-import com.trs.gov.kpi.constant.IssueType;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
@@ -21,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -404,14 +404,16 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
                     if (!isChildChannelUpdated(node)) {
                         // 插入一条更新不及时的记录
                         insertToDB(checking.getChannel().getChannelId(),
-                                IssueType.UPDATE_ISSUE.getCode(), InfoUpdateType.UPDATE_NOT_INTIME.value);
+                                Types.IssueType.INFO_UPDATE_ISSUE.value,
+                                Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
                     }
                 } else if (checking.isWarning()) {
                     // 插入一条更新预警的记录，1. 预警时间，父栏目和子栏目的预警时间是一致的，更新周期也一样。
                     // 2. 只要父栏目及子栏目有一个没有预警，就算没有预警
                     if (!hasNoWarningChildChannel(node)) {
                         insertToDB(checking.getChannel().getChannelId(),
-                                IssueType.INFO_UPDATE_WARNING.getCode(), UpdateWarningType.UPDATE_WARNING.value);
+                                Types.IssueType.INFO_UPDATE_WARNING.value,
+                                Types.InfoUpdateWarningType.UPDATE_WARNING.value);
                     }
                 } else {
                     // 父栏目有更新，无预警，不插入任何记录
@@ -420,7 +422,8 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
             } else if (checking.isShouldSelfCheck() && checking.isSelfWarning()) {
                 // 插入一条自查提醒
                 insertToDB(checking.getChannel().getChannelId(),
-                        IssueType.INFO_UPDATE_WARNING.getCode(), UpdateWarningType.SELF_CHECK_WARNING.value);
+                        Types.IssueType.INFO_UPDATE_WARNING.value,
+                        Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
             }
         }
     }

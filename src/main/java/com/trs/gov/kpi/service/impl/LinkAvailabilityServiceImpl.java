@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.IssueType;
-import com.trs.gov.kpi.constant.LinkIssueType;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
@@ -66,7 +65,7 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
 
         List<LinkAvailability> linkAvailabilityList = linkAvailabilityMapper.getIssueList(startIndex, pageSize, issueBase);
         for (LinkAvailability link : linkAvailabilityList) {
-            LinkIssueType issueType = LinkIssueType.valueOf(link.getIssueTypeId());
+            Types.LinkAvailableIssueType issueType = Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId());
             if (issueType != null) {
                 link.setIssueTypeName(issueType.name);
             }
@@ -101,7 +100,7 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
         Issue issue = new Issue();
         issue.setId(linkAvailability.getId() == null ? null : linkAvailability.getId());
         issue.setSiteId(linkAvailability.getSiteId());
-        issue.setTypeId(IssueType.AVAILABLE_ISSUE.getCode());
+        issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
         issue.setSubTypeId(linkAvailability.getIssueTypeId());
         issue.setDetail(linkAvailability.getInvalidLink());
         issue.setIssueTime(linkAvailability.getCheckTime());
@@ -115,20 +114,20 @@ public class LinkAvailabilityServiceImpl extends OperationServiceImpl implements
         int invalidLinkCount = linkAvailabilityMapper.getInvalidLinkCount(issueBase);
         Statistics invalidLinkStatistics = new Statistics();
         invalidLinkStatistics.setCount(invalidLinkCount);
-        invalidLinkStatistics.setType(LinkIssueType.INVALID_LINK.value);
-        invalidLinkStatistics.setName(LinkIssueType.INVALID_LINK.name);
+        invalidLinkStatistics.setType(Types.LinkAvailableIssueType.INVALID_LINK.value);
+        invalidLinkStatistics.setName(Types.LinkAvailableIssueType.INVALID_LINK.name);
 
         int invalidImageCount = linkAvailabilityMapper.getInvalidImageCount(issueBase);
         Statistics invalidImageStatistics = new Statistics();
         invalidImageStatistics.setCount(invalidImageCount);
-        invalidImageStatistics.setType(LinkIssueType.INVALID_IMAGE.value);
-        invalidImageStatistics.setName(LinkIssueType.INVALID_IMAGE.name);
+        invalidImageStatistics.setType(Types.LinkAvailableIssueType.INVALID_IMAGE.value);
+        invalidImageStatistics.setName(Types.LinkAvailableIssueType.INVALID_IMAGE.name);
 
         int connTimeoutCount = linkAvailabilityMapper.getConnTimeoutCount(issueBase);
         Statistics connTimeoutStatistics = new Statistics();
         connTimeoutStatistics.setCount(connTimeoutCount);
-        connTimeoutStatistics.setType(LinkIssueType.CONNECTION_TIME_OUT.value);
-        connTimeoutStatistics.setName(LinkIssueType.CONNECTION_TIME_OUT.name);
+        connTimeoutStatistics.setType(Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.value);
+        connTimeoutStatistics.setName(Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.name);
 
         List<Statistics> list = new ArrayList<>();
         list.add(invalidLinkStatistics);

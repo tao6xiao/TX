@@ -132,4 +132,5 @@ public class IssueBase {
     public void setIsDel(Integer isDel) {
         this.isDel = isDel;
     }
+
 }

@@ -6,8 +6,10 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
+import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -15,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -27,6 +31,9 @@ public class DocumentApiServiceImpl implements DocumentApiService {
 
     @Value("${service.outer.editcenter.url}")
     private String editCenterServiceUrl;
+
+    @Resource
+    private SiteApiService siteApiService;
 
     private static final String SERVICE_NAME = "gov_documentapi";
 
@@ -90,6 +97,35 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             log.error("", e);
             throw new RemoteException("获取文档失败！", e);
         }
+    }
+
+    @Override
+    public List<Document> getPublishDocuments(int siteId) throws RemoteException {
+        Set<Integer> allChnlIds = new HashSet<>();
+        allChnlIds = siteApiService.getAllChildChnlIds(null, siteId, 0, allChnlIds);
+        if (allChnlIds == null || allChnlIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Document> documentList = new ArrayList<>();
+        for (Integer chnlId : allChnlIds) {
+            if (chnlId == null) {
+                continue;
+            }
+            // TODO: 2017/5/24  set userName
+            List<Integer> publishDocIds = getPublishDocIds(null, siteId, chnlId, null);
+            for (Integer publishDocId : publishDocIds) {
+                if (publishDocId == null) {
+                    continue;
+                }
+                // TODO: 2017/5/24  set userName
+                Document document = getDocument(null, chnlId, publishDocId);
+                document.setSiteId(siteId);
+                documentList.add(document);
+            }
+        }
+//        }
+        return documentList;
     }
 
     private ApiResult getValidResult(Response response, String errMsg) throws RemoteException,

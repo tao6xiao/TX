@@ -4,6 +4,7 @@ package com.trs.gov.kpi.utils;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.service.*;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,76 +16,24 @@ public class InitQueryFiled {
     public static List<Integer> init(String queryFiled, OperationService operationService) {
         List<Integer> list = new ArrayList<>();
         if (operationService instanceof LinkAvailabilityService) {
-            for (LinkIssueType type : LinkIssueType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
+            list.addAll(Types.LinkAvailableIssueType.findByName(queryFiled));
         } else if (operationService instanceof InfoUpdateService) {
-            for (InfoUpdateType type : InfoUpdateType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
+            list.addAll(Types.InfoUpdateIssueType.findByName(queryFiled));
         } else if (operationService instanceof InfoErrorService) {
-            for (InfoErrorType type : InfoErrorType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
+            list.addAll(Types.InfoErrorIssueType.findByName(queryFiled));
         } else if (operationService instanceof IssueService) {
-            for (LinkIssueType type : LinkIssueType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
-            for (InfoUpdateType type : InfoUpdateType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
-            for (InfoErrorType type : InfoErrorType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
+            list.addAll(Types.LinkAvailableIssueType.findByName(queryFiled));
+            list.addAll(Types.InfoUpdateIssueType.findByName(queryFiled));
+            list.addAll(Types.InfoErrorIssueType.findByName(queryFiled));
         } else if (operationService instanceof IntegratedMonitorWarningService) {//预警的name和对应得value匹配
-            for (UpdateWarningType type : UpdateWarningType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
-            for (RespondWarningType type : RespondWarningType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
+            list.addAll(Types.InfoUpdateWarningType.findByName(queryFiled));
+            list.addAll(Types.RespondWarningType.findByName(queryFiled));
         } else if (operationService instanceof IntegratedMonitorIsResolvedService) {
-            for (LinkIssueType type : LinkIssueType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
-            for (InfoUpdateType type : InfoUpdateType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
-            for (InfoErrorType type : InfoErrorType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
-            for (UpdateWarningType type : UpdateWarningType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
-            for (RespondWarningType type : RespondWarningType.values()) {
-                if (type.name.contains(queryFiled)) {
-                    list.add(type.value);
-                }
-            }
+            list.addAll(Types.LinkAvailableIssueType.findByName(queryFiled));
+            list.addAll(Types.InfoUpdateIssueType.findByName(queryFiled));
+            list.addAll(Types.InfoErrorIssueType.findByName(queryFiled));
+            list.addAll(Types.InfoUpdateWarningType.findByName(queryFiled));
+            list.addAll(Types.RespondWarningType.findByName(queryFiled));
         }
         return list;
     }

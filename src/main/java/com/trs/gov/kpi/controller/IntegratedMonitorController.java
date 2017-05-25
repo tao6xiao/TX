@@ -1,9 +1,12 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.IsDelType;
+import com.trs.gov.kpi.constant.IsResolvedType;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
+import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;

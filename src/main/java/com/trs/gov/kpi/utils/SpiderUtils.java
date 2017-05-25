@@ -16,6 +16,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by wangxuan on 2017/5/10.

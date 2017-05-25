@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.LinkIssueType;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.SpiderUtils;
@@ -72,14 +72,14 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
 
     private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
 
-    private LinkIssueType getTypeByLink(String url) {
+    private Types.LinkAvailableIssueType getTypeByLink(String url) {
 
         String suffix = url.substring(url.lastIndexOf(".") + 1);
         for(String imageSuffix: imageSuffixs) {
 
             if(StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
 
-                return LinkIssueType.INVALID_IMAGE;
+                return Types.LinkAvailableIssueType.INVALID_IMAGE;
             }
         }
 
@@ -87,10 +87,10 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
 
             if(StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
 
-                return LinkIssueType.INVALID_FILE;
+                return Types.LinkAvailableIssueType.INVALID_FILE;
             }
         }
 
-        return LinkIssueType.INVALID_LINK;
+        return Types.LinkAvailableIssueType.INVALID_LINK;
     }
 }

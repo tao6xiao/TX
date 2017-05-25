@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.InfoErrorType;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.InfoErrorMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
@@ -53,10 +53,8 @@ public class InfoErrorServiceImpl extends OperationServiceImpl implements InfoEr
     public List<InfoError> getIssueList(Integer pageIndex, Integer pageSize, IssueBase issueBase) {
         List<InfoError> infoErrorList = infoErrorMapper.getIssueList(pageIndex, pageSize, issueBase);
         for (InfoError info : infoErrorList) {
-            if (info.getIssueTypeId() == InfoErrorType.TYPOS.value) {
-                info.setIssueTypeName(InfoErrorType.TYPOS.name);
-            } else if (info.getIssueTypeId() == InfoErrorType.SENSITIVE_WORDS.value) {
-                info.setIssueTypeName(InfoErrorType.SENSITIVE_WORDS.name);
+            if (info.getIssueTypeId() != null) {
+                info.setIssueTypeName(Types.InfoErrorIssueType.valueOf(info.getIssueTypeId()).name);
             }
         }
 
@@ -69,14 +67,14 @@ public class InfoErrorServiceImpl extends OperationServiceImpl implements InfoEr
         int typosCount = infoErrorMapper.getTyposCount(issueBase);
         Statistics typosStatistics = new Statistics();
         typosStatistics.setCount(typosCount);
-        typosStatistics.setType(InfoErrorType.TYPOS.value);
-        typosStatistics.setName(InfoErrorType.TYPOS.name);
+        typosStatistics.setType(Types.InfoErrorIssueType.TYPOS.value);
+        typosStatistics.setName(Types.InfoErrorIssueType.TYPOS.name);
 
         int sensitiveWordsCount = infoErrorMapper.getSensitiveWordsCount(issueBase);
         Statistics sensitiveWordsStatistics = new Statistics();
         sensitiveWordsStatistics.setCount(sensitiveWordsCount);
-        sensitiveWordsStatistics.setType(InfoErrorType.SENSITIVE_WORDS.value);
-        sensitiveWordsStatistics.setName(InfoErrorType.SENSITIVE_WORDS.name);
+        sensitiveWordsStatistics.setType(Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
+        sensitiveWordsStatistics.setName(Types.InfoErrorIssueType.SENSITIVE_WORDS.name);
 
         List<Statistics> list = new ArrayList<>();
         list.add(typosStatistics);

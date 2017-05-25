@@ -55,37 +55,11 @@ public class IssueDataUtil {
      */
     public static List<Issue> getIssueListToSetSubTypeName(List<Issue> issueList) {
         for (Issue issue : issueList) {
-            if (issue.getTypeId() == IssueType.AVAILABLE_ISSUE.getCode()) {//为可用性链接问题
-                if (issue.getSubTypeId() == LinkIssueType.INVALID_LINK.value) {
-                    issue.setSubTypeName(LinkIssueType.INVALID_LINK.name);
-                } else if (issue.getSubTypeId() == LinkIssueType.INVALID_IMAGE.value) {
-                    issue.setSubTypeName(LinkIssueType.INVALID_IMAGE.name);
-                } else if (issue.getSubTypeId() == LinkIssueType.CONNECTION_TIME_OUT.value) {
-                    issue.setSubTypeName(LinkIssueType.CONNECTION_TIME_OUT.name);
-                }
-            } else if (issue.getTypeId() == IssueType.UPDATE_ISSUE.getCode()) {//为信息更新问题
-                if (issue.getSubTypeId() == InfoUpdateType.UPDATE_NOT_INTIME.value) {
-                    issue.setSubTypeName(InfoUpdateType.UPDATE_NOT_INTIME.name);
-                }
-            } else if (issue.getTypeId() == IssueType.INFO_ISSUE.getCode()) {//为信息错误问题
-                if (issue.getSubTypeId() == InfoErrorType.TYPOS.value) {
-                    issue.setSubTypeName(InfoErrorType.TYPOS.name);
-                } else if (issue.getSubTypeId() == InfoErrorType.SENSITIVE_WORDS.value) {
-                    issue.setSubTypeName(InfoErrorType.SENSITIVE_WORDS.name);
-                }
-            } else if (issue.getTypeId() == IssueType.INFO_UPDATE_WARNING.getCode()) {//信息更新预警
-                if (issue.getSubTypeId() == UpdateWarningType.UPDATE_WARNING.value) {
-                    issue.setSubTypeName(UpdateWarningType.UPDATE_WARNING.name);
-                } else if (issue.getSubTypeId() == UpdateWarningType.SELF_CHECK_WARNING.value) {
-                    issue.setSubTypeName(UpdateWarningType.SELF_CHECK_WARNING.name);
-                }
-            } else if (issue.getTypeId() == IssueType.RESPOND_WARNING.getCode()) {//互动回应预警
-                if (issue.getSubTypeId() == RespondWarningType.RESPOND_WARNING.value) {
-                    issue.setSubTypeName(RespondWarningType.RESPOND_WARNING.name);
-                } else if (issue.getSubTypeId() == RespondWarningType.FEEDBACK_WARNING.value) {
-                    issue.setSubTypeName(RespondWarningType.FEEDBACK_WARNING.name);
-                }
+            if (issue.getTypeId() == null || issue.getSubTypeId() == null) {
+                continue;
             }
+            issue.setSubTypeName(Types.getSubTypeName(
+                    Types.IssueType.valueOf(issue.getTypeId()), issue.getSubTypeId()));
         }
         return issueList;
     }
