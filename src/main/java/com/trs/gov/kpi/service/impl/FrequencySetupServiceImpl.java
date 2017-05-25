@@ -104,9 +104,14 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
             }
             frequencySetupResponseDetail.setChnlId(frequencySetup.getChnlId());
             //TODO add userName to validate
-            String chnlName = siteApiService.getChannelById(frequencySetup.getChnlId(),null).getChnlName();
-            frequencySetupResponseDetail.setChnlName(chnlName);
-            frequencySetupResponseDetails.add(frequencySetupResponseDetail);
+            Integer chnlId = frequencySetup.getChnlId();
+            if (chnlId != null) {
+                String chnlName = siteApiService.getChannelById(chnlId, null).getChnlName();
+                if(chnlName != null){
+                    frequencySetupResponseDetail.setChnlName(chnlName);
+                    frequencySetupResponseDetails.add(frequencySetupResponseDetail);
+                }
+            }
         }
         return frequencySetupResponseDetails;
     }
