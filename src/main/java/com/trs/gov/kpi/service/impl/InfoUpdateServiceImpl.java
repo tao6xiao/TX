@@ -16,16 +16,12 @@ import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.DateSplitUtil;
-import com.trs.gov.kpi.utils.InitTime;
-import com.trs.gov.kpi.utils.PageInfoDeal;
-import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -132,10 +128,10 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     @Override
     public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
         if (param.getBeginDateTime() == null || param.getBeginDateTime().trim().isEmpty()) {
-            param.setBeginDateTime(InitTime.getStringTime(issueMapper.getEarliestIssueTime()));
+            param.setBeginDateTime(DateUtil.toString(issueMapper.getEarliestIssueTime()));
         }
         if (param.getEndDateTime() == null || param.getEndDateTime().trim().isEmpty()) {
-            param.setEndDateTime(InitTime.getStringTime(new Date()));
+            param.setEndDateTime(DateUtil.toString(new Date()));
         }
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(param.getBeginDateTime(), param.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -380,8 +376,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         Date endSetTime = InitTime.CheckEndDateTime(endDateTime);
         IssueBase issueBase = new IssueBase();
         issueBase.setSiteId(siteId);
-        issueBase.setBeginDateTime(InitTime.getStringTime(beginSetTime));
-        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
+        issueBase.setBeginDateTime(DateUtil.toString(beginSetTime));
+        issueBase.setEndDateTime(DateUtil.toString(endSetTime));
         return issueBase;
     }
 

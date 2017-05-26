@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import org.springframework.stereotype.Service;
@@ -66,13 +67,13 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
     private IssueWarningResponseDetail getIssueWarningResponseDetailByIssue(Issue is) throws ParseException {
         IssueWarningResponseDetail issueWarningResponseDetail = new IssueWarningResponseDetail();
         issueWarningResponseDetail.setId(is.getId());
-        issueWarningResponseDetail.setIssueTime(InitTime.getStringTime(is.getIssueTime()));
+        issueWarningResponseDetail.setIssueTime(DateUtil.toString(is.getIssueTime()));
         issueWarningResponseDetail.setDetail(is.getDetail());
         issueWarningResponseDetail.setChnlName(is.getCustomer1());
         issueWarningResponseDetail.setIssueTypeName(is.getSubTypeName());
         Date issueTime = is.getIssueTime();
         Date nowTime = new Date();
-        String nowTimeStr = InitTime.getNowTimeFormat(nowTime);
+        String nowTimeStr = DateUtil.toString(nowTime);
         nowTime = InitTime.getNowTimeFormat(nowTimeStr);
         Long between = nowTime.getTime() - issueTime.getTime();
         Long limitTime = between/(24*60*60*1000);

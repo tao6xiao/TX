@@ -37,9 +37,6 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
     SchedulerTask[] schedulerTasks;
 
     @Resource
-    SchedulerManager schedulerManager;
-
-    @Resource
     MonitorSiteService monitorSiteService;
 
     @Resource

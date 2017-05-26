@@ -1,12 +1,7 @@
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.entity.exception.BizException;
-import com.trs.gov.kpi.service.OperationService;
-
-import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -14,10 +9,10 @@ import java.util.Date;
  */
 public class InitTime {
 
-    public static String getStringTime(Date date){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return format.format(date);
-    }
+//    public static String getStringTime(Date date){
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        return format.format(date);
+//    }
 
     public static String getNowTimeFormat(Date date){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -53,7 +48,7 @@ public class InitTime {
     public static Date CheckEndDateTime(String endDateTime) throws ParseException {
         if(endDateTime == null || endDateTime.trim().isEmpty()){
             Date nowTime = new Date();
-            String nowTimeStr = getNowTimeFormat(nowTime);
+            String nowTimeStr = DateUtil.toString(nowTime);
             nowTime = getNowTimeFormat(nowTimeStr);
             return nowTime;
         }else {

@@ -89,10 +89,6 @@ public class QueryFilter {
         sortFields.add(sortField);
     }
 
-    public List<SortDBField> getSortFields() {
-        return sortFields;
-    }
-
     /**
      * 添加或者的复合条件
      *

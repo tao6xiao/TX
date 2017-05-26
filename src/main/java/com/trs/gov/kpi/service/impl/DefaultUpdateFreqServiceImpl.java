@@ -3,6 +3,7 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.DefaultUpdateFreqMapper;
 import com.trs.gov.kpi.entity.DefaultUpdateFreq;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class DefaultUpdateFreqServiceImpl implements DefaultUpdateFreqService {
 
     @Override
     public int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws ParseException {
-        String nowTime = InitTime.getNowTimeFormat(new Date());
+        String nowTime = DateUtil.toString(new Date());
         defaultUpdateFreq.setSetTime(InitTime.getNowTimeFormat(nowTime));
         int num = defaultUpdateFreqMapper.insert(defaultUpdateFreq);
         return num;

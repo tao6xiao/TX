@@ -11,6 +11,7 @@ import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +70,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
 
     @Override
     public int insert(FrequencySetup frequencySetup) throws ParseException {
-        String nowTime = InitTime.getNowTimeFormat(new Date());
+        String nowTime = DateUtil.toString(new Date());
         frequencySetup.setSetTime(InitTime.getNowTimeFormat(nowTime));
         int num = frequencySetupMapper.insert(frequencySetup);
         return num;

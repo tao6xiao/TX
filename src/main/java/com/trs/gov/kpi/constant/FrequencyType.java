@@ -10,9 +10,9 @@ import lombok.Getter;
  */
 public enum FrequencyType {
 
-    HOMEPAGE_AVAILABILITY(1, "首页可用性", FreqUnit.TIMES_PER_DAY, HomePageCheckScheduler.class),
-    TOTAL_BROKEN_LINKS(2, "全站失效链接", FreqUnit.DAYS_PER_TIME, LinkAnalysisScheduler.class),
-    WRONG_INFORMATION(3, "信息错误", FreqUnit.DAYS_PER_TIME, SchedulerTask.class);
+    HOMEPAGE_AVAILABILITY(1, "首页可用性", FreqUnit.TIMES_PER_DAY),
+    TOTAL_BROKEN_LINKS(2, "全站失效链接", FreqUnit.DAYS_PER_TIME),
+    WRONG_INFORMATION(3, "信息错误", FreqUnit.DAYS_PER_TIME);
 
     @Getter
     private int typeId;//类型id
@@ -23,14 +23,10 @@ public enum FrequencyType {
     @Getter
     private FreqUnit freqUnit;//粒度
 
-    @Getter
-    private Class<? extends SchedulerTask> scheduler;
-
-    private FrequencyType(int typeId, String name,FreqUnit freqUnit, Class scheduler) {
+    private FrequencyType(int typeId, String name,FreqUnit freqUnit) {
         this.typeId = typeId;
         this.name = name;
         this.freqUnit = freqUnit;
-        this.scheduler = scheduler;
     }
 
     public static FrequencyType getFrequencyTypeByTypeId(int typeId) {
@@ -42,15 +38,4 @@ public enum FrequencyType {
         return null;
     }
 
-    public static FrequencyType getFrequencyTypeByScheduler(SchedulerTask schedulerTask) {
-
-        for(FrequencyType frequencyType: FrequencyType.values()) {
-
-            if(frequencyType.getScheduler().isInstance(schedulerTask)) {
-
-                return frequencyType;
-            }
-        }
-        return null;
-    }
 }
