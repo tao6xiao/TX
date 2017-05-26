@@ -55,10 +55,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
         QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-        OrCondDBFields orFields = new OrCondDBFields();
-        orFields.addCond("isResolved", Status.Resolve.IGNORED.value);
-        orFields.addCond("isResolved", Status.Resolve.RESOLVED.value);
-        filter.addOrConds(orFields);
+        filter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
         int resolvedCount = issueMapper.count(filter);
 
         filter = LinkAvailabilityServiceHelper.toFilter(param);
