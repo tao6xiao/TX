@@ -4,6 +4,7 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class LinkAvailabilityServiceHelper {
      * @return
      */
     public static  QueryFilter toFilter(PageDataRequestParam param) {
-        QueryFilter filter = new QueryFilter();
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond("siteId", param.getSiteId());
         if (param.getBeginDateTime() != null) {
             filter.addCond("issueTime", param.getBeginDateTime()).setBeginTime(true);
@@ -47,7 +48,7 @@ public class LinkAvailabilityServiceHelper {
                     OrCondDBFields orFields = new OrCondDBFields();
                     orFields.addCond(idField);
                     orFields.addCond(issueTypefield);
-                    filter.addCond("OR_COMPLEX_FIELD", orFields);
+                    filter.addOrConds(orFields);
                 } else {
                     filter.addCond(idField);
                 }
