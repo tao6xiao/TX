@@ -42,7 +42,8 @@ public class LinkAvailabilityController {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) throws BizException {
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
 
         return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
     }
@@ -56,7 +57,8 @@ public class LinkAvailabilityController {
      */
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     public int getUnhandledIssueCount(IssueBase issueBase) throws BizException {
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
 
         return linkAvailabilityService.getUnhandledIssueCount(issueBase);
     }
@@ -78,7 +80,8 @@ public class LinkAvailabilityController {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             issueBase.setEndDateTime(sdf.format(new Date()));
         }
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
 
         return linkAvailabilityService.getIssueHistoryCount(issueBase);
     }
@@ -95,12 +98,14 @@ public class LinkAvailabilityController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), linkAvailabilityService);
             issueBase.setIds(list);
         }
-        ParamCheckUtil.paramCheck(issueBase);
+
+//        ParamCheckUtil.paramCheck(issueBase);
 
         int itemCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
@@ -118,7 +123,8 @@ public class LinkAvailabilityController {
     @RequestMapping(value = "/indexpage/status", method = RequestMethod.GET)
     public Integer getIndexAvailability(@ModelAttribute IssueBase issueBase) throws BizException {
 
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
         String indexUrl = linkAvailabilityService.getIndexUrl(issueBase);
         return linkAvailabilityService.getIndexAvailability(indexUrl, issueBase);
     }
@@ -132,7 +138,8 @@ public class LinkAvailabilityController {
      */
     @RequestMapping(value = "/check/index", method = RequestMethod.GET)
     public IndexPage showIndexAvailability(@ModelAttribute IssueBase issueBase) throws BizException {
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
         return linkAvailabilityService.showIndexAvailability(issueBase);
     }
 

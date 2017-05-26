@@ -42,7 +42,8 @@ public class InfoErrorController {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(IssueBase issueBase) throws BizException {
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
         return IssueCounter.getIssueCount(infoErrorService, issueBase);
     }
 
@@ -62,7 +63,8 @@ public class InfoErrorController {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             issueBase.setEndDateTime(sdf.format(new Date()));
         }
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
         return infoErrorService.getIssueHistoryCount(issueBase);
     }
 
@@ -78,12 +80,13 @@ public class InfoErrorController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issueBase) throws BizException {
 
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
             List list = InitQueryFiled.init(issueBase.getSearchText(), infoErrorService);
             issueBase.setIds(list);
         }
-        ParamCheckUtil.paramCheck(issueBase);
+//        ParamCheckUtil.paramCheck(issueBase);
         int itemCount = infoErrorService.getUnhandledIssueCount(issueBase);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<InfoError> infoErrorList = infoErrorService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);

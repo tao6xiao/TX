@@ -7,6 +7,16 @@ import javax.validation.constraints.NotNull;
  */
 public class PageDataRequestParam {
 
+    /**
+     * 问题编号
+     */
+    private String id;
+
+    /**
+     * 查询历史记录的粒度，1-->天  2-->周  3-->月  4-->年
+     */
+    public Integer granularity;
+
     @NotNull
     private Integer siteId;
 
@@ -101,5 +111,21 @@ public class PageDataRequestParam {
 
     public void setPageIndex(Integer pageIndex) {
         this.pageIndex = pageIndex;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Integer getGranularity() {
+        return granularity;
+    }
+
+    public void setGranularity(Integer granularity) {
+        this.granularity = granularity;
     }
 }

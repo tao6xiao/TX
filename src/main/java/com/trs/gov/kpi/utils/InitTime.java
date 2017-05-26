@@ -15,7 +15,7 @@ import java.util.Date;
 public class InitTime {
 
     public static String getStringTime(Date date){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return format.format(date);
     }
 
