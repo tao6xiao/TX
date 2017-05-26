@@ -62,13 +62,13 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                     scheduleCheckJob(scheduler, site, FrequencyType.HOMEPAGE_AVAILABILITY, EnumCheckJobType.CHECK_HOME_PAGE);
                     break;
                 case CHECK_CONTENT:
-                    scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_HOME_PAGE);
+                    scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_CONTENT);
                     break;
                 case CHECK_INFO_UPDATE:
                     scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 24 * 60 * 60);
                     break;
                 case CHECK_LINK:
-                    scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_HOME_PAGE);
+                    scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
                     break;
             }
 
@@ -81,8 +81,16 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
     public void removeCheckJob(int siteId, EnumCheckJobType checkType) {
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            JobKey key = new JobKey(getJobName(siteId, checkType), getJobGroupName(checkType));
-            scheduler.deleteJob(key);
+            JobKey jobKey = JobKey.jobKey(getJobName(siteId, checkType), getJobGroupName(checkType));
+            TriggerKey triggerKey = TriggerKey.triggerKey(getJobTrigger(siteId, checkType), getJobGroupName(checkType));
+            while (scheduler.checkExists(triggerKey)) {
+                scheduler.unscheduleJob(triggerKey);
+            }
+            while (scheduler.checkExists(jobKey)) {
+                if (!scheduler.deleteJob(jobKey)) {
+                    log.warn("failed delete job " + jobKey);
+                }
+            }
         } catch (SchedulerException e) {
             log.error("", e);
         }
@@ -280,6 +288,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         Trigger trigger = newTrigger()
                 .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .startNow()
+                .forJob(job.getKey())
                 .withSchedule(simpleSchedule()
                         .withIntervalInSeconds(interval)
                         .repeatForever())

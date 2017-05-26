@@ -17,7 +17,7 @@ import java.util.Arrays;
  * Created by linwei on 2017/5/25.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+//@SpringBootTest
 public class IssueMapperTest {
 
     @Resource
