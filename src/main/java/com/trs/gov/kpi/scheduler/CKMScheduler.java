@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -88,36 +89,45 @@ public class CKMScheduler extends AbstractScheduler {
                     String checkText = checkContent.toString();
                     String result = contentCheckApiService.check(checkText, checkTypes);
 
+                    if (StringUtil.isEmpty(result)) {
+                        log.error("invalid return value,  failed to check document " + document.getChannelId() + "->" + document.getMetaDataId());
+                        continue;
+                    }
                     JSONObject resultObj = JSON.parseObject(result);
-                    if (resultObj.get("code") != null && resultObj.getInteger("code") == 1) {
-                        JSONObject checkResult = resultObj.getJSONObject("result");
-                        if (checkResult != null) {
-                            Set<String> keySet = checkResult.keySet();
-                            for (String key : keySet) {
-                                if (key == null) {
-                                    continue;
-                                }
-                                String value = checkResult.getString(key);
-                                Integer subTypeId = Types.InfoErrorIssueType.valueOfCheckType(key).value;
-                                if (subTypeId > 0) {
-                                    Issue issue = new Issue();
-                                    issue.setSiteId(document.getSiteId());
-                                    issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
-                                    issue.setSubTypeId(subTypeId);
-                                    issue.setDetail(document.getDocPubUrl());
-                                    issue.setIssueTime(new Date());
-                                    issue.setCustomer1(value);
-                                    issueList.add(issue);
-                                }
+                    Integer code = resultObj.getInteger("code");
+                    if (code == null || code != 1) {
+                        log.error("invalid code,  failed to check document "
+                                + document.getChannelId() + "->" + document.getMetaDataId() + ", result = " + result);
+                        continue;
+                    }
+
+                    JSONObject checkResult = resultObj.getJSONObject("result");
+                    if (checkResult != null) {
+                        Set<String> keySet = checkResult.keySet();
+                        for (String key : keySet) {
+                            if (key == null) {
+                                continue;
+                            }
+                            String value = checkResult.getString(key);
+                            Integer subTypeId = Types.InfoErrorIssueType.valueOfCheckType(key).value;
+                            if (subTypeId > 0) {
+                                Issue issue = new Issue();
+                                issue.setSiteId(document.getSiteId());
+                                issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
+                                issue.setSubTypeId(subTypeId);
+                                issue.setDetail(document.getDocPubUrl());
+                                issue.setIssueTime(new Date());
+                                issue.setCustomer1(value);
+                                issueList.add(issue);
                             }
                         }
-
                     }
                 }
                 //插入监测出的信息错误数据
                 for (Issue issue : issueList) {
                     issueMapper.insert(issue);
                 }
+                log.info("add content error count: " + issueList.size());
             } catch (RemoteException e) {
                 log.error("", e);
             } catch (ParseException e) {
