@@ -25,10 +25,7 @@ public class IssueMapperTest {
 
     @Test
     public void select() throws Exception {
-        QueryFilter filter = new QueryFilter();
-
-        // 设置表的字段
-        filter.setTable(Table.ISSUE);
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
 
         // 添加siteId和错误类型查询条件
         filter.addCond("siteId", 11);

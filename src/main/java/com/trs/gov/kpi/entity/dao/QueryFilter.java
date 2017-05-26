@@ -2,6 +2,7 @@ package com.trs.gov.kpi.entity.dao;
 
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.utils.StringUtil;
+import javafx.scene.control.Tab;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -12,6 +13,11 @@ import java.util.List;
  * Created by linwei on 2017/5/22.
  */
 public class QueryFilter {
+
+    private static final String OR_COMPLEX_FIELD_NAME = "OR_COMPLEX_FIELD";
+
+    @Getter
+    private final Table table;
 
     // table里面的字段名集合
     @Getter
@@ -33,6 +39,14 @@ public class QueryFilter {
     @Getter
     private DBPager pager;
 
+    public QueryFilter(Table table) {
+        if (table == null) {
+            throw new IllegalArgumentException("invalid table");
+        }
+        this.table = table;
+        setFieldNames(table.getFields());
+    }
+
     /**
      * 添加一个排序字段，默认升序
      *
@@ -52,6 +66,7 @@ public class QueryFilter {
         if (StringUtil.isEmpty(filedName)) {
             return;
         }
+
         this.addSortField(new SortDBField(filedName.trim(), isAsc));
     }
 
@@ -65,6 +80,9 @@ public class QueryFilter {
         if (sortField == null) {
             return;
         }
+
+        checkFieldName(sortField.getFieldName());
+
         if (sortFields == null) {
             sortFields = new ArrayList<>();
         }
@@ -82,7 +100,7 @@ public class QueryFilter {
      * @return
      */
     public CondDBField addOrConds(OrCondDBFields cond) {
-        return addCond("OR_COMPLEX_FIELD", cond);
+        return addCond(OR_COMPLEX_FIELD_NAME, cond);
     }
 
     /**
@@ -96,7 +114,19 @@ public class QueryFilter {
         if (StringUtil.isEmpty(fieldName) || value == null) {
             return null;
         }
+
         return addCond(new CondDBField(fieldName, value));
+    }
+
+    /**
+     * 检查字段名是否合法
+     *
+     * @param fieldName
+     */
+    private void checkFieldName(String fieldName) {
+        if (!fieldName.equals(OR_COMPLEX_FIELD_NAME) && !table.containsField(fieldName)) {
+            throw new IllegalArgumentException("invalid field name " + fieldName + " of table " + table.getTableName());
+        }
     }
 
     /**
@@ -109,6 +139,9 @@ public class QueryFilter {
         if (field == null) {
             return null;
         }
+
+        checkFieldName(field.getFieldName());
+
         if (condFields == null) {
             condFields = new ArrayList<>();
         }
@@ -147,18 +180,6 @@ public class QueryFilter {
     }
 
     /**
-     * 设置表查询用的表
-     *
-     * @param table
-     */
-    public void setTable(Table table) {
-        if (table == null) {
-            throw new IllegalArgumentException("empty table");
-        }
-        setFieldNames(table.getFields());
-    }
-
-    /**
      * 添加分组字段
      *
      * @param fieldName
@@ -167,11 +188,12 @@ public class QueryFilter {
         if (StringUtil.isEmpty(fieldName)) {
             return;
         }
+        checkFieldName(fieldName);
+
         if (this.groupFields == null) {
             this.groupFields = new ArrayList<>();
         }
         this.groupFields.add(fieldName);
     }
-
 
 }
