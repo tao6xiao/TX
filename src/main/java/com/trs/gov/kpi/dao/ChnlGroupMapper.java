@@ -61,4 +61,12 @@ public interface ChnlGroupMapper {
      * @return
      */
     int deleteBySiteIdAndId(@Param("siteId") int siteId, @Param("id") int id);
+
+    /**
+     * 获取当前站点和分类下面的所有栏目id
+     * @param siteId
+     * @param groupId
+     * @return
+     */
+    List<Integer> selectAChnlIds(@Param("siteId") int siteId, @Param("groupId") int groupId);
 }

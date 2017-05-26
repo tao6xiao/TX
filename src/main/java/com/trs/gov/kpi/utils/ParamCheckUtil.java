@@ -15,46 +15,46 @@ import java.util.List;
  */
 public class ParamCheckUtil {
 
-    public static void paramCheck(IssueBase issueBase) throws BizException {
+//    public static void paramCheck(IssueBase issueBase) throws BizException {
+//
+//        if (issueBase.getSiteId() == null) {
+//            throw new BizException("站点编号为空");
+//        }
+//
+//        if (issueBase.getSearchText() == null) {
+//            issueBase.setSearchText("");
+//        }
+//
+//        if (issueBase.getBeginDateTime() != null && !issueBase.getBeginDateTime().trim().isEmpty()) {
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            try {
+//                sdf.setLenient(false);
+//                sdf.parse(issueBase.getBeginDateTime());
+//            } catch (ParseException e) {
+//                throw new BizException("参数不合法");
+//            }
+//        }
+//
+//        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//            try {
+//                sdf.setLenient(false);
+//                sdf.parse(issueBase.getEndDateTime());
+//            } catch (ParseException e) {
+//                throw new BizException("参数不合法");
+//            }
+//        }
+//
+//        if (issueBase.getIds() == null || issueBase.getIds().size() == 0) {
+//            //初始化ids查询条件，默认有一个0，防止sql报错
+//            List list = new ArrayList();
+//            list.add(0);
+//            issueBase.setIds(list);
+//        }
+//
+//    }
 
-        if (issueBase.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
-
-        if (issueBase.getSearchText() == null) {
-            issueBase.setSearchText("");
-        }
-
-        if (issueBase.getBeginDateTime() != null && !issueBase.getBeginDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                sdf.setLenient(false);
-                sdf.parse(issueBase.getBeginDateTime());
-            } catch (ParseException e) {
-                throw new BizException("参数不合法");
-            }
-        }
-
-        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                sdf.setLenient(false);
-                sdf.parse(issueBase.getEndDateTime());
-            } catch (ParseException e) {
-                throw new BizException("参数不合法");
-            }
-        }
-
-        if (issueBase.getIds() == null || issueBase.getIds().size() == 0) {
-            //初始化ids查询条件，默认有一个0，防止sql报错
-            List list = new ArrayList();
-            list.add(0);
-            issueBase.setIds(list);
-        }
-
-    }
-
-    public static void pagerCheck(Integer pageIndex, Integer pageSize) throws BizException{
+    public static void pagerCheck(Integer pageIndex, Integer pageSize) throws BizException {
         if (pageIndex != null && pageIndex < 1) {
             throw new BizException("参数不合法");
         }
@@ -70,23 +70,33 @@ public class ParamCheckUtil {
             throw new BizException("参数不合法");
         }
 
-        if (param.getPageSize() != null && param.getPageSize() <= 0) {
-            throw new BizException("参数不合法");
-        }
-        if (param.getPageIndex() != null && param.getPageIndex() <= 0) {
-            throw new BizException("参数不合法");
-        }
+        pagerCheck(param.getPageIndex(), param.getPageSize());
+        checkTime(param.getBeginDateTime());
+        checkTime(param.getEndDateTime());
 
+    }
+
+    private static void checkTime(String time) throws BizException {
+        if (time != null && !time.trim().isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                sdf.setLenient(false);
+                sdf.parse(time);
+            } catch (ParseException e) {
+                throw new BizException("参数不合法");
+            }
+        }
     }
 
     /**
      * 用于判断Integer型数组中是否存在null值
+     *
      * @param array
      * @throws BizException
      */
     public static void integerArrayParamCheck(Integer[] array) throws BizException {
-        for (int i= 0; i < array.length; i++){
-            if(array[i] == null){
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == null) {
                 throw new BizException("参数不合法");
             }
         }

@@ -32,7 +32,8 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/all/count", method = RequestMethod.GET)
     public List<Statistics> getAllIssueCount(@ModelAttribute IssueBase issueBase) throws BizException {
 
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
         return integratedMonitorService.getAllIssueCount(issueBase);
     }
 
@@ -45,7 +46,8 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) throws BizException {
 
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
         return integratedMonitorService.getUnhandledIssueCount(issueBase);
     }
 
@@ -58,7 +60,8 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute IssueBase issueBase) throws BizException {
 
-        ParamCheckUtil.paramCheck(issueBase);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.paramCheck(issueBase);
         return integratedMonitorService.getWarningCount(issueBase);
     }
 

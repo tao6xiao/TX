@@ -39,7 +39,8 @@ public class IntegratedMonitorIsResolvedController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         Integer isResolved = Status.Resolve.RESOLVED.value;
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
@@ -63,7 +64,8 @@ public class IntegratedMonitorIsResolvedController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         Integer isIgnored = Status.Resolve.IGNORED.value;
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isIgnored,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);

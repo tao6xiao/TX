@@ -37,7 +37,8 @@ public class FrequencyPresetController {
         if(siteId == null){
             throw new BizException("站点编号不能为null值");
         }
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = frequencyPresetService.getPageDataBySiteId(siteId, apiPageData.getPager().getCurrPage()-1, apiPageData.getPager().getPageSize());
