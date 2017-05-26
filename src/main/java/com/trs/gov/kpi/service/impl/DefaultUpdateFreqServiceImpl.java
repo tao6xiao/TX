@@ -27,8 +27,7 @@ public class DefaultUpdateFreqServiceImpl implements DefaultUpdateFreqService {
 
     @Override
     public int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws ParseException {
-        String nowTime = DateUtil.toString(new Date());
-        defaultUpdateFreq.setSetTime(InitTime.getNowTimeFormat(nowTime));
+        defaultUpdateFreq.setSetTime(new Date());
         int num = defaultUpdateFreqMapper.insert(defaultUpdateFreq);
         return num;
     }

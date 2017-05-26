@@ -70,8 +70,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
 
     @Override
     public int insert(FrequencySetup frequencySetup) throws ParseException {
-        String nowTime = DateUtil.toString(new Date());
-        frequencySetup.setSetTime(InitTime.getNowTimeFormat(nowTime));
+        frequencySetup.setSetTime(new Date());
         int num = frequencySetupMapper.insert(frequencySetup);
         return num;
     }

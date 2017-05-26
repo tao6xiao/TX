@@ -9,32 +9,17 @@ import java.util.Date;
  */
 public class InitTime {
 
-//    public static String getStringTime(Date date){
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//        return format.format(date);
-//    }
-
-    public static String getNowTimeFormat(Date date){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return format.format(date);
-    }
-
-    public static Date getNowTimeFormat(String dateTime) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return format.parse(dateTime);
-    }
-
     /**
      * 获取起始时间，如果不设置则从系统启动开始算起
      * @param beginDateTime
      * @return
      * @throws ParseException
      */
-    public static Date CheckBeginDateTime(String beginDateTime, Date ealiestTime) throws ParseException {
-        if(beginDateTime == null || beginDateTime.trim().isEmpty()){
-            return ealiestTime;
+    public static Date CheckBeginDateTime(String beginDateTime, Date earliestTime) throws ParseException {
+        if(StringUtil.isEmpty(beginDateTime)){
+            return earliestTime;
         }else {
-            Date setTime = getNowTimeFormat(beginDateTime);
+            Date setTime = DateUtil.toDate(beginDateTime);
             return setTime;
         }
     }
@@ -46,14 +31,10 @@ public class InitTime {
      * @throws ParseException
      */
     public static Date CheckEndDateTime(String endDateTime) throws ParseException {
-        if(endDateTime == null || endDateTime.trim().isEmpty()){
-            Date nowTime = new Date();
-            String nowTimeStr = DateUtil.toString(nowTime);
-            nowTime = getNowTimeFormat(nowTimeStr);
-            return nowTime;
+        if(StringUtil.isEmpty(endDateTime)){
+            return new Date();
         }else {
-            Date setTime = getNowTimeFormat(endDateTime);
-            return setTime;
+            return DateUtil.toDate(endDateTime);
         }
     }
 

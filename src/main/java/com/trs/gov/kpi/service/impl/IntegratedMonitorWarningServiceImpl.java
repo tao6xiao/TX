@@ -73,8 +73,6 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
         issueWarningResponseDetail.setIssueTypeName(is.getSubTypeName());
         Date issueTime = is.getIssueTime();
         Date nowTime = new Date();
-        String nowTimeStr = DateUtil.toString(nowTime);
-        nowTime = InitTime.getNowTimeFormat(nowTimeStr);
         Long between = nowTime.getTime() - issueTime.getTime();
         Long limitTime = between/(24*60*60*1000);
         issueWarningResponseDetail.setLimitTime(limitTime);
