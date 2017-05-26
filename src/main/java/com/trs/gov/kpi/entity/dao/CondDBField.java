@@ -1,5 +1,9 @@
 package com.trs.gov.kpi.entity.dao;
 
+import com.trs.gov.kpi.utils.StringUtil;
+
+import java.util.Collection;
+
 /**
  * Created by linwei on 2017/5/22.
  */
@@ -13,8 +17,14 @@ public class CondDBField {
     private boolean isCollection = false;
 
     public CondDBField(String fieldName, Object condValue) {
+        if (StringUtil.isEmpty(fieldName) || condValue == null) {
+            throw new IllegalArgumentException("empty field or cond");
+        }
         this.fieldName = fieldName;
         this.condValue = condValue;
+        if (condValue instanceof Collection) {
+            this.setCollection(true);
+        }
     }
 
     public String getFieldName() {

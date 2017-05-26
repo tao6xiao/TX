@@ -464,12 +464,19 @@
     </if>
   </sql>
 
-  <sql id="groupby_sql">
-
+  <sql id="group_sql">
+    <if test="groupFields != null">
+      GROUP BY
+      <foreach collection="groupFields" item="groupField" separator=",">
+        ${groupField}
+      </foreach>
+    </if>
   </sql>
 
   <sql id="page_sql">
-
+    <if test="pager != null">
+      limit #{pager.offset},#{pager.count}
+    </if>
   </sql>
 
   <select id="select" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="com.trs.gov.kpi.entity.Issue">
@@ -477,7 +484,7 @@
     *
     FROM issue WHERE 1=1
     <include refid="where_sql"/>
-    <include refid="groupby_sql"/>
+    <include refid="group_sql"/>
     <include refid="order_sql"/>
     <include refid="page_sql"/>
   </select>

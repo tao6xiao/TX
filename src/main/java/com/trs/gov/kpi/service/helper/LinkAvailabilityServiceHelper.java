@@ -4,7 +4,6 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.dao.SortDBField;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
 import java.util.List;
@@ -46,8 +45,8 @@ public class LinkAvailabilityServiceHelper {
                 CondDBField issueTypefield = buildIssueTypeCond(param.getSearchText());
                 if (issueTypefield != null) {
                     OrCondDBFields orFields = new OrCondDBFields();
-                    orFields.addCondDBField(idField);
-                    orFields.addCondDBField(issueTypefield);
+                    orFields.addCond(idField);
+                    orFields.addCond(issueTypefield);
                     filter.addCond("OR_COMPLEX_FIELD", orFields);
                 } else {
                     filter.addCond(idField);
@@ -62,15 +61,9 @@ public class LinkAvailabilityServiceHelper {
                 String[] nameAndDirection = sortField.split(",");
                 if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
                     if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
-                        SortDBField dbField = new SortDBField();
-                        dbField.setFieldName(nameAndDirection[0].trim());
-                        dbField.setAsc(true);
-                        filter.addSortField(dbField);
+                        filter.addSortField(nameAndDirection[0], true);
                     } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
-                        SortDBField dbField = new SortDBField();
-                        dbField.setFieldName(nameAndDirection[0].trim());
-                        dbField.setAsc(false);
-                        filter.addSortField(dbField);
+                        filter.addSortField(nameAndDirection[0], false);
                     }
                 }
             }

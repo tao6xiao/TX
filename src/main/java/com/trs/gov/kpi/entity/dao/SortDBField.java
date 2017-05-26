@@ -1,27 +1,29 @@
 package com.trs.gov.kpi.entity.dao;
 
+import com.trs.gov.kpi.utils.StringUtil;
+import lombok.Getter;
+
 /**
+ * 用于数据查询的排序字段
+ *
  * Created by linwei on 2017/5/22.
  */
 public class SortDBField {
 
+    @Getter
     private String fieldName;
 
+    @Getter
     private boolean isAsc = true;
 
-    public String getFieldName() {
-        return fieldName;
+    public SortDBField(String fieldName){
+        this(fieldName, true);
     }
-
-    public void setFieldName(String fieldName) {
-        this.fieldName = fieldName;
-    }
-
-    public boolean isAsc() {
-        return isAsc;
-    }
-
-    public void setAsc(boolean asc) {
-        isAsc = asc;
+    public SortDBField(String fieldName, boolean isAsc) {
+        if (StringUtil.isEmpty(fieldName)) {
+            throw new IllegalArgumentException("empty field");
+        }
+        this.fieldName = fieldName.trim();
+        this.isAsc = isAsc;
     }
 }

@@ -3,7 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.CondDBField;
-import com.trs.gov.kpi.entity.dao.QueryFilterPager;
+import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.SortDBField;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -43,7 +43,7 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      * @param pager
      * @return
      */
-    List<LinkAvailability> getIssueListBySql(@Param("condFields") List<CondDBField> condFields, @Param("sortFields") List<SortDBField> sortFields, @Param("pager") QueryFilterPager pager);
+    List<LinkAvailability> getIssueListBySql(@Param("condFields") List<CondDBField> condFields, @Param("sortFields") List<SortDBField> sortFields, @Param("pager") DBPager pager);
 
 
     /**
