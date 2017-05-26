@@ -72,7 +72,13 @@ public class CondDBField {
     }
 
     public void setBeginTime(boolean beginTime) {
-        isBeginTime = beginTime;
+        if (beginTime) {
+            isLike = false;
+            isEqual = false;
+            isCollection = false;
+            isBeginTime = beginTime;
+            isEndTime = false;
+        }
     }
 
     public boolean isEndTime() {
