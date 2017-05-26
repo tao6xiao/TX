@@ -110,4 +110,10 @@
     delete from chnlgroup
     where siteId = #{siteId,jdbcType=INTEGER} AND id = #{id,jdbcType=INTEGER}
   </delete>
+    <select id="selectAChnlIds" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select
+        chnlId
+        from chnlgroup
+        where siteId = #{siteId,jdbcType=INTEGER} AND groupId = #{groupId,jdbcType=INTEGER}
+    </select>
 </mapper>

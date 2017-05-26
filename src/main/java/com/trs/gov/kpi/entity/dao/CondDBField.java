@@ -88,7 +88,11 @@ public class CondDBField {
     public void setEndTime(boolean endTime) {
         if (endTime) {
             isEndTime = endTime;
+            isLike = false;
+            isEqual = false;
+            isCollection = false;
             isBeginTime = false;
+            isEndTime = false;
         }
     }
 

@@ -14,6 +14,19 @@
     <result column="customer2" jdbcType="VARCHAR" property="customer2" />
     <result column="customer3" jdbcType="VARCHAR" property="customer3" />
   </resultMap>
+
+  <resultMap id="InfoUpdateMap" type="com.trs.gov.kpi.entity.InfoUpdateDao">
+    <id column="id" property="id"/>
+    <result column="siteId" jdbcType="INTEGER" property="siteId" />
+    <result column="subTypeId" property="subTypeId"/>
+    <result column="detail" property="chnlUrl"/>
+    <result column="issueTime" property="checkTime"/>
+    <result column="isResolved" jdbcType="BIT" property="isResolved" />
+    <result column="isDel" jdbcType="BIT" property="isDel" />
+    <result column="customer2" property="chnlId"/>
+  </resultMap>
+
+
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -412,12 +425,18 @@
           ${fieldName} = #{condField.condValue}
         </if>
         <if test="condField.isBeginTime">
-          ${fieldName} >= #{condField.condValue}
+          ${fieldName}
+          <![CDATA[
+           >=
+          ]]>
+          #{condField.condValue}
         </if>
         <if test="condField.isEndTime">
+          ${fieldName}
           <![CDATA[
-                ${fieldName} <= #{condField.condValue}
+                 <=
               ]]>
+          #{condField.condValue}
         </if>
         <if test="condField.isCollection">
           ${fieldName} in
@@ -479,9 +498,91 @@
     </if>
   </sql>
 
+  <sql id="all_conditions_sql">
+    <include refid="where_sql"/>
+    <include refid="group_sql"/>
+    <include refid="order_sql"/>
+    <include refid="page_sql"/>
+  </sql>
+
   <select id="select" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="com.trs.gov.kpi.entity.Issue">
     SELECT
     *
+    FROM issue WHERE 1=1
+    <include refid="where_sql"/>
+    <include refid="group_sql"/>
+    <include refid="order_sql"/>
+    <include refid="page_sql"/>
+  </select>
+
+  <select id="count" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+    SELECT
+    count(1)
+    FROM issue WHERE 1=1
+    <include refid="where_sql"/>
+    <include refid="group_sql"/>
+    <include refid="order_sql"/>
+    <include refid="page_sql"/>
+  </select>
+
+  <select id="selectInfoUpdate" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="InfoUpdateMap">
+    SELECT
+    *
+    FROM issue WHERE 1=1
+    <include refid="where_sql"/>
+    <include refid="group_sql"/>
+    <include refid="order_sql"/>
+    <include refid="page_sql"/>
+  </select>
+
+  <select id="getEarliestIssueTime" resultType="java.util.Date">
+    SELECT min(issueTime)
+    FROM issue
+  </select>
+
+  <update id="handIssuesByIds" parameterType="java.util.List">
+    UPDATE issue
+    SET isResolved = 1
+    WHERE siteId = ${siteId}
+    AND id IN
+    <foreach collection="ids" item="item" open="(" close=")" separator=",">
+      ${item}
+    </foreach>
+  </update>
+
+
+  <update id="ignoreIssuesByIds" parameterType="java.util.List">
+    UPDATE issue
+    SET isResolved = 2
+    WHERE siteId = ${siteId}
+    AND id IN
+    <foreach collection="ids" item="item" open="(" close=")" separator=",">
+      ${item}
+    </foreach>
+  </update>
+
+  <update id="delIssueByIds" parameterType="java.util.List">
+    UPDATE issue
+    SET isDel = 1
+    WHERE siteId = ${siteId}
+    AND id IN
+    <foreach collection="ids" item="item" open="(" close=")" separator=",">
+      ${item}
+    </foreach>
+  </update>
+  <select id="getIdsUpdateNotInTime" resultType="int">
+    SELECT
+    customer2
+    FROM issue WHERE 1=1
+    <include refid="where_sql"/>
+    <include refid="group_sql"/>
+    <include refid="order_sql"/>
+    <include refid="page_sql"/>
+  </select>
+
+  <select id="countList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="java.util.Map">
+    SELECT
+    customer2,count(1)
     FROM issue WHERE 1=1
     <include refid="where_sql"/>
     <include refid="group_sql"/>

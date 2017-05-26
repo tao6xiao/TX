@@ -39,7 +39,8 @@ public class IntegratedMonitorIssueController {
         if (issue.getSiteId() == null) {
             throw new BizException("站点编号为空");
         }
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+        // TODO: 2017/5/26 param check
+//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         issue = IssueDataUtil.getIssueToGetPageData(issue, issueService,
                 Status.Resolve.UN_RESOLVED.value, Status.Delete.UN_DELETE.value);
         int itemCount = issueService.getAllIssueCount(issue);
