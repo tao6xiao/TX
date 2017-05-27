@@ -29,7 +29,7 @@ public enum FrequencyType {
         this.freqUnit = freqUnit;
     }
 
-    public static FrequencyType getFrequencyTypeByTypeId(int typeId) {
+    public static FrequencyType valueOf(int typeId) {
         for (FrequencyType frequencyType : FrequencyType.values()) {
             if (frequencyType.getTypeId() == typeId) {
                 return frequencyType;

@@ -90,7 +90,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         monitorFrequencyResponse.setId(monitorFrequency.getTypeId());
         monitorFrequencyResponse.setValue(monitorFrequency.getValue());
         int typeId = monitorFrequency.getTypeId();
-        FrequencyType frequencyType = FrequencyType.getFrequencyTypeByTypeId(typeId);
+        FrequencyType frequencyType = FrequencyType.valueOf(typeId);
         monitorFrequencyResponse.setName(frequencyType.getName());
         monitorFrequencyResponse.setFreqUnit(frequencyType.getFreqUnit().getCode());
         return monitorFrequencyResponse;
