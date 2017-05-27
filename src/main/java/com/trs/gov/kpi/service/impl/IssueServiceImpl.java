@@ -3,7 +3,6 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -30,25 +29,7 @@ public class IssueServiceImpl implements IssueService {
     @Resource
     private IssueMapper issueMapper;
 
-    @Override
-    public int getAllIssueCount(IssueBase issue) {
-        return issueMapper.getAllIssueCount(issue);
-    }
-
-    @Override
-    public List<IssueIsNotResolvedResponse> getAllIssueList(Integer currPage, Integer pageSize, IssueBase issue) {
-        List<Issue> issueList = issueMapper.getAllIssueList(currPage, pageSize, issue);
-        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
-        List<IssueIsNotResolvedResponse> issueIsNotResolvedResponseList = new ArrayList<>();
-        IssueIsNotResolvedResponse issueIsNotResolvedResponse = null;
-        for (Issue is :issueList) {
-            issueIsNotResolvedResponse = getIssueIsNotResolvedResponseDetailByIssue(is);
-            issueIsNotResolvedResponseList.add(issueIsNotResolvedResponse);
-        }
-        return issueIsNotResolvedResponseList;
-    }
-
-    private IssueIsNotResolvedResponse getIssueIsNotResolvedResponseDetailByIssue(Issue is) {
+    private IssueIsNotResolvedResponse toNotResolvedResponse(Issue is) {
         IssueIsNotResolvedResponse issueIsNotResolvedResponse = new IssueIsNotResolvedResponse();
         issueIsNotResolvedResponse.setId(is.getId());
         issueIsNotResolvedResponse.setIssueTypeName(is.getSubTypeName());
@@ -89,18 +70,16 @@ public class IssueServiceImpl implements IssueService {
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
         filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(),apiPageData.getPager().getPageSize()));
         List<Issue> issueList = issueMapper.select(filter);
-        List<IssueIsNotResolvedResponse> responseByIssueList = getResponseByIssueList(issueList);
+        List<IssueIsNotResolvedResponse> responseByIssueList = toResponse(issueList);
         apiPageData.setData(responseByIssueList);
         return apiPageData;
     }
 
-    private List<IssueIsNotResolvedResponse> getResponseByIssueList(List<Issue> issueList) {
+    private List<IssueIsNotResolvedResponse> toResponse(List<Issue> issueList) {
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueIsNotResolvedResponse> issueIsNotResolvedResponseList = new ArrayList<>();
-        IssueIsNotResolvedResponse issueIsNotResolvedResponse = null;
         for (Issue is :issueList) {
-            issueIsNotResolvedResponse = getIssueIsNotResolvedResponseDetailByIssue(is);
-            issueIsNotResolvedResponseList.add(issueIsNotResolvedResponse);
+            issueIsNotResolvedResponseList.add(toNotResolvedResponse(is));
         }
         return issueIsNotResolvedResponseList;
     }

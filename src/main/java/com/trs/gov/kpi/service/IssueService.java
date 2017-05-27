@@ -13,9 +13,9 @@ import java.util.List;
  */
 public interface IssueService{
 
-    int getAllIssueCount(IssueBase issue);
+//    int getAllIssueCount(IssueBase issue);
 
-    List<IssueIsNotResolvedResponse> getAllIssueList(Integer currPage, Integer pageSize, IssueBase issue);
+//    List<IssueIsNotResolvedResponse> getAllIssueList(Integer currPage, Integer pageSize, IssueBase issue);
 
     void handIssuesByIds(int siteId, List<Integer> ids);
 
