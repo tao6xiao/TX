@@ -57,12 +57,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
         int resolvedCount = issueMapper.count(filter);
-
-        filter = LinkAvailabilityServiceHelper.toFilter(param);
-        filter.addCond("typeId", Types.IssueType.INFO_UPDATE_WARNING.value);
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        int waringCount = issueMapper.count(filter);
+        
 
         filter = LinkAvailabilityServiceHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
@@ -71,13 +66,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         int updateCount = issueMapper.count(filter);
 
         List<Statistics> statisticsList = new ArrayList<>();
-        Statistics statistics = new Statistics();
-        statistics.setType(IssueIndicator.UPDATE_WARNING.value);
-        statistics.setName(IssueIndicator.UPDATE_WARNING.name);
-        statistics.setCount(waringCount);
-        statisticsList.add(statistics);
 
-        statistics = new Statistics();
+
+        Statistics statistics = new Statistics();
         statistics.setType(IssueIndicator.SOLVED.value);
         statistics.setName(IssueIndicator.SOLVED.name);
         statistics.setCount(resolvedCount);
