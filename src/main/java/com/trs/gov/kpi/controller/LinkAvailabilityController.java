@@ -2,7 +2,8 @@ package com.trs.gov.kpi.controller;
 
 
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
@@ -37,110 +38,89 @@ public class LinkAvailabilityController {
     /**
      * 查询待解决和已解决问题数量
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(IssueBase issueBase) throws BizException {
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
+    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        return IssueCounter.getIssueCount(linkAvailabilityService, issueBase);
+        ParamCheckUtil.paramCheck(param);
+
+        return linkAvailabilityService.getIssueCount(param);
     }
 
     /**
      * 查询待解决问题数量
      *
-     * @param issueBase
+     * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
-    public int getUnhandledIssueCount(IssueBase issueBase) throws BizException {
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
+    public int getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        return linkAvailabilityService.getUnhandledIssueCount(issueBase);
+        ParamCheckUtil.paramCheck(param);
+
+        return linkAvailabilityService.getUnhandledIssueCount(param);
     }
 
 
     /**
      * 查询历史记录
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException {
-        if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            issueBase.setBeginDateTime(sdf.format(linkAvailabilityService.getEarliestIssueTime()));
-        }
-        if(issueBase.getEndDateTime() ==null || issueBase.getEndDateTime().trim().isEmpty()){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            issueBase.setEndDateTime(sdf.format(new Date()));
-        }
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
+    public List<HistoryStatistics> getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        return linkAvailabilityService.getIssueHistoryCount(issueBase);
+        ParamCheckUtil.paramCheck(param);
+
+        return linkAvailabilityService.getIssueHistoryCount(param);
     }
 
     /**
      * 查询未解决问题列表
      *
-     * @param pageIndex
-     * @param pageSize
-     * @param issueBase
+     * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issueBase) throws BizException {
+    public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
-            List list = InitQueryFiled.init(issueBase.getSearchText(), linkAvailabilityService);
-            issueBase.setIds(list);
-        }
+        ParamCheckUtil.paramCheck(param);
 
-//        ParamCheckUtil.paramCheck(issueBase);
-
-        int itemCount = linkAvailabilityService.getUnhandledIssueCount(issueBase);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
-        apiPageData.setData(linkAvailabilityList);
-        return apiPageData;
+        return linkAvailabilityService.getIssueList(param);
     }
 
     /**
      * 获取网站首页可用性
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/indexpage/status", method = RequestMethod.GET)
-    public Integer getIndexAvailability(@ModelAttribute IssueBase issueBase) throws BizException {
+    public Integer getIndexAvailability(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
-        String indexUrl = linkAvailabilityService.getIndexUrl(issueBase);
-        return linkAvailabilityService.getIndexAvailability(indexUrl, issueBase);
+
+        ParamCheckUtil.paramCheck(param);
+
+        return linkAvailabilityService.getIndexAvailability(param);
     }
 
     /**
      * 首页可用性校验显示
      *
-     * @param issueBase
+     * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/check/index", method = RequestMethod.GET)
-    public IndexPage showIndexAvailability(@ModelAttribute IssueBase issueBase) throws BizException {
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
-        return linkAvailabilityService.showIndexAvailability(issueBase);
+    public IndexPage showIndexAvailability(@ModelAttribute PageDataRequestParam param) throws BizException {
+
+        ParamCheckUtil.paramCheck(param);
+        return linkAvailabilityService.showIndexAvailability(param);
     }
 
 

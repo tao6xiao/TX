@@ -64,8 +64,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
         queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
         queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
-        queryFilter.addCond("issueTime", param.getBeginDateTime()).setBeginTime(true);
-        queryFilter.addCond("issueTime", param.getEndDateTime()).setEndTime(true);
 
         return issueMapper.count(queryFilter);
     }
@@ -77,8 +75,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        queryFilter.addCond("issueTime", param.getBeginDateTime()).setBeginTime(true);
-        queryFilter.addCond("issueTime", param.getEndDateTime()).setEndTime(true);
 
         return issueMapper.count(queryFilter);
     }
@@ -114,8 +110,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        queryFilter.addCond("issueTime", param.getBeginDateTime()).setBeginTime(true);
-        queryFilter.addCond("issueTime", param.getEndDateTime()).setEndTime(true);
 
         int count = issueMapper.count(queryFilter);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), count);
@@ -136,44 +130,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         return apiPageData;
     }
 
-    @Override
-    public List<Statistics> getIssueCountByType(PageDataRequestParam param) {
-
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
-
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.InfoErrorIssueType.TYPOS.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        queryFilter.addCond("issueTime", param.getBeginDateTime()).setBeginTime(true);
-        queryFilter.addCond("issueTime", param.getEndDateTime()).setEndTime(true);
-
-        int typosCount = issueMapper.count(queryFilter);
-        Statistics typosStatistics = new Statistics();
-        typosStatistics.setCount(typosCount);
-        typosStatistics.setType(Types.InfoErrorIssueType.TYPOS.value);
-        typosStatistics.setName(Types.InfoErrorIssueType.TYPOS.name);
-
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        queryFilter.addCond("issueTime", param.getBeginDateTime()).setBeginTime(true);
-        queryFilter.addCond("issueTime", param.getEndDateTime()).setEndTime(true);
-
-        int sensitiveWordsCount = issueMapper.count(queryFilter);
-        Statistics sensitiveWordsStatistics = new Statistics();
-        sensitiveWordsStatistics.setCount(sensitiveWordsCount);
-        sensitiveWordsStatistics.setType(Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
-        sensitiveWordsStatistics.setName(Types.InfoErrorIssueType.SENSITIVE_WORDS.name);
-
-        List<Statistics> list = new ArrayList<>();
-        list.add(typosStatistics);
-        list.add(sensitiveWordsStatistics);
-
-        return list;
-    }
 
 
     @Override

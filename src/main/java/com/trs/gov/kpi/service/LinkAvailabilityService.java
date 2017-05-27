@@ -1,36 +1,47 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.IndexPage;
-import com.trs.gov.kpi.entity.responsedata.Statistics;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by ranwei on 2017/5/11.
  */
-public interface LinkAvailabilityService extends OperationService {
+public interface LinkAvailabilityService  {
 
 
-    List<HistoryStatistics> getIssueHistoryCount(IssueBase issueBase);
+    List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
 
-    List<LinkAvailability> getIssueList(Integer currPage, Integer pageSize, IssueBase issueBase);
+    ApiPageData getIssueList(PageDataRequestParam param);
 
-    void insertLinkAvailability(LinkAvailability linkAvailability);
+    void insertLinkAvailability(LinkAvailabilityResponse linkAvailabilityResponse);
 
-    List<Statistics> getIssueCountByType(IssueBase issueBase);
+    int getIndexAvailability(PageDataRequestParam param);
 
-    int getIndexAvailability(String indexUrl, IssueBase issueBase);
+    String getIndexUrl(PageDataRequestParam param);
 
-    String getIndexUrl(IssueBase issueBase);
+    IndexPage showIndexAvailability(PageDataRequestParam param);
 
-    IndexPage showIndexAvailability(IssueBase issueBase);
-
-    List<LinkAvailability> getUnsolvedIssueList(QueryFilter filter);
+    List<LinkAvailabilityResponse> getUnsolvedIssueList(QueryFilter filter);
 
     int getUnsolvedIssueCount(QueryFilter filter);
+
+    int getHandledIssueCount(PageDataRequestParam param);
+
+    int getUnhandledIssueCount(PageDataRequestParam param);
+
+    List<Statistics> getIssueCount(PageDataRequestParam param);
+
+    void handIssuesByIds(int siteId, List<Integer> ids);
+
+    void ignoreIssuesByIds(int siteId, List<Integer> ids);
+
+    void delIssueByIds(int siteId, List<Integer> ids);
+
+    Date getEarliestIssueTime();
 
 }

@@ -34,6 +34,14 @@
     <result column="issueTime" property="checkTime"/>
   </resultMap>
 
+  <resultMap id="LinkAvailabilityMap" type="com.trs.gov.kpi.entity.LinkAvailability">
+    <id column="id" property="id"/>
+    <result column="subTypeId" property="issueTypeId"/>
+    <result column="detail" property="invalidLink"/>
+    <result column="customer1" property="snapshot"/>
+    <result column="issueTime" property="checkTime"/>
+  </resultMap>
+
 
   <sql id="Example_Where_Clause">
     <where>
@@ -541,6 +549,13 @@
     <include refid="all_conditions_sql"/>
   </select>
 
+  <select id="selectLinkAvailability" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="LinkAvailabilityMap">
+    SELECT
+    *
+    FROM issue WHERE 1=1
+    <include refid="all_conditions_sql"/>
+  </select>
+
   <select id="getEarliestIssueTime" resultType="java.util.Date">
     SELECT min(issueTime)
     FROM issue
@@ -584,6 +599,27 @@
     customer2,count(1)
     FROM issue WHERE 1=1
     <include refid="all_conditions_sql"/>
+  </select>
+
+  <select id="getIndexUrl" resultType="String">
+    SELECT indexUrl
+    FROM monitorsite
+    WHERE siteId = #{param.siteId}
+  </select>
+
+  <select id="getIndexAvailability" resultType="int">
+    SELECT count(1)
+    FROM issue
+    WHERE 1=1
+    <include refid="where_sql"/>
+  </select>
+
+  <select id="getMonitorTime" resultType="java.sql.Date">
+    SELECT issueTime
+    FROM issue
+    WHERE 1=1
+    <include refid="where_sql"/>
+    ORDER BY issueTime DESC LIMIT 1
   </select>
 
 </mapper>

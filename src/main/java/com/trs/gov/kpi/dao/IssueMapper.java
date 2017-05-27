@@ -2,6 +2,7 @@ package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -87,6 +88,37 @@ public interface IssueMapper {
      * @return
      */
     List<InfoError> selectInfoError(QueryFilter filter);
+
+    /**
+     * 查询LinkAvailability
+     * @param filter
+     * @return
+     */
+    List<LinkAvailability> selectLinkAvailability(QueryFilter filter);
+
+    /**
+     * 根据站点编号获取首页
+     *
+     * @param param
+     * @return
+     */
+    String getIndexUrl(@Param("param")PageDataRequestParam param);
+
+    /**
+     * 查询首页不可用问题的监测时间
+     *
+     * @param filter
+     * @return
+     */
+    Date getMonitorTime(QueryFilter filter);
+
+    /**
+     * 查询问题中是否包含首页不可用
+     *
+     * @param filter
+     * @return
+     */
+    int getIndexAvailability(QueryFilter filter);
 
     /**
      * 查询数量

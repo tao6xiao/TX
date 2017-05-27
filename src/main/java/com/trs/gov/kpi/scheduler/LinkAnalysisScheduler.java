@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import lombok.Getter;
@@ -52,13 +52,13 @@ public class LinkAnalysisScheduler extends AbstractScheduler{
                 List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
                 Date checkTime = new Date();
                 for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
-                    LinkAvailability linkAvailability = new LinkAvailability();
-                    linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getKey());
-                    linkAvailability.setSnapshot(unavailableUrlAndParentUrl.getValue());
-                    linkAvailability.setCheckTime(checkTime);
-                    linkAvailability.setSiteId(siteId);
-                    linkAvailability.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
-                    linkAvailabilityService.insertLinkAvailability(linkAvailability);
+                    LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
+                    linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
+                    linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
+                    linkAvailabilityResponse.setCheckTime(checkTime);
+                    linkAvailabilityResponse.setSiteId(siteId);
+                    linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
+                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
                 }
             } catch (Exception e) {
                 log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);

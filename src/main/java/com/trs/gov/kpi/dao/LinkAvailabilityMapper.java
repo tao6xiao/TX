@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.SortDBField;
@@ -33,7 +33,7 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      * @param issueBase
      * @return
      */
-    List<LinkAvailability> getIssueList(@Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
+    List<LinkAvailabilityResponse> getIssueList(@Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
 
     /**
      * 获取符合条件的链接问题数量
@@ -43,7 +43,7 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      * @param pager
      * @return
      */
-    List<LinkAvailability> getIssueListBySql(@Param("condFields") List<CondDBField> condFields, @Param("sortFields") List<SortDBField> sortFields, @Param("pager") DBPager pager);
+    List<LinkAvailabilityResponse> getIssueListBySql(@Param("condFields") List<CondDBField> condFields, @Param("sortFields") List<SortDBField> sortFields, @Param("pager") DBPager pager);
 
 
     /**
@@ -51,7 +51,7 @@ public interface LinkAvailabilityMapper extends OperationMapper {
      *
      * @param linkAvailabilities
      */
-    void batchInsertLinkAvailabilities(@Param("linkAvailabilities") List<LinkAvailability> linkAvailabilities);
+    void batchInsertLinkAvailabilities(@Param("linkAvailabilities") List<LinkAvailabilityResponse> linkAvailabilities);
 
     /**
      * 获取符合条件的链接问题数量

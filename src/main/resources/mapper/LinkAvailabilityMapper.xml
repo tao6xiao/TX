@@ -5,7 +5,7 @@
 <mapper namespace="com.trs.gov.kpi.dao.LinkAvailabilityMapper">
 
 
-    <resultMap id="linkAvailabilityMap" type="com.trs.gov.kpi.entity.LinkAvailability">
+    <resultMap id="linkAvailabilityMap" type="com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse">
         <id column="id" property="id"/>
         <result column="subTypeId" property="issueTypeId"/>
         <result column="detail" property="invalidLink"/>
