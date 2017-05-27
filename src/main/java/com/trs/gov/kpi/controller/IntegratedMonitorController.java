@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -26,43 +26,42 @@ public class IntegratedMonitorController {
     /**
      * 查询所有问题数量
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/all/count", method = RequestMethod.GET)
-    public List<Statistics> getAllIssueCount(@ModelAttribute IssueBase issueBase) throws BizException {
+    public List<Statistics> getAllIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
-        return integratedMonitorService.getAllIssueCount(issueBase);
+        ParamCheckUtil.paramCheck(param);
+        return integratedMonitorService.getAllIssueCount(param);
     }
 
     /**
      * 查询各类问题的待解决问题数
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
-    public List<Statistics> getUnhandledIssueCount(@ModelAttribute IssueBase issueBase) throws BizException {
+    public List<Statistics> getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
-        return integratedMonitorService.getUnhandledIssueCount(issueBase);
+
+        ParamCheckUtil.paramCheck(param);
+        return integratedMonitorService.getUnhandledIssueCount(param);
     }
 
     /**
      * 查询各类预警的待解决数
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/warning/bytype/count")
-    public List<Statistics> getWarningCount(@ModelAttribute IssueBase issueBase) throws BizException {
+    public List<Statistics> getWarningCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
-        return integratedMonitorService.getWarningCount(issueBase);
+
+        ParamCheckUtil.paramCheck(param);
+        return integratedMonitorService.getWarningCount(param);
     }
 
 

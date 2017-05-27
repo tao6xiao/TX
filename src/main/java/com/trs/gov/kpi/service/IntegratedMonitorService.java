@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.util.List;
@@ -10,9 +11,9 @@ import java.util.List;
  */
 public interface IntegratedMonitorService {
 
-    List<Statistics> getAllIssueCount(IssueBase issueBase);
+    List<Statistics> getAllIssueCount(PageDataRequestParam param);
 
-    List<Statistics> getUnhandledIssueCount(IssueBase issueBase);
+    List<Statistics> getUnhandledIssueCount(PageDataRequestParam param);
 
-    List<Statistics> getWarningCount(IssueBase issueBase);
+    List<Statistics> getWarningCount(PageDataRequestParam param);
 }

@@ -32,6 +32,4 @@ public interface InfoErrorService  {
 
     ApiPageData getIssueList(PageDataRequestParam param);
 
-    List<Statistics> getIssueCountByType(PageDataRequestParam param);
-
 }

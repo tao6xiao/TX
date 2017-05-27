@@ -4,7 +4,7 @@ import com.trs.gov.kpi.constant.EnumChannelGroup;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChannelGroup;
-import com.trs.gov.kpi.entity.LinkAvailability;
+import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -97,13 +97,13 @@ public class ServiceLinkController {
         int itemCount = linkAvailabilityService.getUnsolvedIssueCount(filter);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(requestParam.getPageIndex(), requestParam.getPageSize(), itemCount);
         filter.setPager(apiPageData.getPager());
-        List<LinkAvailability> linkAvailabilityList = linkAvailabilityService.getUnsolvedIssueList(filter);
-        for (LinkAvailability link : linkAvailabilityList) {
+        List<LinkAvailabilityResponse> linkAvailabilityResponseList = linkAvailabilityService.getUnsolvedIssueList(filter);
+        for (LinkAvailabilityResponse link : linkAvailabilityResponseList) {
             if (link.getIssueTypeId() != null) {
                 link.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).name);
             }
         }
-        apiPageData.setData(linkAvailabilityList);
+        apiPageData.setData(linkAvailabilityResponseList);
 
         return apiPageData;
     }
