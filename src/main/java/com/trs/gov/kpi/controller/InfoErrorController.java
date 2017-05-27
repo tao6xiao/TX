@@ -1,14 +1,13 @@
 package com.trs.gov.kpi.controller;
 
 
-import com.trs.gov.kpi.entity.InfoError;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.InfoErrorResponse;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.utils.InitQueryFiled;
-import com.trs.gov.kpi.utils.IssueCounter;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,61 +36,39 @@ public class InfoErrorController {
     /**
      * 查询待解决和已解决问题数量
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(IssueBase issueBase) throws BizException {
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
-        return IssueCounter.getIssueCount(infoErrorService, issueBase);
+    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.paramCheck(param);
+        return infoErrorService.getIssueCount(param);
     }
 
     /**
      * 查询历史记录
      *
-     * @param issueBase
+     * @param param
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getIssueHistoryCount(@ModelAttribute IssueBase issueBase) throws BizException {
-        if (issueBase.getBeginDateTime() == null || issueBase.getBeginDateTime().trim().isEmpty()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            issueBase.setBeginDateTime(sdf.format(infoErrorService.getEarliestIssueTime()));
-        }
-        if(issueBase.getEndDateTime() ==null || issueBase.getEndDateTime().trim().isEmpty()){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            issueBase.setEndDateTime(sdf.format(new Date()));
-        }
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.paramCheck(issueBase);
-        return infoErrorService.getIssueHistoryCount(issueBase);
+    public List<HistoryStatistics> getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.paramCheck(param);
+        return infoErrorService.getIssueHistoryCount(param);
     }
 
     /**
      * 查询待解决问题列表
      *
-     * @param pageIndex
-     * @param pageSize
-     * @param issueBase
+     * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issueBase) throws BizException {
+    public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        if (issueBase.getSearchText() != null && !issueBase.getSearchText().trim().isEmpty()) {
-            List list = InitQueryFiled.init(issueBase.getSearchText(), infoErrorService);
-            issueBase.setIds(list);
-        }
-//        ParamCheckUtil.paramCheck(issueBase);
-        int itemCount = infoErrorService.getUnhandledIssueCount(issueBase);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<InfoError> infoErrorList = infoErrorService.getIssueList((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issueBase);
-        apiPageData.setData(infoErrorList);
-        return apiPageData;
+        ParamCheckUtil.paramCheck(param);
+        return infoErrorService.getIssueList(param);
     }
 
     /**

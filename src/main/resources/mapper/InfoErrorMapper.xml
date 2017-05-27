@@ -5,7 +5,7 @@
 <mapper namespace="com.trs.gov.kpi.dao.InfoErrorMapper">
 
 
-    <resultMap id="infoErrorMap" type="com.trs.gov.kpi.entity.InfoError">
+    <resultMap id="infoErrorMap" type="com.trs.gov.kpi.entity.responsedata.InfoErrorResponse">
         <id column="id" property="id"/>
         <result column="subTypeId" property="issueTypeId"/>
         <result column="detail" property="snapshot"/>
