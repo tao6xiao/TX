@@ -1,9 +1,8 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.FrequencyPreset;
-import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequestDeal;
-import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponseDeal;
-import org.apache.ibatis.annotations.Param;
+import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
+import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 
 import java.util.List;
 
@@ -27,14 +26,14 @@ public interface FrequencyPresetService {
      * @param pageSize
      * @return
      */
-    List<FrequencyPresetResponseDeal> getPageDataBySiteId(int siteId, int pageIndex, int pageSize);
+    List<FrequencyPresetResponse> getPageDataBySiteId(int siteId, int pageIndex, int pageSize);
 
     /**
      * 添加预设记录
-     * @param frequencyPresetRequestDeal
+     * @param frequencyPresetRequest
      * @return
      */
-    int addFrequencyPreset(FrequencyPresetRequestDeal frequencyPresetRequestDeal);
+    int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest);
 
     /**
      * 通过站点id和id修改更新频率和预警预设记录

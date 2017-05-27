@@ -3,7 +3,7 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponse;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
@@ -24,12 +24,12 @@ public class IntegratedMonitorIsResolvedServiceImpl extends OperationServiceImpl
     IssueMapper issueMapper;
 
     @Override
-    public List<IssueIsResolvedResponseDetail> getPageDataIsResolvedList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue) {
+    public List<IssueIsResolvedResponse> getPageDataIsResolvedList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue) {
         int pageCalculate = pageIndex * pageSize;
         List<Issue> issueList = issueMapper.selectPageDataIsResolvedList(pageCalculate, pageSize, issue);
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
-        List<IssueIsResolvedResponseDetail> issueIsResolvedResponseDetailList = new ArrayList<>();
-        IssueIsResolvedResponseDetail issueIsResolvedResponseDetail = null;
+        List<IssueIsResolvedResponse> issueIsResolvedResponseDetailList = new ArrayList<>();
+        IssueIsResolvedResponse issueIsResolvedResponseDetail = null;
         for (Issue is :issueList) {
             issueIsResolvedResponseDetail = getIssueIsResolvedResponseDetailByIssue(is);
             issueIsResolvedResponseDetailList.add(issueIsResolvedResponseDetail);
@@ -43,8 +43,8 @@ public class IntegratedMonitorIsResolvedServiceImpl extends OperationServiceImpl
         return num;
     }
 
-    private IssueIsResolvedResponseDetail getIssueIsResolvedResponseDetailByIssue(Issue is) {
-        IssueIsResolvedResponseDetail issueIsResolvedResponseDetail = new IssueIsResolvedResponseDetail();
+    private IssueIsResolvedResponse getIssueIsResolvedResponseDetailByIssue(Issue is) {
+        IssueIsResolvedResponse issueIsResolvedResponseDetail = new IssueIsResolvedResponse();
         issueIsResolvedResponseDetail.setId(is.getId());
         issueIsResolvedResponseDetail.setIssueTypeName(is.getSubTypeName());
         issueIsResolvedResponseDetail.setDetail(is.getDetail());

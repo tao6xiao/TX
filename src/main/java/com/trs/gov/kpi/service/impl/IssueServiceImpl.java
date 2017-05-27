@@ -3,7 +3,7 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponse;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
@@ -28,24 +28,24 @@ public class IssueServiceImpl extends OperationServiceImpl implements IssueServi
     }
 
     @Override
-    public List<IssueIsNotResolvedResponseDetail> getAllIssueList(Integer currPage, Integer pageSize, IssueBase issue) {
+    public List<IssueIsNotResolvedResponse> getAllIssueList(Integer currPage, Integer pageSize, IssueBase issue) {
         List<Issue> issueList = issueMapper.getAllIssueList(currPage, pageSize, issue);
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
-        List<IssueIsNotResolvedResponseDetail> issueIsNotResolvedResponseDetailList = new ArrayList<>();
-        IssueIsNotResolvedResponseDetail issueIsNotResolvedResponseDetail = null;
+        List<IssueIsNotResolvedResponse> issueIsNotResolvedResponseList = new ArrayList<>();
+        IssueIsNotResolvedResponse issueIsNotResolvedResponse = null;
         for (Issue is :issueList) {
-            issueIsNotResolvedResponseDetail = getIssueIsNotResolvedResponseDetailByIssue(is);
-            issueIsNotResolvedResponseDetailList.add(issueIsNotResolvedResponseDetail);
+            issueIsNotResolvedResponse = getIssueIsNotResolvedResponseDetailByIssue(is);
+            issueIsNotResolvedResponseList.add(issueIsNotResolvedResponse);
         }
-        return issueIsNotResolvedResponseDetailList;
+        return issueIsNotResolvedResponseList;
     }
 
-    private IssueIsNotResolvedResponseDetail getIssueIsNotResolvedResponseDetailByIssue(Issue is) {
-        IssueIsNotResolvedResponseDetail issueIsNotResolvedResponseDetail = new IssueIsNotResolvedResponseDetail();
-        issueIsNotResolvedResponseDetail.setId(is.getId());
-        issueIsNotResolvedResponseDetail.setIssueTypeName(is.getSubTypeName());
-        issueIsNotResolvedResponseDetail.setDetail(is.getDetail());
-        issueIsNotResolvedResponseDetail.setIssueTime(DateUtil.toString(is.getIssueTime()));
-        return issueIsNotResolvedResponseDetail;
+    private IssueIsNotResolvedResponse getIssueIsNotResolvedResponseDetailByIssue(Issue is) {
+        IssueIsNotResolvedResponse issueIsNotResolvedResponse = new IssueIsNotResolvedResponse();
+        issueIsNotResolvedResponse.setId(is.getId());
+        issueIsNotResolvedResponse.setIssueTypeName(is.getSubTypeName());
+        issueIsNotResolvedResponse.setDetail(is.getDetail());
+        issueIsNotResolvedResponse.setIssueTime(DateUtil.toString(is.getIssueTime()));
+        return issueIsNotResolvedResponse;
     }
 }

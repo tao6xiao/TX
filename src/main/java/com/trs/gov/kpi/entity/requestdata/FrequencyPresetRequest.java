@@ -7,7 +7,7 @@ import lombok.Data;
  * Created by he.lang on 2017/5/15.
  */
 @Data
-public class FrequencyPresetRequestDeal {
+public class FrequencyPresetRequest {
     private Integer siteId;
 
     private Integer updateFreq;

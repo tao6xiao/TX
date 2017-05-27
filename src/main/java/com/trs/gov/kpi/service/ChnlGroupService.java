@@ -1,10 +1,10 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequestDetail;
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupChannelResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequest;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequest;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupChannelResponse;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface ChnlGroupService {
      *
      * @return
      */
-    ChnlGroupsResponseDetail[] getChnlGroupsResponseDetailArray();
+    ChnlGroupsResponse[] getChnlGroupsResponseDetailArray();
 
     /**
      * 获取指定siteId和groupId（分类编号）和栏目编号的对象，主要用于添加栏目到当前栏目分类时的严验证当前记录是否存在
@@ -29,7 +29,7 @@ public interface ChnlGroupService {
      * @param chnlId
      * @return
      */
-    ChnlGroupChannelResponseDetail getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId);
+    ChnlGroupChannelResponse getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId);
 
     /**
      * 通过站点id和反分类编号做分页查询
@@ -40,7 +40,7 @@ public interface ChnlGroupService {
      * @param pageSize
      * @return
      */
-    List<ChnlGroupChnlsResponseDetail> getPageDataBySiteIdAndGroupId(int siteId, int groupId, int pageIndex, int pageSize);
+    List<ChnlGroupChnlsResponse> getPageDataBySiteIdAndGroupId(int siteId, int groupId, int pageIndex, int pageSize);
 
     /**
      * 获取指定的站点和根分类下面的记录总数
@@ -57,7 +57,7 @@ public interface ChnlGroupService {
      * @param chnlGroupChnlRequestDetail
      * @return
      */
-    int updateBySiteIdAndId(ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail);
+    int updateBySiteIdAndId(ChnlGroupChannelRequest chnlGroupChnlRequestDetail);
 
     /**
      * 删除当前站点、当前id的对应记录
@@ -71,8 +71,8 @@ public interface ChnlGroupService {
     /**
      * 添加栏目
      *
-     * @param chnlGroupChnlsAddRequestDetail
+     * @param chnlGroupChnlsAddRequest
      * @return
      */
-    int addChnlGroupChnls(ChnlGroupChnlsAddRequestDetail chnlGroupChnlsAddRequestDetail);
+    int addChnlGroupChnls(ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest);
 }

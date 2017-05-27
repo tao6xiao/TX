@@ -3,13 +3,12 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
-import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
-import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -45,38 +44,38 @@ public class FrequencySetupController {
 //        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<FrequencySetupResponseDetail> frequencySetupResponseDetails = frequencySetupService.getPageDataFrequencySetupList(siteId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
-        apiPageData.setData(frequencySetupResponseDetails);
+        List<FrequencySetupResponse> frequencySetupResponses = frequencySetupService.getPageDataFrequencySetupList(siteId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
+        apiPageData.setData(frequencySetupResponses);
         return apiPageData;
     }
 
     /**
      * 添加更新频率（特殊：存在插入和修改操作）
      *
-     * @param frequencySetupSetRequestDetail
+     * @param frequencySetupSetRequest
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.POST)
     @ResponseBody
-    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequestDetail frequencySetupSetRequestDetail) throws BizException, ParseException {
-        if (frequencySetupSetRequestDetail.getSiteId() == null || frequencySetupSetRequestDetail.getPresetFeqId() == null || frequencySetupSetRequestDetail.getChnlIds() == null || frequencySetupSetRequestDetail.getChnlIds().length == 0) {
+    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, ParseException {
+        if (frequencySetupSetRequest.getSiteId() == null || frequencySetupSetRequest.getPresetFeqId() == null || frequencySetupSetRequest.getChnlIds() == null || frequencySetupSetRequest.getChnlIds().length == 0) {
             throw new BizException("参数存在null值");
         }
-        Integer[] chnlIds = frequencySetupSetRequestDetail.getChnlIds();
+        Integer[] chnlIds = frequencySetupSetRequest.getChnlIds();
         for (int i = 0; i < chnlIds.length; i++) {
             if(chnlIds[i] == null){
                 throw new BizException("参数chnlIds[]中存在null值");
             }
         }
-        int siteId = frequencySetupSetRequestDetail.getSiteId();
+        int siteId = frequencySetupSetRequest.getSiteId();
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
-                frequencySetup = frequencySetupService.getFrequencySetupByFrequencySetupSetRequestDetail(frequencySetupSetRequestDetail, chnlIds[i]);
+                frequencySetup = frequencySetupService.getFrequencySetupByFrequencySetupSetRequestDetail(frequencySetupSetRequest, chnlIds[i]);
                 frequencySetupService.insert(frequencySetup);
             } else {//当前站点的当前栏目设置过更新频率，需要修改
-                frequencySetup.setPresetFeqId(frequencySetupSetRequestDetail.getPresetFeqId());
+                frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
                 frequencySetupService.updateFrequencySetupById(frequencySetup);
             }
         }
@@ -86,17 +85,17 @@ public class FrequencySetupController {
     /**
      * 修改更新频率记录
      *
-     * @param frequencySetupUpdateRequestDetail
+     * @param frequencySetupUpdateRequest
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.PUT)
     @ResponseBody
-    public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequestDetail frequencySetupUpdateRequestDetail) throws BizException {
-        if (frequencySetupUpdateRequestDetail.getSiteId() == null || frequencySetupUpdateRequestDetail.getId() == null || frequencySetupUpdateRequestDetail.getPresetFeqId() == null || frequencySetupUpdateRequestDetail.getChnlId() == null) {
+    public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequest frequencySetupUpdateRequest) throws BizException {
+        if (frequencySetupUpdateRequest.getSiteId() == null || frequencySetupUpdateRequest.getId() == null || frequencySetupUpdateRequest.getPresetFeqId() == null || frequencySetupUpdateRequest.getChnlId() == null) {
             throw new BizException("参数存在null值");
         }
-        frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequestDetail);
+        frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequest);
         return null;
     }
 

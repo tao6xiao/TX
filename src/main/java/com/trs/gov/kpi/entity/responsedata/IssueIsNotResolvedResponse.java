@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by he.lang on 2017/5/19.
  */
 @Data
-public class IssueIsResolvedResponseDetail {
+public class IssueIsNotResolvedResponse {
     private String id;
 
     private String issueTypeName;

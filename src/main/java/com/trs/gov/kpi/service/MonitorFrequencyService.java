@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
+import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyResponse;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public interface MonitorFrequencyService {
      * @param siteId
      * @return
      */
-    List<MonitorFrequencyDeal> queryBySiteId(int siteId);
+    List<MonitorFrequencyResponse> queryBySiteId(int siteId);
 
     /**
      * 插入监测频率记录（一个站点有多个监测频率记录）

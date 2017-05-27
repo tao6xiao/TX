@@ -4,10 +4,9 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.OperationMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
-import com.trs.gov.kpi.entity.responsedata.IssueWarningResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.IssueWarningResponse;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import org.springframework.stereotype.Service;
 
@@ -51,32 +50,32 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
     }
 
     @Override
-    public List<IssueWarningResponseDetail> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException {
+    public List<IssueWarningResponse> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException {
         int pageCalculate = pageIndex * pageSize;
         List<Issue> issueList = issueMapper.getAllWarningList(pageCalculate, pageSize, issue);
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
-        List<IssueWarningResponseDetail> issueWarningResponseDetailList = new ArrayList<>();
-        IssueWarningResponseDetail issueWarningResponseDetail = null;
+        List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
+        IssueWarningResponse issueWarningResponse = null;
         for (Issue is: issueList) {
-            issueWarningResponseDetail = getIssueWarningResponseDetailByIssue(is);
-            issueWarningResponseDetailList.add(issueWarningResponseDetail);
+            issueWarningResponse = getIssueWarningResponseDetailByIssue(is);
+            issueWarningResponseList.add(issueWarningResponse);
         }
-        return issueWarningResponseDetailList;
+        return issueWarningResponseList;
     }
 
-    private IssueWarningResponseDetail getIssueWarningResponseDetailByIssue(Issue is) throws ParseException {
-        IssueWarningResponseDetail issueWarningResponseDetail = new IssueWarningResponseDetail();
-        issueWarningResponseDetail.setId(is.getId());
-        issueWarningResponseDetail.setIssueTime(DateUtil.toString(is.getIssueTime()));
-        issueWarningResponseDetail.setDetail(is.getDetail());
-        issueWarningResponseDetail.setChnlName(is.getCustomer1());
-        issueWarningResponseDetail.setIssueTypeName(is.getSubTypeName());
+    private IssueWarningResponse getIssueWarningResponseDetailByIssue(Issue is) throws ParseException {
+        IssueWarningResponse issueWarningResponse = new IssueWarningResponse();
+        issueWarningResponse.setId(is.getId());
+        issueWarningResponse.setIssueTime(DateUtil.toString(is.getIssueTime()));
+        issueWarningResponse.setDetail(is.getDetail());
+        issueWarningResponse.setChnlName(is.getCustomer1());
+        issueWarningResponse.setIssueTypeName(is.getSubTypeName());
         Date issueTime = is.getIssueTime();
         Date nowTime = new Date();
         Long between = nowTime.getTime() - issueTime.getTime();
         Long limitTime = between/(24*60*60*1000);
-        issueWarningResponseDetail.setLimitTime(limitTime);
-        return issueWarningResponseDetail;
+        issueWarningResponse.setLimitTime(limitTime);
+        return issueWarningResponse;
     }
 
     @Override

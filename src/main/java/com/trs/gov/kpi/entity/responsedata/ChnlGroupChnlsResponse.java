@@ -7,7 +7,7 @@ import lombok.Data;
  * Created by he.lang on 2017/5/17.
  */
 @Data
-public class ChnlGroupChnlsResponseDetail {
+public class ChnlGroupChnlsResponse {
     private Integer id;
     private String chnlGroupName;
     private Chnl chnl;

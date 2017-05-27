@@ -1,13 +1,12 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.FrequencyPreset;
-import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequestDeal;
+import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponseDeal;
+import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
-import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,24 +40,24 @@ public class FrequencyPresetController {
 //        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = frequencyPresetService.getPageDataBySiteId(siteId, apiPageData.getPager().getCurrPage()-1, apiPageData.getPager().getPageSize());
-        apiPageData.setData(frequencyPresetResponseDealList);
+        List<FrequencyPresetResponse> frequencyPresetResponseList = frequencyPresetService.getPageDataBySiteId(siteId, apiPageData.getPager().getCurrPage()-1, apiPageData.getPager().getPageSize());
+        apiPageData.setData(frequencyPresetResponseList);
         return apiPageData;
     }
 
     /**
      * 添加预设记录
-     * @param frequencyPresetRequestDeal
+     * @param frequencyPresetRequest
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/presetfreq", method = RequestMethod.POST)
     @ResponseBody
-    public Object addFrequencyPreset(@ModelAttribute FrequencyPresetRequestDeal frequencyPresetRequestDeal) throws BizException {
-        if(frequencyPresetRequestDeal.getSiteId() == null || frequencyPresetRequestDeal.getUpdateFreq() == null || frequencyPresetRequestDeal.getAlertFreq() == null){
+    public Object addFrequencyPreset(@ModelAttribute FrequencyPresetRequest frequencyPresetRequest) throws BizException {
+        if(frequencyPresetRequest.getSiteId() == null || frequencyPresetRequest.getUpdateFreq() == null || frequencyPresetRequest.getAlertFreq() == null){
             throw new BizException("传入的参数存在null值");
         }
-        frequencyPresetService.addFrequencyPreset(frequencyPresetRequestDeal);
+        frequencyPresetService.addFrequencyPreset(frequencyPresetRequest);
         return null;
     }
 

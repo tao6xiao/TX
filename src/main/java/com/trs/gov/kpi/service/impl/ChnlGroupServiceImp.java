@@ -5,12 +5,12 @@ import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChannelGroup;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequestDetail;
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequest;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequest;
 import com.trs.gov.kpi.entity.responsedata.Chnl;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupChannelResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupChannelResponse;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,37 +35,37 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     SiteApiService siteApiService;
 
     @Override
-    public ChnlGroupsResponseDetail[] getChnlGroupsResponseDetailArray() {
+    public ChnlGroupsResponse[] getChnlGroupsResponseDetailArray() {
         EnumChannelGroup[] chnlGroups = EnumChannelGroup.getChnlGroups();
-        ChnlGroupsResponseDetail[] chnlGroupsResponseDetails = new ChnlGroupsResponseDetail[chnlGroups.length];
+        ChnlGroupsResponse[] chnlGroupsResponses = new ChnlGroupsResponse[chnlGroups.length];
         for (int i = 0; i < chnlGroups.length; i++) {
-            chnlGroupsResponseDetails[i] = new ChnlGroupsResponseDetail();
-            chnlGroupsResponseDetails[i].setId(chnlGroups[i].getId());
-            chnlGroupsResponseDetails[i].setName(chnlGroups[i].getName());
+            chnlGroupsResponses[i] = new ChnlGroupsResponse();
+            chnlGroupsResponses[i].setId(chnlGroups[i].getId());
+            chnlGroupsResponses[i].setName(chnlGroups[i].getName());
         }
-        return chnlGroupsResponseDetails;
+        return chnlGroupsResponses;
     }
 
     @Override
-    public ChnlGroupChannelResponseDetail getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId) {
+    public ChnlGroupChannelResponse getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId) {
         ChannelGroup channelGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
-        ChnlGroupChannelResponseDetail chnlGroupChnlResponseDetail = getChnlGroupByChnlGroupChnlReponseDetail(channelGroup);
+        ChnlGroupChannelResponse chnlGroupChnlResponseDetail = getChnlGroupByChnlGroupChnlReponseDetail(channelGroup);
         return chnlGroupChnlResponseDetail;
     }
 
     @Override
-    public List<ChnlGroupChnlsResponseDetail> getPageDataBySiteIdAndGroupId(int siteId, int groupId, int pageIndex, int pageSize) {
+    public List<ChnlGroupChnlsResponse> getPageDataBySiteIdAndGroupId(int siteId, int groupId, int pageIndex, int pageSize) {
         int pageCalculate = pageIndex * pageSize;
         List<ChannelGroup> channelGroupList = chnlGroupMapper.selectPageDataBySiteIdAndGroupId(siteId, groupId, pageCalculate, pageSize);
-        List<ChnlGroupChnlsResponseDetail> chnlGroupChnlsResponseDetailList = new ArrayList<>();
-        ChnlGroupChnlsResponseDetail chnlGroupChnlsResponseDetail = null;
+        List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = new ArrayList<>();
+        ChnlGroupChnlsResponse chnlGroupChnlsResponse = null;
 
         Map<Integer, String> chnlNamCache = new HashMap<>();
         for (ChannelGroup channelGroup : channelGroupList) {
-            chnlGroupChnlsResponseDetail = getChnlGroupChnlsResponseDetailByChnlGroup(channelGroup, chnlNamCache);
-            chnlGroupChnlsResponseDetailList.add(chnlGroupChnlsResponseDetail);
+            chnlGroupChnlsResponse = getChnlGroupChnlsResponseDetailByChnlGroup(channelGroup, chnlNamCache);
+            chnlGroupChnlsResponseList.add(chnlGroupChnlsResponse);
         }
-        return chnlGroupChnlsResponseDetailList;
+        return chnlGroupChnlsResponseList;
     }
 
     private Chnl getChnl(ChannelGroup channelGroup, Map<Integer, String> chnlNamCache) {
@@ -86,8 +86,8 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         return chnl;
     }
 
-    private ChnlGroupChnlsResponseDetail getChnlGroupChnlsResponseDetailByChnlGroup(ChannelGroup channelGroup, Map<Integer, String> chnlNamCache) {
-        ChnlGroupChnlsResponseDetail responseChnl = new ChnlGroupChnlsResponseDetail();
+    private ChnlGroupChnlsResponse getChnlGroupChnlsResponseDetailByChnlGroup(ChannelGroup channelGroup, Map<Integer, String> chnlNamCache) {
+        ChnlGroupChnlsResponse responseChnl = new ChnlGroupChnlsResponse();
         responseChnl.setId(channelGroup.getId());
         responseChnl.setChnlGroupName(EnumChannelGroup.valueOf(channelGroup.getGroupId()).getName());
         responseChnl.setChnl(getChnl(channelGroup, chnlNamCache));
@@ -101,7 +101,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     }
 
     @Override
-    public int updateBySiteIdAndId(ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail) {
+    public int updateBySiteIdAndId(ChnlGroupChannelRequest chnlGroupChnlRequestDetail) {
         ChannelGroup channelGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(chnlGroupChnlRequestDetail.getSiteId(), chnlGroupChnlRequestDetail.getGroupId(), chnlGroupChnlRequestDetail.getChnlId());
         int num = 0;
         if (channelGroup == null) {
@@ -113,7 +113,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         return num;
     }
 
-    private ChannelGroup getChnlGroupByChnlGroupChnlRequestDetail(ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail) {
+    private ChannelGroup getChnlGroupByChnlGroupChnlRequestDetail(ChnlGroupChannelRequest chnlGroupChnlRequestDetail) {
         ChannelGroup channelGroup = new ChannelGroup();
         channelGroup.setSiteId(chnlGroupChnlRequestDetail.getSiteId());
         channelGroup.setId(chnlGroupChnlRequestDetail.getId());
@@ -122,8 +122,8 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         return channelGroup;
     }
 
-    private ChnlGroupChannelResponseDetail getChnlGroupByChnlGroupChnlReponseDetail(ChannelGroup channelGroup) {
-        ChnlGroupChannelResponseDetail chnlGroupChnlResponseDetail = new ChnlGroupChannelResponseDetail();
+    private ChnlGroupChannelResponse getChnlGroupByChnlGroupChnlReponseDetail(ChannelGroup channelGroup) {
+        ChnlGroupChannelResponse chnlGroupChnlResponseDetail = new ChnlGroupChannelResponse();
         chnlGroupChnlResponseDetail.setSiteId(channelGroup.getSiteId());
         chnlGroupChnlResponseDetail.setId(channelGroup.getId());
         chnlGroupChnlResponseDetail.setGroupId(channelGroup.getGroupId());
@@ -138,10 +138,10 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     }
 
     @Override
-    public int addChnlGroupChnls(ChnlGroupChnlsAddRequestDetail chnlGroupChnlsAddRequestDetail) {
-        int siteId = chnlGroupChnlsAddRequestDetail.getSiteId();
-        int groupId = chnlGroupChnlsAddRequestDetail.getGroupId();
-        Integer[] chnlIds = chnlGroupChnlsAddRequestDetail.getChnlIds();
+    public int addChnlGroupChnls(ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest) {
+        int siteId = chnlGroupChnlsAddRequest.getSiteId();
+        int groupId = chnlGroupChnlsAddRequest.getGroupId();
+        Integer[] chnlIds = chnlGroupChnlsAddRequest.getChnlIds();
         int num = 0;
         for (int i = 0; i < chnlIds.length; i++) {
             int chnlId = chnlIds[i];

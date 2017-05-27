@@ -6,7 +6,7 @@ import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
-import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
+import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyResponse;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
@@ -32,17 +32,17 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     SchedulerService schedulerService;
 
     @Override
-    public List<MonitorFrequencyDeal> queryBySiteId(int siteId) {
+    public List<MonitorFrequencyResponse> queryBySiteId(int siteId) {
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyMapper.queryBySiteId(siteId);
-        List<MonitorFrequencyDeal> monitorFrequencyDealList = new ArrayList<>();
+        List<MonitorFrequencyResponse> monitorFrequencyResponseList = new ArrayList<>();
         if (monitorFrequencyList != null) {
             for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
-                MonitorFrequencyDeal monitorFrequencyDeal =
+                MonitorFrequencyResponse monitorFrequencyResponse =
                         getMonitorFrequencyDealFromMonitorFrequency(monitorFrequency);
-                monitorFrequencyDealList.add(monitorFrequencyDeal);
+                monitorFrequencyResponseList.add(monitorFrequencyResponse);
             }
         }
-        return monitorFrequencyDealList;
+        return monitorFrequencyResponseList;
     }
 
     @Override
@@ -88,16 +88,16 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         return monitorFrequencyList;
     }
 
-    private MonitorFrequencyDeal getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency
+    private MonitorFrequencyResponse getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency
                                                                                      monitorFrequency) {
-        MonitorFrequencyDeal monitorFrequencyDeal = new MonitorFrequencyDeal();
-        monitorFrequencyDeal.setId(monitorFrequency.getTypeId());
-        monitorFrequencyDeal.setValue(monitorFrequency.getValue());
+        MonitorFrequencyResponse monitorFrequencyResponse = new MonitorFrequencyResponse();
+        monitorFrequencyResponse.setId(monitorFrequency.getTypeId());
+        monitorFrequencyResponse.setValue(monitorFrequency.getValue());
         int typeId = monitorFrequency.getTypeId();
         FrequencyType frequencyType = FrequencyType.getFrequencyTypeByTypeId(typeId);
-        monitorFrequencyDeal.setName(frequencyType.getName());
-        monitorFrequencyDeal.setFreqUnit(frequencyType.getFreqUnit().getCode());
-        return monitorFrequencyDeal;
+        monitorFrequencyResponse.setName(frequencyType.getName());
+        monitorFrequencyResponse.setFreqUnit(frequencyType.getFreqUnit().getCode());
+        return monitorFrequencyResponse;
     }
 
     /**

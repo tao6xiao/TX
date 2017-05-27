@@ -4,11 +4,10 @@ import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponse;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
-import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -45,7 +44,7 @@ public class IntegratedMonitorIsResolvedController {
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<IssueIsResolvedResponseDetail> issueList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
+        List<IssueIsResolvedResponse> issueList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
         apiPageData.setData(issueList);
         return apiPageData;
     }
@@ -70,7 +69,7 @@ public class IntegratedMonitorIsResolvedController {
         issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isIgnored,null);
         int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<IssueIsResolvedResponseDetail> issueIsResolvedResponseDetailList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
+        List<IssueIsResolvedResponse> issueIsResolvedResponseDetailList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
         apiPageData.setData(issueIsResolvedResponseDetailList);
         return apiPageData;
     }

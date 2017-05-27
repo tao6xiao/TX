@@ -2,8 +2,8 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
-import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequestDeal;
-import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponseDeal;
+import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
+import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import org.springframework.stereotype.Service;
 
@@ -26,20 +26,20 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
     }
 
     @Override
-    public List<FrequencyPresetResponseDeal> getPageDataBySiteId(int siteId, int pageIndex, int pageSize) {
+    public List<FrequencyPresetResponse> getPageDataBySiteId(int siteId, int pageIndex, int pageSize) {
         int pageCalculate = pageIndex * pageSize;
         List<FrequencyPreset> frequencyPresetList = frequencyPresetMapper.selectPageDataBySiteId(siteId, pageCalculate, pageSize);
-        List<FrequencyPresetResponseDeal> frequencyPresetResponseDealList = new ArrayList<>();
+        List<FrequencyPresetResponse> frequencyPresetResponseList = new ArrayList<>();
         for (FrequencyPreset frequencyPreset : frequencyPresetList) {
-            FrequencyPresetResponseDeal frequencyPresetResponseDeal = getFrequencyPresetDealByfrequencyPreset(frequencyPreset);
-            frequencyPresetResponseDealList.add(frequencyPresetResponseDeal);
+            FrequencyPresetResponse frequencyPresetResponse = getFrequencyPresetDealByfrequencyPreset(frequencyPreset);
+            frequencyPresetResponseList.add(frequencyPresetResponse);
         }
-        return frequencyPresetResponseDealList;
+        return frequencyPresetResponseList;
     }
 
     @Override
-    public int addFrequencyPreset(FrequencyPresetRequestDeal frequencyPresetRequestDeal) {
-        FrequencyPreset frequencyPreset = getFrequencyPresetByFrequencyPresetRequestDeal(frequencyPresetRequestDeal);
+    public int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest) {
+        FrequencyPreset frequencyPreset = getFrequencyPresetByFrequencyPresetRequestDeal(frequencyPresetRequest);
         int num = frequencyPresetMapper.insert(frequencyPreset);
         return num;
     }
@@ -56,20 +56,20 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
         return num;
     }
 
-    private FrequencyPreset getFrequencyPresetByFrequencyPresetRequestDeal(FrequencyPresetRequestDeal frequencyPresetRequestDeal) {
+    private FrequencyPreset getFrequencyPresetByFrequencyPresetRequestDeal(FrequencyPresetRequest frequencyPresetRequest) {
         FrequencyPreset frequencyPreset = new FrequencyPreset();
         frequencyPreset.setId(null);
-        frequencyPreset.setSiteId(frequencyPresetRequestDeal.getSiteId());
-        frequencyPreset.setUpdateFreq(frequencyPresetRequestDeal.getUpdateFreq());
-        frequencyPreset.setAlertFreq(frequencyPresetRequestDeal.getAlertFreq());
+        frequencyPreset.setSiteId(frequencyPresetRequest.getSiteId());
+        frequencyPreset.setUpdateFreq(frequencyPresetRequest.getUpdateFreq());
+        frequencyPreset.setAlertFreq(frequencyPresetRequest.getAlertFreq());
         return frequencyPreset;
     }
 
-    private FrequencyPresetResponseDeal getFrequencyPresetDealByfrequencyPreset(FrequencyPreset frequencyPreset) {
-        FrequencyPresetResponseDeal frequencyPresetResponseDeal = new FrequencyPresetResponseDeal();
-        frequencyPresetResponseDeal.setId(frequencyPreset.getId());
-        frequencyPresetResponseDeal.setUpdateFreq(frequencyPreset.getUpdateFreq());
-        frequencyPresetResponseDeal.setAlertFreq(frequencyPreset.getAlertFreq());
-        return frequencyPresetResponseDeal;
+    private FrequencyPresetResponse getFrequencyPresetDealByfrequencyPreset(FrequencyPreset frequencyPreset) {
+        FrequencyPresetResponse frequencyPresetResponse = new FrequencyPresetResponse();
+        frequencyPresetResponse.setId(frequencyPreset.getId());
+        frequencyPresetResponse.setUpdateFreq(frequencyPreset.getUpdateFreq());
+        frequencyPresetResponse.setAlertFreq(frequencyPreset.getAlertFreq());
+        return frequencyPresetResponse;
     }
 }

@@ -1,11 +1,11 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequestDetail;
-import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequestDetail;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequest;
+import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponseDetail;
-import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponseDetail;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
+import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ public class ChnlGroupController {
      */
     @RequestMapping(value = "/chnlgroups", method = RequestMethod.GET)
     @ResponseBody
-    public ChnlGroupsResponseDetail[] getChnlGroups() {
+    public ChnlGroupsResponse[] getChnlGroups() {
         return chnlGroupService.getChnlGroupsResponseDetailArray();
     }
 
@@ -61,24 +61,24 @@ public class ChnlGroupController {
 
         int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<ChnlGroupChnlsResponseDetail> chnlGroupChnlsResponseDetailList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
-        apiPageData.setData(chnlGroupChnlsResponseDetailList);
+        List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
+        apiPageData.setData(chnlGroupChnlsResponseList);
         return apiPageData;
     }
 
     /**
      * 在当前站点和根栏目下添加栏目
-     * @param chnlGroupChnlsAddRequestDetail
+     * @param chnlGroupChnlsAddRequest
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.POST)
     @ResponseBody
-    public Object addChnlGroupChnls(@RequestBody ChnlGroupChnlsAddRequestDetail chnlGroupChnlsAddRequestDetail) throws BizException {
-        if (chnlGroupChnlsAddRequestDetail.getSiteId() == null || chnlGroupChnlsAddRequestDetail.getGroupId() == null || chnlGroupChnlsAddRequestDetail.getChnlIds() == null || chnlGroupChnlsAddRequestDetail.getChnlIds().length == 0) {
+    public Object addChnlGroupChnls(@RequestBody ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest) throws BizException {
+        if (chnlGroupChnlsAddRequest.getSiteId() == null || chnlGroupChnlsAddRequest.getGroupId() == null || chnlGroupChnlsAddRequest.getChnlIds() == null || chnlGroupChnlsAddRequest.getChnlIds().length == 0) {
             throw new BizException("参数存在null值");
         }
-        chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequestDetail);
+        chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequest);
         return null;
     }
 
@@ -90,7 +90,7 @@ public class ChnlGroupController {
      */
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.PUT)
     @ResponseBody
-    public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequestDetail chnlGroupChnlRequestDetail) throws BizException {
+    public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException {
         if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null || chnlGroupChnlRequestDetail.getChnlId() == null) {
             throw new BizException("参数存在null值");
         }

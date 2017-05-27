@@ -2,7 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyDeal;
+import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyResponse;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -31,12 +31,12 @@ public class MonitorFrequencyController {
      */
     @RequestMapping(value = "/checkfreq", method = RequestMethod.GET)
     @ResponseBody
-    public List<MonitorFrequencyDeal> queryBySiteId(@RequestParam Integer siteId) throws BizException {
+    public List<MonitorFrequencyResponse> queryBySiteId(@RequestParam Integer siteId) throws BizException {
         if (siteId == null) {
             throw new BizException("参数存在null值");
         }
-        List<MonitorFrequencyDeal> monitorFrequencyDealList = monitorFrequencyService.queryBySiteId(siteId);
-        return monitorFrequencyDealList;
+        List<MonitorFrequencyResponse> monitorFrequencyResponseList = monitorFrequencyService.queryBySiteId(siteId);
+        return monitorFrequencyResponseList;
     }
 
     /**

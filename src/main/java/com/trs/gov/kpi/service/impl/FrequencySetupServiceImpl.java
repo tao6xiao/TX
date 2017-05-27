@@ -6,13 +6,11 @@ import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequestDetail;
-import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequestDetail;
-import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponseDetail;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
+import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,11 +34,11 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     SiteApiService siteApiService;
 
     @Override
-    public List<FrequencySetupResponseDetail> getPageDataFrequencySetupList(int siteId, int pageIndex, int pageSize) throws RemoteException {
+    public List<FrequencySetupResponse> getPageDataFrequencySetupList(int siteId, int pageIndex, int pageSize) throws RemoteException {
         int pageCalculate = pageIndex * pageSize;
         List<FrequencySetup> frequencySetupList = frequencySetupMapper.selectPageDataFrequencySetupList(siteId, pageCalculate, pageSize);
-        List<FrequencySetupResponseDetail> frequencySetupResponseDetails = getFrequencySetupDetailListByFrequencySetupList(frequencySetupList);
-        return frequencySetupResponseDetails;
+        List<FrequencySetupResponse> frequencySetupResponses = getFrequencySetupDetailListByFrequencySetupList(frequencySetupList);
+        return frequencySetupResponses;
     }
 
     @Override
@@ -62,8 +60,8 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     }
 
     @Override
-    public int updateFrequencySetupById(FrequencySetupUpdateRequestDetail frequencySetupUpdateRequestDetail) {
-        FrequencySetup frequencySetup = frequencySetupUpdateRequestDetail;
+    public int updateFrequencySetupById(FrequencySetupUpdateRequest frequencySetupUpdateRequest) {
+        FrequencySetup frequencySetup = frequencySetupUpdateRequest;
         int num = frequencySetupMapper.updateBySiteIdAndidAndChnlId(frequencySetup);
         return num;
     }
@@ -76,11 +74,11 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     }
 
     @Override
-    public FrequencySetup getFrequencySetupByFrequencySetupSetRequestDetail(FrequencySetupSetRequestDetail frequencySetupSetRequestDetail, int chnlId) {
+    public FrequencySetup getFrequencySetupByFrequencySetupSetRequestDetail(FrequencySetupSetRequest frequencySetupSetRequest, int chnlId) {
         FrequencySetup frequencySetup = new FrequencySetup();
         frequencySetup.setId(null);
-        frequencySetup.setSiteId(frequencySetupSetRequestDetail.getSiteId());
-        frequencySetup.setPresetFeqId(frequencySetupSetRequestDetail.getPresetFeqId());
+        frequencySetup.setSiteId(frequencySetupSetRequest.getSiteId());
+        frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
         frequencySetup.setChnlId(chnlId);
         return frequencySetup;
     }
@@ -91,29 +89,29 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
         return num;
     }
 
-    private List<FrequencySetupResponseDetail> getFrequencySetupDetailListByFrequencySetupList(List<FrequencySetup> frequencySetupList) throws RemoteException {
-        List<FrequencySetupResponseDetail> frequencySetupResponseDetails = new ArrayList<>();
-        FrequencySetupResponseDetail frequencySetupResponseDetail = null;
+    private List<FrequencySetupResponse> getFrequencySetupDetailListByFrequencySetupList(List<FrequencySetup> frequencySetupList) throws RemoteException {
+        List<FrequencySetupResponse> frequencySetupResponses = new ArrayList<>();
+        FrequencySetupResponse frequencySetupResponse = null;
         for (FrequencySetup frequencySetup : frequencySetupList) {
-            frequencySetupResponseDetail = new FrequencySetupResponseDetail();
-            frequencySetupResponseDetail.setId(frequencySetup.getId());
-            frequencySetupResponseDetail.setPresetFeqId(frequencySetup.getPresetFeqId());
+            frequencySetupResponse = new FrequencySetupResponse();
+            frequencySetupResponse.setId(frequencySetup.getId());
+            frequencySetupResponse.setPresetFeqId(frequencySetup.getPresetFeqId());
             FrequencyPreset frequencyPreset = frequencyPresetMapper.selectByPrimaryKey(frequencySetup.getPresetFeqId());
             if (frequencyPreset != null) {
-                frequencySetupResponseDetail.setUpdateFreq(frequencyPreset.getUpdateFreq());
-                frequencySetupResponseDetail.setAlertFreq(frequencyPreset.getAlertFreq());
+                frequencySetupResponse.setUpdateFreq(frequencyPreset.getUpdateFreq());
+                frequencySetupResponse.setAlertFreq(frequencyPreset.getAlertFreq());
             }
-            frequencySetupResponseDetail.setChnlId(frequencySetup.getChnlId());
+            frequencySetupResponse.setChnlId(frequencySetup.getChnlId());
             //TODO add userName to validate
             Integer chnlId = frequencySetup.getChnlId();
             if (chnlId != null) {
                 Channel childChnl = siteApiService.getChannelById(chnlId, null);
                 if(childChnl != null && childChnl.getChnlName() != null){
-                    frequencySetupResponseDetail.setChnlName(childChnl.getChnlName());
-                    frequencySetupResponseDetails.add(frequencySetupResponseDetail);
+                    frequencySetupResponse.setChnlName(childChnl.getChnlName());
+                    frequencySetupResponses.add(frequencySetupResponse);
                 }
             }
         }
-        return frequencySetupResponseDetails;
+        return frequencySetupResponses;
     }
 }

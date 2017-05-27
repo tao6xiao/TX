@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by he.lang on 2017/5/19.
  */
 @Data
-public class IssueWarningResponseDetail {
+public class IssueWarningResponse {
     private String id;
 
     private String issueTypeName;
