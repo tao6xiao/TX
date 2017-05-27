@@ -1,14 +1,9 @@
 package com.trs.gov.kpi.service.impl.outer;
 
 import com.alibaba.fastjson.JSON;
-import com.trs.gov.kpi.dao.MonitorSiteMapper;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
-import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
-import com.trs.gov.kpi.service.outer.DocumentApiService;
-import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -24,12 +19,10 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import sun.misc.BASE64Encoder;
-import sun.plugin.javascript.JSObject;
 
-import javax.annotation.Resource;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by he.lang on 2017/5/24.
