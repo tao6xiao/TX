@@ -202,22 +202,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-
             scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_CONTENT);
-
-//            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
-//                    .queryBySiteId(site.getSiteId());
-//            if (StringUtil.isEmpty(site.getIndexUrl())
-//                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-//                continue;
-//            }
-//
-//            for (MonitorFrequency freq : monitorFrequencies) {
-//                if (freq != null && freq.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
-//                    int interval = getInterval(FrequencyType.WRONG_INFORMATION.getFreqUnit(), freq.getValue());
-//                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
-//                }
-//            }
         }
     }
 

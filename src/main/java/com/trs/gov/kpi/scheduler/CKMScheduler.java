@@ -56,16 +56,6 @@ public class CKMScheduler extends AbstractScheduler {
             try {
                 List<Issue> issueList = new ArrayList<>();
                 List<Document> documentList = documentApiService.getPublishDocuments(getSiteId());
-//                documentList = null;
-//                documentList = new ArrayList<>();
-//                Document document1 = new Document();
-//                document1.setSiteId(11);
-//                document1.setChannelId(144);
-//                document1.setDocContent("我们化夏子孙，建成的小别野");
-//                document1.setDocPubUrl("www.112.com");
-//                document1.setDocTitle("检测文档");
-//                documentList.add(document1);
-
                 List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
                 if (checkTypeList == null || checkTypeList.isEmpty()) {
                     return;
