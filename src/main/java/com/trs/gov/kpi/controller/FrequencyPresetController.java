@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -36,8 +37,7 @@ public class FrequencyPresetController {
         if(siteId == null){
             throw new BizException("站点编号不能为null值");
         }
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<FrequencyPresetResponse> frequencyPresetResponseList = frequencyPresetService.getPageDataBySiteId(siteId, apiPageData.getPager().getCurrPage()-1, apiPageData.getPager().getPageSize());

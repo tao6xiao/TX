@@ -48,7 +48,7 @@ public class ContentCheckResult {
             return null;
         }
 
-        return resultObj.getString(issueType.name);
+        return resultObj.getString(issueType.checkType);
     }
 
 
