@@ -16,10 +16,6 @@ public interface InfoErrorService  {
 
     List<Statistics> getIssueCount(PageDataRequestParam param);
 
-    int getHandledIssueCount(PageDataRequestParam param);
-
-    int getUnhandledIssueCount(PageDataRequestParam param);
-
     void handIssuesByIds(int siteId, List<Integer> ids);
 
     void ignoreIssuesByIds(int siteId, List<Integer> ids);

@@ -41,13 +41,25 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
+        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
+        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
+        int handledCount = issueMapper.count(queryFilter);
+
         Statistics handledIssueStatistics = new Statistics();
-        handledIssueStatistics.setCount(getHandledIssueCount(param));
+        handledIssueStatistics.setCount(handledCount);
         handledIssueStatistics.setType(IssueIndicator.SOLVED.value);
         handledIssueStatistics.setName(IssueIndicator.SOLVED.name);
 
+        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
+        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        int unhandledCount = issueMapper.count(queryFilter);
+
         Statistics unhandledIssueStatistics = new Statistics();
-        unhandledIssueStatistics.setCount(getUnhandledIssueCount(param));
+        unhandledIssueStatistics.setCount(unhandledCount);
         unhandledIssueStatistics.setType(IssueIndicator.UN_SOLVED.value);
         unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.name);
 
@@ -56,28 +68,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         list.add(unhandledIssueStatistics);
 
         return list;
-    }
-
-    @Override
-    public int getHandledIssueCount(PageDataRequestParam param) {
-
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
-
-        return issueMapper.count(queryFilter);
-    }
-
-    @Override
-    public int getUnhandledIssueCount(PageDataRequestParam param) {
-
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
-
-        return issueMapper.count(queryFilter);
     }
 
     @Override
