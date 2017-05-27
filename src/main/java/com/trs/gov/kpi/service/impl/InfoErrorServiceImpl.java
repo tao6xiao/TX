@@ -63,6 +63,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
 
         QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
         queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
+        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
         queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
 
         return issueMapper.count(queryFilter);
