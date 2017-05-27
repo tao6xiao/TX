@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by he.lang on 2017/5/24.
@@ -86,40 +88,34 @@ public class CKMScheduler extends AbstractScheduler {
                         continue;
                     }
 
-                    String checkText = checkContent.toString();
-                    String result = contentCheckApiService.check(checkText, checkTypes);
-
-                    if (StringUtil.isEmpty(result)) {
-                        log.error("invalid return value,  failed to check document " + document.getChannelId() + "->" + document.getMetaDataId());
-                        continue;
-                    }
-                    JSONObject resultObj = JSON.parseObject(result);
-                    Integer code = resultObj.getInteger("code");
-                    if (code == null || code != 1) {
-                        log.error("invalid code,  failed to check document "
-                                + document.getChannelId() + "->" + document.getMetaDataId() + ", result = " + result);
+                    ContentCheckResult result = null;
+                    try {
+                        result = contentCheckApiService.check(checkContent.toString(), checkTypes);
+                    } catch (Exception e) {
+                        log.error("failed to check document " + document.getChannelId() + "->" + document.getMetaDataId(), e);
                         continue;
                     }
 
-                    JSONObject checkResult = resultObj.getJSONObject("result");
-                    if (checkResult != null) {
-                        Set<String> keySet = checkResult.keySet();
-                        for (String key : keySet) {
-                            if (key == null) {
+                    if (!result.isOk()) {
+                        log.error("return error: " + result.getMessage() + ", document: " + document.getChannelId() + "->" + document.getMetaDataId());
+                        continue;
+                    }
+
+                    if (result.getResult() != null) {
+                        for (String checkType : checkTypeList) {
+                            Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
+                            String errorContent = result.getResultOfType(subIssueType);
+                            if (errorContent == null) {
                                 continue;
                             }
-                            String value = checkResult.getString(key);
-                            Integer subTypeId = Types.InfoErrorIssueType.valueOfCheckType(key).value;
-                            if (subTypeId > 0) {
-                                Issue issue = new Issue();
-                                issue.setSiteId(document.getSiteId());
-                                issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
-                                issue.setSubTypeId(subTypeId);
-                                issue.setDetail(document.getDocPubUrl());
-                                issue.setIssueTime(new Date());
-                                issue.setCustomer1(value);
-                                issueList.add(issue);
-                            }
+                            Issue issue = new Issue();
+                            issue.setSiteId(document.getSiteId());
+                            issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
+                            issue.setSubTypeId(subIssueType.value);
+                            issue.setDetail(document.getDocPubUrl());
+                            issue.setIssueTime(new Date());
+                            issue.setCustomer1(errorContent);
+                            issueList.add(issue);
                         }
                     }
                 }
