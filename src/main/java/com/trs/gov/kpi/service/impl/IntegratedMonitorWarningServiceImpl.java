@@ -1,13 +1,20 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.OperationMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.dao.DBPager;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponse;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
+import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
+import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,31 +28,29 @@ import java.util.List;
  * Created by he.lang on 2017/5/18.
  */
 @Service
-public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl implements IntegratedMonitorWarningService {
+public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWarningService {
     @Resource
     IssueMapper issueMapper;
 
-    @Resource
-    OperationMapper operationMapper;
 
     @Override
     public int dealWithWarningBySiteIdAndId(int siteId, Integer[] ids) {
         List<Integer> idList = Arrays.asList(ids);
-        operationMapper.handIssuesByIds(siteId, idList);
+        issueMapper.handIssuesByIds(siteId, idList);
         return 0;
     }
 
     @Override
     public int ignoreWarningBySiteIdAndId(int siteId, Integer[] ids) {
         List<Integer> idList = Arrays.asList(ids);
-        operationMapper.ignoreIssuesByIds(siteId, idList);
+        issueMapper.ignoreIssuesByIds(siteId, idList);
         return 0;
     }
 
     @Override
     public int deleteWarningBySiteIdAndId(int siteId, Integer[] ids) {
         List<Integer> idList = Arrays.asList(ids);
-        operationMapper.delIssueByIds(siteId, idList);
+        issueMapper.delIssueByIds(siteId, idList);
         return 0;
     }
 
@@ -82,6 +87,33 @@ public class IntegratedMonitorWarningServiceImpl extends OperationServiceImpl im
     public int getItemCount(IssueBase issue) {
         int itemCount = issueMapper.getAllWarningCount(issue);
         return itemCount;
+    }
+
+    @Override
+    public ApiPageData get(PageDataRequestParam param) throws ParseException {
+        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
+        filter.addCond("isDel",Status.Delete.UN_DELETE.value);
+        filter.addCond("typeId",51).setRangeBegin(true);
+        filter.addCond("typeId",100).setRangeEnd(true);
+        int itemCount = issueMapper.count(filter);
+        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
+        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(),apiPageData.getPager().getPageSize()));
+        List<Issue> issueList = issueMapper.select(filter);
+        List<IssueWarningResponse> responseByIssueList = getReopnseByIssueList(issueList);
+        apiPageData.setData(responseByIssueList);
+        return apiPageData;
+    }
+
+    private List<IssueWarningResponse> getReopnseByIssueList(List<Issue> issueList) throws ParseException {
+        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
+        List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
+        IssueWarningResponse issueWarningResponse = null;
+        for (Issue is: issueList) {
+            issueWarningResponse = getIssueWarningResponseDetailByIssue(is);
+            issueWarningResponseList.add(issueWarningResponse);
+        }
+        return issueWarningResponseList;
     }
 
 }

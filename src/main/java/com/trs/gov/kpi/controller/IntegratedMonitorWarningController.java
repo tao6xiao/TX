@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponse;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
@@ -28,26 +29,15 @@ public class IntegratedMonitorWarningController {
 
     /**
      * 查询预警提醒的分页数据（未处理、未忽略、未删除）
-     * @param pageIndex
-     * @param pageSize
-     * @param issue
+     * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataWaringList(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue) throws BizException, ParseException {
-        if (issue.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorWarningService,
-                Status.Resolve.UN_RESOLVED.value, Status.Delete.UN_DELETE.value);
-        int itemCount = integratedMonitorWarningService.getItemCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<IssueWarningResponse> issueList = integratedMonitorWarningService.getPageDataWaringList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(), issue);
-        apiPageData.setData(issueList);
+    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
+        ParamCheckUtil.paramCheck(param);
+       ApiPageData apiPageData = integratedMonitorWarningService.get(param);
         return apiPageData;
     }
 

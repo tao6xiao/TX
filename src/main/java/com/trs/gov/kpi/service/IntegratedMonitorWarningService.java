@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponse;
 
 import java.text.ParseException;
@@ -10,7 +12,7 @@ import java.util.List;
  * 综合实时监测预警提醒service
  * Created by he.lang on 2017/5/18.
  */
-public interface IntegratedMonitorWarningService extends OperationService{
+public interface IntegratedMonitorWarningService{
 
     /**
      * 处理预警提醒
@@ -54,4 +56,11 @@ public interface IntegratedMonitorWarningService extends OperationService{
      * @return
      */
     int getItemCount(IssueBase issue);
+
+    /**
+     * 获取预警提醒的分页数据
+     * @param param
+     * @return
+     */
+    ApiPageData get(PageDataRequestParam param) throws ParseException;
 }
