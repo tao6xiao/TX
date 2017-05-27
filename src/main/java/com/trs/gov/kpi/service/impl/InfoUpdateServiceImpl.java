@@ -56,6 +56,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
+        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
         int resolvedCount = issueMapper.count(filter);
         
 
