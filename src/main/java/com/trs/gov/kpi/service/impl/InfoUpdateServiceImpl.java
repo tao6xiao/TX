@@ -115,10 +115,10 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Override
     public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
-        if (param.getBeginDateTime() == null || param.getBeginDateTime().trim().isEmpty()) {
+        if (StringUtil.isEmpty(param.getBeginDateTime())) {
             param.setBeginDateTime(DateUtil.toString(issueMapper.getEarliestIssueTime()));
         }
-        if (param.getEndDateTime() == null || param.getEndDateTime().trim().isEmpty()) {
+        if (StringUtil.isEmpty(param.getEndDateTime())) {
             param.setEndDateTime(DateUtil.toString(new Date()));
         }
         List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(param.getBeginDateTime(), param.getEndDateTime());
@@ -137,73 +137,73 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return list;
     }
 
-    @Override
-    public List<InfoUpdateResponse> getIssueList(PageDataRequestParam param) {
-        List<InfoUpdateResponse> infoUpdateResponseList = new ArrayList<>();
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+//    @Override
+//    public List<InfoUpdateResponse> getIssueList(PageDataRequestParam param) {
+//        List<InfoUpdateResponse> infoUpdateResponseList = new ArrayList<>();
+//        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+//
+//        List<Issue> issueList = null;
+//
+//        for (InfoUpdateResponse info : infoUpdateResponseList) {
+//            if (info.getIssueTypeId() != null) {
+//                info.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(info.getIssueTypeId()).name);
+//            }
+//            // get channl name
+//            try {
+//                if (info.getChnlId() != null) {
+//                    Channel chnl = siteApiService.getChannelById(info.getChnlId(), "");
+//                    if (chnl != null && !StringUtil.isEmpty(chnl.getChnlName())) {
+//                        info.setChnlName(chnl.getChnlName());
+//                    }
+//                }
+//            } catch (RemoteException e) {
+//                log.error("", e);
+//            }
+//        }
+//        return infoUpdateResponseList;
+//    }
 
-        List<Issue> issueList = null;
+//    @Override
+//    public List<Statistics> getIssueCountByType(IssueBase issueBase) {
+//
+//        int updateNotIntimeCount = infoUpdateMapper.getUpdateNotIntimeCount(issueBase);
+//        Statistics updateNotIntimeStatistics = new Statistics();
+//        updateNotIntimeStatistics.setCount(updateNotIntimeCount);
+//        updateNotIntimeStatistics.setType(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+//        updateNotIntimeStatistics.setName(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.name);
+//
+//        List<Statistics> list = new ArrayList<>();
+//        list.add(updateNotIntimeStatistics);
+//
+//        return list;
+//    }
 
-        for (InfoUpdateResponse info : infoUpdateResponseList) {
-            if (info.getIssueTypeId() != null) {
-                info.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(info.getIssueTypeId()).name);
-            }
-            // get channl name
-            try {
-                if (info.getChnlId() != null) {
-                    Channel chnl = siteApiService.getChannelById(info.getChnlId(), "");
-                    if (chnl != null && !StringUtil.isEmpty(chnl.getChnlName())) {
-                        info.setChnlName(chnl.getChnlName());
-                    }
-                }
-            } catch (RemoteException e) {
-                log.error("", e);
-            }
-        }
-        return infoUpdateResponseList;
-    }
+//    @Override
+//    public List<Statistics> getWarningCountByType(IssueBase issueBase) {
+//
+//        int updateWarningCount = infoUpdateMapper.getUpdateWarningCount(issueBase);
+//        Statistics updateWarningStatistics = new Statistics();
+//        updateWarningStatistics.setCount(updateWarningCount);
+//        updateWarningStatistics.setType(Types.InfoUpdateWarningType.UPDATE_WARNING.value);
+//        updateWarningStatistics.setName(Types.InfoUpdateWarningType.UPDATE_WARNING.name);
+//
+//        int selfWarningCount = infoUpdateMapper.getSelfWarningCount(issueBase);
+//        Statistics selfWarningStatistics = new Statistics();
+//        selfWarningStatistics.setCount(selfWarningCount);
+//        selfWarningStatistics.setType(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
+//        selfWarningStatistics.setName(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.name);
+//
+//        List<Statistics> list = new ArrayList<>();
+//        list.add(updateWarningStatistics);
+//        list.add(selfWarningStatistics);
+//
+//        return list;
+//    }
 
-    @Override
-    public List<Statistics> getIssueCountByType(IssueBase issueBase) {
-
-        int updateNotIntimeCount = infoUpdateMapper.getUpdateNotIntimeCount(issueBase);
-        Statistics updateNotIntimeStatistics = new Statistics();
-        updateNotIntimeStatistics.setCount(updateNotIntimeCount);
-        updateNotIntimeStatistics.setType(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-        updateNotIntimeStatistics.setName(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.name);
-
-        List<Statistics> list = new ArrayList<>();
-        list.add(updateNotIntimeStatistics);
-
-        return list;
-    }
-
-    @Override
-    public List<Statistics> getWarningCountByType(IssueBase issueBase) {
-
-        int updateWarningCount = infoUpdateMapper.getUpdateWarningCount(issueBase);
-        Statistics updateWarningStatistics = new Statistics();
-        updateWarningStatistics.setCount(updateWarningCount);
-        updateWarningStatistics.setType(Types.InfoUpdateWarningType.UPDATE_WARNING.value);
-        updateWarningStatistics.setName(Types.InfoUpdateWarningType.UPDATE_WARNING.name);
-
-        int selfWarningCount = infoUpdateMapper.getSelfWarningCount(issueBase);
-        Statistics selfWarningStatistics = new Statistics();
-        selfWarningStatistics.setCount(selfWarningCount);
-        selfWarningStatistics.setType(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
-        selfWarningStatistics.setName(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.name);
-
-        List<Statistics> list = new ArrayList<>();
-        list.add(updateWarningStatistics);
-        list.add(selfWarningStatistics);
-
-        return list;
-    }
-
-    @Override
-    public int getHandledIssueCount(IssueBase issueBase) {
-        return 0;
-    }
+//    @Override
+//    public int getHandledIssueCount(IssueBase issueBase) {
+//        return 0;
+//    }
 
     /**
      * 获取栏目信息更新不及时问题的统计信息

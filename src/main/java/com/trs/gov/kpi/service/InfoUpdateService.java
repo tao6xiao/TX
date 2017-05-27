@@ -21,13 +21,13 @@ public interface InfoUpdateService {
 
     List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
 
-    List<InfoUpdateResponse> getIssueList(PageDataRequestParam param);
+//    List<InfoUpdateResponse> getIssueList(PageDataRequestParam param);
 
-    List<Statistics> getIssueCountByType(IssueBase issueBase);
+//    List<Statistics> getIssueCountByType(IssueBase issueBase);
 
-    List<Statistics> getWarningCountByType(IssueBase issueBase);
+//    List<Statistics> getWarningCountByType(IssueBase issueBase);
 
-    int getHandledIssueCount(IssueBase issueBase);
+//    int getHandledIssueCount(IssueBase issueBase);
 
     int getUnhandledIssueCount(IssueBase issueBase);
 
