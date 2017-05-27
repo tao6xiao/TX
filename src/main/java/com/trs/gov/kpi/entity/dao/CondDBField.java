@@ -12,8 +12,8 @@ public class CondDBField {
     private Object condValue;
     private boolean isLike = false;
     private boolean isEqual = true;
-    private boolean isBeginTime = false;
-    private boolean isEndTime = false;
+    private boolean isRangeBegin = false;
+    private boolean isRangeEnd = false;
     private boolean isCollection = false;
 
     public CondDBField(String fieldName, Object condValue) {
@@ -67,32 +67,31 @@ public class CondDBField {
         }
     }
 
-    public boolean isBeginTime() {
-        return isBeginTime;
+    public boolean isRangeBegin() {
+        return isRangeBegin;
     }
 
-    public void setBeginTime(boolean beginTime) {
-        if (beginTime) {
+    public void setRangeBegin(boolean rangeBegin) {
+        if (rangeBegin) {
             isLike = false;
             isEqual = false;
             isCollection = false;
-            isBeginTime = beginTime;
-            isEndTime = false;
+            isRangeBegin = rangeBegin;
+            isRangeEnd = false;
         }
     }
 
-    public boolean isEndTime() {
-        return isEndTime;
+    public boolean isRangeEnd() {
+        return isRangeEnd;
     }
 
-    public void setEndTime(boolean endTime) {
-        if (endTime) {
-            isEndTime = endTime;
+    public void setRangeEnd(boolean rangeEnd) {
+        if (rangeEnd) {
+            isRangeEnd = rangeEnd;
             isLike = false;
             isEqual = false;
             isCollection = false;
-            isBeginTime = false;
-            isEndTime = false;
+            isRangeBegin = false;
         }
     }
 

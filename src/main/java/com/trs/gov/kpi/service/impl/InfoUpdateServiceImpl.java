@@ -136,8 +136,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
             filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-            filter.addCond("issueTime", date.getBeginDate()).setBeginTime(true);
-            filter.addCond("issueTime", date.getEndDate()).setEndTime(true);
+            filter.addCond("issueTime", date.getBeginDate()).setRangeBegin(true);
+            filter.addCond("issueTime", date.getEndDate()).setRangeEnd(true);
 
             historyStatistics.setValue(issueMapper.count(filter));
             historyStatistics.setTime(date.getMonth());

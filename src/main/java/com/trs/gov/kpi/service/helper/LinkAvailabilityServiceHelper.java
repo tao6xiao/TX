@@ -24,11 +24,11 @@ public class LinkAvailabilityServiceHelper {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond("siteId", param.getSiteId());
         if (param.getBeginDateTime() != null) {
-            filter.addCond("issueTime", param.getBeginDateTime()).setBeginTime(true);
+            filter.addCond("issueTime", param.getBeginDateTime()).setRangeBegin(true);
         }
 
         if (param.getEndDateTime() != null) {
-            filter.addCond("issueTime", param.getEndDateTime()).setEndTime(true);
+            filter.addCond("issueTime", param.getEndDateTime()).setRangeEnd(true);
         }
 
         if (param.getSearchText() != null) {

@@ -432,14 +432,14 @@
         <if test="condField.isEqual">
           ${fieldName} = #{condField.condValue}
         </if>
-        <if test="condField.isBeginTime">
+        <if test="condField.isRangeBegin">
           ${fieldName}
           <![CDATA[
            >=
           ]]>
           #{condField.condValue}
         </if>
-        <if test="condField.isEndTime">
+        <if test="condField.isRangeEnd">
           ${fieldName}
           <![CDATA[
                  <=

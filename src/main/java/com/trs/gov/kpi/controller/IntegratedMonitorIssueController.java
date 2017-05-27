@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponse;
 import com.trs.gov.kpi.service.IssueService;
@@ -28,25 +29,14 @@ public class IntegratedMonitorIssueController {
     /**
      * 查询所有未解决问题列表
      *
-     * @param pageSize
-     * @param pageIndex
-     * @param issue
+     * @param  param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getAllIssueList(Integer pageSize, Integer pageIndex, @ModelAttribute IssueBase issue) throws BizException {
-        if (issue.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        issue = IssueDataUtil.getIssueToGetPageData(issue, issueService,
-                Status.Resolve.UN_RESOLVED.value, Status.Delete.UN_DELETE.value);
-        int itemCount = issueService.getAllIssueCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<IssueIsNotResolvedResponse> linkAvailabilityList = issueService.getAllIssueList((apiPageData.getPager().getCurrPage() - 1)*apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize(), issue);
-        apiPageData.setData(linkAvailabilityList);
+    public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = issueService.get(param);
         return apiPageData;
     }
 
