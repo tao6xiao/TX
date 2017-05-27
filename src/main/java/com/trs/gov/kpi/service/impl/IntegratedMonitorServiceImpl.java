@@ -33,33 +33,33 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
 
 
-        int handledCount = linkAvailabilityService.getHandledIssueCount(issueBase) + infoUpdateService.getHandledIssueCount(issueBase) + infoErrorService.getHandledIssueCount(issueBase);
-
-
-        issueService.getAllIssueCount(issueBase);
-        int unhandledCount = linkAvailabilityService.getUnhandledIssueCount(issueBase) + infoUpdateService.getUnhandledIssueCount(issueBase) + infoErrorService.getUnhandledIssueCount(issueBase);
-
-        int warningCount = infoUpdateService.getUpdateWarningCount(issueBase);
-
-        Statistics handledStatistics = new Statistics();
-        handledStatistics.setName(IssueIndicator.SOLVED.name);
-        handledStatistics.setType(IssueIndicator.SOLVED.value);
-        handledStatistics.setCount(handledCount);
-
-        Statistics unhandledStatistics = new Statistics();
-        unhandledStatistics.setName(IssueIndicator.UN_SOLVED.name);
-        unhandledStatistics.setType(IssueIndicator.UN_SOLVED.value);
-        unhandledStatistics.setCount(unhandledCount);
-
-        Statistics warningStatistics = new Statistics();
-        warningStatistics.setName(IssueIndicator.WARNING.name);
-        warningStatistics.setType(IssueIndicator.WARNING.value);
-        warningStatistics.setCount(warningCount);
+//        int handledCount = linkAvailabilityService.getHandledIssueCount(issueBase) + infoUpdateService.getHandledIssueCount(issueBase) + infoErrorService.getHandledIssueCount(issueBase);
+//
+//
+//        issueService.getAllIssueCount(issueBase);
+//        int unhandledCount = linkAvailabilityService.getUnhandledIssueCount(issueBase) + infoUpdateService.getUnhandledIssueCount(issueBase) + infoErrorService.getUnhandledIssueCount(issueBase);
+//
+//        int warningCount = infoUpdateService.getUpdateWarningCount(issueBase);
+//
+//        Statistics handledStatistics = new Statistics();
+//        handledStatistics.setName(IssueIndicator.SOLVED.name);
+//        handledStatistics.setType(IssueIndicator.SOLVED.value);
+//        handledStatistics.setCount(handledCount);
+//
+//        Statistics unhandledStatistics = new Statistics();
+//        unhandledStatistics.setName(IssueIndicator.UN_SOLVED.name);
+//        unhandledStatistics.setType(IssueIndicator.UN_SOLVED.value);
+//        unhandledStatistics.setCount(unhandledCount);
+//
+//        Statistics warningStatistics = new Statistics();
+//        warningStatistics.setName(IssueIndicator.WARNING.name);
+//        warningStatistics.setType(IssueIndicator.WARNING.value);
+//        warningStatistics.setCount(warningCount);
 
         List<Statistics> list = new ArrayList<>();
-        list.add(handledStatistics);
-        list.add(unhandledStatistics);
-        list.add(warningStatistics);
+//        list.add(handledStatistics);
+//        list.add(unhandledStatistics);
+//        list.add(warningStatistics);
 
         return list;
     }
@@ -69,10 +69,10 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         List<Statistics> linkAvailabilityList = linkAvailabilityService.getIssueCountByType(issueBase);
         List<Statistics> infoUpdateList = infoUpdateService.getIssueCountByType(issueBase);
-        List<Statistics> infoErrorList = infoErrorService.getIssueCountByType(issueBase);
+//        List<Statistics> infoErrorList = infoErrorService.getIssueCountByType(issueBase);
 
         linkAvailabilityList.addAll(infoUpdateList);
-        linkAvailabilityList.addAll(infoErrorList);
+//        linkAvailabilityList.addAll(infoErrorList);
 
         return linkAvailabilityList;
     }

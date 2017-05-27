@@ -15,12 +15,11 @@ public class InitTime {
      * @return
      * @throws ParseException
      */
-    public static Date CheckBeginDateTime(String beginDateTime, Date earliestTime) throws ParseException {
+    public static String checkBeginDateTime(String beginDateTime, Date earliestTime)  {
         if(StringUtil.isEmpty(beginDateTime)){
-            return earliestTime;
+            return DateUtil.toString(earliestTime);
         }else {
-            Date setTime = DateUtil.toDate(beginDateTime);
-            return setTime;
+            return beginDateTime;
         }
     }
 
@@ -30,11 +29,11 @@ public class InitTime {
      * @return
      * @throws ParseException
      */
-    public static Date CheckEndDateTime(String endDateTime) throws ParseException {
+    public static String checkEndDateTime(String endDateTime) {
         if(StringUtil.isEmpty(endDateTime)){
-            return new Date();
+            return DateUtil.toString(new Date());
         }else {
-            return DateUtil.toDate(endDateTime);
+            return endDateTime;
         }
     }
 

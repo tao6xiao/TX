@@ -369,12 +369,12 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     private IssueBase getIssueBase(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
         Date ealiestTime = getEarliestIssueTime();
-        Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime, ealiestTime);
-        Date endSetTime = InitTime.CheckEndDateTime(endDateTime);
+        beginDateTime = InitTime.checkBeginDateTime(beginDateTime, ealiestTime);
+        endDateTime = InitTime.checkEndDateTime(endDateTime);
         IssueBase issueBase = new IssueBase();
         issueBase.setSiteId(siteId);
-        issueBase.setBeginDateTime(DateUtil.toString(beginSetTime));
-        issueBase.setEndDateTime(DateUtil.toString(endSetTime));
+        issueBase.setBeginDateTime(beginDateTime);
+        issueBase.setEndDateTime(endDateTime);
         return issueBase;
     }
 

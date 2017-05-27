@@ -1,14 +1,13 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.trs.gov.kpi.entity.dao.QueryFilter;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface IssueMapper {
@@ -81,6 +80,13 @@ public interface IssueMapper {
      * @return
      */
     List<InfoUpdateDao> selectInfoUpdate(QueryFilter filter);
+
+    /**
+     * 查询InfoUpdate
+     * @param filter
+     * @return
+     */
+    List<InfoError> selectInfoError(QueryFilter filter);
 
     /**
      * 查询数量
