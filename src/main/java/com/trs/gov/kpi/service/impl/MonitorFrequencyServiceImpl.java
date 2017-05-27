@@ -47,8 +47,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Override
     public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
-        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList
-                (monitorFrequencySetUp);
+        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
         updateMonitorScheduler(monitorFrequencyList);
         return num;
@@ -62,15 +61,13 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Override
     public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
-        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList
-                (monitorFrequencySetUp);
+        List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.updateMonitorFrequencySetUp(monitorFrequencyList);
         updateMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
-    private List<MonitorFrequency> addFrequencySetUpToList(MonitorFrequencySetUp
-                                                                   monitorFrequencySetUp) {
+    private List<MonitorFrequency> addFrequencySetUpToList(MonitorFrequencySetUp monitorFrequencySetUp) {
         int siteId = monitorFrequencySetUp.getSiteId();
         MonitorFrequencyFreq[] freqs = monitorFrequencySetUp.getFreqs();
         List<MonitorFrequency> monitorFrequencyList = new ArrayList<>();//为何创建ArrayList
@@ -88,8 +85,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         return monitorFrequencyList;
     }
 
-    private MonitorFrequencyResponse getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency
-                                                                                     monitorFrequency) {
+    private MonitorFrequencyResponse getMonitorFrequencyDealFromMonitorFrequency(MonitorFrequency monitorFrequency) {
         MonitorFrequencyResponse monitorFrequencyResponse = new MonitorFrequencyResponse();
         monitorFrequencyResponse.setId(monitorFrequency.getTypeId());
         monitorFrequencyResponse.setValue(monitorFrequency.getValue());

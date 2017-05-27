@@ -53,7 +53,6 @@ public class MonitorFrequencyController {
         if (monitorFrequencySetUp.getSiteId() == null || freqs.length == 0 || freqs == null) {
             throw new BizException("参数存在null值");
         }
-        boolean idIsExist = true;
         for (int i = 0; i < freqs.length; i++) {
             if (freqs[i].getId() == null) {
                 throw new BizException("参数freqs[]中id（类型编号）存在null值");
