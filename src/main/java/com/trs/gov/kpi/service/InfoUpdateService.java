@@ -29,9 +29,9 @@ public interface InfoUpdateService {
 
 //    int getHandledIssueCount(IssueBase issueBase);
 
-    int getUnhandledIssueCount(IssueBase issueBase);
+//    int getUnhandledIssueCount(IssueBase issueBase);
 
-    int getUpdateWarningCount(IssueBase issueBase);
+//    int getUpdateWarningCount(IssueBase issueBase);
 
     void handIssuesByIds(int siteId, List<Integer> ids);
 
@@ -58,13 +58,13 @@ public interface InfoUpdateService {
 //     */
 //    int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException;
 
-    /**
-     * 获取更新不及时的数据条数
-     *
-     * @param issueBase
-     * @return
-     */
-    int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException;
+//    /**
+//     * 获取更新不及时的数据条数
+//     *
+//     * @param issueBase
+//     * @return
+//     */
+//    int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException;
 
 
     ApiPageData get(PageDataRequestParam param) throws RemoteException;

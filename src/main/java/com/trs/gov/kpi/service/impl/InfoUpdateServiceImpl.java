@@ -84,15 +84,15 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return statisticsList;
     }
 
-    @Override
-    public int getUnhandledIssueCount(IssueBase issueBase) {
-        return infoUpdateMapper.getUnhandledIssueCount(issueBase);
-    }
-
-    @Override
-    public int getUpdateWarningCount(IssueBase issueBase) {
-        return infoUpdateMapper.getUpdateWarningCount(issueBase) + infoUpdateMapper.getSelfWarningCount(issueBase);
-    }
+//    @Override
+//    public int getUnhandledIssueCount(IssueBase issueBase) {
+//        return infoUpdateMapper.getUnhandledIssueCount(issueBase);
+//    }
+//
+//    @Override
+//    public int getUpdateWarningCount(IssueBase issueBase) {
+//        return infoUpdateMapper.getUpdateWarningCount(issueBase) + infoUpdateMapper.getSelfWarningCount(issueBase);
+//    }
 
     @Override
     public void handIssuesByIds(int siteId, List<Integer> ids) {
@@ -316,13 +316,13 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 //        return 0;
 //    }
 
-    @Override
-    public int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException {
-//        IssueBase issueBase = getIssueBase(siteId, beginDateTime, endDateTime);
-        //获取所有
-        int count = infoUpdateMapper.getAllDateUpdateNotInTime(issueBase);
-        return count;
-    }
+//    @Override
+//    public int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException {
+////        IssueBase issueBase = getIssueBase(siteId, beginDateTime, endDateTime);
+//        //获取所有
+//        int count = infoUpdateMapper.getAllDateUpdateNotInTime(issueBase);
+//        return count;
+//    }
 
     @Override
     public ApiPageData get(PageDataRequestParam param) throws RemoteException {
@@ -334,41 +334,59 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
         filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
         List<InfoUpdate> infoUpdateList = issueMapper.selectInfoUpdate(filter);
-        List<InfoUpdateResponse> infoUpdateResponseList = new ArrayList<>();
-        InfoUpdateResponse infoUpdateResponse = null;
-        for (InfoUpdate infoUpdate : infoUpdateList) {
-            infoUpdateResponse = new InfoUpdateResponse();
-            Integer chnlId = infoUpdate.getChnlId();
-            if (chnlId != null) {
-                Channel channel = siteApiService.getChannelById(chnlId, null);
-                if (channel == null) {
-                    continue;
-                }
-                String chnlName = channel.getChnlName();
-                if (chnlName != null) {
-                    infoUpdateResponse.setChnlName(chnlName);
-                    infoUpdateResponse.setId(infoUpdate.getId());
-                    infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
-                    infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
-                    infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).name);
-                    infoUpdateResponseList.add(infoUpdateResponse);
-                }
-            }
-        }
+        List<InfoUpdateResponse> infoUpdateResponseList = toResponse(infoUpdateList);
         apiPageData.setData(infoUpdateResponseList);
         return apiPageData;
     }
 
-    private IssueBase getIssueBase(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
-        Date ealiestTime = getEarliestIssueTime();
-        beginDateTime = InitTime.checkBeginDateTime(beginDateTime, ealiestTime);
-        endDateTime = InitTime.checkEndDateTime(endDateTime);
-        IssueBase issueBase = new IssueBase();
-        issueBase.setSiteId(siteId);
-        issueBase.setBeginDateTime(beginDateTime);
-        issueBase.setEndDateTime(endDateTime);
-        return issueBase;
+    private List<InfoUpdateResponse> toResponse(List<InfoUpdate> infoUpdateList) {
+        List<InfoUpdateResponse> responseList = new ArrayList<>();
+        if (infoUpdateList == null) {
+            return responseList;
+        }
+        InfoUpdateResponse infoUpdateResponse = null;
+        for (InfoUpdate infoUpdate : infoUpdateList) {
+            infoUpdateResponse = new InfoUpdateResponse();
+            infoUpdateResponse.setChnlName(getChannelName(infoUpdate.getChnlId()));
+            infoUpdateResponse.setId(infoUpdate.getId());
+            infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
+            infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
+            infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).name);
+            responseList.add(infoUpdateResponse);
+        }
+        return responseList;
     }
+
+    private String getChannelName(Integer channelId) {
+        if (channelId == null) {
+            return "";
+        }
+        Channel channel = null;
+        try {
+            channel = siteApiService.getChannelById(channelId, null);
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
+        if (channel == null) {
+            return "";
+        }
+        String chnlName = channel.getChnlName();
+        if (chnlName == null) {
+            return "";
+        }
+        return chnlName;
+    }
+
+//    private IssueBase getIssueBase(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
+//        Date ealiestTime = getEarliestIssueTime();
+//        beginDateTime = InitTime.checkBeginDateTime(beginDateTime, ealiestTime);
+//        endDateTime = InitTime.checkEndDateTime(endDateTime);
+//        IssueBase issueBase = new IssueBase();
+//        issueBase.setSiteId(siteId);
+//        issueBase.setBeginDateTime(beginDateTime);
+//        issueBase.setEndDateTime(endDateTime);
+//        return issueBase;
+//    }
 
     private Statistics getStatisticsByCount(int i, int count) {
         Statistics statistics = new Statistics();
