@@ -20,8 +20,8 @@ import java.util.Arrays;
 //@SpringBootTest
 public class IssueMapperTest {
 
-    @Resource
-    private IssueMapper issueMapper;
+//    @Resource
+//    private IssueMapper issueMapper;
 
     @Test
     public void select() throws Exception {
