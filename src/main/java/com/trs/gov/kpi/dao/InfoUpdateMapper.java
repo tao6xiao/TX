@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.dao;
 
-import com.trs.gov.kpi.entity.InfoUpdate;
+import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
 import com.trs.gov.kpi.entity.IssueBase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,7 +32,7 @@ public interface InfoUpdateMapper extends OperationMapper {
      * @param issueBase
      * @return
      */
-    List<InfoUpdate> getIssueList(@Param("pageIndex") Integer pageIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
+    List<InfoUpdateResponse> getIssueList(@Param("pageIndex") Integer pageIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
 
     /**
      * 查询更新不及时的问题数
@@ -78,10 +78,10 @@ public interface InfoUpdateMapper extends OperationMapper {
      * 插入预警或者问题
      *
      * @param typeId
-     * @param infoUpdate
+     * @param infoUpdateResponse
      * @return
      */
-    int insert(@Param("typeId") Integer typeId, @Param("infoUpdate") InfoUpdate infoUpdate);
+    int insert(@Param("typeId") Integer typeId, @Param("infoUpdateResponse") InfoUpdateResponse infoUpdateResponse);
 
     /**
      * 获取更新不及时的数据条数

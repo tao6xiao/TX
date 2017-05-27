@@ -1,13 +1,12 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.InfoUpdate;
+import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -22,7 +21,7 @@ public interface InfoUpdateService {
 
     List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
 
-    List<InfoUpdate> getIssueList(PageDataRequestParam param);
+    List<InfoUpdateResponse> getIssueList(PageDataRequestParam param);
 
     List<Statistics> getIssueCountByType(IssueBase issueBase);
 

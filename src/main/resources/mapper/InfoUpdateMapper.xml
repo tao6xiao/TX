@@ -5,7 +5,7 @@
 <mapper namespace="com.trs.gov.kpi.dao.InfoUpdateMapper">
 
 
-    <resultMap id="infoUpdateMap" type="com.trs.gov.kpi.entity.InfoUpdate">
+    <resultMap id="infoUpdateMap" type="com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse">
         <id column="id" property="id"/>
         <result column="subTypeId" property="issueTypeId"/>
         <result column="detail" property="chnlUrl"/>
@@ -259,7 +259,7 @@
         INSERT INTO issue
         (`siteId`, `typeId`, `subTypeId`, `detail`, `issueTime`, `isResolved`, `isDel`,  `customer2`)
         VALUES
-            (#{infoUpdate.siteId}, #{typeId}, #{infoUpdate.issueTypeId}, #{infoUpdate.chnlUrl}, #{infoUpdate.checkTime}, 0, 0,  #{infoUpdate.chnlId})
+            (#{infoUpdateResponse.siteId}, #{typeId}, #{infoUpdateResponse.issueTypeId}, #{infoUpdateResponse.chnlUrl}, #{infoUpdateResponse.checkTime}, 0, 0,  #{infoUpdateResponse.chnlId})
     </insert>
 
     <!--    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.Issue">

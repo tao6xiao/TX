@@ -80,7 +80,7 @@ public interface IssueMapper {
      * @param filter
      * @return
      */
-    List<InfoUpdateDao> selectInfoUpdate(QueryFilter filter);
+    List<InfoUpdate> selectInfoUpdate(QueryFilter filter);
 
     /**
      * 查询数量

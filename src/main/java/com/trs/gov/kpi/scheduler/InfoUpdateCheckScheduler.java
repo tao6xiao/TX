@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
+import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
@@ -20,7 +21,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -436,7 +436,7 @@ public class InfoUpdateCheckScheduler extends AbstractScheduler {
      * @param subIssueTypeId
      */
     private void insertToDB(int channelId, int issueTypeId, int subIssueTypeId) {
-        InfoUpdate update = new InfoUpdate();
+        InfoUpdateResponse update = new InfoUpdateResponse();
         update.setSiteId(siteId);
         update.setIssueTypeId(subIssueTypeId);
         update.setCheckTime(new Date());

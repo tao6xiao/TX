@@ -9,13 +9,13 @@ import com.trs.gov.kpi.dao.InfoUpdateMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.dao.DBPager;
-import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
@@ -147,13 +147,13 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public List<InfoUpdate> getIssueList(PageDataRequestParam param) {
-        List<InfoUpdate> infoUpdateList = new ArrayList<>();
+    public List<InfoUpdateResponse> getIssueList(PageDataRequestParam param) {
+        List<InfoUpdateResponse> infoUpdateResponseList = new ArrayList<>();
         QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
 
         List<Issue> issueList = null;
 
-        for (InfoUpdate info : infoUpdateList) {
+        for (InfoUpdateResponse info : infoUpdateResponseList) {
             if (info.getIssueTypeId() != null) {
                 info.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(info.getIssueTypeId()).name);
             }
@@ -169,7 +169,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
                 log.error("", e);
             }
         }
-        return infoUpdateList;
+        return infoUpdateResponseList;
     }
 
     @Override
@@ -341,12 +341,12 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         int itemCount = issueMapper.count(filter);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
         filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
-        List<InfoUpdateDao> infoUpdateDaoList = issueMapper.selectInfoUpdate(filter);
-        List<InfoUpdate> infoUpdateList = new ArrayList<>();
-        InfoUpdate infoUpdate = null;
-        for (InfoUpdateDao infoUpdateDao : infoUpdateDaoList) {
-            infoUpdate = new InfoUpdate();
-            Integer chnlId = infoUpdateDao.getChnlId();
+        List<InfoUpdate> infoUpdateList = issueMapper.selectInfoUpdate(filter);
+        List<InfoUpdateResponse> infoUpdateResponseList = new ArrayList<>();
+        InfoUpdateResponse infoUpdateResponse = null;
+        for (InfoUpdate infoUpdate : infoUpdateList) {
+            infoUpdateResponse = new InfoUpdateResponse();
+            Integer chnlId = infoUpdate.getChnlId();
             if (chnlId != null) {
                 Channel channel = siteApiService.getChannelById(chnlId, null);
                 if (channel == null) {
@@ -354,16 +354,16 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
                 }
                 String chnlName = channel.getChnlName();
                 if (chnlName != null) {
-                    infoUpdate.setChnlName(chnlName);
-                    infoUpdate.setId(infoUpdateDao.getId());
-                    infoUpdate.setChnlUrl(infoUpdateDao.getChnlUrl());
-                    infoUpdate.setCheckTime(infoUpdateDao.getCheckTime());
-                    infoUpdate.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateDao.getSubTypeId()).name);
-                    infoUpdateList.add(infoUpdate);
+                    infoUpdateResponse.setChnlName(chnlName);
+                    infoUpdateResponse.setId(infoUpdate.getId());
+                    infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
+                    infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
+                    infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).name);
+                    infoUpdateResponseList.add(infoUpdateResponse);
                 }
             }
         }
-        apiPageData.setData(infoUpdateList);
+        apiPageData.setData(infoUpdateResponseList);
         return apiPageData;
     }
 
