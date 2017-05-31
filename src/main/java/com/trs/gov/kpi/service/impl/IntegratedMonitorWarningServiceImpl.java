@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.IssueMapper;
-import com.trs.gov.kpi.dao.OperationMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.dao.DBPager;
@@ -11,7 +10,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponse;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
-import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -83,15 +82,15 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         return issueWarningResponse;
     }
 
-    @Override
-    public int getItemCount(IssueBase issue) {
-        int itemCount = issueMapper.getAllWarningCount(issue);
-        return itemCount;
-    }
+//    @Override
+//    public int getItemCount(IssueBase issue) {
+//        int itemCount = issueMapper.getAllWarningCount(issue);
+//        return itemCount;
+//    }
 
     @Override
     public ApiPageData get(PageDataRequestParam param) throws ParseException {
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         filter.addCond("isDel",Status.Delete.UN_DELETE.value);
         filter.addCond("typeId",51).setRangeBegin(true);

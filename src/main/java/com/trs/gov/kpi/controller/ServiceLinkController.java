@@ -11,7 +11,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -86,7 +86,7 @@ public class ServiceLinkController {
 
         ParamCheckUtil.paramCheck(requestParam);
 
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(requestParam);
+        QueryFilter filter = QueryFilterHelper.toFilter(requestParam);
         filter.addCond("typeId", Integer.valueOf(Types.IssueType.LINK_AVAILABLE_ISSUE.value));
 
         Set<Integer> ids = getChannelIdsOfHandleGuide(requestParam.getSiteId());
@@ -121,7 +121,7 @@ public class ServiceLinkController {
             throw new BizException("参数不合法");
         }
 
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(requestParam);
+        QueryFilter filter = QueryFilterHelper.toFilter(requestParam);
         filter.addCond("typeId", Integer.valueOf(Types.IssueType.LINK_AVAILABLE_ISSUE.value));
 
         Set<Integer> ids = getChannelIdsOfHandleGuide(requestParam.getSiteId());

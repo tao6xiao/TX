@@ -50,12 +50,12 @@ public interface IntegratedMonitorWarningService{
      */
     List<IssueWarningResponse> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException;
 
-    /**
-     * 获取数据总条数
-     * @param issue
-     * @return
-     */
-    int getItemCount(IssueBase issue);
+//    /**
+//     * 获取数据总条数
+//     * @param issue
+//     * @return
+//     */
+//    int getItemCount(IssueBase issue);
 
     /**
      * 获取预警提醒的分页数据
