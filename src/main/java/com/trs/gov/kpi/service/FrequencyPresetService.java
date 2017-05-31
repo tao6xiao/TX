@@ -49,4 +49,11 @@ public interface FrequencyPresetService {
      * @return
      */
     int deleteFrequencyPresetBySiteIdAndId(int siteId, int id);
+
+    /**
+     * 检查当前预设id是否存在
+     * @param id
+     * @return
+     */
+    boolean checkPresetFeqIdIsExistOrNot(int siteId, int id);
 }

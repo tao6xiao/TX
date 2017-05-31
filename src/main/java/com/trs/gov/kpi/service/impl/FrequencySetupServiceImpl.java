@@ -62,7 +62,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     @Override
     public int updateFrequencySetupById(FrequencySetupUpdateRequest frequencySetupUpdateRequest) {
         FrequencySetup frequencySetup = frequencySetupUpdateRequest;
-        int num = frequencySetupMapper.updateBySiteIdAndidAndChnlId(frequencySetup);
+        int num = frequencySetupMapper.updateBySiteIdAndIdAndChnlId(frequencySetup);
         return num;
     }
 

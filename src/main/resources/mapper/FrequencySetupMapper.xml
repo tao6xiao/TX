@@ -111,7 +111,7 @@
     presetFeqId = #{presetFeqId,jdbcType=INTEGER},
     where siteId = #{siteId,jdbcType=INTEGER} AND chnlId = #{chnlId,jdbcType=INTEGER}
   </update>-->
-  <update id="updateBySiteIdAndidAndChnlId" parameterType="com.trs.gov.kpi.entity.FrequencySetup">
+  <update id="updateBySiteIdAndIdAndChnlId" parameterType="com.trs.gov.kpi.entity.FrequencySetup">
     update frequencysetup
     set
     presetFeqId = #{presetFeqId,jdbcType=INTEGER}

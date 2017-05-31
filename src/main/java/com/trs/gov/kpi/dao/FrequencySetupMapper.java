@@ -57,7 +57,7 @@ public interface FrequencySetupMapper {
      * @param frequencySetup
      * @return
      */
-     int updateBySiteIdAndidAndChnlId(FrequencySetup frequencySetup);
+     int updateBySiteIdAndIdAndChnlId(FrequencySetup frequencySetup);
 
     /**
      * 删除更新频率记录

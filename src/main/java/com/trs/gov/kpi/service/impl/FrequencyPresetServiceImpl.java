@@ -56,6 +56,16 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
         return num;
     }
 
+    @Override
+    public boolean checkPresetFeqIdIsExistOrNot(int siteId,int id) {
+        boolean state = false;
+        FrequencyPreset preset = frequencyPresetMapper.selectBySiteIdAndId(siteId, id);
+        if(preset != null){
+            state = true;
+        }
+        return state;
+    }
+
     private FrequencyPreset getFrequencyPresetByFrequencyPresetRequestDeal(FrequencyPresetRequest frequencyPresetRequest) {
         FrequencyPreset frequencyPreset = new FrequencyPreset();
         frequencyPreset.setId(null);

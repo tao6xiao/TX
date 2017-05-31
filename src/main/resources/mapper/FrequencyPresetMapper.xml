@@ -112,4 +112,10 @@
     WHERE siteId = #{siteId,jdbcType=INTEGER}
     AND id = #{id,jdbcType=INTEGER}
   </delete>
+  <select id="selectBySiteIdAndId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from frequencypreset
+    where siteId = #{siteId,jdbcType=INTEGER} AND id = #{id,jdbcType=INTEGER}
+  </select>
 </mapper>

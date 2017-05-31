@@ -62,4 +62,6 @@ public interface FrequencyPresetMapper {
      * @return
      */
     FrequencyPreset selectById(@Param("siteId") int siteId, @Param("id") int id);
+
+    FrequencyPreset selectBySiteIdAndId(@Param("siteId") int siteId, @Param("id") int id);
 }

@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
+import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -28,6 +29,9 @@ import java.util.List;
 public class FrequencySetupController {
     @Resource
     FrequencySetupService frequencySetupService;
+
+    @Resource
+    FrequencyPresetService frequencyPresetService;
 
     /**
      * 分页查询当前站点的数数据
@@ -75,6 +79,11 @@ public class FrequencySetupController {
             }
         }
         int siteId = frequencySetupSetRequest.getSiteId();
+        int presetFeqId = frequencySetupSetRequest.getPresetFeqId();
+        if(!frequencyPresetService.checkPresetFeqIdIsExistOrNot(siteId, presetFeqId)){
+            log.error("Invalid parameter: 参数FrequencySetupSetRequest对象中presetFeqId不在数据库表预设记录中");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
