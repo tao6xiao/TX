@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.helper;
 
+import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
@@ -39,6 +40,8 @@ public class QueryFilterHelper {
                 CondDBField field = buildIssueTypeCond(param.getSearchText(), issueType);
                 if (field != null) {
                     filter.addCond(field);
+                } else {
+                    filter.addCond(new CondDBField(IssueTableField.SUBTYPE_ID, Types.IssueType.INVALID.value));
                 }
             } else if (param.getSearchField() == null) {
                 CondDBField idField = new CondDBField("id", '%' + param.getSearchText() + "%");
