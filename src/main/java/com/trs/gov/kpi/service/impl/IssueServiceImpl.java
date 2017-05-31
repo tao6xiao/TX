@@ -9,7 +9,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponse;
 import com.trs.gov.kpi.service.IssueService;
-import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -60,7 +60,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public ApiPageData get(PageDataRequestParam param) {
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         filter.addCond("isDel",Status.Delete.UN_DELETE.value);
         filter.addCond("typeId",1).setRangeBegin(true);

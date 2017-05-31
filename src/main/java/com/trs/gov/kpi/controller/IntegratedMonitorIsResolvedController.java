@@ -1,17 +1,13 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponse;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
-import com.trs.gov.kpi.utils.IssueDataUtil;
-import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * 综合监测：已解决Controller，主要是查询
@@ -26,51 +22,33 @@ public class IntegratedMonitorIsResolvedController {
 
     /**
      * 获取已解决的分页数据
-     * @param pageIndex
-     * @param pageSize
-     * @param issue
+     *
+     * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/handled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataIsResolved(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue) throws BizException {
-        if (issue.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        Integer isResolved = Status.Resolve.RESOLVED.value;
-        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isResolved,null);
-        int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<IssueIsResolvedResponse> issueList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
-        apiPageData.setData(issueList);
-        return apiPageData;
+    public ApiPageData getPageDataIsResolved(@ModelAttribute PageDataRequestParam param) throws BizException {
+
+        ParamCheckUtil.paramCheck(param);
+
+        return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
     }
 
     /**
      * 获取已忽略的分页数据
-     * @param pageIndex
-     * @param pageSize
-     * @param issue
+     *
+     * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/ignored", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataIsIgnored(Integer pageIndex, Integer pageSize, @ModelAttribute IssueBase issue) throws BizException {
-        if (issue.getSiteId() == null) {
-            throw new BizException("站点编号为空");
-        }
-        // TODO: 2017/5/26 param check
-//        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        Integer isIgnored = Status.Resolve.IGNORED.value;
-        issue = IssueDataUtil.getIssueToGetPageData(issue, integratedMonitorIsResolvedService,isIgnored,null);
-        int itemCount = integratedMonitorIsResolvedService.getPageDataIsResolvedItemCount(issue);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<IssueIsResolvedResponse> issueIsResolvedResponseDetailList = integratedMonitorIsResolvedService.getPageDataIsResolvedList(apiPageData.getPager().getCurrPage()-1,apiPageData.getPager().getPageSize(),issue);
-        apiPageData.setData(issueIsResolvedResponseDetailList);
-        return apiPageData;
+    public ApiPageData getPageDataIsIgnored(@ModelAttribute PageDataRequestParam param) throws BizException {
+
+        ParamCheckUtil.paramCheck(param);
+
+        return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);
     }
 }

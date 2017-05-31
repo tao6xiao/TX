@@ -18,7 +18,7 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
-import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.*;
@@ -53,14 +53,14 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
         filter.addCond("isDel", Status.Delete.UN_DELETE.value);
         int resolvedCount = issueMapper.count(filter);
         
 
-        filter = LinkAvailabilityServiceHelper.toFilter(param);
+        filter = QueryFilterHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("isDel", Status.Delete.UN_DELETE.value);
         filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
@@ -126,7 +126,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+            QueryFilter filter = QueryFilterHelper.toFilter(param);
             filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
             filter.addCond("issueTime", date.getBeginDate()).setRangeBegin(true);
             filter.addCond("issueTime", date.getEndDate()).setRangeEnd(true);
@@ -141,7 +141,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 //    @Override
 //    public List<InfoUpdateResponse> getIssueList(PageDataRequestParam param) {
 //        List<InfoUpdateResponse> infoUpdateResponseList = new ArrayList<>();
-//        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+//        QueryFilter filter = QueryFilterHelper.toFilter(param);
 //
 //        List<Issue> issueList = null;
 //
@@ -226,7 +226,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 //        issueBase.setBeginDateTime(InitTime.getStringTime(beginSetTime));
 //        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
 
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
         filter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -256,7 +256,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
                 }
             }
         }
-        filter = LinkAvailabilityServiceHelper.toFilter(param);
+        filter = QueryFilterHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
         filter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -284,7 +284,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
                 childChnlIds2.add(channel.getChannelId());
             }
         }
-        filter = LinkAvailabilityServiceHelper.toFilter(param);
+        filter = QueryFilterHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
         filter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -326,7 +326,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Override
     public ApiPageData get(PageDataRequestParam param) throws RemoteException {
-        QueryFilter filter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond("isDel", Status.Delete.UN_DELETE.value);
         filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);

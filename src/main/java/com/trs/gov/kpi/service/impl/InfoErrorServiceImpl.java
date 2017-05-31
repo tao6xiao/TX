@@ -14,7 +14,7 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.InfoErrorResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoErrorService;
-import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateSplitUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -41,7 +41,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
         queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
@@ -52,7 +52,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         handledIssueStatistics.setType(IssueIndicator.SOLVED.value);
         handledIssueStatistics.setName(IssueIndicator.SOLVED.name);
 
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -80,7 +80,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+            QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
             queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
             queryFilter.addCond("issueTime", date.getBeginDate()).setRangeBegin(true);
             queryFilter.addCond("issueTime", date.getEndDate()).setRangeEnd(true);
@@ -97,7 +97,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);

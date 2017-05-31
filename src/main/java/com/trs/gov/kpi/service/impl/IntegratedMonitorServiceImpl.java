@@ -3,13 +3,12 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.IssueIndicator;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.*;
-import com.trs.gov.kpi.service.helper.LinkAvailabilityServiceHelper;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
@@ -36,19 +35,19 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("typeId", Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
         queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
 
         int handledCount = issueMapper.count(queryFilter);
 
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("typeId", Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
         int unhandledCount = issueMapper.count(queryFilter);
 
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("typeId", Arrays.asList(Types.IssueType.INFO_UPDATE_WARNING.value,Types.IssueType.RESPOND_WARNING.value));
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -86,7 +85,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
         //查询失效链接数量
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_LINK.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -97,7 +96,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         invalidLinkStatistics.setName(Types.LinkAvailableIssueType.INVALID_LINK.name);
 
         //查询失效图片数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_IMAGE.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -108,7 +107,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         invalidImageStatistics.setName(Types.LinkAvailableIssueType.INVALID_IMAGE.name);
 
         //查询连接超时数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -119,7 +118,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         connTimeoutStatistics.setName(Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.name);
 
         //查询失效附件数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_FILE.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -130,7 +129,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         invalidFileStatistics.setName(Types.LinkAvailableIssueType.INVALID_FILE.name);
 
         //查询失效首页数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -148,7 +147,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
 
         //查询更新不及时数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -162,7 +161,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
 
         //查询错别字数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.InfoErrorIssueType.TYPOS.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -173,7 +172,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         typosStatistics.setName(Types.InfoErrorIssueType.TYPOS.name);
 
         //查询敏感词数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -199,7 +198,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
         //查询信息更新预警数量
-        QueryFilter queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.InfoUpdateWarningType.UPDATE_WARNING.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
@@ -212,7 +211,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         list.add(updateWarningStatistics);
 
         //查询自查预警数量
-        queryFilter = LinkAvailabilityServiceHelper.toFilter(param);
+        queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond("subTypeId", Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
         queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);

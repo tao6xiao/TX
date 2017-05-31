@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by linwei on 2017/5/22.
  */
-public class LinkAvailabilityServiceHelper {
+public class QueryFilterHelper {
 
     /**
      * 把参数转换为查询filter
@@ -75,6 +75,8 @@ public class LinkAvailabilityServiceHelper {
 
     private static CondDBField buildIssueTypeCond(String issueName) {
         List<Integer> matchedTypes = Types.LinkAvailableIssueType.findByName(issueName);
+        matchedTypes.addAll(Types.InfoErrorIssueType.findByName(issueName));
+        matchedTypes.addAll(Types.InfoUpdateIssueType.findByName(issueName));
         CondDBField field = null;
         if (!matchedTypes.isEmpty()) {
             if (matchedTypes.size() == 1) {
