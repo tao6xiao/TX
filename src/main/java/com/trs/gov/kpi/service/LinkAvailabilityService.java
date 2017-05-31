@@ -19,7 +19,7 @@ public interface LinkAvailabilityService {
 
     void insertLinkAvailability(LinkAvailabilityResponse linkAvailabilityResponse);
 
-    int getIndexAvailability(PageDataRequestParam param);
+    boolean getIndexAvailability(PageDataRequestParam param);
 
     String getIndexUrl(PageDataRequestParam param);
 

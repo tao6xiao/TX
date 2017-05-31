@@ -173,7 +173,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public int getIndexAvailability(PageDataRequestParam param) {
+    public boolean getIndexAvailability(PageDataRequestParam param) {
 
         param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
@@ -186,11 +186,10 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int flag = issueMapper.getIndexAvailability(queryFilter);
 
-        //返回0表示不可用，1表示可用
         if (flag > 0) {
-            return 0;
+            return false;
         } else {
-            return 1;
+            return true;
         }
     }
 
@@ -206,7 +205,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if (getIndexAvailability(param) == 1) {
+        if (getIndexAvailability(param)) {
             indexPage.setIndexAvailable(true);
             indexPage.setMonitorTime(sdf.format(new Date()));
         } else {
