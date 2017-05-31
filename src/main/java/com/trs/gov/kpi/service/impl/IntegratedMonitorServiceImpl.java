@@ -8,7 +8,8 @@ import com.trs.gov.kpi.entity.IssueIndicator;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
-import com.trs.gov.kpi.service.*;
+import com.trs.gov.kpi.service.IntegratedMonitorService;
+import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
@@ -37,19 +38,19 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE.value));
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
 
         int handledCount = issueMapper.count(queryFilter);
 
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE.value));
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED);
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int unhandledCount = issueMapper.count(queryFilter);
 
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_WARNING.value,Types.IssueType.RESPOND_WARNING.value));
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_WARNING.value, Types.IssueType.RESPOND_WARNING.value));
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED);
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int warningCount = issueMapper.count(queryFilter);
@@ -223,6 +224,32 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         selfCheckStatistics.setName(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.name);
 
         list.add(selfCheckStatistics);
+
+        //查询征集反馈预警数量
+        queryFilter = QueryFilterHelper.toFilter(param);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.RespondWarningType.FEEDBACK_WARNING.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        int feedBackCount = issueMapper.count(queryFilter);
+        Statistics feedBackStatistics = new Statistics();
+        feedBackStatistics.setCount(feedBackCount);
+        feedBackStatistics.setType(Types.RespondWarningType.FEEDBACK_WARNING.value);
+        feedBackStatistics.setName(Types.RespondWarningType.FEEDBACK_WARNING.name);
+
+        list.add(feedBackStatistics);
+
+        //查询咨询回应预警数量
+        queryFilter = QueryFilterHelper.toFilter(param);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.RespondWarningType.RESPOND_WARNING.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        int respondCount = issueMapper.count(queryFilter);
+        Statistics respondStatistics = new Statistics();
+        respondStatistics.setCount(respondCount);
+        respondStatistics.setType(Types.RespondWarningType.RESPOND_WARNING.value);
+        respondStatistics.setName(Types.RespondWarningType.RESPOND_WARNING.name);
+
+        list.add(respondStatistics);
 
         return list;
     }
