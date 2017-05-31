@@ -41,14 +41,14 @@ public interface IntegratedMonitorWarningService{
      */
     int deleteWarningBySiteIdAndId(int siteId, Integer[] ids);
 
-    /**
-     * 获取分页数据
-     * @param pageIndex
-     * @param pageSize
-     * @param issue
-     * @return
-     */
-    List<IssueWarningResponse> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException;
+//    /**
+//     * 获取分页数据
+//     * @param pageIndex
+//     * @param pageSize
+//     * @param issue
+//     * @return
+//     */
+//    List<IssueWarningResponse> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException;
 
 //    /**
 //     * 获取数据总条数

@@ -1,9 +1,8 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
 
 import java.util.Date;
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * Created by ranwei on 2017/5/11.
  */
-public interface LinkAvailabilityService  {
+public interface LinkAvailabilityService {
 
 
     List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);

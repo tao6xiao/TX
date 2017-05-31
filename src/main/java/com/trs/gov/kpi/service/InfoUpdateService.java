@@ -1,7 +1,5 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;

@@ -54,19 +54,19 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         return 0;
     }
 
-    @Override
-    public List<IssueWarningResponse> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException {
-        int pageCalculate = pageIndex * pageSize;
-        List<Issue> issueList = issueMapper.getAllWarningList(pageCalculate, pageSize, issue);
-        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
-        List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
-        IssueWarningResponse issueWarningResponse = null;
-        for (Issue is: issueList) {
-            issueWarningResponse = getIssueWarningResponseDetailByIssue(is);
-            issueWarningResponseList.add(issueWarningResponse);
-        }
-        return issueWarningResponseList;
-    }
+//    @Override
+//    public List<IssueWarningResponse> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException {
+//        int pageCalculate = pageIndex * pageSize;
+//        List<Issue> issueList = issueMapper.getAllWarningList(pageCalculate, pageSize, issue);
+//        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
+//        List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
+//        IssueWarningResponse issueWarningResponse = null;
+//        for (Issue is: issueList) {
+//            issueWarningResponse = getIssueWarningResponseDetailByIssue(is);
+//            issueWarningResponseList.add(issueWarningResponse);
+//        }
+//        return issueWarningResponseList;
+//    }
 
     private IssueWarningResponse getIssueWarningResponseDetailByIssue(Issue is) throws ParseException {
         IssueWarningResponse issueWarningResponse = new IssueWarningResponse();

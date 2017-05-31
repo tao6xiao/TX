@@ -3,14 +3,10 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.MonitorSiteMapper;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
-import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.MonitorSiteService;
-import com.trs.gov.kpi.utils.DataTypeConversion;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,8 +41,8 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
 //        String siteIdsForString = DataTypeConversion.integerArrayToString(siteIdsForInteger);
         int num = 0;
 //        if (siteIdsForString != null) {
-            MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
-            num = monitorSiteMapper.insert(monitorSite);
+        MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
+        num = monitorSiteMapper.insert(monitorSite);
 //        }
         return num;
     }

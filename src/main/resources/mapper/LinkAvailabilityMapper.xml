@@ -15,60 +15,60 @@
         <result column="endDateTime" property="endDateTime"/>
     </resultMap>
 
-    <sql id="Query_Condition_IssueBase">
-        AND siteId = #{issueBase.siteId}
-        AND typeId = 1
-        AND isDel = 0
-    </sql>
+    <!--<sql id="Query_Condition_IssueBase">-->
+        <!--AND siteId = #{issueBase.siteId}-->
+        <!--AND typeId = 1-->
+        <!--AND isDel = 0-->
+    <!--</sql>-->
 
-    <sql id="Query_StartEndTime_IssueBase">
-        <if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">
-            AND issueTime
-            <![CDATA[
-                >
-                ]]>
-            #{issueBase.beginDateTime}
-        </if>
-        <if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">
-            AND issueTime
-            <![CDATA[
-            <
-            ]]>
-            #{issueBase.endDateTime}
-        </if>
-    </sql>
+    <!--<sql id="Query_StartEndTime_IssueBase">-->
+        <!--<if test="issueBase.beginDateTime != null and issueBase.beginDateTime != ''">-->
+            <!--AND issueTime-->
+            <!--<![CDATA[-->
+                <!--&gt;-->
+                <!--]]>-->
+            <!--#{issueBase.beginDateTime}-->
+        <!--</if>-->
+        <!--<if test="issueBase.endDateTime != null and issueBase.endDateTime != ''">-->
+            <!--AND issueTime-->
+            <!--<![CDATA[-->
+            <!--<-->
+            <!--]]>-->
+            <!--#{issueBase.endDateTime}-->
+        <!--</if>-->
+    <!--</sql>-->
 
-    <sql id="Query_Search_IssueBase">
-        <if test="issueBase.searchField == 'id'">
-            AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
-        </if>
-        <if test="issueBase.searchField == 'issueType' and issueBase.searchText != ''">
-            AND subTypeId IN (
-            <foreach collection="issueBase.ids" item="item" separator=",">
-                #{item}
-            </foreach>
-            )
-        </if>
-        <if test="issueBase.searchField == null or issueBase.searchField == ''">
-            AND (
-            id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')
-            OR
-            subTypeId IN (
-            <foreach collection="issueBase.ids" item="item" separator=",">
-                #{item}
-            </foreach>
-            )
-            )
-        </if>
-    </sql>
+    <!--<sql id="Query_Search_IssueBase">-->
+        <!--<if test="issueBase.searchField == 'id'">-->
+            <!--AND id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')-->
+        <!--</if>-->
+        <!--<if test="issueBase.searchField == 'issueType' and issueBase.searchText != ''">-->
+            <!--AND subTypeId IN (-->
+            <!--<foreach collection="issueBase.ids" item="item" separator=",">-->
+                <!--#{item}-->
+            <!--</foreach>-->
+            <!--)-->
+        <!--</if>-->
+        <!--<if test="issueBase.searchField == null or issueBase.searchField == ''">-->
+            <!--AND (-->
+            <!--id LIKE concat('%',#{issueBase.searchText,jdbcType=VARCHAR},'%')-->
+            <!--OR-->
+            <!--subTypeId IN (-->
+            <!--<foreach collection="issueBase.ids" item="item" separator=",">-->
+                <!--#{item}-->
+            <!--</foreach>-->
+            <!--)-->
+            <!--)-->
+        <!--</if>-->
+    <!--</sql>-->
 
-    <select id="getHandledIssueCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved IN (1,2)
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getHandledIssueCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE isResolved IN (1,2)-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
 
     <sql id="where_cond_field">
@@ -206,82 +206,82 @@
         1 = 1
     </select>
 
-    <select id="getInvalidLinkCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        AND subTypeId = 11
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getInvalidLinkCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE isResolved = 0-->
+        <!--AND subTypeId = 11-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
-    <select id="getInvalidImageCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        AND subTypeId = 12
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getInvalidImageCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE isResolved = 0-->
+        <!--AND subTypeId = 12-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
-    <select id="getConnTimeoutCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        AND subTypeId = 13
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getConnTimeoutCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE isResolved = 0-->
+        <!--AND subTypeId = 13-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
-    <select id="getInvalidFileCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        AND subTypeId = 14
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getInvalidFileCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE isResolved = 0-->
+        <!--AND subTypeId = 14-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
-    <select id="getInvalidHomepageCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        AND subTypeId = 15
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getInvalidHomepageCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE isResolved = 0-->
+        <!--AND subTypeId = 15-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
-    <select id="getUnhandledIssueCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE isResolved = 0
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-        <include refid="Query_Search_IssueBase"/>
-    </select>
+    <!--<select id="getUnhandledIssueCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE isResolved = 0-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+        <!--<include refid="Query_Search_IssueBase"/>-->
+    <!--</select>-->
 
-    <select id="getIssueHistoryCount" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE 1=1
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getIssueHistoryCount" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE 1=1-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
 
-    <select id="getIssueList" resultMap="linkAvailabilityMap">
-        SELECT id,
-        subTypeId,
-        detail,
-        customer1,
-        issueTime
-        FROM issue
-        WHERE isResolved = 0
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-        <include refid="Query_Search_IssueBase"/>
-        limit #{startIndex},#{pageSize}
-    </select>
+    <!--<select id="getIssueList" resultMap="linkAvailabilityMap">-->
+        <!--SELECT id,-->
+        <!--subTypeId,-->
+        <!--detail,-->
+        <!--customer1,-->
+        <!--issueTime-->
+        <!--FROM issue-->
+        <!--WHERE isResolved = 0-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+        <!--<include refid="Query_Search_IssueBase"/>-->
+        <!--limit #{startIndex},#{pageSize}-->
+    <!--</select>-->
 
     <select id="getIssueListBySql" resultMap="linkAvailabilityMap">
         SELECT
@@ -314,40 +314,40 @@
         </if>
     </select>
 
-    <insert id="batchInsertLinkAvailabilities" useGeneratedKeys="true" parameterType="java.util.List">
-        INSERT INTO issue
-        (`siteId`, `typeId`, `subTypeId`, `detail`, `issueTime`, `isResolved`, `isDel`, `customer1`, `customer2`,
-        `customer3`)
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-            (#{siteId}, #{issueTypeId}, 1, #{issueTypeId}, #{invalidLink}, #{})
-        </foreach>
+    <!--<insert id="batchInsertLinkAvailabilities" useGeneratedKeys="true" parameterType="java.util.List">-->
+        <!--INSERT INTO issue-->
+        <!--(`siteId`, `typeId`, `subTypeId`, `detail`, `issueTime`, `isResolved`, `isDel`, `customer1`, `customer2`,-->
+        <!--`customer3`)-->
+        <!--VALUES-->
+        <!--<foreach collection="list" item="item" separator=",">-->
+            <!--(#{siteId}, #{issueTypeId}, 1, #{issueTypeId}, #{invalidLink}, #{})-->
+        <!--</foreach>-->
 
-    </insert>
+    <!--</insert>-->
 
-    <select id="getIndexAvailability" resultType="int">
-        SELECT count(1)
-        FROM issue
-        WHERE issue.detail = #{indexUrl}
-        AND isResolved = 0
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-    </select>
+    <!--<select id="getIndexAvailability" resultType="int">-->
+        <!--SELECT count(1)-->
+        <!--FROM issue-->
+        <!--WHERE issue.detail = #{indexUrl}-->
+        <!--AND isResolved = 0-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+    <!--</select>-->
 
-    <select id="getIndexUrl" resultType="String">
-        SELECT indexUrl
-        FROM monitorsite
-        WHERE siteId = #{issueBase.siteId}
-    </select>
+    <!--<select id="getIndexUrl" resultType="String">-->
+        <!--SELECT indexUrl-->
+        <!--FROM monitorsite-->
+        <!--WHERE siteId = #{issueBase.siteId}-->
+    <!--</select>-->
 
-    <select id="getMonitorTime" resultType="java.sql.Date">
-        SELECT issueTime
-        FROM issue
-        WHERE issue.detail = #{indexUrl}
-        AND isResolved = 0
-        <include refid="Query_Condition_IssueBase"/>
-        <include refid="Query_StartEndTime_IssueBase"/>
-        ORDER BY issueTime DESC LIMIT 1
-    </select>
+    <!--<select id="getMonitorTime" resultType="java.sql.Date">-->
+        <!--SELECT issueTime-->
+        <!--FROM issue-->
+        <!--WHERE issue.detail = #{indexUrl}-->
+        <!--AND isResolved = 0-->
+        <!--<include refid="Query_Condition_IssueBase"/>-->
+        <!--<include refid="Query_StartEndTime_IssueBase"/>-->
+        <!--ORDER BY issueTime DESC LIMIT 1-->
+    <!--</select>-->
 
 </mapper>

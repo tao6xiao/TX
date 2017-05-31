@@ -1,18 +1,17 @@
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.entity.IssueBase;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by ranwei on 2017/5/22.
  */
+@Slf4j
 public class ParamCheckUtil {
 
 //    public static void paramCheck(IssueBase issueBase) throws BizException {
@@ -31,7 +30,7 @@ public class ParamCheckUtil {
 //                sdf.setLenient(false);
 //                sdf.parse(issueBase.getBeginDateTime());
 //            } catch (ParseException e) {
-//                throw new BizException("参数不合法");
+//                throw new BizException(Constants.INVALID_PARAMETER);
 //            }
 //        }
 //
@@ -41,7 +40,7 @@ public class ParamCheckUtil {
 //                sdf.setLenient(false);
 //                sdf.parse(issueBase.getEndDateTime());
 //            } catch (ParseException e) {
-//                throw new BizException("参数不合法");
+//                throw new BizException(Constants.INVALID_PARAMETER);
 //            }
 //        }
 //
@@ -56,18 +55,21 @@ public class ParamCheckUtil {
 
     public static void pagerCheck(Integer pageIndex, Integer pageSize) throws BizException {
         if (pageIndex != null && pageIndex < 1) {
-            throw new BizException("参数不合法");
+            log.error("Invalid parameter: 参数param的pageIndex不合法");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
 
         if (pageSize != null && pageSize < 1) {
-            throw new BizException("参数不合法");
+            log.error("Invalid parameter: 参数param的pageSize不合法");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
     }
 
     public static void paramCheck(PageDataRequestParam param) throws BizException {
 
         if (param.getSiteId() == null) {
-            throw new BizException("参数不合法");
+            log.error("Invalid parameter: 参数param的siteId为null");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
 
         pagerCheck(param.getPageIndex(), param.getPageSize());
@@ -83,7 +85,8 @@ public class ParamCheckUtil {
                 sdf.setLenient(false);
                 sdf.parse(time);
             } catch (ParseException e) {
-                throw new BizException("参数不合法");
+                log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss");
+                throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
     }
@@ -97,7 +100,8 @@ public class ParamCheckUtil {
     public static void integerArrayParamCheck(Integer[] array) throws BizException {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == null) {
-                throw new BizException("参数不合法");
+                log.error("Invalid parameter: Integer型数组中存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
     }

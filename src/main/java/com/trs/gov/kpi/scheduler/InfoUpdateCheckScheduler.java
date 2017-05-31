@@ -1,10 +1,13 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
-import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.entity.DefaultUpdateFreq;
+import com.trs.gov.kpi.entity.FrequencyPreset;
+import com.trs.gov.kpi.entity.FrequencySetup;
+import com.trs.gov.kpi.entity.SimpleTree;
 import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;

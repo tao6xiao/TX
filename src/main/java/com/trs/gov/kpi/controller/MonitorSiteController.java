@@ -7,13 +7,10 @@ import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
-import com.trs.gov.kpi.service.impl.MonitorSiteServiceImpl;
-import com.trs.gov.kpi.utils.DataTypeConversion;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 /**
@@ -25,7 +22,8 @@ import javax.annotation.Resource;
 @RequestMapping("/gov/kpi/setting")
 public class MonitorSiteController {
 
-    @Resource @Setter
+    @Resource
+    @Setter
     MonitorSiteService monitorSiteService;
 
     @Resource
@@ -33,14 +31,15 @@ public class MonitorSiteController {
 
     /**
      * 通过siteId查询监测站点的设置参数
+     *
      * @param siteId
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/site",method = RequestMethod.GET)
+    @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
-        if(siteId == null){
+        if (siteId == null) {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
@@ -50,22 +49,23 @@ public class MonitorSiteController {
     }
 
     /**
-     *  获取参数插入或者修改监测站点设置记录
+     * 获取参数插入或者修改监测站点设置记录
+     *
      * @param monitorSiteDeal
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/site",method = RequestMethod.POST)
+    @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@RequestBody MonitorSiteDeal monitorSiteDeal) throws BizException {
-        if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null){
+        if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null) {
             log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl三个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
 
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
-        if(monitorSite != null){//检测站点表中存在siteId对应记录，将修改记录
+        if (monitorSite != null) {//检测站点表中存在siteId对应记录，将修改记录
             monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
 
             if (monitorSite.getIndexUrl() != null && !monitorSite.getIndexUrl().trim().isEmpty()) {
@@ -75,7 +75,7 @@ public class MonitorSiteController {
                 schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }
 
-        }else {//检测站点表中不存在siteId对应记录，将插入记录
+        } else {//检测站点表中不存在siteId对应记录，将插入记录
             monitorSiteService.addMonitorSite(monitorSiteDeal);
 
             // 触发监控

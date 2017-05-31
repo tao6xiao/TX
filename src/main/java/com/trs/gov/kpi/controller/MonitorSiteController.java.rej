@@ -1,0 +1,19 @@
+diff a/src/main/java/com/trs/gov/kpi/controller/MonitorSiteController.java b/src/main/java/com/trs/gov/kpi/controller/MonitorSiteController.java	(rejected hunks)
+@@ -27,14 +27,15 @@
+ 
+     /**
+      * 通过siteId查询监测站点的设置参数
++     *
+      * @param siteId
+      * @return
+      * @throws BizException
+      */
+-    @RequestMapping(value = "/site",method = RequestMethod.GET)
++    @RequestMapping(value = "/site", method = RequestMethod.GET)
+     @ResponseBody
+     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
+-        if(siteId == null){
++        if (siteId == null) {
+             throw new BizException("参数不合法！");
+         }
+         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);

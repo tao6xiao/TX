@@ -4,47 +4,47 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.OperationMapper">
 
-    <!--<resultMap id="issueMap" type="com.trs.gov.kpi.entity.Issue">-->
-        <!--<id column="id" property="id"/>-->
-        <!--<result column="typeId" property="typeId"/>-->
-        <!--<result column="detail" property="detail"/>-->
-        <!--<result column="issueTime" property="issueTime"/>-->
-    <!--</resultMap>-->
+    <!--&lt;!&ndash;<resultMap id="issueMap" type="com.trs.gov.kpi.entity.Issue">&ndash;&gt;-->
+        <!--&lt;!&ndash;<id column="id" property="id"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<result column="typeId" property="typeId"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<result column="detail" property="detail"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;<result column="issueTime" property="issueTime"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;</resultMap>&ndash;&gt;-->
 
-    <update id="handIssuesByIds" parameterType="java.util.List">
-        UPDATE issue
-        SET isResolved = 1
-        WHERE siteId = ${siteId}
-        AND id IN
-        <foreach collection="ids" item="item" open="(" close=")" separator=",">
-            ${item}
-        </foreach>
-    </update>
+    <!--<update id="handIssuesByIds" parameterType="java.util.List">-->
+        <!--UPDATE issue-->
+        <!--SET isResolved = 1-->
+        <!--WHERE siteId = ${siteId}-->
+        <!--AND id IN-->
+        <!--<foreach collection="ids" item="item" open="(" close=")" separator=",">-->
+            <!--${item}-->
+        <!--</foreach>-->
+    <!--</update>-->
 
 
-    <update id="ignoreIssuesByIds" parameterType="java.util.List">
-        UPDATE issue
-        SET isResolved = 2
-        WHERE siteId = ${siteId}
-        AND id IN
-        <foreach collection="ids" item="item" open="(" close=")" separator=",">
-            ${item}
-        </foreach>
-    </update>
+    <!--<update id="ignoreIssuesByIds" parameterType="java.util.List">-->
+        <!--UPDATE issue-->
+        <!--SET isResolved = 2-->
+        <!--WHERE siteId = ${siteId}-->
+        <!--AND id IN-->
+        <!--<foreach collection="ids" item="item" open="(" close=")" separator=",">-->
+            <!--${item}-->
+        <!--</foreach>-->
+    <!--</update>-->
 
-    <update id="delIssueByIds" parameterType="java.util.List">
-        UPDATE issue
-        SET isDel = 1
-        WHERE siteId = ${siteId}
-        AND id IN
-        <foreach collection="ids" item="item" open="(" close=")" separator=",">
-            ${item}
-        </foreach>
-    </update>
+    <!--<update id="delIssueByIds" parameterType="java.util.List">-->
+        <!--UPDATE issue-->
+        <!--SET isDel = 1-->
+        <!--WHERE siteId = ${siteId}-->
+        <!--AND id IN-->
+        <!--<foreach collection="ids" item="item" open="(" close=")" separator=",">-->
+            <!--${item}-->
+        <!--</foreach>-->
+    <!--</update>-->
 
-    <select id="getEarliestIssueTime" resultType="java.util.Date">
-        SELECT min(issueTime)
-        FROM issue
-    </select>
+    <!--<select id="getEarliestIssueTime" resultType="java.util.Date">-->
+        <!--SELECT min(issueTime)-->
+        <!--FROM issue-->
+    <!--</select>-->
 
 </mapper>

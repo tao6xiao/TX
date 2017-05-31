@@ -1,20 +1,14 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.*;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponse;
 import com.trs.gov.kpi.service.IssueService;
-import com.trs.gov.kpi.utils.IssueDataUtil;
-import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * 综合实时监测：待解决问题Controller
@@ -29,7 +23,7 @@ public class IntegratedMonitorIssueController {
     /**
      * 查询所有未解决问题列表
      *
-     * @param  param
+     * @param param
      * @return
      * @throws BizException
      */
@@ -61,6 +55,7 @@ public class IntegratedMonitorIssueController {
 
     /**
      * 忽略对应siteId和id的待解决记录（批量和单个）
+     *
      * @param siteId
      * @param ids
      * @return
@@ -79,6 +74,7 @@ public class IntegratedMonitorIssueController {
 
     /**
      * 删除对应siteId和id的待解决记录（批量和单个）
+     *
      * @param siteId
      * @param ids
      * @return

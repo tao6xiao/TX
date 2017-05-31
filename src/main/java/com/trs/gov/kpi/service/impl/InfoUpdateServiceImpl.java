@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
-import com.trs.gov.kpi.dao.InfoUpdateMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
@@ -38,8 +37,8 @@ import java.util.*;
 @Service
 public class InfoUpdateServiceImpl implements InfoUpdateService {
 
-    @Resource
-    private InfoUpdateMapper infoUpdateMapper;
+//    @Resource
+//    private InfoUpdateMapper infoUpdateMapper;
 
     @Resource
     private SiteApiService siteApiService;
