@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
@@ -91,10 +92,10 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
     @Override
     public ApiPageData get(PageDataRequestParam param) throws ParseException {
         QueryFilter filter = QueryFilterHelper.toFilter(param);
-        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        filter.addCond("isDel",Status.Delete.UN_DELETE.value);
-        filter.addCond("typeId",51).setRangeBegin(true);
-        filter.addCond("typeId",100).setRangeEnd(true);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.IS_DEL,Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.TYPE_ID,51).setRangeBegin(true);
+        filter.addCond(IssueTableField.TYPE_ID,100).setRangeEnd(true);
         int itemCount = issueMapper.count(filter);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
         filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(),apiPageData.getPager().getPageSize()));

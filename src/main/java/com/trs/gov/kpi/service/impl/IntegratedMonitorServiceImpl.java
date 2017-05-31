@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
@@ -36,21 +37,21 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
-        queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
 
         int handledCount = issueMapper.count(queryFilter);
 
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value,Types.IssueType.INFO_ERROR_ISSUE.value,Types.IssueType.INFO_UPDATE_ISSUE.value));
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int unhandledCount = issueMapper.count(queryFilter);
 
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Arrays.asList(Types.IssueType.INFO_UPDATE_WARNING.value,Types.IssueType.RESPOND_WARNING.value));
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_WARNING.value,Types.IssueType.RESPOND_WARNING.value));
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int warningCount = issueMapper.count(queryFilter);
 
         Statistics handledStatistics = new Statistics();
@@ -86,9 +87,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询失效链接数量
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_LINK.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_LINK.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int invalidLinkCount = issueMapper.count(queryFilter);
         Statistics invalidLinkStatistics = new Statistics();
         invalidLinkStatistics.setCount(invalidLinkCount);
@@ -97,9 +98,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询失效图片数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_IMAGE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_IMAGE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int invalidImageCount = issueMapper.count(queryFilter);
         Statistics invalidImageStatistics = new Statistics();
         invalidImageStatistics.setCount(invalidImageCount);
@@ -108,9 +109,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询连接超时数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int connTimeoutCount = issueMapper.count(queryFilter);
         Statistics connTimeoutStatistics = new Statistics();
         connTimeoutStatistics.setCount(connTimeoutCount);
@@ -119,9 +120,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询失效附件数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_FILE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_FILE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int invalidFileCount = issueMapper.count(queryFilter);
         Statistics invalidFileStatistics = new Statistics();
         invalidFileStatistics.setCount(invalidFileCount);
@@ -130,9 +131,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询失效首页数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int invalidHomepageCount = issueMapper.count(queryFilter);
         Statistics invalidHomepageStatistics = new Statistics();
         invalidHomepageStatistics.setCount(invalidHomepageCount);
@@ -148,9 +149,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询更新不及时数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int updateNotIntimeCount = issueMapper.count(queryFilter);
         Statistics updateNotIntimeStatistics = new Statistics();
         updateNotIntimeStatistics.setCount(updateNotIntimeCount);
@@ -162,9 +163,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询错别字数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.InfoErrorIssueType.TYPOS.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoErrorIssueType.TYPOS.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int typosCount = issueMapper.count(queryFilter);
         Statistics typosStatistics = new Statistics();
         typosStatistics.setCount(typosCount);
@@ -173,9 +174,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询敏感词数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int sensitiveWordsCount = issueMapper.count(queryFilter);
         Statistics sensitiveWordsStatistics = new Statistics();
         sensitiveWordsStatistics.setCount(sensitiveWordsCount);
@@ -199,9 +200,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询信息更新预警数量
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.InfoUpdateWarningType.UPDATE_WARNING.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateWarningType.UPDATE_WARNING.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int updateWarningCount = issueMapper.count(queryFilter);
         Statistics updateWarningStatistics = new Statistics();
         updateWarningStatistics.setCount(updateWarningCount);
@@ -212,9 +213,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         //查询自查预警数量
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("subTypeId", Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int selfCheckCount = issueMapper.count(queryFilter);
         Statistics selfCheckStatistics = new Statistics();
         selfCheckStatistics.setCount(selfCheckCount);

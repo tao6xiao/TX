@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
@@ -34,13 +35,13 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
 
         QueryFilter filter = QueryFilterHelper.toFilter(param);
         if (isResolved) {
-            filter.addCond("isResolved", Status.Resolve.RESOLVED.value);
+            filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
         } else {
-            filter.addCond("isResolved", Status.Resolve.IGNORED.value);
+            filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.IGNORED.value);
         }
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        filter.addCond("typeId", 1).setRangeBegin(true);
-        filter.addCond("typeId", 50).setRangeEnd(true);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.TYPE_ID, 1).setRangeBegin(true);
+        filter.addCond(IssueTableField.TYPE_ID, 50).setRangeEnd(true);
 
         int itemCount = issueMapper.count(filter);
 
