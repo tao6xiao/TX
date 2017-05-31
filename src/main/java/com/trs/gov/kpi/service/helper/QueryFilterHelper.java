@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -80,24 +79,23 @@ public class QueryFilterHelper {
 
         for (int i = 0; i < issueType.length; i++) {
 
-            if (issueType[i].equals(Types.IssueType.LINK_AVAILABLE_ISSUE)) {
-                matchedTypes.addAll(Types.LinkAvailableIssueType.findByName(issueName));
-                continue;
-            } else if (issueType[i].equals(Types.IssueType.INFO_ERROR_ISSUE)) {
-                matchedTypes.addAll(Types.InfoErrorIssueType.findByName(issueName));
-                continue;
-            } else if (issueType[i].equals(Types.IssueType.INFO_UPDATE_ISSUE)) {
-                matchedTypes.addAll(Types.InfoUpdateIssueType.findByName(issueName));
-                continue;
-            } else if (issueType[i].equals(Types.IssueType.INFO_UPDATE_WARNING)) {
-                matchedTypes.addAll(Types.InfoUpdateWarningType.findByName(issueName));
-                continue;
-            } else if (issueType[i].equals(Types.IssueType.RESPOND_WARNING)) {
-                matchedTypes.addAll(Types.RespondWarningType.findByName(issueName));
+            switch (issueType[i]) {
+                case LINK_AVAILABLE_ISSUE:
+                    matchedTypes.addAll(Types.LinkAvailableIssueType.findByName(issueName));
+                    break;
+                case INFO_ERROR_ISSUE:
+                    matchedTypes.addAll(Types.InfoErrorIssueType.findByName(issueName));
+                    break;
+                case INFO_UPDATE_ISSUE:
+                    matchedTypes.addAll(Types.InfoUpdateIssueType.findByName(issueName));
+                    break;
+                case INFO_UPDATE_WARNING:
+                    matchedTypes.addAll(Types.InfoUpdateWarningType.findByName(issueName));
+                    break;
+                case RESPOND_WARNING:
+                    matchedTypes.addAll(Types.RespondWarningType.findByName(issueName));
             }
         }
-//        List<Types.IssueType> list = Arrays.asList(issueType);
-
 
         CondDBField field = null;
         if (!matchedTypes.isEmpty()) {
