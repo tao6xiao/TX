@@ -92,6 +92,10 @@ public class FrequencyPresetController {
             log.error("Invalid parameter:  参数siteId、id（预设记录编号）、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        if(preset.getAlertFreq() > preset.getUpdateFreq()){
+            log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
         frequencyPresetService.updateFrequencyPresetBySiteIdAndId(preset);
         return null;
     }
