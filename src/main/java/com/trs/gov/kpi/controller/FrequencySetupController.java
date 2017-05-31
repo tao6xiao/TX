@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -10,6 +11,7 @@ import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,6 +22,7 @@ import java.util.List;
  * 栏目更新频率Controller
  * Created by he.lang on 2017/5/16.
  */
+@Slf4j
 @RestController
 @RequestMapping("/gov/kpi/setting")
 public class FrequencySetupController {
@@ -39,7 +42,8 @@ public class FrequencySetupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
         if (siteId == null) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
@@ -60,12 +64,14 @@ public class FrequencySetupController {
     @ResponseBody
     public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, ParseException {
         if (frequencySetupSetRequest.getSiteId() == null || frequencySetupSetRequest.getPresetFeqId() == null || frequencySetupSetRequest.getChnlIds() == null || frequencySetupSetRequest.getChnlIds().length == 0) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter: 参数FrequencySetupSetRequest对象中siteId、presetFeqId、chilIds[]三个属性中至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         Integer[] chnlIds = frequencySetupSetRequest.getChnlIds();
         for (int i = 0; i < chnlIds.length; i++) {
             if(chnlIds[i] == null){
-                throw new BizException("参数不合法！");
+                log.error("Invalid parameter: 参数FrequencySetupSetRequest对象中chilIds[]（栏目id数组）中存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
         int siteId = frequencySetupSetRequest.getSiteId();
@@ -93,7 +99,8 @@ public class FrequencySetupController {
     @ResponseBody
     public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequest frequencySetupUpdateRequest) throws BizException {
         if (frequencySetupUpdateRequest.getSiteId() == null || frequencySetupUpdateRequest.getId() == null || frequencySetupUpdateRequest.getPresetFeqId() == null || frequencySetupUpdateRequest.getChnlId() == null) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter:  参数FrequencySetupSetRequest对象中siteId、presetFeqId、chilIds[]三个属性中至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequest);
         return null;
@@ -111,7 +118,8 @@ public class FrequencySetupController {
     @ResponseBody
     public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("id") Integer id) throws BizException {
         if (siteId == null || id == null) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter: 参数siteId或者id（设置的更新频率记录对应id）存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
         return null;

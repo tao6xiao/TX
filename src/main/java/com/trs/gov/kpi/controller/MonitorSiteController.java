@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
@@ -9,6 +10,7 @@ import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.impl.MonitorSiteServiceImpl;
 import com.trs.gov.kpi.utils.DataTypeConversion;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +20,7 @@ import javax.annotation.Resource;
  * Created by HLoach on 2017/5/11.
  * 监控站点设置Controller
  */
+@Slf4j
 @RestController
 @RequestMapping("/gov/kpi/setting")
 public class MonitorSiteController {
@@ -38,7 +41,8 @@ public class MonitorSiteController {
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
         if(siteId == null){
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
 
@@ -55,7 +59,8 @@ public class MonitorSiteController {
     @ResponseBody
     public Object save(@RequestBody MonitorSiteDeal monitorSiteDeal) throws BizException {
         if(monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null){
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl三个属性中至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
 
         int siteId = monitorSiteDeal.getSiteId();

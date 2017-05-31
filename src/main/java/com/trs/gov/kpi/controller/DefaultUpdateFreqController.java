@@ -1,8 +1,10 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.DefaultUpdateFreq;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -12,6 +14,7 @@ import java.text.ParseException;
  * 按需更新的自查提醒Controller
  * Created by he.lang on 2017/5/15.
  */
+@Slf4j
 @RestController
 @RequestMapping("/gov/kpi/setting")
 public class DefaultUpdateFreqController {
@@ -28,7 +31,8 @@ public class DefaultUpdateFreqController {
     @ResponseBody
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException {
         if(siteId == null){
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter:  参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
         Integer value = null;
@@ -48,7 +52,8 @@ public class DefaultUpdateFreqController {
     @ResponseBody
     public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException {
         if(defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null){
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter:  参数siteId、value（自查提醒周期值）中至少一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         int siteId = defaultUpdateFreq.getSiteId();
         DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);

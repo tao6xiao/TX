@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequest;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequest;
@@ -8,6 +9,8 @@ import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -17,6 +20,7 @@ import java.util.List;
  * 栏目分类Controller
  * Created by he.lang on 2017/5/16.
  */
+@Slf4j
 @RestController
 @RequestMapping("/gov/kpi/setting")
 public class ChnlGroupController {
@@ -48,17 +52,10 @@ public class ChnlGroupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, Integer pageSize, Integer pageIndex) throws BizException {
         if (siteId == null || groupId == null) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter:  参数siteId、groupId（分类编号）至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
-
-        if (pageIndex != null && pageIndex < 1) {
-            throw new BizException("参数不合法！");
-        }
-
-        if (pageSize != null && pageSize < 1) {
-            throw new BizException("参数不合法！");
-        }
-
+        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
         List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
@@ -76,7 +73,8 @@ public class ChnlGroupController {
     @ResponseBody
     public Object addChnlGroupChnls(@RequestBody ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest) throws BizException {
         if (chnlGroupChnlsAddRequest.getSiteId() == null || chnlGroupChnlsAddRequest.getGroupId() == null || chnlGroupChnlsAddRequest.getChnlIds() == null || chnlGroupChnlsAddRequest.getChnlIds().length == 0) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter:  参数对象chnlGroupChnlsAddRequest中siteId、groupId（分类编号）、chnlIds[]中至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequest);
         return null;
@@ -92,7 +90,8 @@ public class ChnlGroupController {
     @ResponseBody
     public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException {
         if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null || chnlGroupChnlRequestDetail.getChnlId() == null) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter:  参数对象chnlGroupChnlRequestDetails中iteId、groupId（分类编号）、id（当前栏目设置对象编号）、chnlId中（栏目id）至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         chnlGroupChnlRequestDetail.getId();
         chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
@@ -110,7 +109,8 @@ public class ChnlGroupController {
     @ResponseBody
     public Object deleteChnlGroupChnl(@RequestParam Integer siteId, @RequestParam Integer id) throws BizException {
         if (siteId == null || id == null) {
-            throw new BizException("参数不合法！");
+            log.error("Invalid parameter:  参数siteId、id（当前栏目设置对象编号）中至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         chnlGroupService.deleteBySiteIdAndId(siteId, id);
         return null;
