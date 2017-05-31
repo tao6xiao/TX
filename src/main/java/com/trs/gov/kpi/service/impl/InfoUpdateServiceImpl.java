@@ -1,13 +1,12 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.EnumChannelGroup;
-import com.trs.gov.kpi.constant.EnumIndexUpdateType;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.dao.InfoUpdateMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
-import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.entity.HistoryDate;
+import com.trs.gov.kpi.entity.InfoUpdate;
+import com.trs.gov.kpi.entity.IssueIndicator;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -21,7 +20,10 @@ import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.*;
+import com.trs.gov.kpi.utils.DateSplitUtil;
+import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -54,16 +56,16 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
         QueryFilter filter = QueryFilterHelper.toFilter(param);
-        filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-        filter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int resolvedCount = issueMapper.count(filter);
-        
+
 
         filter = QueryFilterHelper.toFilter(param);
-        filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         int updateCount = issueMapper.count(filter);
 
         List<Statistics> statisticsList = new ArrayList<>();
@@ -127,9 +129,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             QueryFilter filter = QueryFilterHelper.toFilter(param);
-            filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-            filter.addCond("issueTime", date.getBeginDate()).setRangeBegin(true);
-            filter.addCond("issueTime", date.getEndDate()).setRangeEnd(true);
+            filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+            filter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
+            filter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
 
             historyStatistics.setValue(issueMapper.count(filter));
             historyStatistics.setTime(date.getMonth());
@@ -227,11 +229,11 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 //        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
 
         QueryFilter filter = QueryFilterHelper.toFilter(param);
-        filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-        filter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        filter.addGroupField("customer2");
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
         //获取所有
         List<Map<Integer, Integer>> countList = issueMapper.countList(filter);
         for (Map map : countList) {
@@ -257,12 +259,12 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             }
         }
         filter = QueryFilterHelper.toFilter(param);
-        filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-        filter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        filter.addCond("customer2", childChnlIds);
-        filter.addGroupField("customer2");
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.CUSTOMER2, childChnlIds);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
         countList = issueMapper.countList(filter);
         count = 0;
         for (Map map : countList) {
@@ -285,12 +287,12 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             }
         }
         filter = QueryFilterHelper.toFilter(param);
-        filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-        filter.addCond("subTypeId", Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        filter.addCond("customer2", childChnlIds2);
-        filter.addGroupField("customer2");
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.CUSTOMER2, childChnlIds2);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
         countList = issueMapper.countList(filter);
         count = 0;
         for (Map map : countList) {
@@ -327,9 +329,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     @Override
     public ApiPageData get(PageDataRequestParam param) throws RemoteException {
         QueryFilter filter = QueryFilterHelper.toFilter(param);
-        filter.addCond("typeId", Types.IssueType.INFO_UPDATE_ISSUE.value);
-        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        filter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         int itemCount = issueMapper.count(filter);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
         filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
