@@ -32,7 +32,6 @@ public class IntegratedMonitorIsResolvedController {
     public ApiPageData getPageDataIsResolved(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
-
         return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
     }
 
@@ -48,7 +47,6 @@ public class IntegratedMonitorIsResolvedController {
     public ApiPageData getPageDataIsIgnored(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
-
         return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);
     }
 }

@@ -28,7 +28,7 @@ public class DefaultUpdateFreqController {
     @ResponseBody
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException {
         if(siteId == null){
-            throw new BizException("传入的参数存在null值");
+            throw new BizException("参数不合法！");
         }
         DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
         Integer value = null;
@@ -48,7 +48,7 @@ public class DefaultUpdateFreqController {
     @ResponseBody
     public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException {
         if(defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null){
-            throw new BizException("传入的参数存在null值");
+            throw new BizException("参数不合法！");
         }
         int siteId = defaultUpdateFreq.getSiteId();
         DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);

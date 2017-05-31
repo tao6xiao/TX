@@ -76,7 +76,7 @@ public class ChnlGroupController {
     @ResponseBody
     public Object addChnlGroupChnls(@RequestBody ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest) throws BizException {
         if (chnlGroupChnlsAddRequest.getSiteId() == null || chnlGroupChnlsAddRequest.getGroupId() == null || chnlGroupChnlsAddRequest.getChnlIds() == null || chnlGroupChnlsAddRequest.getChnlIds().length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequest);
         return null;
@@ -92,7 +92,7 @@ public class ChnlGroupController {
     @ResponseBody
     public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException {
         if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null || chnlGroupChnlRequestDetail.getChnlId() == null) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         chnlGroupChnlRequestDetail.getId();
         chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
@@ -110,7 +110,7 @@ public class ChnlGroupController {
     @ResponseBody
     public Object deleteChnlGroupChnl(@RequestParam Integer siteId, @RequestParam Integer id) throws BizException {
         if (siteId == null || id == null) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         chnlGroupService.deleteBySiteIdAndId(siteId, id);
         return null;

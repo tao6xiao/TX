@@ -53,7 +53,7 @@ public class IntegratedMonitorWarningController {
     @ResponseBody
     public Object dealWithWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         integratedMonitorWarningService.dealWithWarningBySiteIdAndId(siteId, ids);
@@ -71,7 +71,7 @@ public class IntegratedMonitorWarningController {
     @ResponseBody
     public Object ignoreWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         integratedMonitorWarningService.ignoreWarningBySiteIdAndId(siteId, ids);
@@ -89,7 +89,7 @@ public class IntegratedMonitorWarningController {
     @ResponseBody
     public Object deleteWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         integratedMonitorWarningService.deleteWarningBySiteIdAndId(siteId, ids);

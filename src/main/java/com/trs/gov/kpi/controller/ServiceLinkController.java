@@ -118,7 +118,7 @@ public class ServiceLinkController {
     public Integer getIssueCount(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
 
         if (requestParam.getSiteId() == null) {
-            throw new BizException("参数不合法");
+            throw new BizException("参数不合法！");
         }
 
         QueryFilter filter = QueryFilterHelper.toFilter(requestParam);

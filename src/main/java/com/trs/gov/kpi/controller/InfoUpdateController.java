@@ -74,7 +74,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(Integer siteId, Integer[] ids) throws BizException {
         if(siteId == null){
-            throw new BizException("参数siteId存在null值");
+            throw new BizException("参数不合法！");
         }
         infoUpdateService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
@@ -90,7 +90,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(Integer siteId, Integer[] ids) throws BizException {
         if(siteId == null){
-            throw new BizException("参数siteId存在null值");
+            throw new BizException("参数不合法！");
         }
         infoUpdateService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
@@ -106,7 +106,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(Integer siteId, Integer[] ids) throws BizException {
         if(siteId == null){
-            throw new BizException("参数siteId存在null值");
+            throw new BizException("参数不合法！");
         }
         infoUpdateService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;

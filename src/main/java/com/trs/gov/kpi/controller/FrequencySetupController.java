@@ -39,7 +39,7 @@ public class FrequencySetupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
         if (siteId == null) {
-            throw new BizException("站点编号不能为null值");
+            throw new BizException("参数不合法！");
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
@@ -60,12 +60,12 @@ public class FrequencySetupController {
     @ResponseBody
     public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, ParseException {
         if (frequencySetupSetRequest.getSiteId() == null || frequencySetupSetRequest.getPresetFeqId() == null || frequencySetupSetRequest.getChnlIds() == null || frequencySetupSetRequest.getChnlIds().length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         Integer[] chnlIds = frequencySetupSetRequest.getChnlIds();
         for (int i = 0; i < chnlIds.length; i++) {
             if(chnlIds[i] == null){
-                throw new BizException("参数chnlIds[]中存在null值");
+                throw new BizException("参数不合法！");
             }
         }
         int siteId = frequencySetupSetRequest.getSiteId();
@@ -93,7 +93,7 @@ public class FrequencySetupController {
     @ResponseBody
     public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequest frequencySetupUpdateRequest) throws BizException {
         if (frequencySetupUpdateRequest.getSiteId() == null || frequencySetupUpdateRequest.getId() == null || frequencySetupUpdateRequest.getPresetFeqId() == null || frequencySetupUpdateRequest.getChnlId() == null) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequest);
         return null;
@@ -111,7 +111,7 @@ public class FrequencySetupController {
     @ResponseBody
     public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("id") Integer id) throws BizException {
         if (siteId == null || id == null) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
         return null;

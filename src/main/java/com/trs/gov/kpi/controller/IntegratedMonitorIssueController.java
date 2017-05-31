@@ -52,7 +52,7 @@ public class IntegratedMonitorIssueController {
     @ResponseBody
     public Object handIssuesByIds(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.handIssuesByIds(siteId, Arrays.asList(ids));
@@ -70,7 +70,7 @@ public class IntegratedMonitorIssueController {
     @ResponseBody
     public Object ignoreIssuesByIds(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
@@ -88,7 +88,7 @@ public class IntegratedMonitorIssueController {
     @ResponseBody
     public Object delIssueByIds(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数存在null值");
+            throw new BizException("参数不合法！");
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.delIssueByIds(siteId, Arrays.asList(ids));

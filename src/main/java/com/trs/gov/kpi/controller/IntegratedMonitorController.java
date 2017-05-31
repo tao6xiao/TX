@@ -45,7 +45,6 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
-
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorService.getUnhandledIssueCount(param);
     }
@@ -58,7 +57,6 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute PageDataRequestParam param) throws BizException {
-
 
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorService.getWarningCount(param);
