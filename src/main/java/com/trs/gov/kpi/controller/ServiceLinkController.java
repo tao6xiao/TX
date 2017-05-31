@@ -4,12 +4,12 @@ import com.trs.gov.kpi.constant.EnumChannelGroup;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChannelGroup;
-import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -18,7 +18,10 @@ import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 服务实用中服务链接Controller
@@ -38,6 +41,7 @@ public class ServiceLinkController {
 
     /**
      * 处理（批量和单个结合）
+     *
      * @param siteId
      * @param ids
      * @return
@@ -51,6 +55,7 @@ public class ServiceLinkController {
 
     /**
      * 忽略（批量和单个结合）
+     *
      * @param siteId
      * @param ids
      * @return
@@ -64,6 +69,7 @@ public class ServiceLinkController {
 
     /**
      * 删除（批量和单个结合）
+     *
      * @param siteId
      * @param ids
      * @return
@@ -77,6 +83,7 @@ public class ServiceLinkController {
 
     /**
      * 查询未解决问题列表
+     *
      * @param requestParam
      * @return
      * @throws BizException
@@ -86,7 +93,7 @@ public class ServiceLinkController {
 
         ParamCheckUtil.paramCheck(requestParam);
 
-        QueryFilter filter = QueryFilterHelper.toFilter(requestParam);
+        QueryFilter filter = QueryFilterHelper.toFilter(requestParam, Types.IssueType.LINK_AVAILABLE_ISSUE);
         filter.addCond("typeId", Integer.valueOf(Types.IssueType.LINK_AVAILABLE_ISSUE.value));
 
         Set<Integer> ids = getChannelIdsOfHandleGuide(requestParam.getSiteId());
@@ -110,6 +117,7 @@ public class ServiceLinkController {
 
     /**
      * 查询未解决问题总数
+     *
      * @param requestParam
      * @return
      * @throws BizException

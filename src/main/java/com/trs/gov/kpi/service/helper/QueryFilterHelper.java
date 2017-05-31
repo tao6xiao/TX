@@ -7,6 +7,8 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ public class QueryFilterHelper {
      * @param param
      * @return
      */
-    public static  QueryFilter toFilter(PageDataRequestParam param) {
+    public static QueryFilter toFilter(PageDataRequestParam param, Types.IssueType... issueType) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond("siteId", param.getSiteId());
         if (param.getBeginDateTime() != null) {
@@ -33,17 +35,17 @@ public class QueryFilterHelper {
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
-                filter.addCond("id", '%'+ param.getSearchText() + "%").setLike(true);
+                filter.addCond("id", '%' + param.getSearchText() + "%").setLike(true);
             } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("issueType")) {
-                CondDBField field = buildIssueTypeCond(param.getSearchText());
+                CondDBField field = buildIssueTypeCond(param.getSearchText(), issueType);
                 if (field != null) {
                     filter.addCond(field);
                 }
             } else if (param.getSearchField() == null) {
-                CondDBField idField = new CondDBField("id", '%'+ param.getSearchText() + "%");
+                CondDBField idField = new CondDBField("id", '%' + param.getSearchText() + "%");
                 idField.setLike(true);
 
-                CondDBField issueTypefield = buildIssueTypeCond(param.getSearchText());
+                CondDBField issueTypefield = buildIssueTypeCond(param.getSearchText(), issueType);
                 if (issueTypefield != null) {
                     OrCondDBFields orFields = new OrCondDBFields();
                     orFields.addCond(idField);
@@ -73,10 +75,30 @@ public class QueryFilterHelper {
         return filter;
     }
 
-    private static CondDBField buildIssueTypeCond(String issueName) {
-        List<Integer> matchedTypes = Types.LinkAvailableIssueType.findByName(issueName);
-        matchedTypes.addAll(Types.InfoErrorIssueType.findByName(issueName));
-        matchedTypes.addAll(Types.InfoUpdateIssueType.findByName(issueName));
+    private static CondDBField buildIssueTypeCond(String issueName, Types.IssueType... issueType) {
+        List<Integer> matchedTypes = new ArrayList<>();
+
+        for (int i = 0; i < issueType.length; i++) {
+
+            if (issueType[i].equals(Types.IssueType.LINK_AVAILABLE_ISSUE)) {
+                matchedTypes.addAll(Types.LinkAvailableIssueType.findByName(issueName));
+                continue;
+            } else if (issueType[i].equals(Types.IssueType.INFO_ERROR_ISSUE)) {
+                matchedTypes.addAll(Types.InfoErrorIssueType.findByName(issueName));
+                continue;
+            } else if (issueType[i].equals(Types.IssueType.INFO_UPDATE_ISSUE)) {
+                matchedTypes.addAll(Types.InfoUpdateIssueType.findByName(issueName));
+                continue;
+            } else if (issueType[i].equals(Types.IssueType.INFO_UPDATE_WARNING)) {
+                matchedTypes.addAll(Types.InfoUpdateWarningType.findByName(issueName));
+                continue;
+            } else if (issueType[i].equals(Types.IssueType.RESPOND_WARNING)) {
+                matchedTypes.addAll(Types.RespondWarningType.findByName(issueName));
+            }
+        }
+//        List<Types.IssueType> list = Arrays.asList(issueType);
+
+
         CondDBField field = null;
         if (!matchedTypes.isEmpty()) {
             if (matchedTypes.size() == 1) {
