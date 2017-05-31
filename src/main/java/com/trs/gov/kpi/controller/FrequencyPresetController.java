@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.service.FrequencyPresetService;
+import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,9 @@ import java.util.List;
 public class FrequencyPresetController {
     @Resource
     FrequencyPresetService frequencyPresetService;
+
+    @Resource
+    FrequencySetupService frequencySetupService;
 
     /**
      * 获取更新频率及预警初设的分页数据
@@ -65,6 +69,10 @@ public class FrequencyPresetController {
             log.error("Invalid parameter:  参数siteId、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        if(request.getAlertFreq() > request.getUpdateFreq()){
+            log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
         frequencyPresetService.addFrequencyPreset(request);
         return null;
     }
@@ -103,7 +111,12 @@ public class FrequencyPresetController {
             log.error("Invalid parameter:  参数siteId或者id（预设记录编号）存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        frequencyPresetService.deleteFrequencyPresetBySiteIdAndId(siteId, id);
+        if(frequencySetupService.checkPresetFeqIsUsedOrNot(siteId, id)){
+            frequencyPresetService.deleteFrequencyPresetBySiteIdAndId(siteId, id);
+        }else{
+            log.error("Invalid parameter:  当前参数siteId和id下的记录已经被某一栏目所使用，无法删除");
+            throw new BizException("当前预设记录已经被某一栏目所使用，无法删除");
+        }
         return null;
     }
 }

@@ -66,4 +66,12 @@ public interface FrequencySetupMapper {
      * @return
      */
     int deleteFrequencySetupBySiteIdAndId(@Param("siteId")int siteId, @Param("id") int id);
+
+    /**
+     * 用于获取指定站点下的指定预设记录
+     * @param siteId
+     * @param presetFeqId
+     * @return
+     */
+    List<FrequencySetup> getBySiteIdAndPresetFeqId(@Param("siteId") int siteId, @Param("presetFeqId") int presetFeqId);
 }

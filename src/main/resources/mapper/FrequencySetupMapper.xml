@@ -121,4 +121,10 @@
     delete from frequencysetup
     where id = #{id,jdbcType=INTEGER} AND siteId = #{siteId,jdbcType=INTEGER}
   </delete>
+  <select id="getBySiteIdAndPresetFeqId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from frequencysetup
+    where siteId = #{siteId,jdbcType=INTEGER} AND presetFeqId = #{presetFeqId,jdbcType=INTEGER}
+  </select>
 </mapper>
