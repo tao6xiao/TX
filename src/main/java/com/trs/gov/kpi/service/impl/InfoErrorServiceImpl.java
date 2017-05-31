@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
@@ -42,9 +43,9 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
-        queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
         int handledCount = issueMapper.count(queryFilter);
 
         Statistics handledIssueStatistics = new Statistics();
@@ -53,9 +54,9 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         handledIssueStatistics.setName(IssueIndicator.SOLVED.name);
 
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int unhandledCount = issueMapper.count(queryFilter);
 
         Statistics unhandledIssueStatistics = new Statistics();
@@ -81,9 +82,9 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-            queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
-            queryFilter.addCond("issueTime", date.getBeginDate()).setRangeBegin(true);
-            queryFilter.addCond("issueTime", date.getEndDate()).setRangeEnd(true);
+            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+            queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
+            queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
             historyStatistics.setValue(issueMapper.count(queryFilter));
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
@@ -98,9 +99,9 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.INFO_ERROR_ISSUE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
 
         int count = issueMapper.count(queryFilter);

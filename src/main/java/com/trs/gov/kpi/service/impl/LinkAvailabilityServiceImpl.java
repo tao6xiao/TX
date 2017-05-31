@@ -1,14 +1,18 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
-import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.entity.HistoryDate;
+import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.IssueIndicator;
+import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.DBPager;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateSplitUtil;
@@ -27,7 +31,7 @@ import java.util.List;
  * Created by rw103 on 2017/5/11.
  */
 @Service
-public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
+public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Resource
     private LinkAvailabilityMapper linkAvailabilityMapper;
@@ -62,9 +66,9 @@ public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
     public int getHandledIssueCount(PageDataRequestParam param) {
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        queryFilter.addCond("isResolved", Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
         return issueMapper.count(queryFilter);
     }
@@ -73,9 +77,9 @@ public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
     public int getUnhandledIssueCount(PageDataRequestParam param) {
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
         return issueMapper.count(queryFilter);
     }
@@ -91,9 +95,9 @@ public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-            queryFilter.addCond("typeId", Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-            queryFilter.addCond("issueTime", date.getBeginDate()).setRangeBegin(true);
-            queryFilter.addCond("issueTime", date.getEndDate()).setRangeEnd(true);
+            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+            queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
+            queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
             historyStatistics.setValue(issueMapper.count(queryFilter));
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
@@ -109,9 +113,9 @@ public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("typeId", Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        queryFilter.addCond("isResolved", Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel", Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int count = issueMapper.count(queryFilter);
 
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), count);
@@ -143,15 +147,15 @@ public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
 
     @Override
     public List<LinkAvailabilityResponse> getUnsolvedIssueList(QueryFilter filter) {
-        filter.addCond("isResolved", Integer.valueOf(0));
-        filter.addCond("isDel", Integer.valueOf(0));
+        filter.addCond(IssueTableField.IS_RESOLVED, Integer.valueOf(0));
+        filter.addCond(IssueTableField.IS_DEL, Integer.valueOf(0));
         return linkAvailabilityMapper.getIssueListBySql(filter.getCondFields(), filter.getSortFields(), filter.getPager());
     }
 
     @Override
     public int getUnsolvedIssueCount(QueryFilter filter) {
-        filter.addCond("isResolved", Integer.valueOf(0));
-        filter.addCond("isDel", Integer.valueOf(0));
+        filter.addCond(IssueTableField.IS_RESOLVED, Integer.valueOf(0));
+        filter.addCond(IssueTableField.IS_DEL, Integer.valueOf(0));
         return linkAvailabilityMapper.getIssueCount(filter.getCondFields());
     }
 
@@ -177,9 +181,9 @@ public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
         String indexUrl = getIndexUrl(param);
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond("detail",indexUrl);
-        queryFilter.addCond("isResolved",Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond("isDel",Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int flag = issueMapper.getIndexAvailability(queryFilter);
 
         //返回0表示不可用，1表示可用
@@ -212,9 +216,9 @@ public class LinkAvailabilityServiceImpl  implements LinkAvailabilityService {
             param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
             QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-            queryFilter.addCond("detail",indexUrl);
-            queryFilter.addCond("isResolved",Status.Resolve.UN_RESOLVED.value);
-            queryFilter.addCond("isDel",Status.Delete.UN_DELETE.value);
+            queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
+            queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+            queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
             indexPage.setMonitorTime(sdf.format(issueMapper.getMonitorTime(queryFilter)));
         }
         return indexPage;
