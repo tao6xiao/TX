@@ -56,7 +56,7 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
             issueIsResolvedResponseDetail = getIssueIsResolvedResponseDetailByIssue(is);
             issueIsResolvedResponseDetailList.add(issueIsResolvedResponseDetail);
         }
-        apiPageData.setData(issueList);
+        apiPageData.setData(issueIsResolvedResponseDetailList);
         return apiPageData;
     }
 
