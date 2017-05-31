@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBPager;
@@ -61,15 +62,15 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public ApiPageData get(PageDataRequestParam param) {
-        QueryFilter filter = QueryFilterHelper.toFilter(param);
+        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.LINK_AVAILABLE_ISSUE, Types.IssueType.INFO_ERROR_ISSUE);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        filter.addCond(IssueTableField.IS_DEL,Status.Delete.UN_DELETE.value);
-        filter.addCond(IssueTableField.TYPE_ID,1).setRangeBegin(true);
-        filter.addCond(IssueTableField.TYPE_ID,50).setRangeEnd(true);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.TYPE_ID, 1).setRangeBegin(true);
+        filter.addCond(IssueTableField.TYPE_ID, 50).setRangeEnd(true);
 
         int itemCount = issueMapper.count(filter);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
-        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(),apiPageData.getPager().getPageSize()));
+        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
         List<Issue> issueList = issueMapper.select(filter);
         List<IssueIsNotResolvedResponse> responseByIssueList = toResponse(issueList);
         apiPageData.setData(responseByIssueList);
@@ -79,7 +80,7 @@ public class IssueServiceImpl implements IssueService {
     private List<IssueIsNotResolvedResponse> toResponse(List<Issue> issueList) {
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueIsNotResolvedResponse> issueIsNotResolvedResponseList = new ArrayList<>();
-        for (Issue is :issueList) {
+        for (Issue is : issueList) {
             issueIsNotResolvedResponseList.add(toNotResolvedResponse(is));
         }
         return issueIsNotResolvedResponseList;

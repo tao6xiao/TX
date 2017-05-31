@@ -2,9 +2,9 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.IssueBase;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -78,7 +78,7 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         Date issueTime = is.getIssueTime();
         Date nowTime = new Date();
         Long between = nowTime.getTime() - issueTime.getTime();
-        Long limitTime = between/(24*60*60*1000);
+        Long limitTime = between / (24 * 60 * 60 * 1000);
         issueWarningResponse.setLimitTime(limitTime);
         return issueWarningResponse;
     }
@@ -91,14 +91,14 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
 
     @Override
     public ApiPageData get(PageDataRequestParam param) throws ParseException {
-        QueryFilter filter = QueryFilterHelper.toFilter(param);
+        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_WARNING, Types.IssueType.RESPOND_WARNING);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        filter.addCond(IssueTableField.IS_DEL,Status.Delete.UN_DELETE.value);
-        filter.addCond(IssueTableField.TYPE_ID,51).setRangeBegin(true);
-        filter.addCond(IssueTableField.TYPE_ID,100).setRangeEnd(true);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.TYPE_ID, 51).setRangeBegin(true);
+        filter.addCond(IssueTableField.TYPE_ID, 100).setRangeEnd(true);
         int itemCount = issueMapper.count(filter);
         ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
-        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(),apiPageData.getPager().getPageSize()));
+        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
         List<Issue> issueList = issueMapper.select(filter);
         List<IssueWarningResponse> responseByIssueList = getReopnseByIssueList(issueList);
         apiPageData.setData(responseByIssueList);
@@ -109,7 +109,7 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
         IssueWarningResponse issueWarningResponse = null;
-        for (Issue is: issueList) {
+        for (Issue is : issueList) {
             issueWarningResponse = getIssueWarningResponseDetailByIssue(is);
             issueWarningResponseList.add(issueWarningResponse);
         }
