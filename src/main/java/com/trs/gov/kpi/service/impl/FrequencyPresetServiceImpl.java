@@ -51,8 +51,8 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
     }
 
     @Override
-    public int deleteFrequencyPresetBySiteIdAndId(int siteId, int id) {
-        int num = frequencyPresetMapper.deleteFrequencyPresetBySiteIdAndId(siteId, id);
+    public int deleteBySiteIdAndId(int siteId, int id) {
+        int num = frequencyPresetMapper.deleteBySiteIdAndId(siteId, id);
         return num;
     }
 

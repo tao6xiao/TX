@@ -116,7 +116,7 @@ public class FrequencyPresetController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         if(!frequencySetupService.isPresetFeqUsed(siteId, id)){
-            frequencyPresetService.deleteFrequencyPresetBySiteIdAndId(siteId, id);
+            frequencyPresetService.deleteBySiteIdAndId(siteId, id);
         }else{
             log.error("Invalid parameter:  当前参数siteId和id下的记录已经被某一栏目所使用，无法删除");
             throw new BizException("当前预设记录已经被某一栏目所使用，无法删除");

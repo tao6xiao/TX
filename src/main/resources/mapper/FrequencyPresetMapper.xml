@@ -107,7 +107,7 @@
     where siteId = #{siteId,jdbcType=INTEGER}
     AND id = #{id,jdbcType=INTEGER}
   </update>
-  <delete id="deleteFrequencyPresetBySiteIdAndId" parameterType="java.lang.Integer">
+  <delete id="deleteBySiteIdAndId" parameterType="java.lang.Integer">
     delete from frequencypreset
     WHERE siteId = #{siteId,jdbcType=INTEGER}
     AND id = #{id,jdbcType=INTEGER}

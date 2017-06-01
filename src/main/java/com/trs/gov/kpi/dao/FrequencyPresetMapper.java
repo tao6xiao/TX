@@ -52,7 +52,7 @@ public interface FrequencyPresetMapper {
      * @param id
      * @return
      */
-    int deleteFrequencyPresetBySiteIdAndId(@Param("siteId") int siteId, @Param("id") int id);
+    int deleteBySiteIdAndId(@Param("siteId") int siteId, @Param("id") int id);
 
     /**
      * 通过id查询预设记录

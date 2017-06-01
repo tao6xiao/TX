@@ -48,7 +48,7 @@ public interface FrequencyPresetService {
      * @param id
      * @return
      */
-    int deleteFrequencyPresetBySiteIdAndId(int siteId, int id);
+    int deleteBySiteIdAndId(int siteId, int id);
 
     /**
      * 检查当前预设id是否存在
