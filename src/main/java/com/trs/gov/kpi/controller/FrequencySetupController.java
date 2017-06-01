@@ -80,7 +80,7 @@ public class FrequencySetupController {
         }
         int siteId = frequencySetupSetRequest.getSiteId();
         int presetFeqId = frequencySetupSetRequest.getPresetFeqId();
-        if(!frequencyPresetService.IsPresetFeqIdExist(siteId, presetFeqId)){
+        if(!frequencyPresetService.isPresetFeqIdExist(siteId, presetFeqId)){
             log.error("Invalid parameter: 参数FrequencySetupSetRequest对象中presetFeqId不在数据库表预设记录中");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
