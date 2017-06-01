@@ -80,14 +80,14 @@ public class FrequencySetupController {
         }
         int siteId = frequencySetupSetRequest.getSiteId();
         int presetFeqId = frequencySetupSetRequest.getPresetFeqId();
-        if(!frequencyPresetService.checkPresetFeqIdIsExistOrNot(siteId, presetFeqId)){
+        if(!frequencyPresetService.IsPresetFeqIdExist(siteId, presetFeqId)){
             log.error("Invalid parameter: 参数FrequencySetupSetRequest对象中presetFeqId不在数据库表预设记录中");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
-                frequencySetup = frequencySetupService.getFrequencySetupByFrequencySetupSetRequestDetail(frequencySetupSetRequest, chnlIds[i]);
+                frequencySetup = frequencySetupService.toFrequencySetupBySetupRequest(frequencySetupSetRequest, chnlIds[i]);
                 frequencySetupService.insert(frequencySetup);
             } else {//当前站点的当前栏目设置过更新频率，需要修改
                 frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());

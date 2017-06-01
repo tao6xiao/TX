@@ -74,7 +74,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     }
 
     @Override
-    public FrequencySetup getFrequencySetupByFrequencySetupSetRequestDetail(FrequencySetupSetRequest frequencySetupSetRequest, int chnlId) {
+    public FrequencySetup toFrequencySetupBySetupRequest(FrequencySetupSetRequest frequencySetupSetRequest, int chnlId) {
         FrequencySetup frequencySetup = new FrequencySetup();
         frequencySetup.setId(null);
         frequencySetup.setSiteId(frequencySetupSetRequest.getSiteId());

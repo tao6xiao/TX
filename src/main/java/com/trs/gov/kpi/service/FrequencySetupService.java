@@ -71,7 +71,7 @@ public interface FrequencySetupService {
      * @param frequencySetupSetRequest
      * @return
      */
-    FrequencySetup getFrequencySetupByFrequencySetupSetRequestDetail(FrequencySetupSetRequest frequencySetupSetRequest, int chnlId);
+    FrequencySetup toFrequencySetupBySetupRequest(FrequencySetupSetRequest frequencySetupSetRequest, int chnlId);
 
     /**
      * 删除更新频率记录

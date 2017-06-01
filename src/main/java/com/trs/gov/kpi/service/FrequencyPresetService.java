@@ -55,5 +55,5 @@ public interface FrequencyPresetService {
      * @param id
      * @return
      */
-    boolean checkPresetFeqIdIsExistOrNot(int siteId, int id);
+    boolean IsPresetFeqIdExist(int siteId, int id);
 }

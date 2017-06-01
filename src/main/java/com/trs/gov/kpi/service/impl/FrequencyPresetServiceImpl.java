@@ -57,7 +57,7 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
     }
 
     @Override
-    public boolean checkPresetFeqIdIsExistOrNot(int siteId,int id) {
+    public boolean IsPresetFeqIdExist(int siteId, int id) {
         boolean state = false;
         FrequencyPreset preset = frequencyPresetMapper.selectBySiteIdAndId(siteId, id);
         if(preset != null){
