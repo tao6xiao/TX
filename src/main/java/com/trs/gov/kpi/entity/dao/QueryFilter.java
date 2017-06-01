@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.utils.StringUtil;
 import javafx.scene.control.Tab;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * 通用查询条件类
  * Created by linwei on 2017/5/22.
  */
+@Slf4j
 public class QueryFilter {
 
     private static final String OR_COMPLEX_FIELD_NAME = "OR_COMPLEX_FIELD";
@@ -41,6 +43,7 @@ public class QueryFilter {
 
     public QueryFilter(Table table) {
         if (table == null) {
+            log.error("invalid table: 传入的参数table（表）为null");
             throw new IllegalArgumentException("invalid table");
         }
         this.table = table;
@@ -121,6 +124,7 @@ public class QueryFilter {
      */
     private void checkFieldName(String fieldName) {
         if (!fieldName.equals(OR_COMPLEX_FIELD_NAME) && !table.containsField(fieldName)) {
+            log.error("invalid field name: 没有当前表并且fieldName与OR_COMPLEX_FIELD_NAME常量也不相等");
             throw new IllegalArgumentException("invalid field name " + fieldName + " of table " + table.getTableName());
         }
     }
