@@ -90,13 +90,9 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     }
 
     @Override
-    public boolean checkPresetFeqIsUsedOrNot(int siteId, int presetFeqId) {
-        boolean state = false;
+    public boolean isPresetFeqUsed(int siteId, int presetFeqId) {
         List<FrequencySetup> setupList = frequencySetupMapper.getBySiteIdAndPresetFeqId(siteId, presetFeqId);
-        if(setupList.size() == 0 || setupList == null){
-            state = true;
-        }
-        return state;
+        return setupList != null && !setupList.isEmpty();
     }
 
     private List<FrequencySetupResponse> getFrequencySetupDetailListByFrequencySetupList(List<FrequencySetup> frequencySetupList) throws RemoteException {

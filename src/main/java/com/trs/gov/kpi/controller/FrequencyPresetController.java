@@ -115,7 +115,7 @@ public class FrequencyPresetController {
             log.error("Invalid parameter:  参数siteId或者id（预设记录编号）存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        if(frequencySetupService.checkPresetFeqIsUsedOrNot(siteId, id)){
+        if(!frequencySetupService.isPresetFeqUsed(siteId, id)){
             frequencyPresetService.deleteFrequencyPresetBySiteIdAndId(siteId, id);
         }else{
             log.error("Invalid parameter:  当前参数siteId和id下的记录已经被某一栏目所使用，无法删除");

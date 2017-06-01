@@ -85,7 +85,7 @@ public interface FrequencySetupService {
      * 检查当前站点下的当前预设记录是否被用于给栏目设置值
      * @param siteId
      * @param presetFeqId
-     * @return
+     * @return true 表被用了，false表示未被使用
      */
-    boolean checkPresetFeqIsUsedOrNot(int siteId, int presetFeqId);
+    boolean isPresetFeqUsed(int siteId, int presetFeqId);
 }
