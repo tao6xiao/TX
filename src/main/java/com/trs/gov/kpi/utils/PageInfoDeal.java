@@ -69,7 +69,7 @@ public class PageInfoDeal {
      * @param pageCount
      * @return 返回从0开始计数的页
      */
-    private static int dealAndcheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer pageCount) {
+    private static int dealAndCheckPageIndexIsMinusOrOutOfRang(Integer pageIndex, Integer pageCount) {
         pageIndex = pageIndex - 1;//10页，最后一页为第10页,index为9
         // NOTE LINWEI 参数超出下限的情况在controller进行处理，如果超出实际的页数，则可以考虑不处理。削减后端对前端的限制
 //        if (pageIndex < 0) {
@@ -95,7 +95,7 @@ public class PageInfoDeal {
         pageSize = PageInfoDeal.checkPageSizeIsNullOrNot(pageSize);
         pageIndex = PageInfoDeal.checkPageIndexIsNullOrNot(pageIndex);
         int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);
-        pageIndex = PageInfoDeal.dealAndcheckPageIndexIsMinusOrOutOfRang(pageIndex, pageCount);
+        pageIndex = PageInfoDeal.dealAndCheckPageIndexIsMinusOrOutOfRang(pageIndex, pageCount);
         ApiPageData apiPageData = new ApiPageData();
         Pager pager = new Pager();
         pager.setCurrPage(pageIndex + 1);
