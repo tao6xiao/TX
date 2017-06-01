@@ -31,7 +31,7 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
         List<FrequencyPreset> frequencyPresetList = frequencyPresetMapper.selectPageDataBySiteId(siteId, pageCalculate, pageSize);
         List<FrequencyPresetResponse> frequencyPresetResponseList = new ArrayList<>();
         for (FrequencyPreset frequencyPreset : frequencyPresetList) {
-            FrequencyPresetResponse frequencyPresetResponse = getFrequencyPresetDealByfrequencyPreset(frequencyPreset);
+            FrequencyPresetResponse frequencyPresetResponse = getResponseByPresetRequest(frequencyPreset);
             frequencyPresetResponseList.add(frequencyPresetResponse);
         }
         return frequencyPresetResponseList;
@@ -39,14 +39,14 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
 
     @Override
     public int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest) {
-        FrequencyPreset frequencyPreset = getFrequencyPresetByFrequencyPresetRequestDeal(frequencyPresetRequest);
+        FrequencyPreset frequencyPreset = toFrequencyPresetByRequest(frequencyPresetRequest);
         int num = frequencyPresetMapper.insert(frequencyPreset);
         return num;
     }
 
     @Override
-    public int updateFrequencyPresetBySiteIdAndId(FrequencyPreset frequencyPreset) {
-        int num = frequencyPresetMapper.updateFrequencyPresetBySiteIdAndId(frequencyPreset);
+    public int updateBySiteIdAndId(FrequencyPreset frequencyPreset) {
+        int num = frequencyPresetMapper.updateBySiteIdAndId(frequencyPreset);
         return num;
     }
 
@@ -66,7 +66,7 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
         return state;
     }
 
-    private FrequencyPreset getFrequencyPresetByFrequencyPresetRequestDeal(FrequencyPresetRequest frequencyPresetRequest) {
+    private FrequencyPreset toFrequencyPresetByRequest(FrequencyPresetRequest frequencyPresetRequest) {
         FrequencyPreset frequencyPreset = new FrequencyPreset();
         frequencyPreset.setId(null);
         frequencyPreset.setSiteId(frequencyPresetRequest.getSiteId());
@@ -75,7 +75,7 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
         return frequencyPreset;
     }
 
-    private FrequencyPresetResponse getFrequencyPresetDealByfrequencyPreset(FrequencyPreset frequencyPreset) {
+    private FrequencyPresetResponse getResponseByPresetRequest(FrequencyPreset frequencyPreset) {
         FrequencyPresetResponse frequencyPresetResponse = new FrequencyPresetResponse();
         frequencyPresetResponse.setId(frequencyPreset.getId());
         frequencyPresetResponse.setUpdateFreq(frequencyPreset.getUpdateFreq());

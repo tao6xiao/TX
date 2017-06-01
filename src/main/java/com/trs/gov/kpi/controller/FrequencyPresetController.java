@@ -96,7 +96,7 @@ public class FrequencyPresetController {
             log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        frequencyPresetService.updateFrequencyPresetBySiteIdAndId(preset);
+        frequencyPresetService.updateBySiteIdAndId(preset);
         return null;
     }
 

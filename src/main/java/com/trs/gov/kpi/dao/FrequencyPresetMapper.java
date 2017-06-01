@@ -44,7 +44,7 @@ public interface FrequencyPresetMapper {
      * @param frequencyPreset
      * @return
      */
-    int updateFrequencyPresetBySiteIdAndId(FrequencyPreset frequencyPreset);
+    int updateBySiteIdAndId(FrequencyPreset frequencyPreset);
 
     /**
      * 通过站点id和id删除更新频率和预警预设记录

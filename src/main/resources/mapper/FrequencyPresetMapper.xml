@@ -99,7 +99,7 @@
     where siteId = #{siteId,jdbcType=INTEGER}
     AND id = #{id,jdbcType=INTEGER}
   </select>
-  <update id="updateFrequencyPresetBySiteIdAndId" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
+  <update id="updateBySiteIdAndId" parameterType="com.trs.gov.kpi.entity.FrequencyPreset">
     update frequencypreset
     set
       updateFreq = #{updateFreq,jdbcType=INTEGER},
