@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Component
 @Scope("prototype")
-public class HomePageCheckScheduler extends AbstractScheduler {
+public class HomePageCheckScheduler implements SchedulerTask {
 
     @Resource
     SpiderUtils spider;

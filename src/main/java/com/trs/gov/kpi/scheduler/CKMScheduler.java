@@ -1,7 +1,5 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
@@ -11,7 +9,6 @@ import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
-import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.Exchanger;
 
 /**
  * Created by he.lang on 2017/5/24.
@@ -29,7 +25,7 @@ import java.util.concurrent.Exchanger;
 @Slf4j
 @Component
 @Scope("prototype")
-public class CKMScheduler extends AbstractScheduler {
+public class CKMScheduler implements SchedulerTask {
 
     @Setter
     @Getter

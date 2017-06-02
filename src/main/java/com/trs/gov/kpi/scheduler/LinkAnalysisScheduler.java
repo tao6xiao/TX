@@ -23,7 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 @Slf4j
 @Component
 @Scope("prototype")
-public class LinkAnalysisScheduler extends AbstractScheduler{
+public class LinkAnalysisScheduler implements SchedulerTask {
 
     private static Map<String, ScheduledExecutorService> taskAndExecutorMap =
             Collections.synchronizedMap(new HashMap<String, ScheduledExecutorService>());

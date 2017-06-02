@@ -33,7 +33,7 @@ import java.util.*;
 @Slf4j
 @Component
 @Scope("prototype")
-public class InfoUpdateCheckScheduler extends AbstractScheduler {
+public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     // 开始检查的第一个周期起始点
     private static final String BEGIN_CHECK_DAY = "2017-05-01 00:00:00";
