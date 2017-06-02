@@ -59,10 +59,7 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
             issueIsResolvedResponseDetailList.add(getIssueIsResolvedResponseDetailByIssue(is));
         }
 
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(issueIsResolvedResponseDetailList);
-        return apiPageData;
+        return new ApiPageData(pager, issueIsResolvedResponseDetailList);
     }
 
 //    @Override

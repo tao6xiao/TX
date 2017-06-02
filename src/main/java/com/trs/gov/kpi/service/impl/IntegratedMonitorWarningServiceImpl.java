@@ -103,10 +103,7 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         List<Issue> issueList = issueMapper.select(filter);
         List<IssueWarningResponse> responseByIssueList = getReopnseByIssueList(issueList);
 
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(responseByIssueList);
-        return apiPageData;
+        return new ApiPageData(pager, responseByIssueList);
     }
 
     private List<IssueWarningResponse> getReopnseByIssueList(List<Issue> issueList) throws ParseException {

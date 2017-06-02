@@ -60,10 +60,7 @@ public class ChnlGroupController {
         int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
         Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
         List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, pager.getCurrPage() - 1, pager.getPageSize());
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(chnlGroupChnlsResponseList);
-        return apiPageData;
+        return new ApiPageData(pager, chnlGroupChnlsResponseList);
     }
 
     /**

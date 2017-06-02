@@ -111,11 +111,7 @@ public class ServiceLinkController {
                 link.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).name);
             }
         }
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(linkAvailabilityResponseList);
-
-        return apiPageData;
+        return new ApiPageData(pager, linkAvailabilityResponseList);
     }
 
     /**

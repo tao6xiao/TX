@@ -134,11 +134,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(linkAvailabilityResponse);
         }
 
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(list);
-
-        return apiPageData;
+        return new ApiPageData(pager, list);
     }
 
     @Override

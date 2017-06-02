@@ -75,10 +75,7 @@ public class IssueServiceImpl implements IssueService {
         List<Issue> issueList = issueMapper.select(filter);
         List<IssueIsNotResolvedResponse> responseByIssueList = toResponse(issueList);
 
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(responseByIssueList);
-        return apiPageData;
+        return new ApiPageData(pager, responseByIssueList);
     }
 
     private List<IssueIsNotResolvedResponse> toResponse(List<Issue> issueList) {

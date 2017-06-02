@@ -1,16 +1,22 @@
 package com.trs.gov.kpi.entity.responsedata;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
 /**
  * Created by rw103 on 2017/5/13.
  */
-@Data
 public class ApiPageData {
 
-    private Pager pager;
+    @Getter
+    private final Pager pager;
 
-    private List data;
+    @Getter
+    private final List data;
+
+    public ApiPageData(Pager pager, List data) {
+        this.pager = pager;
+        this.data = data;
+    }
 }

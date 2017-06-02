@@ -232,10 +232,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         List<InfoUpdate> infoUpdateList = issueMapper.selectInfoUpdate(filter);
         List<InfoUpdateResponse> infoUpdateResponseList = toResponse(infoUpdateList);
 
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(infoUpdateResponseList);
-        return apiPageData;
+        return new ApiPageData(pager, infoUpdateResponseList);
     }
 
     private List<InfoUpdateResponse> toResponse(List<InfoUpdate> infoUpdateList) {

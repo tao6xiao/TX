@@ -116,11 +116,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorResponses.add(infoErrorResponse);
         }
 
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(infoErrorResponses);
-
-        return apiPageData;
+        return new ApiPageData(pager, infoErrorResponses);
     }
 
 

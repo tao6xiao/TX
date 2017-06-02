@@ -56,10 +56,7 @@ public class FrequencySetupController {
         Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
         List<FrequencySetupResponse> frequencySetupResponses = frequencySetupService.getPageDataFrequencySetupList(siteId, pager.getCurrPage() - 1, pager.getPageSize());
 
-        ApiPageData apiPageData = new ApiPageData();
-        apiPageData.setPager(pager);
-        apiPageData.setData(frequencySetupResponses);
-        return apiPageData;
+        return new ApiPageData(pager, frequencySetupResponses);
     }
 
     /**
