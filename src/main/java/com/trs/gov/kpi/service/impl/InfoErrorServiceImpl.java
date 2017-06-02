@@ -10,10 +10,7 @@ import com.trs.gov.kpi.entity.IssueIndicator;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.InfoErrorResponse;
-import com.trs.gov.kpi.entity.responsedata.Statistics;
+import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
@@ -105,8 +102,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
 
 
         int count = issueMapper.count(queryFilter);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), count);
-        queryFilter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), count);
+        queryFilter.setPager(pager);
 
         List<InfoError> infoErrorList = issueMapper.selectInfoError(queryFilter);
         List<InfoErrorResponse> infoErrorResponses = new ArrayList<>();
@@ -118,6 +115,9 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
             infoErrorResponses.add(infoErrorResponse);
         }
+
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(infoErrorResponses);
 
         return apiPageData;

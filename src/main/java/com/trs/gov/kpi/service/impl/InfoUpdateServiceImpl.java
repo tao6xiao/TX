@@ -11,10 +11,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
-import com.trs.gov.kpi.entity.responsedata.Statistics;
+import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -35,9 +32,6 @@ import java.util.*;
 @Slf4j
 @Service
 public class InfoUpdateServiceImpl implements InfoUpdateService {
-
-//    @Resource
-//    private InfoUpdateMapper infoUpdateMapper;
 
     @Resource
     private SiteApiService siteApiService;
@@ -84,16 +78,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return statisticsList;
     }
 
-//    @Override
-//    public int getUnhandledIssueCount(IssueBase issueBase) {
-//        return infoUpdateMapper.getUnhandledIssueCount(issueBase);
-//    }
-//
-//    @Override
-//    public int getUpdateWarningCount(IssueBase issueBase) {
-//        return infoUpdateMapper.getUpdateWarningCount(issueBase) + infoUpdateMapper.getSelfWarningCount(issueBase);
-//    }
-
     @Override
     public void handIssuesByIds(int siteId, List<Integer> ids) {
         issueMapper.handIssuesByIds(siteId, ids);
@@ -138,74 +122,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return list;
     }
 
-//    @Override
-//    public List<InfoUpdateResponse> getIssueList(PageDataRequestParam param) {
-//        List<InfoUpdateResponse> infoUpdateResponseList = new ArrayList<>();
-//        QueryFilter filter = QueryFilterHelper.toFilter(param);
-//
-//        List<Issue> issueList = null;
-//
-//        for (InfoUpdateResponse info : infoUpdateResponseList) {
-//            if (info.getIssueTypeId() != null) {
-//                info.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(info.getIssueTypeId()).name);
-//            }
-//            // get channl name
-//            try {
-//                if (info.getChnlId() != null) {
-//                    Channel chnl = siteApiService.getChannelById(info.getChnlId(), "");
-//                    if (chnl != null && !StringUtil.isEmpty(chnl.getChnlName())) {
-//                        info.setChnlName(chnl.getChnlName());
-//                    }
-//                }
-//            } catch (RemoteException e) {
-//                log.error("", e);
-//            }
-//        }
-//        return infoUpdateResponseList;
-//    }
-
-//    @Override
-//    public List<Statistics> getIssueCountByType(IssueBase issueBase) {
-//
-//        int updateNotIntimeCount = infoUpdateMapper.getUpdateNotIntimeCount(issueBase);
-//        Statistics updateNotIntimeStatistics = new Statistics();
-//        updateNotIntimeStatistics.setCount(updateNotIntimeCount);
-//        updateNotIntimeStatistics.setType(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-//        updateNotIntimeStatistics.setName(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.name);
-//
-//        List<Statistics> list = new ArrayList<>();
-//        list.add(updateNotIntimeStatistics);
-//
-//        return list;
-//    }
-
-//    @Override
-//    public List<Statistics> getWarningCountByType(IssueBase issueBase) {
-//
-//        int updateWarningCount = infoUpdateMapper.getUpdateWarningCount(issueBase);
-//        Statistics updateWarningStatistics = new Statistics();
-//        updateWarningStatistics.setCount(updateWarningCount);
-//        updateWarningStatistics.setType(Types.InfoUpdateWarningType.UPDATE_WARNING.value);
-//        updateWarningStatistics.setName(Types.InfoUpdateWarningType.UPDATE_WARNING.name);
-//
-//        int selfWarningCount = infoUpdateMapper.getSelfWarningCount(issueBase);
-//        Statistics selfWarningStatistics = new Statistics();
-//        selfWarningStatistics.setCount(selfWarningCount);
-//        selfWarningStatistics.setType(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
-//        selfWarningStatistics.setName(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.name);
-//
-//        List<Statistics> list = new ArrayList<>();
-//        list.add(updateWarningStatistics);
-//        list.add(selfWarningStatistics);
-//
-//        return list;
-//    }
-
-//    @Override
-//    public int getHandledIssueCount(IssueBase issueBase) {
-//        return 0;
-//    }
-
     /**
      * 获取栏目信息更新不及时问题的统计信息
      *
@@ -218,13 +134,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     public List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException {
         int count = 0;
         List<Statistics> statisticsList = new ArrayList<>();
-//        Date ealiestTime = getEarliestIssueTime();
-//        Date beginSetTime = InitTime.CheckBeginDateTime(beginDateTime, ealiestTime);
-//        Date endSetTime = InitTime.CheckEndDateTime(endDateTime);
-//        IssueBase issueBase = new IssueBase();
-//        issueBase.setSiteId(siteId);
-//        issueBase.setBeginDateTime(InitTime.getStringTime(beginSetTime));
-//        issueBase.setEndDateTime(InitTime.getStringTime(endSetTime));
 
         QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
@@ -311,19 +220,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return statisticsList;
     }
 
-//    @Override
-//    public int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
-//        return 0;
-//    }
-
-//    @Override
-//    public int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException {
-////        IssueBase issueBase = getIssueBase(siteId, beginDateTime, endDateTime);
-//        //获取所有
-//        int count = infoUpdateMapper.getAllDateUpdateNotInTime(issueBase);
-//        return count;
-//    }
-
     @Override
     public ApiPageData get(PageDataRequestParam param) throws RemoteException {
         QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE);
@@ -331,10 +227,13 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         int itemCount = issueMapper.count(filter);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
-        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
+        filter.setPager(pager);
         List<InfoUpdate> infoUpdateList = issueMapper.selectInfoUpdate(filter);
         List<InfoUpdateResponse> infoUpdateResponseList = toResponse(infoUpdateList);
+
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(infoUpdateResponseList);
         return apiPageData;
     }
@@ -376,17 +275,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         }
         return chnlName;
     }
-
-//    private IssueBase getIssueBase(Integer siteId, String beginDateTime, String endDateTime) throws ParseException {
-//        Date ealiestTime = getEarliestIssueTime();
-//        beginDateTime = InitTime.checkBeginDateTime(beginDateTime, ealiestTime);
-//        endDateTime = InitTime.checkEndDateTime(endDateTime);
-//        IssueBase issueBase = new IssueBase();
-//        issueBase.setSiteId(siteId);
-//        issueBase.setBeginDateTime(beginDateTime);
-//        issueBase.setEndDateTime(endDateTime);
-//        return issueBase;
-//    }
 
     private Statistics getStatisticsByCount(int i, int count) {
         Statistics statistics = new Statistics();

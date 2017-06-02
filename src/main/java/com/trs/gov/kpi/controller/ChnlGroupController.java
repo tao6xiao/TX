@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -57,8 +58,10 @@ public class ChnlGroupController {
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
+        Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
+        List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, pager.getCurrPage() - 1, pager.getPageSize());
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(chnlGroupChnlsResponseList);
         return apiPageData;
     }

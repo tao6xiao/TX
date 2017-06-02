@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -48,9 +49,11 @@ public class FrequencyPresetController {
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
+        Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
         List<FrequencyPresetResponse> responseList = frequencyPresetService.getPageDataBySiteId(
-                siteId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
+                siteId, pager.getCurrPage() - 1, pager.getPageSize());
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(responseList);
         return apiPageData;
     }

@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponse;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
@@ -97,10 +98,13 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         filter.addCond(IssueTableField.TYPE_ID, 51).setRangeBegin(true);
         filter.addCond(IssueTableField.TYPE_ID, 100).setRangeEnd(true);
         int itemCount = issueMapper.count(filter);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
-        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
+        filter.setPager(pager);
         List<Issue> issueList = issueMapper.select(filter);
         List<IssueWarningResponse> responseByIssueList = getReopnseByIssueList(issueList);
+
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(responseByIssueList);
         return apiPageData;
     }

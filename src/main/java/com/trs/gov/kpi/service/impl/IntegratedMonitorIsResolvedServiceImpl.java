@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponse;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
@@ -46,17 +47,20 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
 
         int itemCount = issueMapper.count(filter);
 
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
-        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
+        filter.setPager(pager);
         List<Issue> issueList = issueMapper.select(filter);
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
 
         List<IssueIsResolvedResponse> issueIsResolvedResponseDetailList = new ArrayList<>();
-        IssueIsResolvedResponse issueIsResolvedResponseDetail = null;
+//        IssueIsResolvedResponse issueIsResolvedResponseDetail = null;
         for (Issue is : issueList) {
-            issueIsResolvedResponseDetail = getIssueIsResolvedResponseDetailByIssue(is);
-            issueIsResolvedResponseDetailList.add(issueIsResolvedResponseDetail);
+//            issueIsResolvedResponseDetail = getIssueIsResolvedResponseDetailByIssue(is);
+            issueIsResolvedResponseDetailList.add(getIssueIsResolvedResponseDetailByIssue(is));
         }
+
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(issueIsResolvedResponseDetailList);
         return apiPageData;
     }

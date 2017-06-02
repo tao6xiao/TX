@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -102,14 +103,16 @@ public class ServiceLinkController {
         }
 
         int itemCount = linkAvailabilityService.getUnsolvedIssueCount(filter);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(requestParam.getPageIndex(), requestParam.getPageSize(), itemCount);
-        filter.setPager(apiPageData.getPager());
+        Pager pager = PageInfoDeal.buildResponsePager(requestParam.getPageIndex(), requestParam.getPageSize(), itemCount);
+        filter.setPager(pager);
         List<LinkAvailabilityResponse> linkAvailabilityResponseList = linkAvailabilityService.getUnsolvedIssueList(filter);
         for (LinkAvailabilityResponse link : linkAvailabilityResponseList) {
             if (link.getIssueTypeId() != null) {
                 link.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).name);
             }
         }
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(linkAvailabilityResponseList);
 
         return apiPageData;

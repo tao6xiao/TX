@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -51,8 +52,12 @@ public class FrequencySetupController {
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(pageIndex, pageSize, itemCount);
-        List<FrequencySetupResponse> frequencySetupResponses = frequencySetupService.getPageDataFrequencySetupList(siteId, apiPageData.getPager().getCurrPage() - 1, apiPageData.getPager().getPageSize());
+
+        Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
+        List<FrequencySetupResponse> frequencySetupResponses = frequencySetupService.getPageDataFrequencySetupList(siteId, pager.getCurrPage() - 1, pager.getPageSize());
+
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(frequencySetupResponses);
         return apiPageData;
     }

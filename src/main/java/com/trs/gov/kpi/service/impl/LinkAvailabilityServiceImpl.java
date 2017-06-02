@@ -118,9 +118,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int count = issueMapper.count(queryFilter);
 
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), count);
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), count);
 
-        queryFilter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
+        queryFilter.setPager(pager);
         List<LinkAvailability> linkAvailabilitieList = issueMapper.selectLinkAvailability(queryFilter);
 
         List<LinkAvailabilityResponse> list = new ArrayList<>();
@@ -133,6 +133,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());
             list.add(linkAvailabilityResponse);
         }
+
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(list);
 
         return apiPageData;

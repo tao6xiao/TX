@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponse;
+import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
@@ -69,10 +70,13 @@ public class IssueServiceImpl implements IssueService {
         filter.addCond(IssueTableField.TYPE_ID, 50).setRangeEnd(true);
 
         int itemCount = issueMapper.count(filter);
-        ApiPageData apiPageData = PageInfoDeal.buildApiPageData(param.getPageIndex(), param.getPageSize(), itemCount);
-        filter.setPager(new DBPager((apiPageData.getPager().getCurrPage() - 1) * apiPageData.getPager().getPageSize(), apiPageData.getPager().getPageSize()));
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
+        filter.setPager(pager);
         List<Issue> issueList = issueMapper.select(filter);
         List<IssueIsNotResolvedResponse> responseByIssueList = toResponse(issueList);
+
+        ApiPageData apiPageData = new ApiPageData();
+        apiPageData.setPager(pager);
         apiPageData.setData(responseByIssueList);
         return apiPageData;
     }
