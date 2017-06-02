@@ -16,7 +16,7 @@ import com.trs.gov.kpi.entity.responsedata.InfoErrorResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
-import com.trs.gov.kpi.utils.DateSplitUtil;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.stereotype.Service;
@@ -77,7 +77,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
         param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
 
-        List<HistoryDate> dateList = DateSplitUtil.getHistoryDateList(param.getBeginDateTime(), param.getEndDateTime());
+        List<HistoryDate> dateList = DateUtil.splitDateByMonth(param.getBeginDateTime(), param.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();

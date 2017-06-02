@@ -10,6 +10,7 @@ import com.trs.gov.kpi.job.CheckJob;
 import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
@@ -32,6 +33,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @Slf4j
 @Service
 public class SchedulerServiceImpl implements SchedulerService, ApplicationListener<ContextRefreshedEvent> {
+
+
 
     @Resource
     SchedulerTask[] schedulerTasks;
@@ -62,7 +65,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                     scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_CONTENT);
                     break;
                 case CHECK_INFO_UPDATE:
-                    scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 24 * 60 * 60);
+                    scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, DateUtil.SECOND_ONE_DAY);
                     break;
                 case CHECK_LINK:
                     scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
@@ -136,7 +139,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         // 每一个站点一个job
         for (MonitorSite site : allMonitorSites) {
-            scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 24 * 60 * 60);
+            scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, DateUtil.SECOND_ONE_DAY);
         }
     }
 
