@@ -24,6 +24,7 @@ public class DateUtil {
 
     /**
      * 日期字符串转换为日期
+     *
      * @param dateString
      * @return
      */
@@ -42,6 +43,7 @@ public class DateUtil {
 
     /**
      * 格式化日期为字符串
+     *
      * @param date
      * @return
      */
@@ -55,6 +57,7 @@ public class DateUtil {
 
     /**
      * 计算两个日期之间相差的天数
+     *
      * @param date1
      * @param date2
      * @return
@@ -65,6 +68,7 @@ public class DateUtil {
 
     /**
      * 添加天数
+     *
      * @param date
      * @param day
      * @return
@@ -75,6 +79,7 @@ public class DateUtil {
 
     /**
      * 把时间按月拆分
+     *
      * @param start
      * @param end
      * @return 返回拆分后的每个月
@@ -141,11 +146,21 @@ public class DateUtil {
 
                 }
                 int month = currBegin.get(Calendar.MONTH);
-                historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatDate(month));
+                historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatMonth(month));
                 list.add(historyDate);
                 currBegin.add(Calendar.MONTH, 1);// 进行当前日期月份加1
                 currBegin.set(Calendar.DAY_OF_MONTH, 1);//取当月的第一天
 
+            }
+
+            //起止日期相同时
+            if (currBegin.getTime().equals(endCalendar.getTime())) {
+                HistoryDate historyDate = new HistoryDate();
+                historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatMonth(currBegin.get(Calendar.MONTH)));
+                historyDate.setBeginDate(sdf.format(currBegin.getTime()));
+                endCalendar.add(Calendar.DAY_OF_MONTH, 1);
+                historyDate.setEndDate(sdf.format(endCalendar.getTime()));
+                list.add(historyDate);
             }
 
         } catch (ParseException e) {
@@ -155,7 +170,7 @@ public class DateUtil {
         return list;
     }
 
-    private static String formatDate(int month) {
+    private static String formatMonth(int month) {
         return (month + 1) < 10 ? "0" + (month + 1) : "" + (month + 1);
     }
 
