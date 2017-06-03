@@ -1,8 +1,5 @@
 package com.trs.gov.kpi.constant;
 
-import com.trs.gov.kpi.scheduler.HomePageCheckScheduler;
-import com.trs.gov.kpi.scheduler.LinkAnalysisScheduler;
-import com.trs.gov.kpi.scheduler.SchedulerTask;
 import lombok.Getter;
 
 /**

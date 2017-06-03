@@ -3,7 +3,6 @@ package com.trs.gov.kpi.utils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -16,7 +15,6 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -126,7 +124,7 @@ public class SpiderUtils {
         if(StringUtils.isBlank(baseUrl)) {
 
             log.info("linkCheck completed, no URL has been checked!");
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();

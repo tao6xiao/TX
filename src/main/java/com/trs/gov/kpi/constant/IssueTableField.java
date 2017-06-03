@@ -17,4 +17,8 @@ public class IssueTableField {
     public static final String CUSTOMER1 = "customer1";
     public static final String CUSTOMER2 = "customer2";
     public static final String CUSTOMER3 = "customer3";
+
+    private IssueTableField() {
+
+    }
 }

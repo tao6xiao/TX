@@ -16,7 +16,7 @@ public class Status {
 
         public final int value;
 
-        public final String name;
+        private final String name;
 
         Delete(int value, String name) {
             this.value = value;
@@ -35,7 +35,7 @@ public class Status {
 
         public final int value;
 
-        public final String name;
+        private final String name;
 
         Resolve(int value, String name) {
             this.value = value;

@@ -7,7 +7,6 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.IssueIndicator;
-import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -36,8 +35,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -48,7 +47,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         Statistics handledIssueStatistics = new Statistics();
         handledIssueStatistics.setCount(handledCount);
         handledIssueStatistics.setType(IssueIndicator.SOLVED.value);
-        handledIssueStatistics.setName(IssueIndicator.SOLVED.name);
+        handledIssueStatistics.setName(IssueIndicator.SOLVED.name());
 
         queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -59,7 +58,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         Statistics unhandledIssueStatistics = new Statistics();
         unhandledIssueStatistics.setCount(unhandledCount);
         unhandledIssueStatistics.setType(IssueIndicator.UN_SOLVED.value);
-        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.name);
+        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.name());
 
         List<Statistics> list = new ArrayList<>();
         list.add(handledIssueStatistics);
@@ -71,8 +70,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(param.getBeginDateTime(), param.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -92,8 +91,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public ApiPageData getIssueList(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_ERROR_ISSUE);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -110,7 +109,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         for (InfoError infoError : infoErrorList) {
             InfoErrorResponse infoErrorResponse = new InfoErrorResponse();
             infoErrorResponse.setId(infoError.getId());
-            infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).name);
+            infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).name());
             infoErrorResponse.setSnapshot(infoError.getSnapshot());
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
             infoErrorResponses.add(infoErrorResponse);

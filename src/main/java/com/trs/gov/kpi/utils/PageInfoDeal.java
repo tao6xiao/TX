@@ -11,6 +11,10 @@ public class PageInfoDeal {
     public static final Integer PAGE_SIZE_DEFAULT = 20;//默认分页大小
     public static final Integer PAGE_INDEX_DEFAULT = 1;//默认1，第一页
 
+    private PageInfoDeal() {
+
+    }
+
     /**
      * 分页总数计算
      *
@@ -19,8 +23,7 @@ public class PageInfoDeal {
      * @return
      */
     public static int getPageCount(int itemCount, int pageSize) {
-        int pageCount = itemCount % pageSize == 0 ? itemCount / pageSize : itemCount / pageSize + 1;
-        return pageCount;
+        return itemCount % pageSize == 0 ? itemCount / pageSize : itemCount / pageSize + 1;
     }
 
     /**
@@ -52,18 +55,6 @@ public class PageInfoDeal {
     }
 
     /**
-     * 让页数基于0开始
-     *
-     * @param pageIndex 从1开始计数的页
-     *
-     * @return 返回从0开始计数的页
-     */
-    private static int baseZeroOfPageIndex(Integer pageIndex) {
-        pageIndex = pageIndex - 1;
-        return pageIndex;
-    }
-
-    /**
      * 获取返回的ApiPageData对象（不完整，所以调用方法之后需要将List再放入ApiPageData对象）
      * @param pageIndex 从1开始计数的页
      * @param pageSize
@@ -71,13 +62,13 @@ public class PageInfoDeal {
      * @return
      */
     public static Pager buildResponsePager(Integer pageIndex, Integer pageSize, Integer itemCount){
-        pageSize = PageInfoDeal.initPageSize(pageSize);
-        pageIndex = PageInfoDeal.initPageIndex(pageIndex);
-        int pageCount = PageInfoDeal.getPageCount(itemCount, pageSize);
+        int newPageSize = PageInfoDeal.initPageSize(pageSize);
+        int newPageIndex = PageInfoDeal.initPageIndex(pageIndex);
+        int pageCount = PageInfoDeal.getPageCount(itemCount, newPageSize);
 
         Pager pager = new Pager();
-        pager.setCurrPage(pageIndex);
-        pager.setPageSize(pageSize);
+        pager.setCurrPage(newPageIndex);
+        pager.setPageSize(newPageSize);
         pager.setPageCount(pageCount);
         pager.setItemCount(itemCount);
         return pager;

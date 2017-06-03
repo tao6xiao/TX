@@ -21,8 +21,7 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
 
     @Override
     public int getItemCountBySiteId(int siteId) {
-        int itemCount = frequencyPresetMapper.selectItemCountBySiteId(siteId);
-        return itemCount;
+        return frequencyPresetMapper.selectItemCountBySiteId(siteId);
     }
 
     @Override
@@ -40,30 +39,23 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
     @Override
     public int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest) {
         FrequencyPreset frequencyPreset = toFrequencyPresetByRequest(frequencyPresetRequest);
-        int num = frequencyPresetMapper.insert(frequencyPreset);
-        return num;
+        return frequencyPresetMapper.insert(frequencyPreset);
     }
 
     @Override
     public int updateBySiteIdAndId(FrequencyPreset frequencyPreset) {
-        int num = frequencyPresetMapper.updateBySiteIdAndId(frequencyPreset);
-        return num;
+        return frequencyPresetMapper.updateBySiteIdAndId(frequencyPreset);
     }
 
     @Override
     public int deleteBySiteIdAndId(int siteId, int id) {
-        int num = frequencyPresetMapper.deleteBySiteIdAndId(siteId, id);
-        return num;
+        return frequencyPresetMapper.deleteBySiteIdAndId(siteId, id);
     }
 
     @Override
     public boolean isPresetFeqIdExist(int siteId, int id) {
-        boolean state = false;
         FrequencyPreset preset = frequencyPresetMapper.selectBySiteIdAndId(siteId, id);
-        if(preset != null){
-            state = true;
-        }
-        return state;
+        return preset != null;
     }
 
     private FrequencyPreset toFrequencyPresetByRequest(FrequencyPresetRequest frequencyPresetRequest) {

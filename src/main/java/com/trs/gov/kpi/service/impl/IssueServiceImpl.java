@@ -5,7 +5,6 @@ import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -79,9 +78,9 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private List<IssueIsNotResolvedResponse> toResponse(List<Issue> issueList) {
-        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
+        List<Issue> fullIssueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueIsNotResolvedResponse> issueIsNotResolvedResponseList = new ArrayList<>();
-        for (Issue is : issueList) {
+        for (Issue is : fullIssueList) {
             issueIsNotResolvedResponseList.add(toNotResolvedResponse(is));
         }
         return issueIsNotResolvedResponseList;

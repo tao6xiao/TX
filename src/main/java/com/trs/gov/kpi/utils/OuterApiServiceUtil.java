@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.utils;
 
 import com.squareup.okhttp.Request;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -10,6 +9,13 @@ import java.util.Map;
  * Created by linwei on 2017/5/23.
  */
 public class OuterApiServiceUtil {
+
+    private OuterApiServiceUtil(){
+    }
+
+    public static ServiceRequestBuilder newServiceRequestBuilder() {
+        return new ServiceRequestBuilder();
+    }
 
     public static class ServiceRequestBuilder {
 
@@ -20,7 +26,7 @@ public class OuterApiServiceUtil {
         private String userName;
         private Map<String, String> params;
 
-        public ServiceRequestBuilder() {
+        protected ServiceRequestBuilder() {
         }
 
         public ServiceRequestBuilder setUrlFormat(String urlFormat) {

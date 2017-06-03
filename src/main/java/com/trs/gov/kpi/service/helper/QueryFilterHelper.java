@@ -16,6 +16,10 @@ import java.util.List;
  */
 public class QueryFilterHelper {
 
+    private QueryFilterHelper() {
+
+    }
+
     /**
      * 把参数转换为查询filter
      *
@@ -97,6 +101,8 @@ public class QueryFilterHelper {
                     break;
                 case RESPOND_WARNING:
                     matchedTypes.addAll(Types.RespondWarningType.findByName(issueName));
+                    break;
+                default:
             }
         }
 

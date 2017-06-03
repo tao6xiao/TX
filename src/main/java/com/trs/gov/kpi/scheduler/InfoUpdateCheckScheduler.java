@@ -80,7 +80,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         @Override
         public void run() {
 
-            log.info("InfoUpdateCheckScheduler " + String.valueOf(siteId) + " start...");
+            log.info("InfoUpdateCheckScheduler " + siteId + " start...");
             try {
                 List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
@@ -99,7 +99,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             } catch (Exception e) {
                 log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
             } finally {
-                log.info("InfoUpdateCheckScheduler " + String.valueOf(siteId) + " end...");
+                log.info("InfoUpdateCheckScheduler " + siteId + " end...");
             }
         }
     };

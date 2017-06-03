@@ -3,8 +3,6 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.DefaultUpdateFreqMapper;
 import com.trs.gov.kpi.entity.DefaultUpdateFreq;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,21 +19,18 @@ public class DefaultUpdateFreqServiceImpl implements DefaultUpdateFreqService {
 
     @Override
     public DefaultUpdateFreq getDefaultUpdateFreqBySiteId(int siteId) {
-        DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqMapper.selectByPrimaryKey(siteId);
-        return defaultUpdateFreq;
+        return defaultUpdateFreqMapper.selectByPrimaryKey(siteId);
     }
 
     @Override
     public int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws ParseException {
         defaultUpdateFreq.setSetTime(new Date());
-        int num = defaultUpdateFreqMapper.insert(defaultUpdateFreq);
-        return num;
+        return defaultUpdateFreqMapper.insert(defaultUpdateFreq);
     }
 
     @Override
     public int updateDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) {
-        int num = defaultUpdateFreqMapper.updateByPrimaryKey(defaultUpdateFreq);
-        return num;
+        return defaultUpdateFreqMapper.updateByPrimaryKey(defaultUpdateFreq);
     }
 
 

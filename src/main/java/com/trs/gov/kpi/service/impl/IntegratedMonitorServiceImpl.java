@@ -34,8 +34,8 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     @Override
     public List<Statistics> getAllIssueCount(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE.value));
@@ -56,17 +56,17 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         int warningCount = issueMapper.count(queryFilter);
 
         Statistics handledStatistics = new Statistics();
-        handledStatistics.setName(IssueIndicator.SOLVED.name);
+        handledStatistics.setName(IssueIndicator.SOLVED.name());
         handledStatistics.setType(IssueIndicator.SOLVED.value);
         handledStatistics.setCount(handledCount);
 
         Statistics unhandledStatistics = new Statistics();
-        unhandledStatistics.setName(IssueIndicator.UN_SOLVED.name);
+        unhandledStatistics.setName(IssueIndicator.UN_SOLVED.name());
         unhandledStatistics.setType(IssueIndicator.UN_SOLVED.value);
         unhandledStatistics.setCount(unhandledCount);
 
         Statistics warningStatistics = new Statistics();
-        warningStatistics.setName(IssueIndicator.WARNING.name);
+        warningStatistics.setName(IssueIndicator.WARNING.name());
         warningStatistics.setType(IssueIndicator.WARNING.value);
         warningStatistics.setCount(warningCount);
 
@@ -83,8 +83,8 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         List<Statistics> list = new ArrayList<>();
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         //查询失效链接数量
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
@@ -95,7 +95,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics invalidLinkStatistics = new Statistics();
         invalidLinkStatistics.setCount(invalidLinkCount);
         invalidLinkStatistics.setType(Types.LinkAvailableIssueType.INVALID_LINK.value);
-        invalidLinkStatistics.setName(Types.LinkAvailableIssueType.INVALID_LINK.name);
+        invalidLinkStatistics.setName(Types.LinkAvailableIssueType.INVALID_LINK.name());
 
         //查询失效图片数量
         queryFilter = QueryFilterHelper.toFilter(param);
@@ -106,7 +106,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics invalidImageStatistics = new Statistics();
         invalidImageStatistics.setCount(invalidImageCount);
         invalidImageStatistics.setType(Types.LinkAvailableIssueType.INVALID_IMAGE.value);
-        invalidImageStatistics.setName(Types.LinkAvailableIssueType.INVALID_IMAGE.name);
+        invalidImageStatistics.setName(Types.LinkAvailableIssueType.INVALID_IMAGE.name());
 
         //查询连接超时数量
         queryFilter = QueryFilterHelper.toFilter(param);
@@ -117,7 +117,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics connTimeoutStatistics = new Statistics();
         connTimeoutStatistics.setCount(connTimeoutCount);
         connTimeoutStatistics.setType(Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.value);
-        connTimeoutStatistics.setName(Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.name);
+        connTimeoutStatistics.setName(Types.LinkAvailableIssueType.CONNECTION_TIME_OUT.name());
 
         //查询失效附件数量
         queryFilter = QueryFilterHelper.toFilter(param);
@@ -128,7 +128,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics invalidFileStatistics = new Statistics();
         invalidFileStatistics.setCount(invalidFileCount);
         invalidFileStatistics.setType(Types.LinkAvailableIssueType.INVALID_FILE.value);
-        invalidFileStatistics.setName(Types.LinkAvailableIssueType.INVALID_FILE.name);
+        invalidFileStatistics.setName(Types.LinkAvailableIssueType.INVALID_FILE.name());
 
         //查询失效首页数量
         queryFilter = QueryFilterHelper.toFilter(param);
@@ -139,7 +139,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics invalidHomepageStatistics = new Statistics();
         invalidHomepageStatistics.setCount(invalidHomepageCount);
         invalidHomepageStatistics.setType(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-        invalidHomepageStatistics.setName(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.name);
+        invalidHomepageStatistics.setName(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.name());
 
         list.add(invalidLinkStatistics);
         list.add(invalidImageStatistics);
@@ -157,7 +157,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics updateNotIntimeStatistics = new Statistics();
         updateNotIntimeStatistics.setCount(updateNotIntimeCount);
         updateNotIntimeStatistics.setType(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-        updateNotIntimeStatistics.setName(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.name);
+        updateNotIntimeStatistics.setName(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.name());
 
         list.add(updateNotIntimeStatistics);
 
@@ -171,7 +171,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics typosStatistics = new Statistics();
         typosStatistics.setCount(typosCount);
         typosStatistics.setType(Types.InfoErrorIssueType.TYPOS.value);
-        typosStatistics.setName(Types.InfoErrorIssueType.TYPOS.name);
+        typosStatistics.setName(Types.InfoErrorIssueType.TYPOS.name());
 
         //查询敏感词数量
         queryFilter = QueryFilterHelper.toFilter(param);
@@ -182,7 +182,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics sensitiveWordsStatistics = new Statistics();
         sensitiveWordsStatistics.setCount(sensitiveWordsCount);
         sensitiveWordsStatistics.setType(Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
-        sensitiveWordsStatistics.setName(Types.InfoErrorIssueType.SENSITIVE_WORDS.name);
+        sensitiveWordsStatistics.setName(Types.InfoErrorIssueType.SENSITIVE_WORDS.name());
 
         list.add(typosStatistics);
         list.add(sensitiveWordsStatistics);
@@ -196,8 +196,8 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         List<Statistics> list = new ArrayList<>();
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         //查询信息更新预警数量
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
@@ -208,7 +208,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics updateWarningStatistics = new Statistics();
         updateWarningStatistics.setCount(updateWarningCount);
         updateWarningStatistics.setType(Types.InfoUpdateWarningType.UPDATE_WARNING.value);
-        updateWarningStatistics.setName(Types.InfoUpdateWarningType.UPDATE_WARNING.name);
+        updateWarningStatistics.setName(Types.InfoUpdateWarningType.UPDATE_WARNING.name());
 
         list.add(updateWarningStatistics);
 
@@ -221,7 +221,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics selfCheckStatistics = new Statistics();
         selfCheckStatistics.setCount(selfCheckCount);
         selfCheckStatistics.setType(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
-        selfCheckStatistics.setName(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.name);
+        selfCheckStatistics.setName(Types.InfoUpdateWarningType.SELF_CHECK_WARNING.name());
 
         list.add(selfCheckStatistics);
 
@@ -234,7 +234,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics feedBackStatistics = new Statistics();
         feedBackStatistics.setCount(feedBackCount);
         feedBackStatistics.setType(Types.RespondWarningType.FEEDBACK_WARNING.value);
-        feedBackStatistics.setName(Types.RespondWarningType.FEEDBACK_WARNING.name);
+        feedBackStatistics.setName(Types.RespondWarningType.FEEDBACK_WARNING.name());
 
         list.add(feedBackStatistics);
 
@@ -247,7 +247,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics respondStatistics = new Statistics();
         respondStatistics.setCount(respondCount);
         respondStatistics.setType(Types.RespondWarningType.RESPOND_WARNING.value);
-        respondStatistics.setName(Types.RespondWarningType.RESPOND_WARNING.name);
+        respondStatistics.setName(Types.RespondWarningType.RESPOND_WARNING.name());
 
         list.add(respondStatistics);
 

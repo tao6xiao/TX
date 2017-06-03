@@ -27,10 +27,10 @@ public interface FrequencySetupService {
     /**
      * 获取当前siteId的记录总数
      *
-     * @param SiteId
+     * @param siteId
      * @return
      */
-    int getCountFrequencySetupBySite(int SiteId);
+    int getCountFrequencySetupBySite(int siteId);
 
     /**
      * 通过站点id和栏目id获取对应的栏目更新频率记录

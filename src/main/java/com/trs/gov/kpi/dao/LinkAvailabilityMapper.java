@@ -15,24 +15,6 @@ import java.util.List;
 @Mapper
 public interface LinkAvailabilityMapper {
 
-//    /**
-//     * 获取每月新增问题数
-//     *
-//     * @param issueBase
-//     * @return
-//     */
-//    int getIssueHistoryCount(@Param("issueBase") IssueBase issueBase);
-//
-//    /**
-//     * 查询未解决问题集合
-//     *
-//     * @param startIndex
-//     * @param pageSize
-//     * @param issueBase
-//     * @return
-//     */
-//    List<LinkAvailabilityResponse> getIssueList(@Param("startIndex") Integer startIndex, @Param("pageSize") Integer pageSize, @Param("issueBase") IssueBase issueBase);
-
     /**
      * 获取符合条件的链接问题数量
      *
@@ -43,14 +25,6 @@ public interface LinkAvailabilityMapper {
      */
     List<LinkAvailabilityResponse> getIssueListBySql(@Param("condFields") List<CondDBField> condFields, @Param("sortFields") List<SortDBField> sortFields, @Param("pager") DBPager pager);
 
-
-//    /**
-//     * 批量添加链接问题
-//     *
-//     * @param linkAvailabilities
-//     */
-//    void batchInsertLinkAvailabilities(@Param("linkAvailabilities") List<LinkAvailabilityResponse> linkAvailabilities);
-
     /**
      * 获取符合条件的链接问题数量
      *
@@ -58,67 +32,5 @@ public interface LinkAvailabilityMapper {
      * @return
      */
     int getIssueCount(@Param("condFields") List<CondDBField> condFields);
-
-//    /**
-//     * 查询未解决失效图片的问题数
-//     *
-//     * @param issueBase
-//     * @return
-//     */
-//    int getInvalidImageCount(@Param("issueBase") IssueBase issueBase);
-
-//    /**
-//     * 查询未解决连接超时的问题数
-//     *
-//     * @param issueBase
-//     * @return
-//     */
-//    int getConnTimeoutCount(@Param("issueBase") IssueBase issueBase);
-
-//    /**
-//     * 查询未解决失效附件的问题数
-//     *
-//     * @param issueBase
-//     * @return
-//     */
-//    int getInvalidFileCount(@Param("issueBase") IssueBase issueBase);
-
-//    /**
-//     * 查询未解决失效首页的问题数
-//     *
-//     * @param issueBase
-//     * @return
-//     */
-//    int getInvalidHomepageCount(@Param("issueBase") IssueBase issueBase);
-//
-//    /**
-//     * 根据站点编号获取首页
-//     *
-//     * @param issueBase
-//     * @return
-//     */
-//    String getIndexUrl(@Param("issueBase") IssueBase issueBase);
-//
-//    /**
-//     * 查询问题中是否包含首页不可用
-//     *
-//     * @param indexUrl
-//     * @return
-//     */
-//    int getIndexAvailability(@Param("indexUrl") String indexUrl, @Param("issueBase") IssueBase issueBase);
-//
-//    /**
-//     * 查询首页不可用问题的监测时间
-//     *
-//     * @param indexUrl
-//     * @return
-//     */
-//    Date getMonitorTime(@Param("indexUrl") String indexUrl, @Param("issueBase") IssueBase issueBase);
-//
-//    /**
-//     * @param issueBase
-//     * @return
-//     */
-//    int getInvalidLinkCount(@Param("issueBase") IssueBase issueBase);
 
 }

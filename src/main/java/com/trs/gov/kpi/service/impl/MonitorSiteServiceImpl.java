@@ -22,8 +22,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         MonitorSite monitorSite = monitorSiteMapper.selectByPrimaryKey(siteId);
         MonitorSiteDeal monitorSiteDeal = null;
         if (monitorSite != null) {
-//            String siteIds = monitorSite.getSiteIds();
-//            Integer[] siteIdsArrayForInteger = DataTypeConversion.stringToIntegerArray(siteIds);
             monitorSiteDeal = getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(monitorSite);
         }
         return monitorSiteDeal;
@@ -31,29 +29,19 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
 
     @Override
     public MonitorSite getMonitorSiteBySiteId(Integer siteId) {
-        MonitorSite monitorSite = monitorSiteMapper.selectByPrimaryKey(siteId);
-        return monitorSite;
+        return monitorSiteMapper.selectByPrimaryKey(siteId);
     }
 
     @Override
     public int addMonitorSite(MonitorSiteDeal monitorSiteDeal) {
-//        Integer[] siteIdsForInteger = monitorSiteDeal.getSiteIds();
-//        String siteIdsForString = DataTypeConversion.integerArrayToString(siteIdsForInteger);
-        int num = 0;
-//        if (siteIdsForString != null) {
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
-        num = monitorSiteMapper.insert(monitorSite);
-//        }
-        return num;
+        return monitorSiteMapper.insert(monitorSite);
     }
 
     @Override
     public int updateMonitorSiteBySiteId(MonitorSiteDeal monitorSiteDeal) {
-//        Integer[] siteIdsForIntegerArray = monitorSiteDeal.getSiteIds();
-//        String siteIds = DataTypeConversion.integerArrayToString(siteIdsForIntegerArray);
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
-        int num = monitorSiteMapper.updateByPrimaryKey(monitorSite);
-        return num;
+        return monitorSiteMapper.updateByPrimaryKey(monitorSite);
     }
 
     @Override
@@ -69,16 +57,8 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSite.setGuarderAccount(monitorSiteDeal.getGuarderAccount());
         monitorSite.setGuarderPhone(monitorSiteDeal.getGuarderPhone());
         monitorSite.setIndexUrl(monitorSiteDeal.getIndexUrl());
-//        monitorSite.setSiteIds(siteIds);
         return monitorSite;
     }
-
-
-//    private String[] getSplitSiteIdsArray(MonitorSite monitorSite){
-//        String siteIds = monitorSite.getSiteIds();
-//        String[] siteIdsArrayForString = siteIds.split(",");
-//        return  siteIdsArrayForString;
-//    }
 
     private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite) {
         MonitorSiteDeal monitorSiteDeal = new MonitorSiteDeal();
@@ -88,7 +68,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSiteDeal.setGuarderAccount(monitorSite.getGuarderAccount());
         monitorSiteDeal.setGuarderPhone(monitorSite.getGuarderPhone());
         monitorSiteDeal.setIndexUrl(monitorSite.getIndexUrl());
-//        monitorSiteDeal.setSiteIds(siteIdsArrayForInteger);
         return monitorSiteDeal;
     }
 

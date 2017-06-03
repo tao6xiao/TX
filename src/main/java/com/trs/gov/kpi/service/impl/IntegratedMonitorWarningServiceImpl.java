@@ -5,7 +5,6 @@ import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -55,21 +54,7 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         return 0;
     }
 
-//    @Override
-//    public List<IssueWarningResponse> getPageDataWaringList(Integer pageIndex, Integer pageSize, IssueBase issue) throws ParseException {
-//        int pageCalculate = pageIndex * pageSize;
-//        List<Issue> issueList = issueMapper.getAllWarningList(pageCalculate, pageSize, issue);
-//        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
-//        List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
-//        IssueWarningResponse issueWarningResponse = null;
-//        for (Issue is: issueList) {
-//            issueWarningResponse = getIssueWarningResponseDetailByIssue(is);
-//            issueWarningResponseList.add(issueWarningResponse);
-//        }
-//        return issueWarningResponseList;
-//    }
-
-    private IssueWarningResponse getIssueWarningResponseDetailByIssue(Issue is) throws ParseException {
+    private IssueWarningResponse getIssueWarningResponseDetailByIssue(Issue is) {
         IssueWarningResponse issueWarningResponse = new IssueWarningResponse();
         issueWarningResponse.setId(is.getId());
         issueWarningResponse.setIssueTime(DateUtil.toString(is.getIssueTime()));
@@ -83,12 +68,6 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         issueWarningResponse.setLimitTime(limitTime);
         return issueWarningResponse;
     }
-
-//    @Override
-//    public int getItemCount(IssueBase issue) {
-//        int itemCount = issueMapper.getAllWarningCount(issue);
-//        return itemCount;
-//    }
 
     @Override
     public ApiPageData get(PageDataRequestParam param) throws ParseException {
@@ -106,13 +85,11 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         return new ApiPageData(pager, responseByIssueList);
     }
 
-    private List<IssueWarningResponse> getReopnseByIssueList(List<Issue> issueList) throws ParseException {
-        issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
+    private List<IssueWarningResponse> getReopnseByIssueList(List<Issue> issueList) {
+        List<Issue> fullIssueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
-        IssueWarningResponse issueWarningResponse = null;
-        for (Issue is : issueList) {
-            issueWarningResponse = getIssueWarningResponseDetailByIssue(is);
-            issueWarningResponseList.add(issueWarningResponse);
+        for (Issue is : fullIssueList) {
+            issueWarningResponseList.add(getIssueWarningResponseDetailByIssue(is));
         }
         return issueWarningResponseList;
     }

@@ -4,7 +4,6 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Document;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 /**

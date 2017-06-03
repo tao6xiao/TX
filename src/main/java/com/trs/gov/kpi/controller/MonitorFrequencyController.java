@@ -38,8 +38,7 @@ public class MonitorFrequencyController {
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        List<MonitorFrequencyResponse> monitorFrequencyResponseList = monitorFrequencyService.queryBySiteId(siteId);
-        return monitorFrequencyResponseList;
+        return monitorFrequencyService.queryBySiteId(siteId);
     }
 
     /**
@@ -74,7 +73,7 @@ public class MonitorFrequencyController {
 
         int siteId = freqSetUp.getSiteId();
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
-        if (monitorFrequencyList == null || monitorFrequencyList.size() == 0) {//siteId和typeId同时不存在，插入记录
+        if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
             monitorFrequencyService.addMonitorFrequencySetUp(freqSetUp);
         } else {//siteId和typeId同时存在，修改对应站点的监测频率记录
             monitorFrequencyService.updateMonitorFrequencySetUp(freqSetUp);

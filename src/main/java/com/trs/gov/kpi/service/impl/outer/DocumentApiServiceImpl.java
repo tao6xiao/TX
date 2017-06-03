@@ -6,21 +6,19 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
-import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
-import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.*;
+
+import static com.trs.gov.kpi.utils.OuterApiServiceUtil.newServiceRequestBuilder;
 
 /**
  * Created by linwei on 2017/5/23.
@@ -124,7 +122,6 @@ public class DocumentApiServiceImpl implements DocumentApiService {
                 documentList.add(document);
             }
         }
-//        }
         return documentList;
     }
 
@@ -143,7 +140,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
     }
 
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
-        return new OuterApiServiceUtil.ServiceRequestBuilder()
+        return newServiceRequestBuilder()
                 .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")
                 .setServiceUrl(editCenterServiceUrl)
                 .setServiceName(SERVICE_NAME)

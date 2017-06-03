@@ -6,7 +6,6 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.IssueIndicator;
-import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
@@ -65,13 +64,13 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
         Statistics statistics = new Statistics();
         statistics.setType(IssueIndicator.SOLVED.value);
-        statistics.setName(IssueIndicator.SOLVED.name);
+        statistics.setName(IssueIndicator.SOLVED.name());
         statistics.setCount(resolvedCount);
         statisticsList.add(statistics);
 
         statistics = new Statistics();
         statistics.setType(IssueIndicator.UPDATE_NOT_INTIME.value);
-        statistics.setName(IssueIndicator.UPDATE_NOT_INTIME.name);
+        statistics.setName(IssueIndicator.UPDATE_NOT_INTIME.name());
         statistics.setCount(updateCount);
         statisticsList.add(statistics);
 
@@ -247,7 +246,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
-            infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).name);
+            infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).name());
             responseList.add(infoUpdateResponse);
         }
         return responseList;

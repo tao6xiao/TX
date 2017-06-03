@@ -2,7 +2,6 @@ package com.trs.gov.kpi.entity.dao;
 
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.utils.StringUtil;
-import javafx.scene.control.Tab;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

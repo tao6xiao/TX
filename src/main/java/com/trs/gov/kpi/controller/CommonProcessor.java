@@ -29,7 +29,7 @@ public class CommonProcessor {
 
     static final String SYSTEMEXCEPTION_MESSAGE = "系统错误";
 
-    public final static String INVOKE_SUCCESS_MESSAGE = "操作成功";
+    public static final String INVOKE_SUCCESS_MESSAGE = "操作成功";
 
     @ExceptionHandler(BizException.class)
     @ResponseBody

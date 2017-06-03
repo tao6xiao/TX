@@ -10,7 +10,6 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +19,16 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.*;
 
+import static com.trs.gov.kpi.utils.OuterApiServiceUtil.newServiceRequestBuilder;
+
 /**
  * Created by linwei on 2017/5/18.
  */
 @Slf4j
 @Service
 public class SiteApiServiceImpl implements SiteApiService {
+
+    public static final String SITE_ID = "SiteId";
 
     @Value("${service.outer.editcenter.url}")
     private String editCenterServiceUrl;
@@ -36,7 +39,7 @@ public class SiteApiServiceImpl implements SiteApiService {
     public Site getSiteById(int siteId, String userName) throws RemoteException {
 
         try {
-            Map<String, String> params = Collections.singletonMap("SiteId", String.valueOf(siteId));
+            Map<String, String> params = Collections.singletonMap(SITE_ID, String.valueOf(siteId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
                     buildRequest("findSiteById", userName, params)).execute();
@@ -62,7 +65,7 @@ public class SiteApiServiceImpl implements SiteApiService {
 
         try {
             Map<String, String> params = new HashMap<>();
-            params.put("SiteId", String.valueOf(siteId));
+            params.put(SITE_ID, String.valueOf(siteId));
             params.put("ParentChannelId", String.valueOf(parentId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
@@ -119,7 +122,7 @@ public class SiteApiServiceImpl implements SiteApiService {
     public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
-            params.put("SiteId", String.valueOf(siteId));
+            params.put(SITE_ID, String.valueOf(siteId));
             params.put("ChannelId", String.valueOf(channelId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(buildRequest("getSiteOrChannelPubUrl", userName, params)).execute();
@@ -175,7 +178,7 @@ public class SiteApiServiceImpl implements SiteApiService {
     }
 
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
-        return new OuterApiServiceUtil.ServiceRequestBuilder()
+        return newServiceRequestBuilder()
                 .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")
                 .setServiceUrl(editCenterServiceUrl)
                 .setServiceName(SERVICE_NAME)

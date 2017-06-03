@@ -49,8 +49,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     @Override
     public ChnlGroupChannelResponse getBySiteIdAndGroupIdAndChnlId(int siteId, int groupId, int chnlId) {
         ChannelGroup channelGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(siteId, groupId, chnlId);
-        ChnlGroupChannelResponse chnlGroupChnlResponseDetail = getChnlGroupByChnlGroupChnlReponseDetail(channelGroup);
-        return chnlGroupChnlResponseDetail;
+        return getChnlGroupByChnlGroupChnlReponseDetail(channelGroup);
     }
 
     @Override
@@ -133,8 +132,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
 
     @Override
     public int deleteBySiteIdAndId(int siteId, int id) {
-        int num = chnlGroupMapper.deleteBySiteIdAndId(siteId, id);
-        return num;
+        return chnlGroupMapper.deleteBySiteIdAndId(siteId, id);
     }
 
     @Override

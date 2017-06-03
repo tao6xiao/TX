@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.entity.responsedata;
 
-import com.trs.gov.kpi.entity.Issue;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * 综合监测：预警提醒返回数据处理对象

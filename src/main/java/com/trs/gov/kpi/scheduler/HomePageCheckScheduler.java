@@ -40,7 +40,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
         @Override
         public void run() {
 
-            log.info("HomePageCheckScheduler " + String.valueOf(siteId) + " start...");
+            log.info("HomePageCheckScheduler " + siteId + " start...");
             try {
                 List<String> unavailableUrls = spider.homePageCheck(baseUrl);
                 if(unavailableUrls.contains(baseUrl)) {
@@ -54,7 +54,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
                     issueMapper.insert(issue);
                 }
             } finally {
-                log.info("HomePageCheckScheduler " + String.valueOf(siteId) + " end...");
+                log.info("HomePageCheckScheduler " + siteId + " end...");
             }
 
         }

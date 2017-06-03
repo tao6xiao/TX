@@ -87,21 +87,6 @@ public class LinkAvailabilityController {
         return linkAvailabilityService.getIssueList(param);
     }
 
-//    /**
-//     * 获取网站首页可用性
-//     *
-//     * @param param
-//     * @return
-//     */
-//    @RequestMapping(value = "/indexpage/status", method = RequestMethod.GET)
-//    public Integer getIndexAvailability(@ModelAttribute PageDataRequestParam param) throws BizException {
-//
-//
-//        ParamCheckUtil.paramCheck(param);
-//
-//        return linkAvailabilityService.getIndexAvailability(param);
-//    }
-
     /**
      * 首页可用性校验显示
      *

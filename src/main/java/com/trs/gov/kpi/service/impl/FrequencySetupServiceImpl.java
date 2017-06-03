@@ -37,40 +37,34 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     public List<FrequencySetupResponse> getPageDataFrequencySetupList(int siteId, int pageIndex, int pageSize) throws RemoteException {
         int pageCalculate = pageIndex * pageSize;
         List<FrequencySetup> frequencySetupList = frequencySetupMapper.selectPageDataFrequencySetupList(siteId, pageCalculate, pageSize);
-        List<FrequencySetupResponse> frequencySetupResponses = getFrequencySetupDetailListByFrequencySetupList(frequencySetupList);
-        return frequencySetupResponses;
+        return getFrequencySetupDetailListByFrequencySetupList(frequencySetupList);
     }
 
     @Override
-    public int getCountFrequencySetupBySite(int SiteId) {
-        int itemCount = frequencySetupMapper.selectCountFrequencySetupBySiteId(SiteId);
-        return itemCount;
+    public int getCountFrequencySetupBySite(int siteId) {
+        return frequencySetupMapper.selectCountFrequencySetupBySiteId(siteId);
     }
 
     @Override
     public FrequencySetup getFrequencySetupBySiteIdAndChnlId(int siteId, int chnlId) {
-        FrequencySetup frequencySetup = frequencySetupMapper.selectFrequencySetupBySiteIdAndChnlId(siteId, chnlId);
-        return frequencySetup;
+        return frequencySetupMapper.selectFrequencySetupBySiteIdAndChnlId(siteId, chnlId);
     }
 
     @Override
     public int updateFrequencySetupById(FrequencySetup frequencySetup) {
-        int num = frequencySetupMapper.updateByPrimaryKey(frequencySetup);
-        return num;
+        return frequencySetupMapper.updateByPrimaryKey(frequencySetup);
     }
 
     @Override
     public int updateFrequencySetupById(FrequencySetupUpdateRequest frequencySetupUpdateRequest) {
         FrequencySetup frequencySetup = frequencySetupUpdateRequest;
-        int num = frequencySetupMapper.updateBySiteIdAndIdAndChnlId(frequencySetup);
-        return num;
+        return frequencySetupMapper.updateBySiteIdAndIdAndChnlId(frequencySetup);
     }
 
     @Override
     public int insert(FrequencySetup frequencySetup) throws ParseException {
         frequencySetup.setSetTime(new Date());
-        int num = frequencySetupMapper.insert(frequencySetup);
-        return num;
+        return frequencySetupMapper.insert(frequencySetup);
     }
 
     @Override
@@ -85,8 +79,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
 
     @Override
     public int deleteFrequencySetupBySiteIdAndId(int siteId, int id) {
-        int num = frequencySetupMapper.deleteFrequencySetupBySiteIdAndId(siteId, id);
-        return num;
+        return frequencySetupMapper.deleteFrequencySetupBySiteIdAndId(siteId, id);
     }
 
     @Override

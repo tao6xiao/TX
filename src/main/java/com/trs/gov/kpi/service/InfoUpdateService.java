@@ -19,18 +19,6 @@ public interface InfoUpdateService {
 
     List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
 
-//    List<InfoUpdateResponse> getIssueList(PageDataRequestParam param);
-
-//    List<Statistics> getIssueCountByType(IssueBase issueBase);
-
-//    List<Statistics> getWarningCountByType(IssueBase issueBase);
-
-//    int getHandledIssueCount(IssueBase issueBase);
-
-//    int getUnhandledIssueCount(IssueBase issueBase);
-
-//    int getUpdateWarningCount(IssueBase issueBase);
-
     void handIssuesByIds(int siteId, List<Integer> ids);
 
     void ignoreIssuesByIds(int siteId, List<Integer> ids);
@@ -46,24 +34,6 @@ public interface InfoUpdateService {
      * @return
      */
     List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException;
-
-//    /**
-//     * 获取栏目更新不及时的总数
-//     * @param siteId
-//     * @param beginDateTime
-//     * @param endDateTime
-//     * @return
-//     */
-//    int getAllUpdateNotInTime(Integer siteId, String beginDateTime, String endDateTime) throws ParseException;
-
-//    /**
-//     * 获取更新不及时的数据条数
-//     *
-//     * @param issueBase
-//     * @return
-//     */
-//    int getAllDateUpdateNotInTime(IssueBase issueBase) throws ParseException;
-
 
     ApiPageData get(PageDataRequestParam param) throws RemoteException;
 

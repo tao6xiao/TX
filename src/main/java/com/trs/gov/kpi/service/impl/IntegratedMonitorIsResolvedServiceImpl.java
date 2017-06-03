@@ -5,7 +5,6 @@ import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -53,31 +52,12 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
         issueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
 
         List<IssueIsResolvedResponse> issueIsResolvedResponseDetailList = new ArrayList<>();
-//        IssueIsResolvedResponse issueIsResolvedResponseDetail = null;
         for (Issue is : issueList) {
-//            issueIsResolvedResponseDetail = getIssueIsResolvedResponseDetailByIssue(is);
             issueIsResolvedResponseDetailList.add(getIssueIsResolvedResponseDetailByIssue(is));
         }
 
         return new ApiPageData(pager, issueIsResolvedResponseDetailList);
     }
-
-//    @Override
-//    public int getPageDataIsResolvedItemCount(PageDataRequestParam param, Boolean isResolved) {
-//
-//        QueryFilter filter = QueryFilterHelper.toFilter(param);
-//        if(isResolved){
-//            filter.addCond("isResolved", Status.Resolve.RESOLVED.value);
-//        }else {
-//            filter.addCond("isResolved", Status.Resolve.IGNORED.value);
-//        }
-//        filter.addCond("isDel", Status.Delete.UN_DELETE.value);
-//        filter.addCond("typeId", 1).setRangeBegin(true);
-//        filter.addCond("typeId", 50).setRangeEnd(true);
-//
-//        int num = issueMapper.count(filter);
-//        return num;
-//    }
 
     private IssueIsResolvedResponse getIssueIsResolvedResponseDetailByIssue(Issue is) {
         IssueIsResolvedResponse issueIsResolvedResponseDetail = new IssueIsResolvedResponse();

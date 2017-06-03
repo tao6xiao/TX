@@ -14,7 +14,7 @@ public enum IssueIndicator {
 
     public final int value;
 
-    public final String name;
+    private final String name;
 
     IssueIndicator(int type, String name) {
         this.value = type;

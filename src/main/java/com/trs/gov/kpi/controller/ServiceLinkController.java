@@ -108,7 +108,7 @@ public class ServiceLinkController {
         List<LinkAvailabilityResponse> linkAvailabilityResponseList = linkAvailabilityService.getUnsolvedIssueList(filter);
         for (LinkAvailabilityResponse link : linkAvailabilityResponseList) {
             if (link.getIssueTypeId() != null) {
-                link.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).name);
+                link.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).name());
             }
         }
         return new ApiPageData(pager, linkAvailabilityResponseList);

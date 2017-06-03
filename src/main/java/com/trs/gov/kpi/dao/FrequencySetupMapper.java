@@ -31,10 +31,10 @@ public interface FrequencySetupMapper {
 
     /**
      * 获取当前siteId的记录总数
-     * @param SiteId
+     * @param siteId
      * @return
      */
-    int selectCountFrequencySetupBySiteId(int SiteId);
+    int selectCountFrequencySetupBySiteId(int siteId);
 
     /**
      * 通过站点id和栏目id获取对应的栏目更新频率记录
@@ -43,14 +43,6 @@ public interface FrequencySetupMapper {
      * @return
      */
     FrequencySetup selectFrequencySetupBySiteIdAndChnlId(@Param("siteId") int siteId, @Param("chnlId") int chnlId);
-
-//    /**
-//     * 通过站点id和栏目修改对应的栏目更新频率记录
-//     * @param siteId
-//     * @param chnlId
-//     * @return
-//     */
-//    int updateBySiteIdAndChnlId(@Param("siteId") int siteId, @Param("chnlId") int chnlId);
 
     /**
      * 更新对应的更新频率记录

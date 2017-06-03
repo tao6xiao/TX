@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -32,8 +33,7 @@ public class IntegratedMonitorWarningController {
     @ResponseBody
     public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
         ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = integratedMonitorWarningService.get(param);
-        return apiPageData;
+        return integratedMonitorWarningService.get(param);
     }
 
     /**
@@ -48,7 +48,7 @@ public class IntegratedMonitorWarningController {
     @ResponseBody
     public Object dealWithWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数不合法！");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         integratedMonitorWarningService.dealWithWarningBySiteIdAndId(siteId, ids);

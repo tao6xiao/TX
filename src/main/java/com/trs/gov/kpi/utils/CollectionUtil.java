@@ -7,6 +7,9 @@ import java.util.Collection;
  */
 public class CollectionUtil {
 
+    private CollectionUtil(){
+
+    }
 
     public static <T> String join(Collection<T>  collection, String delimiter) {
         if (collection == null || collection.isEmpty()) {

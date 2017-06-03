@@ -48,7 +48,7 @@ public class CKMScheduler implements SchedulerTask {
     private final Runnable task = new Runnable() {
         @Override
         public void run() {
-            log.info("CKMScheduler " + String.valueOf(siteId) + " start...");
+            log.info("CKMScheduler " + siteId + " start...");
             try {
                 List<Issue> issueList = new ArrayList<>();
                 List<Document> documentList = documentApiService.getPublishDocuments(getSiteId());
@@ -115,7 +115,7 @@ public class CKMScheduler implements SchedulerTask {
             } catch (ParseException e) {
                 log.error("", e);
             } finally {
-                log.info("CKMScheduler " + String.valueOf(siteId) + " end...");
+                log.info("CKMScheduler " + siteId + " end...");
             }
         }
     };

@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -33,8 +34,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
         ParamCheckUtil.paramCheck(param);
-        List<Statistics> statisticsList = infoUpdateService.getIssueCount(param);
-        return statisticsList;
+        return infoUpdateService.getIssueCount(param);
     }
 
     /**
@@ -59,8 +59,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = infoUpdateService.get(param);
-        return apiPageData;
+        return infoUpdateService.get(param);
     }
 
 
@@ -74,7 +73,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(Integer siteId, Integer[] ids) throws BizException {
         if (siteId == null) {
-            throw new BizException("参数不合法！");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         infoUpdateService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
@@ -90,7 +89,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(Integer siteId, Integer[] ids) throws BizException {
         if (siteId == null) {
-            throw new BizException("参数不合法！");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         infoUpdateService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
@@ -106,7 +105,7 @@ public class InfoUpdateController {
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(Integer siteId, Integer[] ids) throws BizException {
         if (siteId == null) {
-            throw new BizException("参数不合法！");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         infoUpdateService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
@@ -125,25 +124,7 @@ public class InfoUpdateController {
     @ResponseBody
     public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
         ParamCheckUtil.paramCheck(param);
-        List<Statistics> updateNotInTimeCountList = infoUpdateService.getUpdateNotInTimeCountList(param);
-        return updateNotInTimeCountList;
+        return infoUpdateService.getUpdateNotInTimeCountList(param);
     }
-
-//    /**
-//     * 获取栏目更新不及时
-//     * @param issueBase
-//     * @return
-//     * @throws BizException
-//     * @throws ParseException
-//     * @throws RemoteException
-//     */
-//    @RequestMapping(value = "/bygroup/all/count", method = RequestMethod.GET)
-//    @ResponseBody
-//    public Integer getUpdateNotInTimeAllCount(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-//        
-//        // prepareIssueBase(issueBase);
-//        Integer count = infoUpdateService.getAllDateUpdateNotInTime(issueBase);
-//        return count;
-//    }
 
 }
