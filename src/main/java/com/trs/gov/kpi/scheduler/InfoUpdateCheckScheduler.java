@@ -190,18 +190,17 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 newCheckingChannel.setShouldIssueCheck(parentChecking.isShouldIssueCheck());
                 newCheckingChannel.setShouldSelfCheck(parentChecking.isShouldSelfCheck());
                 newCheckingChannel.setBeginDateTime(parentChecking.getBeginDateTime());
-                newCheckingChannel.setEndDateTime(parentChecking.getEndDateTime());
+                newCheckingChannel.setCheckDay(parentChecking.getCheckDay());
                 newCheckingChannel.setWarningDay(parentChecking.getWarningDay());
-                newCheckingChannel.setWarningBeginDateTime(parentChecking.getWarningBeginDateTime());
-                newCheckingChannel.setWarningEndDateTime(parentChecking.getWarningEndDateTime());
+                newCheckingChannel.setSelfCheckBeginDate(parentChecking.getSelfCheckBeginDate());
                 newCheckingChannel.setSelfCheckDay(parentChecking.getSelfCheckDay());
             } else {
                 // 设置自查提醒
                 if (defaultUpdateFreq != null) {
                     newCheckingChannel.setShouldSelfCheck(true);
-                    Date beginDate = getSelfCheckBeginDate(defaultUpdateFreq.getValue());
-                    newCheckingChannel.setBeginDateTime(DateUtil.toString(beginDate));
-                    newCheckingChannel.setEndDateTime(DateUtil.toString(DateUtil.addDay(beginDate, defaultUpdateFreq.getValue())));
+                    Date selfCheckBeginDate = DateUtil.nearestPeriodBeginDate(new Date(), BEGIN_CHECK_DAY, defaultUpdateFreq.getValue());
+                    newCheckingChannel.setSelfCheckBeginDate(DateUtil.toString(DateUtil.addDay(selfCheckBeginDate, -1 * defaultUpdateFreq.getValue())));
+                    newCheckingChannel.setSelfCheckDay(defaultUpdateFreq.getValue());
                 }
             }
         } else {
@@ -209,16 +208,10 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             FrequencyPreset preset = presetCache.get(freqSetup.getPresetFeqId());
             if (preset != null) {
                 newCheckingChannel.setShouldIssueCheck(true);
-                Date beginDate = getSelfCheckBeginDate(preset.getUpdateFreq());
-                newCheckingChannel.setBeginDateTime(DateUtil.toString(beginDate));
-                newCheckingChannel.setEndDateTime(
-                        DateUtil.toString(DateUtil.addDay(beginDate, preset.getUpdateFreq())));
-
+                Date checkBeginDate = DateUtil.nearestPeriodBeginDate(new Date(), BEGIN_CHECK_DAY, preset.getUpdateFreq());
+                newCheckingChannel.setBeginDateTime(DateUtil.toString(checkBeginDate));
+                newCheckingChannel.setCheckDay(preset.getUpdateFreq());
                 newCheckingChannel.setWarningDay(preset.getAlertFreq());
-                Date warningBeginDate = getWarningCheckBeginDate(preset.getUpdateFreq());
-                newCheckingChannel.setWarningBeginDateTime(DateUtil.toString(warningBeginDate));
-                newCheckingChannel.setWarningEndDateTime(
-                        DateUtil.toString(DateUtil.addDay(warningBeginDate, preset.getUpdateFreq())));
             }
         }
 
@@ -262,28 +255,32 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getBeginDateTime());
                 // 检查超时未更新和预警
                 if (!isUpdated) {
-                    // 超过时间就更新不及时
-                    Date endDate = DateUtil.toDate(checkingChannel.getEndDateTime());
+                    // 本周期未更新，就看一下上个周期是否更新不及时
+                    boolean isPrevPeroidUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getPrevPeroidBeginDate());
                     Date now = new Date();
-                    if (now.compareTo(endDate) > 0) {
-                        checkingChannel.setIssue(true);
-                    } else {
-                        // 没有超过时间，就判定是否预警
-                        if (DateUtil.diffDay(endDate, now) <= checkingChannel.getWarningDay()) {
+                    if (isPrevPeroidUpdated) {
+                        // 上一个周期已经更新了，检查是否需要预警
+                        Date beginWarningDate = DateUtil.addDay(DateUtil.toDate(checkingChannel.getBeginDateTime()), checkingChannel.getCheckDay()-checkingChannel.getWarningDay());
+                        if (now.compareTo(beginWarningDate) >= 0) {
                             checkingChannel.setWarning(true);
                         }
+                    } else {
+                        // 上一个周期就没有更新，那么就是更新不及时
+                        checkingChannel.setIssue(true);
                     }
+                } else {
+                    // 本周期已经更新了，就不存在更新不及时和预警问题啊
                 }
             }
 
             if (checkingChannel.isShouldSelfCheck()) {
                 // 前一个周期已经更新，才对当前周期做自查更新
-                if (isUpdated) {
-                    Date endDate = DateUtil.toDate(checkingChannel.getEndDateTime());
-                    Date now = new Date();
-                    if (now.compareTo(endDate) > 0) {
-                        checkingChannel.setSelfWarning(true);
-                    }
+                isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getSelfCheckBeginDate());
+                if (!isUpdated) {
+                    // 上一个周期开始都没有更新则这个周期开始，就要提醒
+                    checkingChannel.setSelfWarning(true);
+                } else {
+                    // 已经更新，就不用提醒了
                 }
             }
         }
@@ -411,13 +408,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                                 Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
                     }
                 } else if (checking.isWarning()) {
-                    // 插入一条更新预警的记录，1. 预警时间，父栏目和子栏目的预警时间是一致的，更新周期也一样。
-                    // 2. 只要父栏目及子栏目有一个没有预警，就算没有预警
-                    if (!hasNoWarningChildChannel(node)) {
-                        insertToDB(checking.getChannel().getChannelId(),
-                                Types.IssueType.INFO_UPDATE_WARNING.value,
-                                Types.InfoUpdateWarningType.UPDATE_WARNING.value);
-                    }
+                    insertToDB(checking.getChannel().getChannelId(),
+                            Types.IssueType.INFO_UPDATE_WARNING.value,
+                            Types.InfoUpdateWarningType.UPDATE_WARNING.value);
                 } else {
                     // 父栏目有更新，无预警，不插入任何记录
                 }
@@ -466,12 +459,15 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         for (SimpleTree.Node<CheckingChannel> child : parent.getChildren()) {
             if (child != null && child.getData() != null) {
                 // 只判定没有单独设置监控频率的子栏目
-                if (setupCache.get(child.getData().getChannel().getChannelId()) == null
-                        && child.getData().isShouldIssueCheck()
+                if (child.getData().isShouldIssueCheck()
                         && !child.getData().isIssue()) {
                     return true;
                 } else {
-                    return isChildChannelUpdated(child);
+                    // child更新不及时
+                    boolean isUpdated = isChildChannelUpdated(child);
+                    if (isUpdated) {
+                        return true;
+                    }
                 }
             }
         }

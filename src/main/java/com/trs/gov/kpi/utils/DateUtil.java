@@ -180,5 +180,19 @@ public class DateUtil {
         return (month + 1) < 10 ? "0" + (month + 1) : String.valueOf(month + 1);
     }
 
+    /**
+     * 获取离指定时间最近的这个周期的起始时间
+     *
+     * @param date 指定的时间
+     * @param beginDate 周期计算的起始时间
+     * @param intervalDay 周期间隔时间，天为单位
+     * @return
+     */
+    public static Date nearestPeriodBeginDate(Date date, String beginDate, int intervalDay) {
+        long beginTime = toDate(beginDate).getTime();
+        long endTime = date.getTime();
+        int peroids = (int)((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
+        return new Date(beginTime + intervalDay * peroids * MS_ONE_DAY);
+    }
 
 }

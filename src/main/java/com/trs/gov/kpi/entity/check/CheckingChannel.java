@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.entity.check;
 
 import com.trs.gov.kpi.entity.outerapi.Channel;
+import com.trs.gov.kpi.utils.DateUtil;
 import lombok.Data;
 
 /**
@@ -19,17 +20,14 @@ public class CheckingChannel {
     // 当前周期的起始时间
     private String beginDateTime;
 
-    // 当前周期的结束时间
-    private String endDateTime;
-
-    // 当前周期的预警提醒起始时间
-    private String warningBeginDateTime;
-
-    // 当前周期的预警提醒结束时间
-    private String warningEndDateTime;
+    // 检查周期
+    private int checkDay;
 
     // 预警天数
     private int warningDay;
+
+    // 自查提醒起始时间
+    private String selfCheckBeginDate;
 
     // 自查更新天数
     private int selfCheckDay;
@@ -48,4 +46,12 @@ public class CheckingChannel {
 
     // 是否自查提醒
     private boolean isSelfWarning = false;
+
+    /**
+     * 获取上一个周期的起始时间
+     * @return
+     */
+    public String getPrevPeroidBeginDate() {
+        return DateUtil.toString(DateUtil.addDay(DateUtil.toDate(beginDateTime), -1 * checkDay));
+    }
 }
