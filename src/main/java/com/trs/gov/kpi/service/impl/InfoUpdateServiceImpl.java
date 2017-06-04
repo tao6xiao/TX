@@ -64,13 +64,13 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
         Statistics statistics = new Statistics();
         statistics.setType(IssueIndicator.SOLVED.value);
-        statistics.setName(IssueIndicator.SOLVED.name());
+        statistics.setName(IssueIndicator.SOLVED.getName());
         statistics.setCount(resolvedCount);
         statisticsList.add(statistics);
 
         statistics = new Statistics();
         statistics.setType(IssueIndicator.UPDATE_NOT_INTIME.value);
-        statistics.setName(IssueIndicator.UPDATE_NOT_INTIME.name());
+        statistics.setName(IssueIndicator.UPDATE_NOT_INTIME.getName());
         statistics.setCount(updateCount);
         statisticsList.add(statistics);
 
@@ -246,7 +246,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
-            infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).name());
+            infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).getName());
             responseList.add(infoUpdateResponse);
         }
         return responseList;

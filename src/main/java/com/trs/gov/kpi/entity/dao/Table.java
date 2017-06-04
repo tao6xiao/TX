@@ -59,7 +59,7 @@ public enum Table {
 
         Table[] tables = Table.values();
         for (Table table : tables) {
-            if (table.name().equalsIgnoreCase(tableName)) {
+            if (table.getTableName().equalsIgnoreCase(tableName)) {
                 return table;
             }
         }

@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.constant;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public final class Types {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         IssueType(int value, String name) {
@@ -57,6 +60,7 @@ public final class Types {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         LinkAvailableIssueType(int type, String name) {
@@ -109,6 +113,7 @@ public final class Types {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         InfoUpdateIssueType(int type, String name) {
@@ -162,6 +167,7 @@ public final class Types {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         public final String checkType;
@@ -246,6 +252,7 @@ public final class Types {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         InfoUpdateWarningType(int type, String name) {
@@ -298,6 +305,7 @@ public final class Types {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         RespondWarningType(int type, String name) {

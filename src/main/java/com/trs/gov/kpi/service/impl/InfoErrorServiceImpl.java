@@ -47,7 +47,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         Statistics handledIssueStatistics = new Statistics();
         handledIssueStatistics.setCount(handledCount);
         handledIssueStatistics.setType(IssueIndicator.SOLVED.value);
-        handledIssueStatistics.setName(IssueIndicator.SOLVED.name());
+        handledIssueStatistics.setName(IssueIndicator.SOLVED.getName());
 
         queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -58,7 +58,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         Statistics unhandledIssueStatistics = new Statistics();
         unhandledIssueStatistics.setCount(unhandledCount);
         unhandledIssueStatistics.setType(IssueIndicator.UN_SOLVED.value);
-        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.name());
+        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.getName());
 
         List<Statistics> list = new ArrayList<>();
         list.add(handledIssueStatistics);
@@ -109,7 +109,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         for (InfoError infoError : infoErrorList) {
             InfoErrorResponse infoErrorResponse = new InfoErrorResponse();
             infoErrorResponse.setId(infoError.getId());
-            infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).name());
+            infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).getName());
             infoErrorResponse.setSnapshot(infoError.getSnapshot());
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
             infoErrorResponses.add(infoErrorResponse);

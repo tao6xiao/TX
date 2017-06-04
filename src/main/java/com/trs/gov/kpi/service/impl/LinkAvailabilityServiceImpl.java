@@ -47,12 +47,12 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         Statistics handledIssueStatistics = new Statistics();
         handledIssueStatistics.setCount(getHandledIssueCount(param));
         handledIssueStatistics.setType(IssueIndicator.SOLVED.value);
-        handledIssueStatistics.setName(IssueIndicator.SOLVED.name());
+        handledIssueStatistics.setName(IssueIndicator.SOLVED.getName());
 
         Statistics unhandledIssueStatistics = new Statistics();
         unhandledIssueStatistics.setCount(getUnhandledIssueCount(param));
         unhandledIssueStatistics.setType(IssueIndicator.UN_SOLVED.value);
-        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.name());
+        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.getName());
 
         List<Statistics> list = new ArrayList<>();
         list.add(handledIssueStatistics);
@@ -126,7 +126,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         for (LinkAvailability link : linkAvailabilitieList) {
             LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
             linkAvailabilityResponse.setId(link.getId());
-            linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).name());
+            linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).getName());
             linkAvailabilityResponse.setInvalidLink(link.getInvalidLink());
             linkAvailabilityResponse.setSnapshot(link.getSnapshot());
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());
