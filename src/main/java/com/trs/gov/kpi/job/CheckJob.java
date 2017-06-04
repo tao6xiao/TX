@@ -14,6 +14,6 @@ public class CheckJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         SchedulerTask task = (SchedulerTask)jobExecutionContext.getMergedJobDataMap().get("task");
-        task.getTask().run();
+        task.run();
     }
 }

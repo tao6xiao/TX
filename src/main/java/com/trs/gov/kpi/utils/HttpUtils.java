@@ -4,18 +4,20 @@ import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by wangxuan on 2017/5/15.
  */
 public class HttpUtils {
+
+    private HttpUtils() {
+
+    }
 
     public static String getHttpInfo(String url, Map<String, String> params) throws URISyntaxException, IOException {
 

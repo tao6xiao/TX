@@ -36,33 +36,29 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Setter @Getter
     private String baseUrl;
 
-    @Getter
-    private final Runnable task = new Runnable() {
+    @Override
+    public void run() {
 
-        @Override
-        public void run() {
+        log.info("LinkAnalysisScheduler " + siteId + " start...");
+        try {
 
-            log.info("LinkAnalysisScheduler " + siteId + " start...");
-            try {
-
-                List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
-                Date checkTime = new Date();
-                for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
-                    LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
-                    linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
-                    linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
-                    linkAvailabilityResponse.setCheckTime(checkTime);
-                    linkAvailabilityResponse.setSiteId(siteId);
-                    linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
-                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
-                }
-            } catch (Exception e) {
-                log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
-            } finally {
-                log.info("LinkAnalysisScheduler " + siteId + " end...");
+            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
+            Date checkTime = new Date();
+            for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
+                LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
+                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
+                linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setCheckTime(checkTime);
+                linkAvailabilityResponse.setSiteId(siteId);
+                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
+                linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
             }
+        } catch (Exception e) {
+            log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
+        } finally {
+            log.info("LinkAnalysisScheduler " + siteId + " end...");
         }
-    };
+    }
 
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
 

@@ -6,7 +6,7 @@ package com.trs.gov.kpi.scheduler;
  */
 public interface SchedulerTask {
 
-    Runnable getTask();
+    void run();
 
     Integer getSiteId();
 

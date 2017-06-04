@@ -74,35 +74,32 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     // 缓存自查更新频率
     private DefaultUpdateFreq defaultUpdateFreq;
 
-    @Getter
-    private final Runnable task = new Runnable() {
+    @Override
+    public void run() {
 
-        @Override
-        public void run() {
+        log.info("InfoUpdateCheckScheduler " + siteId + " start...");
+        try {
+            List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
-            log.info("InfoUpdateCheckScheduler " + siteId + " start...");
-            try {
-                List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
-
-                // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
-                for (SimpleTree<CheckingChannel> tree : siteTrees) {
-                    List<SimpleTree.Node<CheckingChannel>> children = tree.getRoot().getChildren();
-                    if (children == null) {
-                        continue;
-                    }
-                    for (SimpleTree.Node<CheckingChannel> child : children) {
-                        checkChannelTreeUpdate(child);
-                    }
+            // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
+            for (SimpleTree<CheckingChannel> tree : siteTrees) {
+                List<SimpleTree.Node<CheckingChannel>> children = tree.getRoot().getChildren();
+                if (children == null) {
+                    continue;
                 }
-
-                insertIssueAndWarning(siteTrees);
-            } catch (Exception e) {
-                log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
-            } finally {
-                log.info("InfoUpdateCheckScheduler " + siteId + " end...");
+                for (SimpleTree.Node<CheckingChannel> child : children) {
+                    checkChannelTreeUpdate(child);
+                }
             }
+
+            insertIssueAndWarning(siteTrees);
+        } catch (Exception e) {
+            log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
+        } finally {
+            log.info("InfoUpdateCheckScheduler " + siteId + " end...");
         }
-    };
+    }
+
 
     private List<SimpleTree<CheckingChannel>> buildChannelTree() throws RemoteException {
 
@@ -310,40 +307,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     }
 
     /**
-     * 获取自我检查更新的起始时间
-     * @param day
-     * @return
-     */
-    private Date getSelfCheckBeginDate(int day) {
-        Date startCheckDate = DateUtil.toDate(BEGIN_CHECK_DAY);
-        Date beginDate = startCheckDate;
-        Date now = new Date();
-        // 检查上一个周期时间范围内是否更新了
-        while (DateUtil.diffDay(now, beginDate) > day * 2) {
-            beginDate = DateUtil.addDay(beginDate, day);
-        }
-
-        return beginDate;
-    }
-
-    /**
-     * 获取自我检查更新的起始时间
-     * @param day
-     * @return
-     */
-    private Date getWarningCheckBeginDate(int day) {
-        Date startCheckDate = DateUtil.toDate(BEGIN_CHECK_DAY);
-        Date beginDate = startCheckDate;
-        Date now = new Date();
-        // 获取当前周期的检查
-        while (DateUtil.diffDay(now, beginDate) > day) {
-            beginDate = DateUtil.addDay(beginDate, day);
-        }
-
-        return beginDate;
-    }
-
-    /**
      * 把监测出来的问题，插入到数据库中
      *
      * @param siteTrees
@@ -473,32 +436,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         }
 
         return false;
-    }
-
-    /**
-     * 递归判定子栏目是否有不预警的
-     * @param parent
-     * @return
-     */
-    private boolean hasNoWarningChildChannel(SimpleTree.Node<CheckingChannel> parent) {
-
-        if (parent.getChildren() == null || parent.getChildren().isEmpty()) {
-            return true;
-        }
-
-        for (SimpleTree.Node<CheckingChannel> child : parent.getChildren()) {
-            if (child != null && child.getData() != null) {
-                // 只判定没有单独设置监控频率的子栏目
-                if ( setupCache.get(child.getData().getChannel().getChannelId()) == null
-                        && child.getData().isShouldIssueCheck() && !child.getData().isWarning()) {
-                    return true;
-                } else {
-                    return isChildChannelUpdated(child);
-                }
-            }
-        }
-
-        return true;
     }
 
 }

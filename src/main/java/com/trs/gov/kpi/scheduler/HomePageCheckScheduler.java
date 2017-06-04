@@ -34,29 +34,25 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     private IssueMapper issueMapper;
 
-    @Getter
-    private final Runnable task = new Runnable() {
+    @Override
+    public void run() {
 
-        @Override
-        public void run() {
-
-            log.info("HomePageCheckScheduler " + siteId + " start...");
-            try {
-                List<String> unavailableUrls = spider.homePageCheck(baseUrl);
-                if(unavailableUrls.contains(baseUrl)) {
-                    Issue issue = new Issue();
-                    issue.setSiteId(siteId);
-                    issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-                    issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-                    issue.setDetail(baseUrl);
-                    issue.setCustomer1(baseUrl);
-                    issue.setIssueTime(new Date());
-                    issueMapper.insert(issue);
-                }
-            } finally {
-                log.info("HomePageCheckScheduler " + siteId + " end...");
+        log.info("HomePageCheckScheduler " + siteId + " start...");
+        try {
+            List<String> unavailableUrls = spider.homePageCheck(baseUrl);
+            if(unavailableUrls.contains(baseUrl)) {
+                Issue issue = new Issue();
+                issue.setSiteId(siteId);
+                issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
+                issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                issue.setDetail(baseUrl);
+                issue.setCustomer1(baseUrl);
+                issue.setIssueTime(new Date());
+                issueMapper.insert(issue);
             }
-
+        } finally {
+            log.info("HomePageCheckScheduler " + siteId + " end...");
         }
-    };
+
+    }
 }
