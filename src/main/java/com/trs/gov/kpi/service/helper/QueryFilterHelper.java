@@ -24,18 +24,18 @@ public class QueryFilterHelper {
      */
     public static QueryFilter toFilter(PageDataRequestParam param, Types.IssueType... issueType) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond("siteId", param.getSiteId());
+        filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
         if (param.getBeginDateTime() != null) {
-            filter.addCond("issueTime", param.getBeginDateTime()).setRangeBegin(true);
+            filter.addCond(IssueTableField.ISSUE_TIME, param.getBeginDateTime()).setRangeBegin(true);
         }
 
         if (param.getEndDateTime() != null) {
-            filter.addCond("issueTime", param.getEndDateTime()).setRangeEnd(true);
+            filter.addCond(IssueTableField.ISSUE_TIME, param.getEndDateTime()).setRangeEnd(true);
         }
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
-                filter.addCond("id", '%' + param.getSearchText() + "%").setLike(true);
+                filter.addCond(IssueTableField.ID, '%' + param.getSearchText() + "%").setLike(true);
             } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("issueType")) {
                 CondDBField field = buildIssueTypeCond(param.getSearchText(), issueType);
                 if (field != null) {
@@ -44,7 +44,7 @@ public class QueryFilterHelper {
                     filter.addCond(new CondDBField(IssueTableField.SUBTYPE_ID, Types.IssueType.INVALID.value));
                 }
             } else if (param.getSearchField() == null) {
-                CondDBField idField = new CondDBField("id", '%' + param.getSearchText() + "%");
+                CondDBField idField = new CondDBField(IssueTableField.ID, '%' + param.getSearchText() + "%");
                 idField.setLike(true);
 
                 CondDBField issueTypefield = buildIssueTypeCond(param.getSearchText(), issueType);
@@ -103,9 +103,9 @@ public class QueryFilterHelper {
         CondDBField field = null;
         if (!matchedTypes.isEmpty()) {
             if (matchedTypes.size() == 1) {
-                field = new CondDBField("subTypeId", matchedTypes.get(0));
+                field = new CondDBField(IssueTableField.SUBTYPE_ID, matchedTypes.get(0));
             } else {
-                field = new CondDBField("subTypeId", matchedTypes);
+                field = new CondDBField(IssueTableField.SUBTYPE_ID, matchedTypes);
                 field.setCollection(true);
             }
         }
