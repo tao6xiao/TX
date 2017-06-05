@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -30,8 +31,7 @@ public class IntegratedMonitorIssueController {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
         ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = issueService.get(param);
-        return apiPageData;
+        return issueService.get(param);
     }
 
     /**
@@ -46,7 +46,7 @@ public class IntegratedMonitorIssueController {
     @ResponseBody
     public Object handIssuesByIds(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
         if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数不合法！");
+            throw new BizException(Constants.INVALID_PARAMETER);
         }
         ParamCheckUtil.integerArrayParamCheck(ids);
         issueService.handIssuesByIds(siteId, Arrays.asList(ids));

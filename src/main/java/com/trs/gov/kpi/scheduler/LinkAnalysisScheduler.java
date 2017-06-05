@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -24,10 +24,6 @@ import java.util.concurrent.ScheduledExecutorService;
 @Component
 @Scope("prototype")
 public class LinkAnalysisScheduler implements SchedulerTask {
-
-    private static Map<String, ScheduledExecutorService> taskAndExecutorMap =
-            Collections.synchronizedMap(new HashMap<String, ScheduledExecutorService>());
-
     @Resource
     LinkAvailabilityService linkAvailabilityService;
 
@@ -40,33 +36,29 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Setter @Getter
     private String baseUrl;
 
-    @Getter
-    private final Runnable task = new Runnable() {
+    @Override
+    public void run() {
 
-        @Override
-        public void run() {
+        log.info("LinkAnalysisScheduler " + siteId + " start...");
+        try {
 
-            log.info("LinkAnalysisScheduler " + String.valueOf(siteId) + " start...");
-            try {
-
-                List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
-                Date checkTime = new Date();
-                for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
-                    LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
-                    linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
-                    linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
-                    linkAvailabilityResponse.setCheckTime(checkTime);
-                    linkAvailabilityResponse.setSiteId(siteId);
-                    linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
-                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
-                }
-            } catch (Exception e) {
-                log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
-            } finally {
-                log.info("LinkAnalysisScheduler " + String.valueOf(siteId) + " end...");
+            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
+            Date checkTime = new Date();
+            for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
+                LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
+                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
+                linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setCheckTime(checkTime);
+                linkAvailabilityResponse.setSiteId(siteId);
+                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
+                linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
             }
+        } catch (Exception e) {
+            log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
+        } finally {
+            log.info("LinkAnalysisScheduler " + siteId + " end...");
         }
-    };
+    }
 
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
 
@@ -74,7 +66,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
     private Types.LinkAvailableIssueType getTypeByLink(String url) {
 
-        String suffix = url.substring(url.lastIndexOf(".") + 1);
+        String suffix = url.substring(url.lastIndexOf('.') + 1);
         for(String imageSuffix: imageSuffixs) {
 
             if(StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {

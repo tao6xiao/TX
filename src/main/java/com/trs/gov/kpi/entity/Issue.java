@@ -1,7 +1,5 @@
 package com.trs.gov.kpi.entity;
 
-import lombok.Data;
-
 import java.util.Date;
 
 public class Issue {

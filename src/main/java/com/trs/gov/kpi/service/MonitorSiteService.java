@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

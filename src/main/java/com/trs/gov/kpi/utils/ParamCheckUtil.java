@@ -14,44 +14,9 @@ import java.text.SimpleDateFormat;
 @Slf4j
 public class ParamCheckUtil {
 
-//    public static void paramCheck(IssueBase issueBase) throws BizException {
-//
-//        if (issueBase.getSiteId() == null) {
-//            throw new BizException("站点编号为空");
-//        }
-//
-//        if (issueBase.getSearchText() == null) {
-//            issueBase.setSearchText("");
-//        }
-//
-//        if (issueBase.getBeginDateTime() != null && !issueBase.getBeginDateTime().trim().isEmpty()) {
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            try {
-//                sdf.setLenient(false);
-//                sdf.parse(issueBase.getBeginDateTime());
-//            } catch (ParseException e) {
-//                throw new BizException(Constants.INVALID_PARAMETER);
-//            }
-//        }
-//
-//        if (issueBase.getEndDateTime() != null && !issueBase.getEndDateTime().trim().isEmpty()) {
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            try {
-//                sdf.setLenient(false);
-//                sdf.parse(issueBase.getEndDateTime());
-//            } catch (ParseException e) {
-//                throw new BizException(Constants.INVALID_PARAMETER);
-//            }
-//        }
-//
-//        if (issueBase.getIds() == null || issueBase.getIds().size() == 0) {
-//            //初始化ids查询条件，默认有一个0，防止sql报错
-//            List list = new ArrayList();
-//            list.add(0);
-//            issueBase.setIds(list);
-//        }
-//
-//    }
+    private ParamCheckUtil() {
+
+    }
 
     public static void pagerCheck(Integer pageIndex, Integer pageSize) throws BizException {
         if (pageIndex != null && pageIndex < 1) {

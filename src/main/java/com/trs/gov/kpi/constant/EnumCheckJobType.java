@@ -5,16 +5,14 @@ package com.trs.gov.kpi.constant;
  */
 public enum EnumCheckJobType {
 
-    CHECK_HOME_PAGE(1, "homepage"),
-    CHECK_LINK(2, "link"),
-    CHECK_CONTENT(3, "content"),
-    CHECK_INFO_UPDATE(4, "infoUpdate");
+    CHECK_HOME_PAGE(1),
+    CHECK_LINK(2),
+    CHECK_CONTENT(3),
+    CHECK_INFO_UPDATE(4);
 
     public final int value ;
-    public final String name;
 
-    EnumCheckJobType(int value, String name) {
+    EnumCheckJobType(int value) {
         this.value = value;
-        this.name = name;
     }
 }

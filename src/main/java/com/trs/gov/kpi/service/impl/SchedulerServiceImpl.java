@@ -173,22 +173,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-
             scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
-//
-//            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
-//                    .queryBySiteId(site.getSiteId());
-//            if (StringUtil.isEmpty(site.getIndexUrl())
-//                    || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-//                continue;
-//            }
-//
-//            for (MonitorFrequency freq : monitorFrequencies) {
-//                if (freq != null && freq.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
-//                    int interval = getInterval(FrequencyType.TOTAL_BROKEN_LINKS.getFreqUnit(), freq.getValue());
-//                    scheduleJob(scheduler, CHECK_CONTENT_TYPE, site, interval);
-//                }
-//            }
         }
     }
 
@@ -254,7 +239,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
      */
     private void scheduleJob(Scheduler scheduler,  EnumCheckJobType jobType, MonitorSite site, int interval) {
 
-        String name = jobType.name;
+        String name = jobType.name();
         SchedulerTask task = newTask(jobType);
         if (task == null) {
             return;
@@ -281,20 +266,20 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
-            log.error("failed to schedule " + name + " check of site " + String.valueOf(site.getSiteId()), e);
+            log.error("failed to schedule " + name + " check of site " + site.getSiteId(), e);
         }
     }
 
     private String getJobName(int siteId, EnumCheckJobType checkType) {
-        return checkType.name + "CheckJob" + String.valueOf(siteId);
+        return checkType.name() + "CheckJob" + siteId;
     }
 
     private String getJobGroupName(EnumCheckJobType checkType) {
-        return "group-" + checkType.name + "-check";
+        return "group-" + checkType.name() + "-check";
     }
 
     private String getJobTrigger(int siteId, EnumCheckJobType jobType) {
-        return jobType.name + "CheckJobTrigger" + String.valueOf(siteId);
+        return jobType.name() + "CheckJobTrigger" + siteId;
     }
 
     private SchedulerTask newTask(EnumCheckJobType jobType) {

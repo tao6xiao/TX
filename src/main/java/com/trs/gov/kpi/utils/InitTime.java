@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.utils;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -9,13 +8,17 @@ import java.util.Date;
  */
 public class InitTime {
 
+    private InitTime() {
+
+    }
+
     /**
      * 获取起始时间，如果不设置则从系统启动开始算起
      * @param beginDateTime
      * @return
      * @throws ParseException
      */
-    public static String checkBeginDateTime(String beginDateTime, Date earliestTime)  {
+    public static String initBeginDateTime(String beginDateTime, Date earliestTime)  {
         if(StringUtil.isEmpty(beginDateTime)){
             return DateUtil.toString(earliestTime);
         }else {
@@ -29,7 +32,7 @@ public class InitTime {
      * @return
      * @throws ParseException
      */
-    public static String checkEndDateTime(String endDateTime) {
+    public static String initEndDateTime(String endDateTime) {
         if(StringUtil.isEmpty(endDateTime)){
             return DateUtil.toString(new Date());
         }else {

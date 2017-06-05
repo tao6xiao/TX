@@ -43,9 +43,7 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
-
-        return monitorSiteDeal;
+        return monitorSiteService.getMonitorSiteDealBySiteId(siteId);
     }
 
     /**

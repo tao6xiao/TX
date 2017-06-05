@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.entity;
 
+import lombok.Getter;
+
 /**
  * Created by rw103 on 2017/5/12.
  */
@@ -14,7 +16,8 @@ public enum IssueIndicator {
 
     public final int value;
 
-    public final String name;
+    @Getter
+    private final String name;
 
     IssueIndicator(int type, String name) {
         this.value = type;

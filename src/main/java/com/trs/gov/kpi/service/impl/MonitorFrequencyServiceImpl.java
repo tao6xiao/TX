@@ -55,8 +55,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Override
     public List<MonitorFrequency> checkSiteIdAndTypeAreBothExitsOrNot(int siteId) {
-        List<MonitorFrequency> monitorFrequencyList = monitorFrequencyMapper.queryBySiteId(siteId);
-        return monitorFrequencyList;
+        return monitorFrequencyMapper.queryBySiteId(siteId);
     }
 
     @Override

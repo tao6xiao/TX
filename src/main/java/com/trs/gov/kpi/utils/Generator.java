@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Generator {
 	public static void main(String[] args) throws IOException, XMLParserException, InvalidConfigurationException, SQLException, InterruptedException {
-		List<String> warnings = new ArrayList<String>();
+		List<String> warnings = new ArrayList<>();
 	    boolean overwrite = true;
 		File configFile = new File("C:\\TRS\\workspace\\gov-kpi\\src\\main\\java\\com\\trs\\gov\\kpi\\utils\\generator.xml");
 	    ConfigurationParser cp = new ConfigurationParser(warnings);

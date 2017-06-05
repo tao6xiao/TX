@@ -16,11 +16,17 @@ import java.util.List;
 @Slf4j
 public class DateUtil {
 
+    private DateUtil() {
+
+    }
+
     // 一天的秒数
     public static final int SECOND_ONE_DAY = 24 * 60 * 60;
 
     // 一天的毫秒数
-    private static final long MS_ONE_DAY = 24 * 60 * 60 * 1000;
+    private static final long MS_ONE_DAY = 24 * 60 * 60 * 1000L;
+
+    private static final String DAY_FORMAT = "yyyy-MM-dd";
 
     /**
      * 日期字符串转换为日期
@@ -63,7 +69,7 @@ public class DateUtil {
      * @return
      */
     public static float diffDay(Date date1, Date date2) {
-        return (date1.getTime() - date2.getTime()) / MS_ONE_DAY;
+        return (date1.getTime() - date2.getTime()) * 1.0f / MS_ONE_DAY;
     }
 
     /**
@@ -88,8 +94,8 @@ public class DateUtil {
         List<HistoryDate> list = new ArrayList<>();
         try {
 
-            Date beginDate = new SimpleDateFormat("yyyy-MM-dd").parse(start);// 定义起始日期
-            Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(end);// 定义结束日期
+            Date beginDate = new SimpleDateFormat(DAY_FORMAT).parse(start);// 定义起始日期
+            Date endDate = new SimpleDateFormat(DAY_FORMAT).parse(end);// 定义结束日期
 
             Calendar currBegin = Calendar.getInstance();// 当前起始日期
             currBegin.setTime(beginDate);
@@ -100,7 +106,7 @@ public class DateUtil {
             endCalendar.setTime(endDate);
 
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat(DAY_FORMAT);
 
 
             while (currBegin.getTime().before(endDate)) {// 判断是否到结束日期
@@ -164,15 +170,29 @@ public class DateUtil {
             }
 
         } catch (ParseException e) {
-            return null;
+            return list;
         }
 
         return list;
     }
 
     private static String formatMonth(int month) {
-        return (month + 1) < 10 ? "0" + (month + 1) : "" + (month + 1);
+        return (month + 1) < 10 ? "0" + (month + 1) : String.valueOf(month + 1);
     }
 
+    /**
+     * 获取离指定时间最近的这个周期的起始时间
+     *
+     * @param date 指定的时间
+     * @param beginDate 周期计算的起始时间
+     * @param intervalDay 周期间隔时间，天为单位
+     * @return
+     */
+    public static Date nearestPeriodBeginDate(Date date, String beginDate, int intervalDay) {
+        long beginTime = toDate(beginDate).getTime();
+        long endTime = date.getTime();
+        int peroids = (int)((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
+        return new Date(beginTime + intervalDay * peroids * MS_ONE_DAY);
+    }
 
 }

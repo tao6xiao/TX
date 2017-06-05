@@ -9,7 +9,6 @@ import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.IssueIndicator;
 import com.trs.gov.kpi.entity.LinkAvailability;
-import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -42,18 +41,18 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         Statistics handledIssueStatistics = new Statistics();
         handledIssueStatistics.setCount(getHandledIssueCount(param));
         handledIssueStatistics.setType(IssueIndicator.SOLVED.value);
-        handledIssueStatistics.setName(IssueIndicator.SOLVED.name);
+        handledIssueStatistics.setName(IssueIndicator.SOLVED.getName());
 
         Statistics unhandledIssueStatistics = new Statistics();
         unhandledIssueStatistics.setCount(getUnhandledIssueCount(param));
         unhandledIssueStatistics.setType(IssueIndicator.UN_SOLVED.value);
-        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.name);
+        unhandledIssueStatistics.setName(IssueIndicator.UN_SOLVED.getName());
 
         List<Statistics> list = new ArrayList<>();
         list.add(handledIssueStatistics);
@@ -87,8 +86,8 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     @Override
     public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(param.getBeginDateTime(), param.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -109,8 +108,8 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     @Override
     public ApiPageData getIssueList(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param, Types.IssueType.LINK_AVAILABLE_ISSUE);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
@@ -127,7 +126,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         for (LinkAvailability link : linkAvailabilitieList) {
             LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
             linkAvailabilityResponse.setId(link.getId());
-            linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).name);
+            linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).getName());
             linkAvailabilityResponse.setInvalidLink(link.getInvalidLink());
             linkAvailabilityResponse.setSnapshot(link.getSnapshot());
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());
@@ -172,10 +171,10 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public boolean getIndexAvailability(PageDataRequestParam param) {
+    public boolean isIndexAvailable(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         String indexUrl = getIndexUrl(param);
 
@@ -185,11 +184,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int flag = issueMapper.getIndexAvailability(queryFilter);
 
-        if (flag > 0) {
-            return false;
-        } else {
-            return true;
-        }
+        return flag <= 0;
     }
 
     @Override
@@ -204,14 +199,14 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if (getIndexAvailability(param)) {
+        if (isIndexAvailable(param)) {
             indexPage.setIndexAvailable(true);
             indexPage.setMonitorTime(sdf.format(new Date()));
         } else {
             indexPage.setIndexAvailable(false);
 
-            param.setBeginDateTime(InitTime.checkBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-            param.setEndDateTime(InitTime.checkEndDateTime(param.getEndDateTime()));
+            param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+            param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
             QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
             queryFilter.addCond(IssueTableField.DETAIL, indexUrl);

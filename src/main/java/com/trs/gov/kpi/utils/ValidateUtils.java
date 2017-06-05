@@ -8,6 +8,10 @@ import com.trs.gov.kpi.entity.exception.BizException;
  */
 public class ValidateUtils {
 
+    private ValidateUtils() {
+
+    }
+
     public static void isTrue(boolean expression, String message) throws BizException {
 
         if (!expression) {

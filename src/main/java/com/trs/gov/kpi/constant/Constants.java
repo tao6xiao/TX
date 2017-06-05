@@ -5,5 +5,7 @@ package com.trs.gov.kpi.constant;
  */
 public final class Constants {
 
+    private Constants() {}
+
     public static final String INVALID_PARAMETER = "参数不合法！";
 }

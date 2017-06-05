@@ -8,6 +8,10 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
  */
 public class OuterApiUtil {
 
+    private OuterApiUtil() {
+
+    }
+
     /**
      * 判定结果是否成功
      *

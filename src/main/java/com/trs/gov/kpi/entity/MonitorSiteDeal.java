@@ -2,8 +2,6 @@ package com.trs.gov.kpi.entity;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-
 /**
  * Created by HLoach on 2017/5/11.
  */
@@ -20,8 +18,6 @@ public class MonitorSiteDeal {
     private String guarderPhone;
 
     private String indexUrl;
-
-//    private Integer[] siteIds;
 
 }
 

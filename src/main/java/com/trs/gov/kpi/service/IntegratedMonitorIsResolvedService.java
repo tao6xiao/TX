@@ -19,13 +19,4 @@ public interface IntegratedMonitorIsResolvedService {
      */
     ApiPageData getPageDataIsResolvedList(PageDataRequestParam param, Boolean isResolved);
 
-//    /**
-//     * 获取已解决的数据条数（通用方法，已解决，已忽略）
-//     *
-//     * @param param
-//     * @param isResolved
-//     * @return
-//     */
-//    int getPageDataIsResolvedItemCount(PageDataRequestParam param, Boolean isResolved);
-
 }

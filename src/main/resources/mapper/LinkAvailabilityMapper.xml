@@ -325,7 +325,7 @@
 
     <!--</insert>-->
 
-    <!--<select id="getIndexAvailability" resultType="int">-->
+    <!--<select id="isIndexAvailable" resultType="int">-->
         <!--SELECT count(1)-->
         <!--FROM issue-->
         <!--WHERE issue.detail = #{indexUrl}-->
