@@ -27,4 +27,28 @@ public class WebPageController {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectReplySpeed(param);
     }
+
+    @RequestMapping(value = "/size",method = RequestMethod.GET)
+    public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.paramCheck(param);
+        return webPageService.selectPageSpace(param);
+    }
+
+    @RequestMapping(value = "/depth",method = RequestMethod.GET)
+    public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.paramCheck(param);
+        return webPageService.selectPageDepth(param);
+    }
+
+    @RequestMapping(value = "/code",method = RequestMethod.GET)
+    public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.paramCheck(param);
+        return webPageService.selectRepeatCode(param);
+    }
+
+    @RequestMapping(value = "/length",method = RequestMethod.GET)
+    public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.paramCheck(param);
+        return webPageService.selectUrlLength(param);
+    }
 }

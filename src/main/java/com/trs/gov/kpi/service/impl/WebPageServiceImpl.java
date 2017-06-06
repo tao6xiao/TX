@@ -4,14 +4,12 @@ import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.dao.WebPageMapper;
-import com.trs.gov.kpi.entity.ReplySpeed;
+import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.Pager;
-import com.trs.gov.kpi.entity.responsedata.ReplySpeedResponse;
+import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -38,12 +36,6 @@ public class WebPageServiceImpl implements WebPageService {
     @Resource
     private WebPageMapper webPageMapper;
 
-
-
-//    @Override
-//    public int getReplySpeedCount(PageDataRequestParam param) {
-//        return 0;
-//    }
 
     @Override
     public ApiPageData selectReplySpeed(PageDataRequestParam param) {
@@ -74,6 +66,130 @@ public class WebPageServiceImpl implements WebPageService {
         }
 
         return new ApiPageData(pager, replySpeedResponseList);
+    }
+
+    @Override
+    public ApiPageData selectPageSpace(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        int count = webPageMapper.count(queryFilter);
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), count);
+        queryFilter.setPager(pager);
+
+        List<PageSpace> pageSpaceList = webPageMapper.selectPageSpace(queryFilter);
+        List<PageSpaceResponse> pageSpaceResponseList = new ArrayList<>();
+        for (PageSpace pageSpace : pageSpaceList) {
+            PageSpaceResponse pageSpaceResponse = new PageSpaceResponse();
+            pageSpaceResponse.setId(pageSpace.getId());
+            pageSpaceResponse.setChnlName(getChannelName(pageSpace.getChnlId()));
+            pageSpaceResponse.setPageLink(pageSpace.getPageLink());
+            pageSpaceResponse.setReplySpeed(pageSpace.getReplySpeed());
+            pageSpaceResponse.setPageSpace(pageSpace.getPageSpace());
+            pageSpaceResponse.setCheckTime(pageSpace.getCheckTime());
+            pageSpaceResponseList.add(pageSpaceResponse);
+        }
+
+        return new ApiPageData(pager, pageSpaceResponseList);
+    }
+
+    @Override
+    public ApiPageData selectPageDepth(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        int count = webPageMapper.count(queryFilter);
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), count);
+        queryFilter.setPager(pager);
+
+        List<PageDepth> pageDepthList = webPageMapper.selectPageDepth(queryFilter);
+        List<PageDepthResponse> pageDepthResponseList = new ArrayList<>();
+        for (PageDepth pageDepth : pageDepthList) {
+            PageDepthResponse pageDepthResponse = new PageDepthResponse();
+            pageDepthResponse.setId(pageDepth.getId());
+            pageDepthResponse.setChnlName(getChannelName(pageDepth.getChnlId()));
+            pageDepthResponse.setPageLink(pageDepth.getPageLink());
+            pageDepthResponse.setPageDepth(pageDepth.getPageDepth());
+            pageDepthResponse.setPageSpace(pageDepth.getPageSpace());
+            pageDepthResponse.setCheckTime(pageDepth.getCheckTime());
+            pageDepthResponseList.add(pageDepthResponse);
+        }
+
+        return new ApiPageData(pager, pageDepthResponseList);
+    }
+
+    @Override
+    public ApiPageData selectRepeatCode(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPEAT_CODE.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        int count = webPageMapper.count(queryFilter);
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), count);
+        queryFilter.setPager(pager);
+
+        List<RepeatCode> repeatCodeList = webPageMapper.selectRepeatCode(queryFilter);
+        List<RepeatCodeResponse> repeatCodeResponseList = new ArrayList<>();
+        for (RepeatCode repeatCode : repeatCodeList) {
+            RepeatCodeResponse repeatCodeResponse = new RepeatCodeResponse();
+            repeatCodeResponse.setId(repeatCode.getId());
+            repeatCodeResponse.setChnlName(getChannelName(repeatCode.getChnlId()));
+            repeatCodeResponse.setRepeatPlace(repeatCode.getRepeatPlace());
+            repeatCodeResponse.setRepeatDegree(repeatCode.getRepeatDegree());
+            repeatCodeResponse.setUpdateTime(repeatCode.getUpdateTime());
+            repeatCodeResponse.setCheckTime(repeatCode.getCheckTime());
+            repeatCodeResponseList.add(repeatCodeResponse);
+        }
+
+        return new ApiPageData(pager, repeatCodeResponseList);
+    }
+
+    @Override
+    public ApiPageData selectUrlLength(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        int count = webPageMapper.count(queryFilter);
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), count);
+        queryFilter.setPager(pager);
+
+        List<UrlLength> urlLengthList = webPageMapper.selectUrlLength(queryFilter);
+        List<UrlLengthResponse> urlLengthResponseList = new ArrayList<>();
+        for (UrlLength urlLength : urlLengthList) {
+            UrlLengthResponse urlLengthResponse = new UrlLengthResponse();
+            urlLengthResponse.setId(urlLength.getId());
+            urlLengthResponse.setChnlName(getChannelName(urlLength.getChnlId()));
+            urlLengthResponse.setPageLink(urlLength.getPageLink());
+            urlLengthResponse.setUrlLength(urlLength.getUrlLength());
+            urlLengthResponse.setPageSpace(urlLength.getPageSpace());
+            urlLengthResponse.setCheckTime(urlLength.getCheckTime());
+            urlLengthResponseList.add(urlLengthResponse);
+        }
+
+        return new ApiPageData(pager, urlLengthResponseList);
     }
 
     @Override

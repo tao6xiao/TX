@@ -10,14 +10,6 @@ import java.util.Date;
  */
 public interface WebPageService {
 
-//    /**
-//     * 查询响应速度数量
-//     *
-//     * @param param
-//     * @return
-//     */
-//    int getReplySpeedCount(PageDataRequestParam param);
-
     /**
      * 查询响应速度
      *
@@ -25,6 +17,38 @@ public interface WebPageService {
      * @return
      */
     ApiPageData selectReplySpeed(PageDataRequestParam param);
+
+    /**
+     * 查询过大页面
+     *
+     * @param param
+     * @return
+     */
+    ApiPageData selectPageSpace(PageDataRequestParam param);
+
+    /**
+     * 查询过深页面
+     *
+     * @param param
+     * @return
+     */
+    ApiPageData selectPageDepth(PageDataRequestParam param);
+
+    /**
+     * 查询冗余代码
+     *
+     * @param param
+     * @return
+     */
+    ApiPageData selectRepeatCode(PageDataRequestParam param);
+
+    /**
+     * 查询过长URL页面
+     *
+     * @param param
+     * @return
+     */
+    ApiPageData selectUrlLength(PageDataRequestParam param);
 
     /**
      * 查询监测时间最早的网页分析数据
