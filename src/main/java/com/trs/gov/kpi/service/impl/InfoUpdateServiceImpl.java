@@ -47,7 +47,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
         QueryFilter filter = QueryFilterHelper.toFilter(param);
-        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value,Types.IssueType.INFO_UPDATE_WARNING.value));
         filter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int resolvedCount = issueMapper.count(filter);
@@ -59,19 +59,31 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         int updateCount = issueMapper.count(filter);
 
+        filter = QueryFilterHelper.toFilter(param);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_WARNING.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        int warningCount = issueMapper.count(filter);
+
         List<Statistics> statisticsList = new ArrayList<>();
 
 
         Statistics statistics = new Statistics();
-        statistics.setType(IssueIndicator.SOLVED.value);
-        statistics.setName(IssueIndicator.SOLVED.getName());
+        statistics.setType(IssueIndicator.SOLVED_ALL.value);
+        statistics.setName(IssueIndicator.SOLVED_ALL.getName());
         statistics.setCount(resolvedCount);
         statisticsList.add(statistics);
 
         statistics = new Statistics();
-        statistics.setType(IssueIndicator.UPDATE_NOT_INTIME.value);
-        statistics.setName(IssueIndicator.UPDATE_NOT_INTIME.getName());
+        statistics.setType(IssueIndicator.UN_SOLVED_ISSUE.value);
+        statistics.setName(IssueIndicator.UN_SOLVED_ISSUE.getName());
         statistics.setCount(updateCount);
+        statisticsList.add(statistics);
+
+        statistics = new Statistics();
+        statistics.setType(IssueIndicator.WARNING.value);
+        statistics.setName(IssueIndicator.WARNING.getName());
+        statistics.setCount(warningCount);
         statisticsList.add(statistics);
 
         return statisticsList;
@@ -222,7 +234,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     @Override
     public ApiPageData get(PageDataRequestParam param) throws RemoteException {
         QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE);
-        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value,Types.IssueType.INFO_UPDATE_WARNING.value));
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         int itemCount = issueMapper.count(filter);
