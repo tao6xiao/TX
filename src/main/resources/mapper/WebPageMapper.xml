@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WebPageMapper">
+    <resultMap id="ReplySpeedMap" type="com.trs.gov.kpi.entity.ReplySpeed">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
+        <result column="replySpeed" jdbcType="VARCHAR" property="replySpeed"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+    </resultMap>
+
+    <select id="selectReplySpeed" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="ReplySpeedMap">
+        SELECT
+        *
+        FROM webpage WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="count" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+        SELECT
+        count(1)
+        FROM webpage WHERE 1=1
+        <include refid="all_conditions_sql"/>
+    </select>
+
+    <sql id="all_conditions_sql">
+        <include refid="where_sql"/>
+        <include refid="group_sql"/>
+        <include refid="order_sql"/>
+        <include refid="page_sql"/>
+    </sql>
+
+    <sql id="where_sql">
+        <if test="condFields != null">
+            AND
+            <foreach collection="condFields" item="condField" separator=" AND ">
+                <include refid="where_foreach_field_sql"></include>
+                <if test='condField.fieldName == "OR_COMPLEX_FIELD"'>
+                    <foreach collection="condField.condValue.fields" index="index" item="condField" open="("
+                             separator=" OR " close=")">
+                        <include refid="where_foreach_field_sql"></include>
+                    </foreach>
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="where_foreach_field_sql">
+        <foreach collection="fieldNames" item="fieldName">
+            <if test="condField.fieldName == fieldName">
+                <if test="condField.isLike">
+                    ${fieldName} like #{condField.condValue}
+                </if>
+                <if test="condField.isEqual">
+                    ${fieldName} = #{condField.condValue}
+                </if>
+                <if test="condField.isRangeBegin">
+                    ${fieldName}
+                    <![CDATA[
+                       >=
+                      ]]>
+                    #{condField.condValue}
+                </if>
+                <if test="condField.isRangeEnd">
+                    ${fieldName}
+                    <![CDATA[
+                         <=
+                      ]]>
+                    #{condField.condValue}
+                </if>
+                <if test="condField.isCollection">
+                    ${fieldName} in
+                    <foreach collection="condField.condValue" index="index" item="item" open="(" separator=","
+                             close=")">
+                        #{item}
+                    </foreach>
+                </if>
+            </if>
+        </foreach>
+    </sql>
+
+    <sql id="order_sql">
+        <if test="sortFields != null">
+            ORDER BY
+            <foreach collection="sortFields" item="sortField" separator=",">
+                <foreach collection="fieldNames" item="fieldName">
+                    <if test='sortField.fieldName == fieldName'>
+                        ${fieldName}
+                        <if test="sortField.isAsc">
+                            ASC
+                        </if>
+                        <if test="!sortField.isAsc">
+                            DESC
+                        </if>
+                    </if>
+                </foreach>
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="group_sql">
+        <if test="groupFields != null">
+            GROUP BY
+            <foreach collection="groupFields" item="groupField" separator=",">
+                ${groupField}
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="page_sql">
+        <if test="pager != null">
+            limit #{pager.offset},#{pager.count}
+        </if>
+    </sql>
+
+    <select id="getEarliestCheckTime" resultType="java.util.Date">
+        SELECT min(checkTime)
+        FROM webpage
+    </select>
+
+</mapper>
