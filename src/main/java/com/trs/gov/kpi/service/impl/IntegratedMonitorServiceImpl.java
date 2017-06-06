@@ -38,13 +38,15 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE.value));
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE
+                .value, Types.IssueType.INFO_UPDATE_WARNING.value, Types.IssueType.RESPOND_WARNING.value));
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
 
         int handledCount = issueMapper.count(queryFilter);
 
         queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE.value));
+        queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE
+                .value));
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED);
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int unhandledCount = issueMapper.count(queryFilter);
@@ -56,13 +58,13 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         int warningCount = issueMapper.count(queryFilter);
 
         Statistics handledStatistics = new Statistics();
-        handledStatistics.setName(IssueIndicator.SOLVED.getName());
-        handledStatistics.setType(IssueIndicator.SOLVED.value);
+        handledStatistics.setName(IssueIndicator.SOLVED_ALL.getName());
+        handledStatistics.setType(IssueIndicator.SOLVED_ALL.value);
         handledStatistics.setCount(handledCount);
 
         Statistics unhandledStatistics = new Statistics();
-        unhandledStatistics.setName(IssueIndicator.UN_SOLVED.getName());
-        unhandledStatistics.setType(IssueIndicator.UN_SOLVED.value);
+        unhandledStatistics.setName(IssueIndicator.UN_SOLVED_ISSUE.getName());
+        unhandledStatistics.setType(IssueIndicator.UN_SOLVED_ISSUE.value);
         unhandledStatistics.setCount(unhandledCount);
 
         Statistics warningStatistics = new Statistics();

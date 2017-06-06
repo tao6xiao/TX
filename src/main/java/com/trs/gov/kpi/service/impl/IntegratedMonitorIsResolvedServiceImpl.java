@@ -34,15 +34,14 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
     public ApiPageData getPageDataIsResolvedList(PageDataRequestParam param, Boolean isResolved) {
 
 
-        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.LINK_AVAILABLE_ISSUE, Types.IssueType.INFO_ERROR_ISSUE);
+        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.LINK_AVAILABLE_ISSUE, Types.IssueType.INFO_ERROR_ISSUE, Types.IssueType
+                .INFO_UPDATE_WARNING, Types.IssueType.RESPOND_WARNING);
         if (isResolved) {
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
         } else {
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.IGNORED.value);
         }
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        filter.addCond(IssueTableField.TYPE_ID, 1).setRangeBegin(true);
-        filter.addCond(IssueTableField.TYPE_ID, 50).setRangeEnd(true);
 
         int itemCount = issueMapper.count(filter);
 
