@@ -10,7 +10,71 @@
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
+    <resultMap id="PageSpaceMap" type="com.trs.gov.kpi.entity.PageSpace">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
+        <result column="replySpeed" jdbcType="VARCHAR" property="replySpeed"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+    </resultMap>
+
+    <resultMap id="PageDepthMap" type="com.trs.gov.kpi.entity.PageDepth">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
+        <result column="pageDepth" jdbcType="INTEGER" property="pageDepth"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+    </resultMap>
+
+    <resultMap id="RepeatCodeMap" type="com.trs.gov.kpi.entity.RepeatCode">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="repeatPlace" jdbcType="INTEGER" property="repeatPlace"/>
+        <result column="repeatDegree" jdbcType="VARCHAR" property="repeatDegree"/>
+        <result column="updateTime" jdbcType="DATE" property="updateTime"/>
+        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+    </resultMap>
+
+    <resultMap id="UrlLengthMap" type="com.trs.gov.kpi.entity.UrlLength">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
+        <result column="urlLength" jdbcType="VARCHAR" property="urlLength"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+    </resultMap>
+
     <select id="selectReplySpeed" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="ReplySpeedMap">
+        SELECT
+        *
+        FROM webpage WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="selectPageSpace" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="PageSpaceMap">
+        SELECT
+        *
+        FROM webpage WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="selectPageDepth" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="PageDepthMap">
+        SELECT
+        *
+        FROM webpage WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="selectRepeatCode" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="RepeatCodeMap">
+        SELECT
+        *
+        FROM webpage WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="selectUrlLength" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="UrlLengthMap">
         SELECT
         *
         FROM webpage WHERE 1=1
