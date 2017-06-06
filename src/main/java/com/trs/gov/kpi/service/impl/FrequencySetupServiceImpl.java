@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
@@ -116,6 +117,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     @Override
     public int insert(FrequencySetup frequencySetup) throws ParseException {
         frequencySetup.setSetTime(new Date());
+        frequencySetup.setIsOpen((byte) Status.Open.OPEN.value);
         return frequencySetupMapper.insert(frequencySetup);
     }
 
