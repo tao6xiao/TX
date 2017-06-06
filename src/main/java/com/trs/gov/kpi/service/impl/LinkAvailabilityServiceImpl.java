@@ -20,7 +20,6 @@ import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -198,10 +197,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         String indexUrl = getIndexUrl(param);
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if (isIndexAvailable(param)) {
             indexPage.setIndexAvailable(true);
-            indexPage.setMonitorTime(sdf.format(new Date()));
+            indexPage.setMonitorTime(DateUtil.toString(new Date()));
         } else {
             indexPage.setIndexAvailable(false);
 
@@ -212,7 +210,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
             queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
             queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-            indexPage.setMonitorTime(sdf.format(issueMapper.getMonitorTime(queryFilter)));
+            indexPage.setMonitorTime(DateUtil.toString(issueMapper.getMonitorTime(queryFilter)));
         }
         return indexPage;
     }
