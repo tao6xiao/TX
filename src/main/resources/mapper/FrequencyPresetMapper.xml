@@ -118,4 +118,10 @@
     from frequencypreset
     where siteId = #{siteId,jdbcType=INTEGER} AND id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectBySiteIdAndUpdateFreq" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from frequencypreset
+    where siteId = #{siteId,jdbcType=INTEGER} AND updateFreq LIKE concat("%",#{updateFreq},"%")
+  </select>
 </mapper>

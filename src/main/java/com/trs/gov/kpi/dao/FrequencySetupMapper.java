@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
+import com.trs.gov.kpi.entity.dao.DBPager;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,6 +30,14 @@ public interface FrequencySetupMapper {
      * @return
      */
     List<FrequencySetup> selectPageDataFrequencySetupList(@Param("siteId") int siteId, @Param("pageCalculate") int pageCalculate, @Param("pageSize") int pageSize);
+
+    /**
+     * 模糊查询的分页查询
+     * @param selectRequest
+     * @param pager
+     * @return
+     */
+    List<FrequencySetup> selectPageDataList(@Param("selectRequest") FrequencySetupSelectRequest selectRequest, @Param("pager") DBPager pager, @Param("frequencySetup") FrequencySetup frequencySetup);
 
     /**
      * 获取当前siteId的记录总数

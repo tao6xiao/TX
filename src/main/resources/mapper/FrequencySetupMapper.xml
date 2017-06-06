@@ -7,9 +7,10 @@
     <result column="presetFeqId" jdbcType="INTEGER" property="presetFeqId" />
     <result column="chnlId" jdbcType="INTEGER" property="chnlId" />
     <result column="setTime" jdbcType="TIMESTAMP" property="setTime" />
+    <result column="isOpen" jdbcType="TINYINT" property="isOpen"/>
   </resultMap>
   <sql id="Base_Column_List">
-    id, siteId, presetFeqId, chnlId
+    id, siteId, presetFeqId, chnlId, setTime, isOpen
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -92,6 +93,44 @@
     from frequencysetup
     where siteId = #{siteId,jdbcType=INTEGER}
     limit  #{pageCalculate,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectPageDataList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from frequencysetup
+    where siteId = #{selectRequest.siteId,jdbcType=INTEGER}
+    <choose>
+      <when test='selectRequest.searchField == "chnlId"'>
+        AND chnlId LIKE concat("%",#{selectRequest.searchText},"%")
+      </when>
+      <when test='selectRequest.searchField == "chnlName"'>
+        <if test="frequencySetup.chnlId != null">
+          AND
+          chnlId = #{frequencySetup.chnlId}
+        </if>
+      </when>
+      <when test='selectRequest.searchField == "updateFreq"'>
+        <if test="frequencySetup.presetFeqId != null">
+          AND
+          presetFeqId = #{frequencySetup.presetFeqId}
+        </if>
+      </when>
+      <otherwise>
+        AND (
+        (chnlId LIKE concat("%",#{selectRequest.searchText},"%"))
+        <if test="frequencySetup.chnlId != null">
+          OR
+          (chnlId = #{frequencySetup.chnlId})
+        </if>
+        <if test="frequencySetup.presetFeqId != null">
+          OR
+          (presetFeqId = #{frequencySetup.presetFeqId})
+        </if>
+        )
+      </otherwise>
+    </choose>
+    <include refid="com.trs.gov.kpi.dao.IssueMapper.page_sql"/>
   </select>
   <select id="selectCountFrequencySetupBySiteId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
     select
