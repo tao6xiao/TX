@@ -365,4 +365,41 @@ public final class Types {
          }
     }
 
+    /**
+     * 网页分析类型
+     */
+    public enum AnalysisType {
+        INVALID(-1, "未知类型"),
+        REPLY_SPEED(1, "响应速度"),
+        OVERSIZE_PAGE(2, "过大页面"),
+        OVER_DEEP_PAGE(3, "过深页面"),
+        REPEAT_CODE(4,"冗余代码"),
+        TOO_LONG_URL(5, "过长URL页面");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        AnalysisType(int value, String name) {
+
+            this.value = value;
+            this.name = name;
+        }
+
+        public static AnalysisType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            AnalysisType[] types = AnalysisType.values();
+            for (AnalysisType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+
+    }
+
 }

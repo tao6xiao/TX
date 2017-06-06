@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.helper;
 
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -116,5 +117,57 @@ public class QueryFilterHelper {
             }
         }
         return field;
+    }
+
+    /**
+     * 把参数转换为网页查询的filter
+     *
+     * @param param
+     * @return
+     */
+    public static QueryFilter toPageFilter(PageDataRequestParam param) {
+        QueryFilter filter = new QueryFilter(Table.WEB_PAGE);
+
+        filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
+        if (param.getBeginDateTime() != null) {
+            filter.addCond(WebpageTableField.CHECK_TIME, param.getBeginDateTime()).setRangeBegin(true);
+        }
+
+        if (param.getEndDateTime() != null) {
+            filter.addCond(WebpageTableField.CHECK_TIME, param.getEndDateTime()).setRangeEnd(true);
+        }
+
+        if (param.getSearchText() != null) {
+            if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
+                filter.addCond(WebpageTableField.ID, '%' + param.getSearchText() + "%").setLike(true);
+            } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("chnlName")) {
+
+                //TODO  调接口根据名字查栏目id
+
+            } else if (param.getSearchField() == null) {
+                CondDBField idField = new CondDBField(WebpageTableField.ID, '%' + param.getSearchText() + "%");
+                idField.setLike(true);
+
+                //TODO  调接口根据名字查栏目id
+                filter.addCond(idField);
+            }
+        }
+
+        // sort field
+        if (param.getSortFields() != null && !param.getSortFields().trim().isEmpty()) {
+            String[] sortFields = param.getSortFields().trim().split(";");
+            for (String sortField : sortFields) {
+                String[] nameAndDirection = sortField.split(",");
+                if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
+                    if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
+                        filter.addSortField(nameAndDirection[0], true);
+                    } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
+                        filter.addSortField(nameAndDirection[0], false);
+                    }
+                }
+            }
+        }
+
+        return filter;
     }
 }
