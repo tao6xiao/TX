@@ -25,6 +25,8 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.*;
 
+import static com.trs.gov.kpi.constant.Constants.WANRNING_BEGIN_ID;
+
 /**
  * Created by rw103 on 2017/5/13.
  */
@@ -47,7 +49,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
         QueryFilter filter = QueryFilterHelper.toFilter(param);
-        filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value,Types.IssueType.INFO_UPDATE_WARNING.value));
+        filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value, Types.IssueType.INFO_UPDATE_WARNING.value));
         filter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int resolvedCount = issueMapper.count(filter);
@@ -233,8 +235,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Override
     public ApiPageData get(PageDataRequestParam param) throws RemoteException {
-        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE);
-        filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value,Types.IssueType.INFO_UPDATE_WARNING.value));
+        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.INFO_UPDATE_WARNING);
+        filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value, Types.IssueType.INFO_UPDATE_WARNING.value));
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         int itemCount = issueMapper.count(filter);
@@ -258,7 +260,12 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
-            infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).getName());
+            if (infoUpdate.getSubTypeId() < WANRNING_BEGIN_ID) {
+                infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).getName());
+            } else {
+                infoUpdateResponse.setIssueTypeName(Types.InfoUpdateWarningType.valueOf(infoUpdate.getSubTypeId()).getName());
+            }
+
             responseList.add(infoUpdateResponse);
         }
         return responseList;
