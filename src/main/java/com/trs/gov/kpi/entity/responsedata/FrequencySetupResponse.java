@@ -18,4 +18,6 @@ public class FrequencySetupResponse {
     private Integer chnlId;
 
     private String chnlName;
+
+    private Integer isOpen;
 }

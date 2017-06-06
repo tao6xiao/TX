@@ -13,6 +13,8 @@ public class FrequencySetup {
 
     private Date setTime;
 
+    private Byte isOpen;
+
     public Integer getId() {
         return id;
     }
@@ -51,5 +53,13 @@ public class FrequencySetup {
 
     public void setSetTime(Date setTime) {
         this.setTime = setTime;
+    }
+
+    public Byte getIsOpen() {
+        return isOpen;
+    }
+
+    public void setIsOpen(Byte isOpen) {
+        this.isOpen = isOpen;
     }
 }

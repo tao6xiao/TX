@@ -64,4 +64,11 @@ public interface FrequencyPresetMapper {
     FrequencyPreset selectById(@Param("siteId") int siteId, @Param("id") int id);
 
     FrequencyPreset selectBySiteIdAndId(@Param("siteId") int siteId, @Param("id") int id);
+
+    /**
+     * 通过频率查询对应的记录
+     * @param UpdateFreq
+     * @return
+     */
+    List<FrequencyPreset> selectBySiteIdAndUpdateFreq(@Param("siteId") Integer siteId,@Param("updateFreq") String UpdateFreq);
 }

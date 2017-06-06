@@ -4,6 +4,7 @@ import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -18,7 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 栏目更新频率Controller
@@ -35,28 +39,31 @@ public class FrequencySetupController {
     FrequencyPresetService frequencyPresetService;
 
     /**
-     * 分页查询当前站点的数数据
+     * 分页查询当前站点的数据（附带模糊查询）
      *
-     * @param siteId
-     * @param pageSize
-     * @param pageIndex
+     * @param selectRequest
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
-        if (siteId == null) {
+    public ApiPageData getPageDataBySiteId(@ModelAttribute FrequencySetupSelectRequest selectRequest) throws BizException, RemoteException {
+        if (selectRequest.getSiteId() == null) {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        int itemCount = frequencySetupService.getCountFrequencySetupBySite(siteId);
+        ParamCheckUtil.pagerCheck(selectRequest.getPageIndex(), selectRequest.getPageSize());
+        int itemCount = frequencySetupService.getCountFrequencySetupBySite(selectRequest.getSiteId());
 
-        Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
-        List<FrequencySetupResponse> frequencySetupResponses = frequencySetupService.getPageDataFrequencySetupList(siteId, pager.getCurrPage() - 1, pager.getPageSize());
-
-        return new ApiPageData(pager, frequencySetupResponses);
+        Pager pager = PageInfoDeal.buildResponsePager(selectRequest.getPageIndex(), selectRequest.getPageSize(), itemCount);
+        List<FrequencySetupResponse> frequencySetupResponses = frequencySetupService.getPageDataFrequencySetupList(selectRequest, pager);
+        Set<FrequencySetupResponse> setupResponseSet = new HashSet<>();
+        for (FrequencySetupResponse setupResponse : frequencySetupResponses) {
+            setupResponseSet.add(setupResponse);
+        }
+        pager.setItemCount(setupResponseSet.size());
+        pager.setPageCount(PageInfoDeal.getPageCount(setupResponseSet.size(), pager.getPageSize()));
+        return new ApiPageData(pager, Arrays.asList(setupResponseSet.toArray()));
     }
 
     /**
@@ -121,18 +128,26 @@ public class FrequencySetupController {
      * 删除更新频率记录
      *
      * @param siteId
-     * @param id
+     * @param ids
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.DELETE)
     @ResponseBody
-    public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("id") Integer id) throws BizException {
-        if (siteId == null || id == null) {
-            log.error("Invalid parameter: 参数siteId或者id（设置的更新频率记录对应id）存在null值");
+    public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids) throws BizException {
+        if (siteId == null || ids == null) {
+            log.error("Invalid parameter: 参数siteId或者数组ids（设置的更新频率记录对应id数组）存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
+        for (Integer id : ids) {
+            if(id == null) {
+                log.error("Invalid parameter: 参数数组ids（设置的更新频率记录对应id数组）中存在某一或者多个id为null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+        }
+        for (Integer id : ids) {
+            frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
+        }
         return null;
     }
 

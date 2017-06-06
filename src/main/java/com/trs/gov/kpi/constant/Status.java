@@ -42,4 +42,23 @@ public class Status {
             this.name = name;
         }
     }
+
+    /**
+     * 枚举是否开启，用于栏目更新频率设置
+     * Created by he.lang on 2017/6/6.
+     */
+    public enum Open {
+        CLOSE(0, "关闭"),
+        OPEN(1, "开启");
+
+        public final int value;
+
+        private final String name;
+
+        Open(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+    }
 }
