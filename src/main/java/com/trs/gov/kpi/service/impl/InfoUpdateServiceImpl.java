@@ -5,7 +5,7 @@ import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
-import com.trs.gov.kpi.entity.IssueIndicator;
+import com.trs.gov.kpi.constant.IssueIndicator;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
