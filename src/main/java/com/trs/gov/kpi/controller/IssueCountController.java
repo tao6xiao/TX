@@ -5,9 +5,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IssueCountService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -24,6 +22,14 @@ public class IssueCountController {
     @Resource
     IssueCountService countService;
 
+    /**
+     * 分类查询问题数量统计
+     * @param siteIds
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/count",method = RequestMethod.GET)
+    @ResponseBody
     public List<Statistics> countSort(@RequestParam("siteIds") Integer[] siteIds) throws BizException {
         if (siteIds == null || siteIds.length == 0) {
             log.error("Invalid parameter: 参数数组siteIds为null值");
