@@ -33,7 +33,7 @@ public class WorkOrderController {
     }
 
 
-    @RequestMapping(value = "/workorder", method = RequestMethod.GET)
+    @RequestMapping(value = "/workorder", method = RequestMethod.POST)
     public String updateOrderByIds(Integer workOrderStatus, Integer[] ids) throws BizException {
         if (workOrderStatus == null) {
             throw new BizException("参数不合法！");
