@@ -19,4 +19,6 @@ public class InfoError {
     private String snapshot;
 
     private Date checkTime;
+
+    private String errorDetail;
 }
