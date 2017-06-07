@@ -1,37 +1,52 @@
 package com.trs.gov.kpi.entity;
 
+import com.trs.gov.kpi.annotation.DBField;
+import com.trs.gov.kpi.annotation.DBTable;
+
 import java.util.Date;
 
+@DBTable
 public class Issue {
 
     /**
      * 问题编号
      */
+    @DBField(autoInc=true)
     private String id;
 
     /**
      * 站点编号
      */
+    @DBField
     private Integer siteId;
 
+    @DBField
     private Integer typeId;
 
+    @DBField
     private Integer subTypeId;
 
     private String subTypeName;
 
+    @DBField
     private String detail = "";
 
+    @DBField
     private Date issueTime;
 
+    @DBField
     private Integer isResolved = 0;
 
+    @DBField
     private Integer isDel = 0;
 
+    @DBField
     private String customer1;
 
+    @DBField
     private String customer2;
 
+    @DBField
     private String customer3;
 
     public String getId() {

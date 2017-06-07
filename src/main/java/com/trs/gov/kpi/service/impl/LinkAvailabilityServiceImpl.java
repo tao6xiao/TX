@@ -14,6 +14,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -139,7 +140,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     public void insertLinkAvailability(LinkAvailabilityResponse linkAvailabilityResponse) {
 
         Issue issue = getIssueByLinkAvaliability(linkAvailabilityResponse);
-        issueMapper.insert(issue);
+        issueMapper.insert(DBUtil.toRow(issue));
     }
 
     @Override
