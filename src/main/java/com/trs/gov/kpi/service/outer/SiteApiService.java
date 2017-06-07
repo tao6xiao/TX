@@ -20,7 +20,7 @@ public interface SiteApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    public Site getSiteById(int siteId, String userName) throws RemoteException;
+    Site getSiteById(int siteId, String userName) throws RemoteException;
 
     /**
      * 获取子栏目，如果parentId为0，查询的是站点下的第一级子栏目，
@@ -31,7 +31,7 @@ public interface SiteApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    public List<Channel> getChildChannel(int siteId, int parentId, String userName) throws RemoteException;
+    List<Channel> getChildChannel(int siteId, int parentId, String userName) throws RemoteException;
 
     /**
      * 获取栏目详情
@@ -41,7 +41,7 @@ public interface SiteApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    public Channel getChannelById(int channelId, String userName) throws RemoteException;
+    Channel getChannelById(int channelId, String userName) throws RemoteException;
 
 
     /**
@@ -52,7 +52,7 @@ public interface SiteApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException;
+    String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException;
 
 
     /**
@@ -64,7 +64,7 @@ public interface SiteApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    public Set<Integer> getAllChildChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException;
+    Set<Integer> getAllChildChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException;
 
 
     /**
@@ -76,5 +76,17 @@ public interface SiteApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    public Set<Integer> getAllLeafChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException;
+    Set<Integer> getAllLeafChnlIds(String userName, int siteId, int channelId, Set<Integer> chnlIdSet) throws RemoteException;
+
+
+    /**
+     * 使用栏目名称模糊查找所有的栏目id
+     *
+     * @param userName
+     * @param siteId
+     * @param chnlName
+     * @return
+     * @throws RemoteException
+     */
+    List<Integer> findChnlIds(String userName, int siteId, String chnlName) throws RemoteException;
 }

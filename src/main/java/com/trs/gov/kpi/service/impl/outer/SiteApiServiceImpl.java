@@ -177,6 +177,12 @@ public class SiteApiServiceImpl implements SiteApiService {
         return chnlIdSet;
     }
 
+    @Override
+    public List<Integer> findChnlIds(String userName, int siteId, String chnlName) throws RemoteException {
+        // TODO wait for edit center
+        return new ArrayList<>();
+    }
+
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
         return newServiceRequestBuilder()
                 .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")

@@ -31,16 +31,13 @@ public class DBUtil {
         DBRow row = new DBRow();
         Field[] fields = clazz.getDeclaredFields();
         for(Field field :fields){
-            if (!field.isAnnotationPresent(DBField.class)) {
+            if (!field.isAnnotationPresent(DBField.class)
+                    || field.getAnnotation(DBField.class).autoInc()) {
                 continue;
             }
 
-
-            DBField dbField = field.getAnnotation(DBField.class);
-            if (dbField.autoInc()) {
-                continue;
-            }
             // 获取db字段名
+            DBField dbField = field.getAnnotation(DBField.class);
             String fieldName;
             if (StringUtil.isEmpty(dbField.value())) {
                 // 直接使用field的名字作为字段名
