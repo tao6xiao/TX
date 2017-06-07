@@ -32,6 +32,7 @@
     <result column="subTypeId" property="subTypeId"/>
     <result column="detail" property="snapshot"/>
     <result column="issueTime" property="checkTime"/>
+    <result column="customer1" property="errorDetail"/>
   </resultMap>
 
   <resultMap id="LinkAvailabilityMap" type="com.trs.gov.kpi.entity.LinkAvailability">

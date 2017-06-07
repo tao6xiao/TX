@@ -112,7 +112,10 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).getName());
             infoErrorResponse.setSnapshot(infoError.getSnapshot());
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
-            infoErrorResponses.add(infoErrorResponse);
+            if(infoError.getErrorDetail() != null) {
+                infoErrorResponse.setErrorDetail(infoError.getErrorDetail());
+                infoErrorResponses.add(infoErrorResponse);
+            }
         }
 
         return new ApiPageData(pager, infoErrorResponses);
