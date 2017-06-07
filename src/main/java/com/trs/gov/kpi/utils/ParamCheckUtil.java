@@ -3,6 +3,7 @@ package com.trs.gov.kpi.utils;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
@@ -30,6 +31,12 @@ public class ParamCheckUtil {
         }
     }
 
+    /**
+     * 问题和预警的参数校验
+     *
+     * @param param
+     * @throws BizException
+     */
     public static void paramCheck(PageDataRequestParam param) throws BizException {
 
         if (param.getSiteId() == null) {
@@ -40,6 +47,20 @@ public class ParamCheckUtil {
         pagerCheck(param.getPageIndex(), param.getPageSize());
         checkTime(param.getBeginDateTime());
         checkTime(param.getEndDateTime());
+
+    }
+
+    /**
+     * 工单的参数校验
+     *
+     * @param request
+     * @throws BizException
+     */
+    public static void paramCheck(WorkOrderRequest request) throws BizException {
+
+        pagerCheck(request.getPageIndex(), request.getPageSize());
+        checkTime(request.getBeginDateTime());
+        checkTime(request.getEndDateTime());
 
     }
 

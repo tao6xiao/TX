@@ -6,7 +6,6 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.InfoUpdateOrder;
-import com.trs.gov.kpi.constant.IssueIndicator;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
@@ -302,7 +301,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) {
+    public ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) throws RemoteException {
         QueryFilter filter = QueryFilterHelper.toFilter(request);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond(IssueTableField.WORK_ORDER_STATUS, request.getWorkOrderStatus());
@@ -317,9 +316,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
             infoUpdateOrderRes.setId(infoUpdateOrder.getId());
             infoUpdateOrderRes.setChnlName(getChannelName(infoUpdateOrder.getChnlId()));
-            infoUpdateOrderRes.setSiteName("demo");
+            infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
             infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
-//            infoUpdateOrderRes.setDepartment();
+//            infoUpdateOrderRes.setDepartment();TODO
             infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());
             infoUpdateOrderRes.setCheckTime(infoUpdateOrder.getIssueTime());
             infoUpdateOrderRes.setSolveStatus(infoUpdateOrder.getIsResolved());

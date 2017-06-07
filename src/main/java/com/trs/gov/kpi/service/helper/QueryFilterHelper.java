@@ -129,6 +129,7 @@ public class QueryFilterHelper {
 //                } else {
 //                    filter.addCond(idField);
 //                }
+                filter.addCond(idField);
             }
         }
 

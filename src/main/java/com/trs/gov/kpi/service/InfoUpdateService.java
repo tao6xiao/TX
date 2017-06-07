@@ -1,7 +1,5 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.InfoUpdateOrder;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
@@ -46,7 +44,7 @@ public interface InfoUpdateService {
      * @param request
      * @return
      */
-    ApiPageData selectInfoUpdateOrder(WorkOrderRequest request);
+    ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) throws RemoteException;
 
 
 }

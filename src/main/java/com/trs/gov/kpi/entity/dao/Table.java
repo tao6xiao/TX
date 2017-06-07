@@ -12,7 +12,7 @@ import java.util.List;
 public enum Table {
 
     ISSUE("issue", Arrays.asList("id", "siteId", "typeId", "subTypeId",
-            "detail", "issueTime", "isResolved", "isDel", "customer1", "customer2", "customer3")),
+            "detail", "issueTime", "isResolved", "isDel", "workOrderStatus", "customer1", "customer2", "customer3")),
     WEB_PAGE("webpage", Arrays.asList("id", "siteId", "typeId", "chnlId",
             "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel"));
 

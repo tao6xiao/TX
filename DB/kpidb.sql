@@ -46,6 +46,7 @@ CREATE TABLE `issue` (
   `issueTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `isResolved` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-->待解决，1-->已处理，2-->已忽略',
   `isDel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0-->未删除，1-->已删除',
+  `workOrderStatus` tinyint(1) NOT NULL DEFAULT '0' COMMENT '工单状态 0（未进入工单流程）1（工单处理中）2（工单处理完成）',
   `customer1` varchar(2050) DEFAULT NULL,
   `customer2` varchar(2050) DEFAULT NULL,
   `customer3` varchar(2050) DEFAULT NULL,
@@ -55,21 +56,21 @@ CREATE TABLE `issue` (
 -- ----------------------------
 -- Records of issue
 -- ----------------------------
-INSERT INTO `issue` VALUES ('13854', '11', '1', '1', 'www.baodu.com', '2017-05-10 11:06:29', '0', '0', 'www.baodu.com', null, null);
-INSERT INTO `issue` VALUES ('25687', '11', '1', '1', 'www.sohu.com', '2017-05-04 11:06:33', '0', '0', 'www.sohu.com', null, null);
-INSERT INTO `issue` VALUES ('32189', '11', '2', '1', 'www.dsf.cn', '2017-05-25 17:06:00', '0', '0', '电影天堂', '3', null);
-INSERT INTO `issue` VALUES ('35613', '11', '1', '1', 'www.sina.com', '2017-05-01 11:06:36', '0', '0', 'www.sina.com', null, null);
-INSERT INTO `issue` VALUES ('44735', '11', '1', '2', 'www.hao123.com', '2017-05-17 11:06:39', '0', '0', 'www.hao123.com', null, null);
-INSERT INTO `issue` VALUES ('54531', '11', '1', '2', 'www.dsa.com', '2017-05-18 11:07:02', '0', '0', 'www.dsa.com', null, null);
-INSERT INTO `issue` VALUES ('65872', '11', '1', '1', 'www.dsad.com', '2017-04-30 11:07:22', '0', '0', 'www.dsad.com', null, null);
-INSERT INTO `issue` VALUES ('76915', '11', '2', '1', 'www.cdsf.com', '2017-05-12 17:04:30', '0', '0', '音乐天地', '1', null);
-INSERT INTO `issue` VALUES ('82816', '11', '2', '1', 'www.ffgh.', '2017-05-18 17:05:31', '0', '0', '电视购物', '2', null);
-INSERT INTO `issue` VALUES ('10584', '11', '3', '1', 'www.fdgr.com', '2017-05-15 13:48:26', '0', '0', null, null, null);
-INSERT INTO `issue` VALUES ('11786', '11', '3', '2', 'www.163.com', '2017-05-31 13:48:45', '0', '0', null, null, null);
-INSERT INTO `issue` VALUES ('12429', '11', '3', '1', 'www.zhihu.com', '2017-04-30 13:49:04', '0', '0', null, null, null);
-INSERT INTO `issue` VALUES ('88425', '11', '51', '1', 'www.sohu.com', '2017-05-15 08:54:18', '0', '0', '资讯平台', '10000', null);
-INSERT INTO `issue` VALUES ('96842', '11', '51', '1', 'www.4399.com', '2017-04-30 08:55:02', '0', '0', '游戏平台', '4399', null);
-INSERT INTO `issue` VALUES ('75175', '11', '51', '1', 'www.baidu.com', '2017-05-11 16:55:55', '0', '0', '搜索引擎', '10086', null);
+INSERT INTO `issue` VALUES ('13854', '11', '1', '1', 'www.baodu.com', '2017-05-10 11:06:29', '0', '0', '0', 'www.baodu.com', null, null);
+INSERT INTO `issue` VALUES ('25687', '11', '1', '1', 'www.sohu.com', '2017-05-04 11:06:33', '0', '0', '0', 'www.sohu.com', null, null);
+INSERT INTO `issue` VALUES ('32189', '11', '2', '1', 'www.dsf.cn', '2017-05-25 17:06:00', '0', '0', '0', '电影天堂', '3', null);
+INSERT INTO `issue` VALUES ('35613', '11', '1', '1', 'www.sina.com', '2017-05-01 11:06:36', '0', '0', '0', 'www.sina.com', null, null);
+INSERT INTO `issue` VALUES ('44735', '11', '1', '2', 'www.hao123.com', '2017-05-17 11:06:39', '0', '0', '0', 'www.hao123.com', null, null);
+INSERT INTO `issue` VALUES ('54531', '11', '1', '2', 'www.dsa.com', '2017-05-18 11:07:02', '0', '0', '0', 'www.dsa.com', null, null);
+INSERT INTO `issue` VALUES ('65872', '11', '1', '1', 'www.dsad.com', '2017-04-30 11:07:22', '0', '0', '0', 'www.dsad.com', null, null);
+INSERT INTO `issue` VALUES ('76915', '11', '2', '1', 'www.cdsf.com', '2017-05-12 17:04:30', '0', '0', '0', '音乐天地', '1', null);
+INSERT INTO `issue` VALUES ('82816', '11', '2', '1', 'www.ffgh.', '2017-05-18 17:05:31', '0', '0', '0', '电视购物', '2', null);
+INSERT INTO `issue` VALUES ('10584', '11', '3', '1', 'www.fdgr.com', '2017-05-15 13:48:26', '0', '0', '0', null, null, null);
+INSERT INTO `issue` VALUES ('11786', '11', '3', '2', 'www.163.com', '2017-05-31 13:48:45', '0', '0', '0', null, null, null);
+INSERT INTO `issue` VALUES ('12429', '11', '3', '1', 'www.zhihu.com', '2017-04-30 13:49:04', '0', '0', '0', null, null, null);
+INSERT INTO `issue` VALUES ('88425', '11', '51', '1', 'www.sohu.com', '2017-05-15 08:54:18', '0', '0', '0', '资讯平台', '10000', null);
+INSERT INTO `issue` VALUES ('96842', '11', '51', '1', 'www.4399.com', '2017-04-30 08:55:02', '0', '0', '0', '游戏平台', '4399', null);
+INSERT INTO `issue` VALUES ('75175', '11', '51', '1', 'www.baidu.com', '2017-05-11 16:55:55', '0', '0', '0', '搜索引擎', '10086', null);
 update issue SET subTypeId = typeId*10+subTypeId;
 
 
