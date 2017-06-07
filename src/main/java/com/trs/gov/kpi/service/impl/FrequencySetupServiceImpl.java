@@ -6,6 +6,7 @@ import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.dao.DBPager;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
@@ -41,21 +42,21 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     @Override
     public List<FrequencySetupResponse> getPageDataFrequencySetupList(FrequencySetupSelectRequest selectRequest, Pager pager) throws RemoteException {
         List<FrequencySetup> frequencySetupList = new ArrayList<>();
-        DBPager dbPager = new DBPager((pager.getCurrPage()-1)*pager.getPageSize(),pager.getPageSize());
+        DBPager dbPager = new DBPager((pager.getCurrPage() - 1) * pager.getPageSize(), pager.getPageSize());
         String searchField = selectRequest.getSearchField();
-        if("chnlName".equals(searchField)){
+        if ("chnlName".equals(searchField)) {
             frequencySetupList = getListForChnlName(selectRequest, dbPager, frequencySetupList);
-        }else if("updateFreq".equals(searchField)){
+        } else if ("updateFreq".equals(searchField)) {
             frequencySetupList = getListForUpdateFreq(selectRequest, dbPager, frequencySetupList);
-        }else if("chnlId".equals(searchField)){
+        } else if ("chnlId".equals(searchField)) {
             frequencySetupList = frequencySetupMapper.selectPageDataList(selectRequest, dbPager, null);
-        }else{
+        } else {
             frequencySetupList = getListForChnlName(selectRequest, dbPager, frequencySetupList);
-            if(!"".equals(selectRequest.getSearchText())){
+            if (!"".equals(selectRequest.getSearchText())) {
                 frequencySetupList = getListForUpdateFreq(selectRequest, dbPager, frequencySetupList);
             }
 
-            if(frequencySetupList.isEmpty()) {
+            if (frequencySetupList.isEmpty()) {
                 FrequencySetup frequencySetup = new FrequencySetup();
                 frequencySetupList = frequencySetupMapper.selectPageDataList(selectRequest, dbPager, frequencySetup);
 
@@ -65,11 +66,11 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     }
 
     private List<FrequencySetup> getListForUpdateFreq(FrequencySetupSelectRequest selectRequest, DBPager dbPager, List<FrequencySetup> frequencySetupList) {
-        List<FrequencyPreset> presetList = frequencyPresetMapper.selectBySiteIdAndUpdateFreq(selectRequest.getSiteId(),selectRequest.getSearchText());
+        List<FrequencyPreset> presetList = frequencyPresetMapper.selectBySiteIdAndUpdateFreq(selectRequest.getSiteId(), selectRequest.getSearchText());
         for (FrequencyPreset preset : presetList) {
             FrequencySetup frequencySetup = new FrequencySetup();
             frequencySetup.setPresetFeqId(preset.getId());
-            frequencySetupList = getList(selectRequest, dbPager, frequencySetup,frequencySetupList);
+            frequencySetupList = getList(selectRequest, dbPager, frequencySetup, frequencySetupList);
         }
         return frequencySetupList;
     }
@@ -80,13 +81,13 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = new FrequencySetup();
             frequencySetup.setChnlId(chnlIds[i]);
-            frequencySetupList = getList(selectRequest, dbPager, frequencySetup,frequencySetupList);
+            frequencySetupList = getList(selectRequest, dbPager, frequencySetup, frequencySetupList);
         }
         return frequencySetupList;
     }
 
     private List<FrequencySetup> getList(FrequencySetupSelectRequest selectRequest, DBPager dbPager, FrequencySetup frequencySetup, List<FrequencySetup> frequencySetupList) {
-        List<FrequencySetup> setupList =  frequencySetupMapper.selectPageDataList(selectRequest, dbPager, frequencySetup);
+        List<FrequencySetup> setupList = frequencySetupMapper.selectPageDataList(selectRequest, dbPager, frequencySetup);
         for (FrequencySetup setup : setupList) {
             frequencySetupList.add(setup);
         }
@@ -142,6 +143,22 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
         return setupList != null && !setupList.isEmpty();
     }
 
+    @Override
+    public void closeOrOpen(int siteId, Integer[] ids, int isOpen) {
+        for (int i = 0; i < ids.length; i++) {
+            frequencySetupMapper.closeOrOpen(siteId, ids[i], (byte) isOpen);
+        }
+    }
+
+    @Override
+    public boolean isIdExist(int siteId, int id) {
+        if(frequencySetupMapper.selectBySiteIdAndId(siteId, id) != null){
+            return true;
+        }
+        return false;
+    }
+
+
     private List<FrequencySetupResponse> getFrequencySetupDetailListByFrequencySetupList(List<FrequencySetup> frequencySetupList) throws RemoteException {
         List<FrequencySetupResponse> frequencySetupResponses = new ArrayList<>();
         FrequencySetupResponse frequencySetupResponse = null;
@@ -161,7 +178,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
             Integer chnlId = frequencySetup.getChnlId();
             if (chnlId != null) {
                 Channel childChnl = siteApiService.getChannelById(chnlId, null);
-                if(childChnl != null && childChnl.getChnlName() != null){
+                if (childChnl != null && childChnl.getChnlName() != null) {
                     frequencySetupResponse.setChnlName(childChnl.getChnlName());
                     frequencySetupResponses.add(frequencySetupResponse);
                 }

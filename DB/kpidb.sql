@@ -112,12 +112,13 @@ CREATE TABLE frequencysetup(
 		presetFeqId INT NOT NULL COMMENT '预设频率编号',
 		chnlId INT NOT NULL COMMENT '栏目编号',
 		setTime datetime NOT NULL COMMENT '设置时间',
+		isOpen tinyint NOT NULL COMMIT '当前记录关闭/开启标识',
 		PRIMARY KEY(id),
 		UNIQUE KEY(siteId,chnlId)
 )COMMENT='栏目更新频率表';
-INSERT into frequencysetup VALUES(null,1,1,1,'2017-5-22 10:20:20');
-INSERT into frequencysetup VALUES(null,1,2,2,'2017-5-22 10:20:20');
-INSERT into frequencysetup VALUES(null,1,3,3,'2017-5-22 10:20:20');
+INSERT into frequencysetup VALUES(null,1,1,1,'2017-5-22 10:20:20',1);
+INSERT into frequencysetup VALUES(null,1,2,2,'2017-5-22 10:20:20',0);
+INSERT into frequencysetup VALUES(null,1,3,3,'2017-5-22 10:20:20',0);
 
 -- 栏目分类表
 drop TABLE IF EXISTS chnlgroup;

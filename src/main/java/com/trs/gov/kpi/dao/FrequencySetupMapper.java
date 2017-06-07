@@ -76,4 +76,14 @@ public interface FrequencySetupMapper {
      * @return
      */
     List<FrequencySetup> getBySiteIdAndPresetFeqId(@Param("siteId") int siteId, @Param("presetFeqId") int presetFeqId);
+
+    /**
+     * 批量关闭/开启
+     * @param siteId
+     * @param id
+     * @param isOpen
+     */
+    int closeOrOpen(@Param("siteId") int siteId, @Param("id") int id, @Param("isOpen") byte isOpen);
+
+    FrequencySetup selectBySiteIdAndId(@Param("siteId") int siteId, @Param("id") Integer id);
 }
