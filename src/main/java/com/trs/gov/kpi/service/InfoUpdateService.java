@@ -1,7 +1,10 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.InfoUpdateOrder;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -36,6 +39,14 @@ public interface InfoUpdateService {
     List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException;
 
     ApiPageData get(PageDataRequestParam param) throws RemoteException;
+
+    /**
+     * 查询信息更新的工单
+     *
+     * @param request
+     * @return
+     */
+    ApiPageData selectInfoUpdateOrder(WorkOrderRequest request);
 
 
 }
