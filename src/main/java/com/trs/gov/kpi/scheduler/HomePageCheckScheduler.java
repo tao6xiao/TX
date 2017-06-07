@@ -3,6 +3,7 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,7 +49,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
                 issue.setDetail(baseUrl);
                 issue.setCustomer1(baseUrl);
                 issue.setIssueTime(new Date());
-                issueMapper.insert(issue);
+                issueMapper.insert(DBUtil.toRow(issue));
             }
         } finally {
             log.info("HomePageCheckScheduler " + siteId + " end...");

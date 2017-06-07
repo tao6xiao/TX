@@ -46,94 +46,23 @@
     id, siteId, typeId, subTypeId, detail, issueTime, isResolved, isDel, customer1, customer2, 
     customer3
   </sql>
+
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from issue
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <insert id="insert" parameterType="com.trs.gov.kpi.entity.Issue">
-    insert into issue (id, siteId, typeId, 
-      subTypeId, detail, issueTime, 
-      isResolved, isDel, customer1, 
-      customer2, customer3)
-    values (#{id,jdbcType=INTEGER}, #{siteId,jdbcType=INTEGER}, #{typeId,jdbcType=BIT}, 
-      #{subTypeId,jdbcType=BIT}, #{detail,jdbcType=VARCHAR}, #{issueTime,jdbcType=TIMESTAMP}, 
-      #{isResolved,jdbcType=BIT}, #{isDel,jdbcType=BIT}, #{customer1,jdbcType=VARCHAR}, 
-      #{customer2,jdbcType=VARCHAR}, #{customer3,jdbcType=VARCHAR})
-  </insert>
-  <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.Issue">
+
+  <insert id="insert" parameterType="com.trs.gov.kpi.entity.dao.DBRow">
     insert into issue
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="siteId != null">
-        siteId,
-      </if>
-      <if test="typeId != null">
-        typeId,
-      </if>
-      <if test="subTypeId != null">
-        subTypeId,
-      </if>
-      <if test="detail != null">
-        detail,
-      </if>
-      <if test="issueTime != null">
-        issueTime,
-      </if>
-      <if test="isResolved != null">
-        isResolved,
-      </if>
-      <if test="isDel != null">
-        isDel,
-      </if>
-      <if test="customer1 != null">
-        customer1,
-      </if>
-      <if test="customer2 != null">
-        customer2,
-      </if>
-      <if test="customer3 != null">
-        customer3,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=INTEGER},
-      </if>
-      <if test="siteId != null">
-        #{siteId,jdbcType=INTEGER},
-      </if>
-      <if test="typeId != null">
-        #{typeId,jdbcType=BIT},
-      </if>
-      <if test="subTypeId != null">
-        #{subTypeId,jdbcType=BIT},
-      </if>
-      <if test="detail != null">
-        #{detail,jdbcType=VARCHAR},
-      </if>
-      <if test="issueTime != null">
-        #{issueTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="isResolved != null">
-        #{isResolved,jdbcType=BIT},
-      </if>
-      <if test="isDel != null">
-        #{isDel,jdbcType=BIT},
-      </if>
-      <if test="customer1 != null">
-        #{customer1,jdbcType=VARCHAR},
-      </if>
-      <if test="customer2 != null">
-        #{customer2,jdbcType=VARCHAR},
-      </if>
-      <if test="customer3 != null">
-        #{customer3,jdbcType=VARCHAR},
-      </if>
-    </trim>
+    <foreach collection="fields" item="fieldName" open="(" separator="," close=")">
+      ${fieldName}
+    </foreach>
+    values
+    <foreach collection="values" item="value" open="(" separator="," close=")">
+      #{value}
+    </foreach>
   </insert>
 
   <update id="updateByPrimaryKeySelective" parameterType="com.trs.gov.kpi.entity.Issue">

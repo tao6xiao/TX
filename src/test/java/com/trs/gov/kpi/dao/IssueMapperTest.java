@@ -1,17 +1,17 @@
 package com.trs.gov.kpi.dao;
 
+import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.Resource;
-
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Created by linwei on 2017/5/25.
@@ -48,6 +48,18 @@ public class IssueMapperTest {
 
         // 查询
 //        issueMapper.select(filter);
+    }
+
+    @Test
+    public void insert() throws Exception {
+        Issue issue = new Issue();
+        issue.setTypeId(Types.IssueType.INFO_UPDATE_ISSUE.value);
+        issue.setSubTypeId(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        issue.setSiteId(1);
+        issue.setDetail("http://www.baidu.com");
+        issue.setIssueTime(new Date());
+        issue.setCustomer2("72");
+//        issueMapper.insert(DBUtil.toRow(issue));
     }
 
 }

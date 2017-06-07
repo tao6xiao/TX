@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
+import com.trs.gov.kpi.utils.DBUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -105,7 +106,7 @@ public class CKMScheduler implements SchedulerTask {
             }
             //插入监测出的信息错误数据
             for (Issue issue : issueList) {
-                issueMapper.insert(issue);
+                issueMapper.insert(DBUtil.toRow(issue));
             }
             log.info("add content error count: " + issueList.size());
         } catch (RemoteException e) {

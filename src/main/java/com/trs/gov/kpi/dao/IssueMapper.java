@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.entity.dao.DBRow;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,9 +14,7 @@ import java.util.Map;
 @Mapper
 public interface IssueMapper {
 
-    int insert(Issue record);
-
-    int insertSelective(Issue record);
+    int insert(DBRow row);
 
     Issue selectByPrimaryKey(Integer id);
 
