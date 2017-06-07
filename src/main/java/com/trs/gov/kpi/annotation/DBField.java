@@ -14,7 +14,7 @@ public @interface DBField {
      * 字段名
      * @return
      */
-    String name() default "";
+    String value() default "";
 
     /**
      * 自增长字段

@@ -41,12 +41,12 @@ public class DBUtil {
                 continue;
             }
             // 获取db字段名
-            String fieldName = "";
-            if (StringUtil.isEmpty(dbField.name())) {
+            String fieldName;
+            if (StringUtil.isEmpty(dbField.value())) {
                 // 直接使用field的名字作为字段名
                 fieldName = field.getName();
             } else {
-                fieldName = dbField.name();
+                fieldName = dbField.value();
             }
 
             // 获取值

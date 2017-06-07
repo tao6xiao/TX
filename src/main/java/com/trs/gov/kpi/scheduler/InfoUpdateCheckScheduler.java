@@ -3,19 +3,16 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.dao.FrequencySetupMapper;
-import com.trs.gov.kpi.dao.InfoUpdateMapper;
-import com.trs.gov.kpi.entity.DefaultUpdateFreq;
-import com.trs.gov.kpi.entity.FrequencyPreset;
-import com.trs.gov.kpi.entity.FrequencySetup;
-import com.trs.gov.kpi.entity.SimpleTree;
+import com.trs.gov.kpi.dao.IssueMapper;
+import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.responsedata.InfoUpdateResponse;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,7 +54,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     DefaultUpdateFreqService defaultUpdateFreqService;
 
     @Resource
-    InfoUpdateMapper infoUpdateMapper;
+    IssueMapper issueMapper;
 
     @Getter @Setter
     private Integer siteId;
@@ -395,9 +392,10 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * @param subIssueTypeId
      */
     private void insertToDB(int channelId, int issueTypeId, int subIssueTypeId) {
-        InfoUpdateResponse update = new InfoUpdateResponse();
+        InfoUpdate update = new InfoUpdate();
         update.setSiteId(siteId);
-        update.setIssueTypeId(subIssueTypeId);
+        update.setTypeId(issueTypeId);
+        update.setSubTypeId(subIssueTypeId);
         update.setCheckTime(new Date());
         update.setChnlId(channelId);
         try {
@@ -405,7 +403,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         } catch (Exception e) {
             log.error("", e);
         }
-        infoUpdateMapper.insert(issueTypeId, update);
+
+        issueMapper.insert(DBUtil.toRow(update));
     }
 
     /**

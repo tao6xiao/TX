@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
@@ -60,6 +61,18 @@ public class IssueMapperTest {
         issue.setIssueTime(new Date());
         issue.setCustomer2("72");
 //        issueMapper.insert(DBUtil.toRow(issue));
+    }
+
+    @Test
+    public void insertInfoUpdate() throws Exception {
+        InfoUpdate update = new InfoUpdate();
+        update.setTypeId(Types.IssueType.INFO_UPDATE_ISSUE.value);
+        update.setSubTypeId(Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        update.setCheckTime(new Date());
+        update.setChnlUrl("http://www.baidu.com");
+        update.setChnlId(111);
+        update.setSiteId(1);
+//        issueMapper.insert(DBUtil.toRow(update));
     }
 
 }

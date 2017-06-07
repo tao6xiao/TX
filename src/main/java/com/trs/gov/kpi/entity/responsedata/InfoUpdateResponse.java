@@ -13,7 +13,7 @@ public class InfoUpdateResponse {
     /**
      * 问题编号
      */
-    private String id;
+    private Integer id;
 
     /**
      * 站点编号
