@@ -133,4 +133,13 @@ public interface IssueMapper {
      */
     void delIssueByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
 
+
+    /**
+     * 根据id批量更新工单状态
+     *
+     * @param workOrderStatus
+     * @param ids
+     */
+    void updateOrderByIds(@Param("workOrderStatus") int workOrderStatus, @Param("ids") List<Integer> ids);
+
 }

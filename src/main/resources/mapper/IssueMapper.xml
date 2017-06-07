@@ -61,7 +61,7 @@
   </sql>
 
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from issue
     where id = #{id,jdbcType=INTEGER}
@@ -290,6 +290,15 @@
     UPDATE issue
     SET isDel = 1
     <include refid="siteid_and_ids_where_sql"/>
+  </update>
+
+  <update id="updateOrderByIds" >
+    UPDATE issue
+    SET workOrderStatus = #{workOrderStatus}
+    WHERE  id IN
+    <foreach collection="ids" item="item" open="(" close=")" separator=",">
+      ${item}
+    </foreach>
   </update>
 
   <select id="getIdsUpdateNotInTime" resultType="int">

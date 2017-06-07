@@ -329,4 +329,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
         return new ApiPageData(pager, list);
     }
+
+    @Override
+    public void updateOrderByIds(int workOrderStatus, List<Integer> ids) {
+        issueMapper.updateOrderByIds(workOrderStatus, ids);
+    }
 }

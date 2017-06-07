@@ -46,5 +46,13 @@ public interface InfoUpdateService {
      */
     ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) throws RemoteException;
 
+    /**
+     * 修改工单状态
+     *
+     * @param workOrderStatus
+     * @param ids
+     */
+    void updateOrderByIds(int workOrderStatus, List<Integer> ids);
+
 
 }

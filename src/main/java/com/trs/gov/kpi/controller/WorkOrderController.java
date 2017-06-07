@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 
 /**
  * Created by ranwei on 2017/6/7.
@@ -29,5 +30,15 @@ public class WorkOrderController {
     public ApiPageData selectInfoUpdateOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(request);
         return infoUpdateService.selectInfoUpdateOrder(request);
+    }
+
+
+    @RequestMapping(value = "/workorder", method = RequestMethod.GET)
+    public String updateOrderByIds(Integer workOrderStatus, Integer[] ids) throws BizException {
+        if (workOrderStatus == null) {
+            throw new BizException("参数不合法！");
+        }
+        infoUpdateService.updateOrderByIds(workOrderStatus, Arrays.asList(ids));
+        return null;
     }
 }
