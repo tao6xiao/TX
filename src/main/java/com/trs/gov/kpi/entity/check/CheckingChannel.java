@@ -3,6 +3,9 @@ package com.trs.gov.kpi.entity.check;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.utils.DateUtil;
 import lombok.Data;
+import lombok.NonNull;
+
+import java.text.ParseException;
 
 /**
  *
@@ -51,7 +54,7 @@ public class CheckingChannel {
      * 获取上一个周期的起始时间
      * @return
      */
-    public String getPrevPeroidBeginDate() {
+    public String getPrevPeroidBeginDate() throws ParseException {
         return DateUtil.toString(DateUtil.addDay(DateUtil.toDate(beginDateTime), -1 * checkDay));
     }
 }

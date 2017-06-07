@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.entity.HistoryDate;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
@@ -28,23 +29,18 @@ public class DateUtil {
 
     private static final String DAY_FORMAT = "yyyy-MM-dd";
 
+    // 惯用时间格式
+    private static final String COMMON_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     /**
      * 日期字符串转换为日期
      *
      * @param dateString
      * @return
      */
-    public static Date toDate(String dateString) {
-        if (dateString == null) {
-            return null;
-        }
-        try {
-            final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            return format.parse(dateString);
-        } catch (ParseException e) {
-            log.error("failed to format date: " + dateString, e);
-        }
-        return null;
+    public static Date toDate(@NonNull String dateString) throws ParseException {
+        final SimpleDateFormat format = new SimpleDateFormat(COMMON_DATE_FORMAT);
+        return format.parse(dateString);
     }
 
     /**
@@ -57,7 +53,7 @@ public class DateUtil {
         if (date == null) {
             return "";
         }
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final SimpleDateFormat format = new SimpleDateFormat(COMMON_DATE_FORMAT);
         return format.format(date);
     }
 
@@ -188,14 +184,8 @@ public class DateUtil {
      * @param intervalDay 周期间隔时间，天为单位
      * @return
      */
-    public static Date nearestPeriodBeginDate(Date date, String beginDate, int intervalDay) {
-        Date newBeginDate = toDate(beginDate);
-        if (newBeginDate == null || date == null) {
-            // 以指定时间开始计算
-            return date;
-        }
-
-        long beginTime = newBeginDate.getTime();
+    public static Date nearestPeriodBeginDate(@NonNull Date date, @NonNull String beginDate, int intervalDay) throws ParseException {
+        long beginTime = toDate(beginDate).getTime();
         long endTime = date.getTime();
         int periods = (int)((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
         return new Date(beginTime + intervalDay * periods * MS_ONE_DAY);

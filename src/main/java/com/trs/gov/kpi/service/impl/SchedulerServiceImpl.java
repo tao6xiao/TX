@@ -239,7 +239,6 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
      */
     private void scheduleJob(Scheduler scheduler,  EnumCheckJobType jobType, MonitorSite site, int interval) {
 
-        String name = jobType.name();
         SchedulerTask task = newTask(jobType);
         if (task == null) {
             return;
@@ -266,7 +265,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         try {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
-            log.error("failed to schedule " + name + " check of site " + site.getSiteId(), e);
+            log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
         }
     }
 

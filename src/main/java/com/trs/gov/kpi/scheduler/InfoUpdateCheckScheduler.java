@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -165,7 +166,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      */
     private void recursiveBuildChannelTree(
             Channel curChnl,
-            SimpleTree.Node<CheckingChannel> parent) throws RemoteException {
+            SimpleTree.Node<CheckingChannel> parent) throws RemoteException, ParseException {
 
         if (curChnl == null) {
             return;
@@ -235,7 +236,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      *
      * @param root
      */
-    private void checkChannelTreeUpdate(SimpleTree.Node<CheckingChannel> root) {
+    private void checkChannelTreeUpdate(SimpleTree.Node<CheckingChannel> root) throws ParseException {
 
         if (root == null || root.getData() == null) {
             return;
