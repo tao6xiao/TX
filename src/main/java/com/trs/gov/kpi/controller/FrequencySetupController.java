@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -148,6 +149,44 @@ public class FrequencySetupController {
         for (Integer id : ids) {
             frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
         }
+        return null;
+    }
+
+    /**
+     * 关闭或者生效更新频率记录
+     *
+     * @param siteId
+     * @param ids
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/chnlfreq/open", method = RequestMethod.PUT)
+    @ResponseBody
+    public Object closeOrOpen(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids, @RequestParam("isOpen") Integer isOpen) throws BizException {
+        if (siteId == null || ids == null || isOpen == null) {
+            log.error("Invalid parameter: 参数siteId、数组ids（设置的更新频率记录对应id数组）、isOpen(关闭/开启请求标识)存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        for (Integer id : ids) {
+            if(id == null) {
+                log.error("Invalid parameter: 参数数组ids（设置的更新频率记录对应id数组）中存在某一或者多个id为null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }else{
+                if(!frequencySetupService.isIdExist(siteId, id)){
+                    log.error("Invalid parameter: 参数数组ids（设置的更新频率记录对应id数组）中存在id不是数据库表指定站点中对应某一记录的id");
+                    throw new BizException(Constants.INVALID_PARAMETER);
+                }
+            }
+        }
+        if(isOpen == Status.Open.OPEN.value){
+            frequencySetupService.closeOrOpen(siteId, ids, isOpen);
+        }else if(isOpen == Status.Open.CLOSE.value){
+            frequencySetupService.closeOrOpen(siteId, ids, isOpen);
+        }else {
+            log.error("Invalid parameter: 参数isOpen不存在对应数值的请求");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+
         return null;
     }
 

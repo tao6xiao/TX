@@ -89,4 +89,20 @@ public interface FrequencySetupService {
      * @return true 表被用了，false表示未被使用
      */
     boolean isPresetFeqUsed(int siteId, int presetFeqId);
+
+    /**
+     * 批量关闭/开启
+     * @param siteId
+     * @param ids
+     * @param isOpen
+     */
+    void closeOrOpen(int siteId, Integer[] ids, int isOpen);
+
+    /**
+     * 通过id查询对象后，对象存在返回true，不存在返回false
+     * @param id
+     * @return true：对象存在，false：对象不存在
+     */
+    boolean isIdExist(int siteId, int id);
+
 }

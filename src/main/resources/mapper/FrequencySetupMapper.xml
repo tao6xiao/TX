@@ -166,4 +166,16 @@
     from frequencysetup
     where siteId = #{siteId,jdbcType=INTEGER} AND presetFeqId = #{presetFeqId,jdbcType=INTEGER}
   </select>
+  <update id="closeOrOpen">
+    update frequencysetup
+    set
+    isOpen = #{isOpen,jdbcType=TINYINT}
+    where siteId = #{siteId,jdbcType=INTEGER} AND id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectBySiteIdAndId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from frequencysetup
+    where siteId = #{siteId,jdbcType=INTEGER} AND id = #{id,jdbcType=INTEGER}
+  </select>
 </mapper>
