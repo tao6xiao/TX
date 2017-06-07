@@ -4,7 +4,6 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/7.
@@ -15,7 +14,7 @@ public class DBRow {
     private List<String> fields = new ArrayList<>();
 
     @Getter
-    private List<Object> values = new ArrayList<Object>();
+    private List<Object> values = new ArrayList<>();
 
     /**
      * 添加一个字段

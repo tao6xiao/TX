@@ -189,10 +189,16 @@ public class DateUtil {
      * @return
      */
     public static Date nearestPeriodBeginDate(Date date, String beginDate, int intervalDay) {
-        long beginTime = toDate(beginDate).getTime();
+        Date newBeginDate = toDate(beginDate);
+        if (newBeginDate == null || date == null) {
+            // 以指定时间开始计算
+            return date;
+        }
+
+        long beginTime = newBeginDate.getTime();
         long endTime = date.getTime();
-        int peroids = (int)((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
-        return new Date(beginTime + intervalDay * peroids * MS_ONE_DAY);
+        int periods = (int)((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
+        return new Date(beginTime + intervalDay * periods * MS_ONE_DAY);
     }
 
 }
