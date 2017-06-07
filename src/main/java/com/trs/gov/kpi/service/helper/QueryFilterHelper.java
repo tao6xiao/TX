@@ -8,8 +8,10 @@ import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -67,6 +69,72 @@ public class QueryFilterHelper {
         // sort field
         if (param.getSortFields() != null && !param.getSortFields().trim().isEmpty()) {
             String[] sortFields = param.getSortFields().trim().split(";");
+            for (String sortField : sortFields) {
+                String[] nameAndDirection = sortField.split(",");
+                if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
+                    if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
+                        filter.addSortField(nameAndDirection[0], true);
+                    } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
+                        filter.addSortField(nameAndDirection[0], false);
+                    }
+                }
+            }
+        }
+
+        return filter;
+    }
+
+    /**
+     * 把参数转换为工单所需的查询filter
+     *
+     * @param request
+     * @return
+     */
+    public static QueryFilter toFilter(WorkOrderRequest request) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+
+        if (request.getSiteId() != null) {
+            filter.addCond(IssueTableField.SITE_ID, Arrays.asList(request.getSiteId()));
+        }
+        if (request.getBeginDateTime() != null) {
+            filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        }
+        if (request.getEndDateTime() != null) {
+            filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
+        }
+
+        if (request.getSearchText() != null) {
+            if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("id")) {
+                filter.addCond(IssueTableField.ID, '%' + request.getSearchText() + "%").setLike(true);
+            } else if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("department")) {
+
+                //TODO 等通过部门获取属于它的栏目的接口
+//                CondDBField field = buildIssueTypeCond(request.getSearchText(), issueType);
+//                if (field != null) {
+//                    filter.addCond(field);
+//                } else {
+//                    filter.addCond(new CondDBField(IssueTableField.SUBTYPE_ID, Types.IssueType.INVALID.value));
+//                }
+            } else if (request.getSearchField() == null) {
+                CondDBField idField = new CondDBField(IssueTableField.ID, '%' + request.getSearchText() + "%");
+                idField.setLike(true);
+
+                //TODO 等通过部门获取属于它的栏目的接口
+//                CondDBField issueTypefield = buildIssueTypeCond(request.getSearchText(), issueType);
+//                if (issueTypefield != null) {
+//                    OrCondDBFields orFields = new OrCondDBFields();
+//                    orFields.addCond(idField);
+//                    orFields.addCond(issueTypefield);
+//                    filter.addOrConds(orFields);
+//                } else {
+//                    filter.addCond(idField);
+//                }
+            }
+        }
+
+        // sort field
+        if (request.getSortFields() != null && !request.getSortFields().trim().isEmpty()) {
+            String[] sortFields = request.getSortFields().trim().split(";");
             for (String sortField : sortFields) {
                 String[] nameAndDirection = sortField.split(",");
                 if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {

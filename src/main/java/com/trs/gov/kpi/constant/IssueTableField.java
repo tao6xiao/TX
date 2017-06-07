@@ -14,6 +14,7 @@ public class IssueTableField {
     public static final String ISSUE_TIME = "issueTime";
     public static final String IS_RESOLVED = "isResolved";
     public static final String IS_DEL = "isDel";
+    public static final String WORK_ORDER_STATUS = "workOrderStatus";
     public static final String CUSTOMER1 = "customer1";
     public static final String CUSTOMER2 = "customer2";
     public static final String CUSTOMER3 = "customer3";
