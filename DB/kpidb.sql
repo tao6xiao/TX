@@ -139,6 +139,44 @@ INSERT into chnlgroup VALUES(null,1,3,1);
 INSERT into chnlgroup VALUES(null,1,3,2);
 INSERT into chnlgroup VALUES(null,1,3,3);
 
+-- ----------------------------
+-- Table structure for webpage
+-- ----------------------------
+DROP TABLE IF EXISTS `webpage`;
+CREATE TABLE `webpage` (
+  `id` int(255) NOT NULL AUTO_INCREMENT COMMENT '信息编号',
+  `siteId` int(255) NOT NULL COMMENT '站点编号',
+  `typeId` tinyint(1) NOT NULL COMMENT '类型编号',
+  `chnlId` int(255) NOT NULL COMMENT '所在栏目编号',
+  `pageLink` varchar(3024) DEFAULT NULL COMMENT '网页链接',
+  `replySpeed` varchar(5) DEFAULT NULL COMMENT '响应速度',
+  `pageSpace` varchar(5) DEFAULT NULL COMMENT '页面大小',
+  `pageDepth` tinyint(2) DEFAULT NULL COMMENT '页面深度',
+  `repeatPlace` tinyint(5) DEFAULT NULL COMMENT '冗余位置',
+  `repeatDegree` varchar(1) DEFAULT NULL COMMENT '冗余程度：低，中，高',
+  `urlLength` varchar(5) DEFAULT NULL COMMENT 'URL长度',
+  `updateTime` datetime DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '最后操作时间',
+  `checkTime` datetime NOT NULL COMMENT '监测时间',
+  `isResolved` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0（未解决）1（已处理）2（已忽略）',
+  `isDel` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0（未删除）1（已删除）',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=95479 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of webpage
+-- ----------------------------
+INSERT INTO `webpage` VALUES ('12345', '11', '1', '11', 'www.zhihu.com', '10s', '5M', null, null, null, null, '2017-06-06 16:44:30', '2017-06-06 16:15:27', '0', '0');
+INSERT INTO `webpage` VALUES ('21454', '11', '3', '7', 'www.zhihu.com', null, '5M', '8', null, null, null, '2017-06-06 17:26:46', '2017-06-01 17:23:43', '0', '0');
+INSERT INTO `webpage` VALUES ('36542', '11', '2', '11', 'www.ds.com', '10s', '8M', null, null, null, null, '2017-06-06 17:27:32', '2017-06-06 17:22:22', '0', '0');
+INSERT INTO `webpage` VALUES ('36554', '11', '2', '10', 'www.zhihu.com', null, '15M', null, null, null, null, '2017-06-06 17:26:27', '2017-06-04 17:23:01', '0', '0');
+INSERT INTO `webpage` VALUES ('52469', '11', '1', '10', 'www.baidu.com', '7s', '7M', null, null, null, null, '2017-06-03 16:44:35', '2017-06-03 16:16:07', '0', '0');
+INSERT INTO `webpage` VALUES ('54785', '11', '5', '7', 'www.zhihu.com', null, '5M', null, null, null, '120字节', '2017-06-06 17:27:58', '2017-06-03 17:25:05', '0', '0');
+INSERT INTO `webpage` VALUES ('58496', '11', '3', '11', 'www.zhihu.com', null, '9M', '9', null, null, null, '2017-06-06 17:26:44', '2017-06-03 17:23:34', '0', '0');
+INSERT INTO `webpage` VALUES ('68542', '11', '1', '7', 'www.hao123.com', '9s', '6M', null, null, null, null, '2017-06-02 16:44:39', '2017-06-02 16:17:08', '0', '0');
+INSERT INTO `webpage` VALUES ('75146', '11', '5', '11', 'www.zhihu.com', null, '6M', null, null, null, '80字节', '2017-06-06 17:27:55', '2017-06-06 17:24:58', '0', '0');
+INSERT INTO `webpage` VALUES ('76544', '11', '4', '11', 'www.zhihu.com', null, null, null, '65', '中', null, '2017-06-07 10:31:46', '2017-06-02 17:24:10', '0', '0');
+INSERT INTO `webpage` VALUES ('95478', '11', '4', '7', 'www.zhihu.com', null, null, null, '78', '高', null, '2017-06-07 10:31:48', '2017-06-06 17:24:16', '0', '0');
+
 
 
 

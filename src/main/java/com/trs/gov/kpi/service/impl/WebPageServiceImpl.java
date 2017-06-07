@@ -100,6 +100,21 @@ public class WebPageServiceImpl implements WebPageService {
     }
 
     @Override
+    public int selectPageSpaceCount(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        return webPageMapper.count(queryFilter);
+
+    }
+
+    @Override
     public ApiPageData selectPageDepth(PageDataRequestParam param) {
         param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
@@ -128,6 +143,21 @@ public class WebPageServiceImpl implements WebPageService {
         }
 
         return new ApiPageData(pager, pageDepthResponseList);
+    }
+
+    @Override
+    public int selectPageDepthCount(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        return webPageMapper.count(queryFilter);
+
     }
 
     @Override
@@ -162,6 +192,21 @@ public class WebPageServiceImpl implements WebPageService {
     }
 
     @Override
+    public int selectRepeatCodeCount(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPEAT_CODE.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        return webPageMapper.count(queryFilter);
+
+    }
+
+    @Override
     public ApiPageData selectUrlLength(PageDataRequestParam param) {
         param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
@@ -193,6 +238,21 @@ public class WebPageServiceImpl implements WebPageService {
     }
 
     @Override
+    public int selectUrlLengthCount(PageDataRequestParam param) {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+
+        return webPageMapper.count(queryFilter);
+
+    }
+
+    @Override
     public Date getEarliestCheckTime() {
         return webPageMapper.getEarliestCheckTime();
     }
@@ -216,5 +276,20 @@ public class WebPageServiceImpl implements WebPageService {
             return "";
         }
         return chnlName;
+    }
+
+    @Override
+    public void handlePageByIds(int siteId, List<Integer> ids) {
+        webPageMapper.handlePageByIds(siteId, ids);
+    }
+
+    @Override
+    public void ignorePageByIds(int siteId, List<Integer> ids) {
+        webPageMapper.ignorePageByIds(siteId, ids);
+    }
+
+    @Override
+    public void delPageByIds(int siteId, List<Integer> ids) {
+        webPageMapper.delPageByIds(siteId, ids);
     }
 }

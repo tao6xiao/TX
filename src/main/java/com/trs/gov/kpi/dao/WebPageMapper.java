@@ -3,6 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -67,4 +68,28 @@ public interface WebPageMapper {
      * @return
      */
     Date getEarliestCheckTime();
+
+    /**
+     * 批量处理网页问题
+     *
+     * @param siteId
+     * @param ids
+     */
+    void handlePageByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
+
+    /**
+     * 批量忽略网页问题
+     *
+     * @param siteId
+     * @param ids
+     */
+    void ignorePageByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
+
+    /**
+     * 批量删除网页问题
+     *
+     * @param siteId
+     * @param ids
+     */
+    void delPageByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
 }

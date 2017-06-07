@@ -178,6 +178,32 @@
         </if>
     </sql>
 
+    <sql id="siteid_and_ids_where_sql">
+        WHERE siteId = ${siteId}
+        AND id IN
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </sql>
+
+    <update id="handlePageByIds" parameterType="java.util.List">
+        UPDATE webpage
+        SET isResolved = 1
+        <include refid="siteid_and_ids_where_sql"/>
+    </update>
+
+    <update id="ignorePageByIds" parameterType="java.util.List">
+        UPDATE webpage
+        SET isResolved = 2
+        <include refid="siteid_and_ids_where_sql"/>
+    </update>
+
+    <update id="delPageByIds" parameterType="java.util.List">
+        UPDATE webpage
+        SET isDel = 1
+        <include refid="siteid_and_ids_where_sql"/>
+    </update>
+
     <select id="getEarliestCheckTime" resultType="java.util.Date">
         SELECT min(checkTime)
         FROM webpage
