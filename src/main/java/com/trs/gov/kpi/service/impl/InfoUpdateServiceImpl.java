@@ -5,11 +5,12 @@ import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
-import com.trs.gov.kpi.entity.IssueIndicator;
+import com.trs.gov.kpi.entity.InfoUpdateOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
@@ -234,7 +235,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public ApiPageData get(PageDataRequestParam param) throws RemoteException {
+    public ApiPageData get(PageDataRequestParam param) {
         QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.INFO_UPDATE_WARNING);
         filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value, Types.IssueType.INFO_UPDATE_WARNING.value));
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
@@ -297,5 +298,35 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         statistics.setType(i);
         statistics.setName(EnumIndexUpdateType.valueOf(i).getName());
         return statistics;
+    }
+
+    @Override
+    public ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) throws RemoteException {
+        QueryFilter filter = QueryFilterHelper.toFilter(request);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.WORK_ORDER_STATUS, request.getWorkOrderStatus());
+        filter.addCond(IssueTableField.IS_RESOLVED, request.getSolveStatus());
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        int itemCount = issueMapper.count(filter);
+        Pager pager = PageInfoDeal.buildResponsePager(request.getPageIndex(), request.getPageSize(), itemCount);
+        filter.setPager(pager);
+        List<InfoUpdateOrder> infoUpdateOrderList = issueMapper.selectInfoUpdateOrder(filter);
+        List<InfoUpdateOrderRes> list = new ArrayList<>();
+        for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
+            InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
+            infoUpdateOrderRes.setId(infoUpdateOrder.getId());
+            infoUpdateOrderRes.setChnlName(getChannelName(infoUpdateOrder.getChnlId()));
+            infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
+            infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
+//            infoUpdateOrderRes.setDepartment();TODO
+            infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());
+            infoUpdateOrderRes.setCheckTime(infoUpdateOrder.getIssueTime());
+            infoUpdateOrderRes.setSolveStatus(infoUpdateOrder.getIsResolved());
+            infoUpdateOrderRes.setIsDeleted(infoUpdateOrder.getIsDel());
+            infoUpdateOrderRes.setWorkOrderStatus(infoUpdateOrder.getWorkOrderStatus());
+            list.add(infoUpdateOrderRes);
+        }
+
+        return new ApiPageData(pager, list);
     }
 }

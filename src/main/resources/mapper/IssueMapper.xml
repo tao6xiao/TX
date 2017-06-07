@@ -26,6 +26,18 @@
     <result column="customer2" property="chnlId"/>
   </resultMap>
 
+  <resultMap id="InfoUpdateOrderMap" type="com.trs.gov.kpi.entity.InfoUpdateOrder">
+    <id column="id" property="id"/>
+    <result column="siteId" jdbcType="INTEGER" property="siteId" />
+    <result column="customer2" property="chnlId"/>
+    <result column="subTypeId" property="subTypeId"/>
+    <result column="detail" property="detail"/>
+    <result column="issueTime" property="issueTime"/>
+    <result column="isResolved" jdbcType="BIT" property="isResolved" />
+    <result column="isDel" jdbcType="BIT" property="isDel" />
+    <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
+  </resultMap>
+
   <resultMap id="InfoErrorMap" type="com.trs.gov.kpi.entity.InfoError">
     <id column="id" property="id"/>
     <result column="siteId" jdbcType="INTEGER" property="siteId" />
@@ -222,6 +234,13 @@
   </select>
 
   <select id="selectInfoUpdate" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="InfoUpdateMap">
+    SELECT
+    *
+    FROM issue WHERE 1=1
+    <include refid="all_conditions_sql"/>
+  </select>
+
+  <select id="selectInfoUpdateOrder" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="InfoUpdateOrderMap">
     SELECT
     *
     FROM issue WHERE 1=1

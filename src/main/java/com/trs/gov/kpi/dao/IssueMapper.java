@@ -32,6 +32,7 @@ public interface IssueMapper {
 
     /**
      * 查询InfoUpdate
+     *
      * @param filter
      * @return
      */
@@ -39,6 +40,7 @@ public interface IssueMapper {
 
     /**
      * 查询InfoUpdate
+     *
      * @param filter
      * @return
      */
@@ -46,10 +48,19 @@ public interface IssueMapper {
 
     /**
      * 查询LinkAvailability
+     *
      * @param filter
      * @return
      */
     List<LinkAvailability> selectLinkAvailability(QueryFilter filter);
+
+    /**
+     * 查询信息更新的工单
+     *
+     * @param filter
+     * @return
+     */
+    List<InfoUpdateOrder> selectInfoUpdateOrder(QueryFilter filter);
 
     /**
      * 根据站点编号获取首页
@@ -57,7 +68,7 @@ public interface IssueMapper {
      * @param param
      * @return
      */
-    String getIndexUrl(@Param("param")PageDataRequestParam param);
+    String getIndexUrl(@Param("param") PageDataRequestParam param);
 
     /**
      * 查询首页不可用问题的监测时间
@@ -77,6 +88,7 @@ public interface IssueMapper {
 
     /**
      * 查询数量
+     *
      * @param filter
      * @return
      */
@@ -84,13 +96,15 @@ public interface IssueMapper {
 
     /**
      * 查询各栏目的更新不及时的mapList
+     *
      * @param filter
      * @return
      */
-    List<Map<Integer,Integer>> countList(QueryFilter filter);
+    List<Map<Integer, Integer>> countList(QueryFilter filter);
 
     /**
      * 获取最早时间
+     *
      * @return
      */
     Date getEarliestIssueTime();
