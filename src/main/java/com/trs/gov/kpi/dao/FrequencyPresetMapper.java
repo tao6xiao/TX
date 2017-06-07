@@ -70,5 +70,5 @@ public interface FrequencyPresetMapper {
      * @param UpdateFreq
      * @return
      */
-    List<FrequencyPreset> selectBySiteIdAndUpdateFreq(@Param("siteId") Integer siteId,@Param("updateFreq") String UpdateFreq);
+    List<FrequencyPreset> selectBySiteIdAndUpdateFreq(@Param("siteId") Integer siteId,@Param("updateFreq") String updateFreq);
 }
