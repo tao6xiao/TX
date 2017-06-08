@@ -1,9 +1,11 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
+import com.trs.gov.kpi.entity.responsedata.IssueHistoryCountResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IssueCountService;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,23 +26,26 @@ public class IssueCountController {
 
     /**
      * 分类查询问题数量统计
-     * @param siteIds
+     * @param request
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/count",method = RequestMethod.GET)
     @ResponseBody
-    public List<Statistics> countSort(@RequestParam("siteIds") Integer[] siteIds) throws BizException {
-        if (siteIds == null || siteIds.length == 0) {
-            log.error("Invalid parameter: 参数数组siteIds为null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        for (int i = 0; i < siteIds.length; i++) {
-            if (siteIds[i] == null) {
-                log.error("Invalid parameter: 参数数组siteIds中存在null值");
-                throw new BizException(Constants.INVALID_PARAMETER);
-            }
-        }
-        return countService.countSort(siteIds);
+    public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException {
+        ParamCheckUtil.paramCheck(request);
+        return countService.countSort(request);
+    }
+
+    /**
+     * 分类查询统计历史数量
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/count/history",method = RequestMethod.GET)
+    @ResponseBody
+    public List<IssueHistoryCountResponse> historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
+        ParamCheckUtil.paramCheck(request);
+        return countService.historyCountSort(request);
     }
 }

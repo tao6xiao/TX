@@ -13,4 +13,23 @@ public class StringUtil {
         return str == null || str.trim().isEmpty();
     }
 
+    //String数组转Integer数组
+    public static Integer[] stringToIntegerArray(String str) {
+        String[] arrayForString = str.split(",");
+        Integer[] arrayForInteger = null;
+        if (arrayForString.length > 1) {
+            arrayForInteger = new Integer[arrayForString.length];
+            for (int i = 0; i < arrayForString.length; i++) {
+                Integer elementForInteger = Integer.parseInt(arrayForString[i]);
+                arrayForInteger[i] = elementForInteger;
+            }
+        } else {
+            arrayForInteger = new Integer[1];
+            Integer elementForInteger = Integer.parseInt(arrayForString[0]);
+            arrayForInteger[0] = elementForInteger;
+        }
+        return arrayForInteger;
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,28 @@ public class ParamCheckUtil {
     public static void paramCheck(WorkOrderRequest request) throws BizException {
 
         pagerCheck(request.getPageIndex(), request.getPageSize());
+        checkTime(request.getBeginDateTime());
+        checkTime(request.getEndDateTime());
+
+    }
+
+    /**
+     * 问题统计参数校验
+     * @param request
+     * @throws BizException
+     */
+    public static void paramCheck(IssueCountRequest request) throws BizException {
+        Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
+        if (siteIds == null || siteIds.length == 0) {
+            log.error("Invalid parameter: 参数数组siteIds为null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        for (int i = 0; i < siteIds.length; i++) {
+            if (siteIds[i] == null) {
+                log.error("Invalid parameter: 参数数组siteIds中存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+        }
         checkTime(request.getBeginDateTime());
         checkTime(request.getEndDateTime());
 

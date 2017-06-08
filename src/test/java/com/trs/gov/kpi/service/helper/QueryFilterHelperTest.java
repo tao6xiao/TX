@@ -1,11 +1,13 @@
 package com.trs.gov.kpi.service.helper;
 
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by ranwei on 2017/6/8.
@@ -120,6 +122,16 @@ public class QueryFilterHelperTest {
         param.setSearchText("123");
         QueryFilter filter = QueryFilterHelper.toPageFilter(param);
         assertEquals(3, filter.getCondFields().size());//TODO 等获取栏目接口，有了之后,期望条件数+1
+    }
+	
+	@Test
+	public void toFilter() throws Exception {
+        IssueCountRequest request = new IssueCountRequest();
+        request.setBeginDateTime("2017-06-07 00:00:00");
+        request.setEndDateTime("2017-06-08 00:00:00");
+        QueryFilter filter =  QueryFilterHelper.toFilter(request);
+        assertTrue(!filter.getCondFields().isEmpty());
+
     }
 
 }

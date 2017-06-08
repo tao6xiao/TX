@@ -1,9 +1,12 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by ranwei on 2017/6/8.
@@ -72,6 +75,16 @@ public class ParamCheckUtilTest {
     public void integerArrayParamCheck_Not_Null() throws Exception {
         Integer[] array = new Integer[]{1, 2};
         ParamCheckUtil.integerArrayParamCheck(array);
+    }
+	
+	@Test
+    public void paramCheck() throws Exception {
+        IssueCountRequest request = new IssueCountRequest();
+        request.setBeginDateTime("2017-06-07 00:00:00");
+        request.setEndDateTime("2017-06-08 00:00:00");
+        request.setSiteIds("1,2,3");
+        ParamCheckUtil.paramCheck(request);
+        assertTrue(true);
     }
 
 }
