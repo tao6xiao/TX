@@ -6,7 +6,6 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
-import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,14 +21,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/gov/kpi/available/issue")
-public class LinkAvailabilityController {
+public class LinkAvailabilityController extends IssueHandler {
 
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
-
-    @Resource
-    private IssueService issueService;
-
 
     /**
      * 查询待解决和已解决问题数量
@@ -105,45 +99,4 @@ public class LinkAvailabilityController {
         return linkAvailabilityService.showIndexAvailability(param);
     }
 
-
-    /**
-     * 批量处理
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     */
-    @RequestMapping(value = "/handle", method = RequestMethod.POST)
-    public String handIssuesByIds(int siteId, Integer[] ids) {
-        issueService.handIssuesByIds(siteId, Arrays.asList(ids));
-        return null;
-    }
-
-
-    /**
-     * 批量忽略
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     */
-    @RequestMapping(value = "/ignore", method = RequestMethod.POST)
-    public String ignoreIssuesByIds(int siteId, Integer[] ids) {
-        issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
-        return null;
-    }
-
-
-    /**
-     * 批量删除
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public String delIssueByIds(int siteId, Integer[] ids) {
-        issueService.delIssueByIds(siteId, Arrays.asList(ids));
-        return null;
-    }
 }
