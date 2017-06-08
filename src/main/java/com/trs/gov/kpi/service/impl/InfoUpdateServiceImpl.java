@@ -93,26 +93,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public void handIssuesByIds(int siteId, List<Integer> ids) {
-        issueMapper.handIssuesByIds(siteId, ids);
-    }
-
-    @Override
-    public void ignoreIssuesByIds(int siteId, List<Integer> ids) {
-        issueMapper.ignoreIssuesByIds(siteId, ids);
-    }
-
-    @Override
-    public void delIssueByIds(int siteId, List<Integer> ids) {
-        issueMapper.delIssueByIds(siteId, ids);
-    }
-
-    @Override
-    public Date getEarliestIssueTime() {
-        return issueMapper.getEarliestIssueTime();
-    }
-
-    @Override
     public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
         if (StringUtil.isEmpty(param.getBeginDateTime())) {
             param.setBeginDateTime(DateUtil.toString(issueMapper.getEarliestIssueTime()));

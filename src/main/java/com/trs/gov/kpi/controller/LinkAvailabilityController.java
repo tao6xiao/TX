@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
+import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,6 +27,9 @@ public class LinkAvailabilityController {
 
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
+
+    @Resource
+    private IssueService issueService;
 
 
     /**
@@ -111,7 +115,7 @@ public class LinkAvailabilityController {
      */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) {
-        linkAvailabilityService.handIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -125,7 +129,7 @@ public class LinkAvailabilityController {
      */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
-        linkAvailabilityService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -139,7 +143,7 @@ public class LinkAvailabilityController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
-        linkAvailabilityService.delIssueByIds(siteId, Arrays.asList(ids));
+        issueService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
     }
 }

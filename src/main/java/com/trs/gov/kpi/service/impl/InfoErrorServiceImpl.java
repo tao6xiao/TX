@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,9 +43,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
-
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -80,7 +76,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(param.getBeginDateTime(), param.getEndDateTime());
@@ -101,8 +97,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public ApiPageData getIssueList(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_ERROR_ISSUE);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -129,27 +123,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         }
 
         return new ApiPageData(pager, infoErrorResponses);
-    }
-
-
-    @Override
-    public void handIssuesByIds(int siteId, List<Integer> ids) {
-        issueMapper.handIssuesByIds(siteId, ids);
-    }
-
-    @Override
-    public void ignoreIssuesByIds(int siteId, List<Integer> ids) {
-        issueMapper.ignoreIssuesByIds(siteId, ids);
-    }
-
-    @Override
-    public void delIssueByIds(int siteId, List<Integer> ids) {
-        issueMapper.delIssueByIds(siteId, ids);
-    }
-
-    @Override
-    public Date getEarliestIssueTime() {
-        return issueMapper.getEarliestIssueTime();
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
+import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,9 @@ public class InfoUpdateController {
 
     @Resource
     private InfoUpdateService infoUpdateService;
+
+    @Resource
+    private IssueService issueService;
 
     /**
      * 查询已解决、预警和更新不及时的数量
@@ -75,7 +79,7 @@ public class InfoUpdateController {
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        infoUpdateService.handIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -91,7 +95,7 @@ public class InfoUpdateController {
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        infoUpdateService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -107,7 +111,7 @@ public class InfoUpdateController {
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        infoUpdateService.delIssueByIds(siteId, Arrays.asList(ids));
+        issueService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
     }
 

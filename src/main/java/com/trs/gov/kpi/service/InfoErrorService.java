@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.InfoErrorOrderRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,14 +16,6 @@ import java.util.List;
 public interface InfoErrorService {
 
     List<Statistics> getIssueCount(PageDataRequestParam param);
-
-    void handIssuesByIds(int siteId, List<Integer> ids);
-
-    void ignoreIssuesByIds(int siteId, List<Integer> ids);
-
-    void delIssueByIds(int siteId, List<Integer> ids);
-
-    Date getEarliestIssueTime();
 
     List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
 
