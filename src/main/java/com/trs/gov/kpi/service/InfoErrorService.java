@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -26,5 +28,13 @@ public interface InfoErrorService {
     List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
 
     ApiPageData getIssueList(PageDataRequestParam param);
+
+    /**
+     * 查询信息错误的工单
+     *
+     * @param request
+     * @return
+     */
+    ApiPageData selectInfoErrorOrder(WorkOrderRequest request) throws RemoteException;
 
 }

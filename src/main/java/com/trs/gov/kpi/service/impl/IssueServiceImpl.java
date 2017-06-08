@@ -85,4 +85,9 @@ public class IssueServiceImpl implements IssueService {
         }
         return issueIsNotResolvedResponseList;
     }
+
+    @Override
+    public void updateOrderByIds(int workOrderStatus, List<Integer> ids) {
+        issueMapper.updateOrderByIds(workOrderStatus, ids);
+    }
 }

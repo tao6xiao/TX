@@ -268,14 +268,14 @@ public class WebPageServiceImpl implements WebPageService {
         } catch (RemoteException e) {
             log.error("", e);
         }
-        if (channel == null) {
+        return checkChannelName(channel);
+    }
+
+    private String checkChannelName(Channel channel){
+        if (channel == null || channel.getChnlName() == null) {
             return "";
         }
-        String chnlName = channel.getChnlName();
-        if (chnlName == null) {
-            return "";
-        }
-        return chnlName;
+        return channel.getChnlName();
     }
 
     @Override

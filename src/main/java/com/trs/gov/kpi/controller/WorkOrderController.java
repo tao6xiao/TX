@@ -4,7 +4,9 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;
+import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +28,22 @@ public class WorkOrderController {
     @Resource
     private InfoUpdateService infoUpdateService;
 
+    @Resource
+    private InfoErrorService infoErrorService;
+
+    @Resource
+    private IssueService issueService;
+
     @RequestMapping(value = "/channel/update", method = RequestMethod.GET)
     public ApiPageData selectInfoUpdateOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(request);
         return infoUpdateService.selectInfoUpdateOrder(request);
+    }
+
+    @RequestMapping(value = "/document/error", method = RequestMethod.GET)
+    public ApiPageData selectInfoErrorOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
+        ParamCheckUtil.paramCheck(request);
+        return infoErrorService.selectInfoErrorOrder(request);
     }
 
 
@@ -38,7 +52,7 @@ public class WorkOrderController {
         if (workOrderStatus == null) {
             throw new BizException("参数不合法！");
         }
-        infoUpdateService.updateOrderByIds(workOrderStatus, Arrays.asList(ids));
+        issueService.updateOrderByIds(workOrderStatus, Arrays.asList(ids));
         return null;
     }
 }

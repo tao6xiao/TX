@@ -47,6 +47,19 @@
     <result column="customer1" property="errorDetail"/>
   </resultMap>
 
+  <resultMap id="InfoErrorOrderMap" type="com.trs.gov.kpi.entity.InfoErrorOrder">
+    <id column="id" property="id"/>
+    <result column="siteId" jdbcType="INTEGER" property="siteId" />
+    <result column="customer2" property="chnlId"/>
+    <result column="subTypeId" property="subTypeId"/>
+    <result column="detail" property="detail"/>
+    <result column="customer1" property="errorDetail"/>
+    <result column="issueTime" property="issueTime"/>
+    <result column="isResolved" jdbcType="BIT" property="isResolved" />
+    <result column="isDel" jdbcType="BIT" property="isDel" />
+    <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
+</resultMap>
+
   <resultMap id="LinkAvailabilityMap" type="com.trs.gov.kpi.entity.LinkAvailability">
     <id column="id" property="id"/>
     <result column="subTypeId" property="issueTypeId"/>
@@ -248,6 +261,13 @@
   </select>
 
   <select id="selectInfoError" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="InfoErrorMap">
+    SELECT
+    *
+    FROM issue WHERE 1=1
+    <include refid="all_conditions_sql"/>
+  </select>
+
+  <select id="selectInfoErrorOrder" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="InfoErrorOrderMap">
     SELECT
     *
     FROM issue WHERE 1=1

@@ -63,6 +63,14 @@ public interface IssueMapper {
     List<InfoUpdateOrder> selectInfoUpdateOrder(QueryFilter filter);
 
     /**
+     * 查询信息错误的工单
+     *
+     * @param filter
+     * @return
+     */
+    List<InfoErrorOrder> selectInfoErrorOrder(QueryFilter filter);
+
+    /**
      * 根据站点编号获取首页
      *
      * @param param

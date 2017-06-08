@@ -25,4 +25,12 @@ public interface IssueService{
      * @return
      */
     ApiPageData get( PageDataRequestParam param);
+
+    /**
+     * 修改工单状态
+     *
+     * @param workOrderStatus
+     * @param ids
+     */
+    void updateOrderByIds(int workOrderStatus, List<Integer> ids);
 }

@@ -282,14 +282,14 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         } catch (RemoteException e) {
             log.error("", e);
         }
-        if (channel == null) {
+        return checkChannelName(channel);
+    }
+
+    private String checkChannelName(Channel channel) {
+        if (channel == null || channel.getChnlName() == null) {
             return "";
         }
-        String chnlName = channel.getChnlName();
-        if (chnlName == null) {
-            return "";
-        }
-        return chnlName;
+        return channel.getChnlName();
     }
 
     private Statistics getStatisticsByCount(int i, int count) {
@@ -330,8 +330,4 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return new ApiPageData(pager, list);
     }
 
-    @Override
-    public void updateOrderByIds(int workOrderStatus, List<Integer> ids) {
-        issueMapper.updateOrderByIds(workOrderStatus, ids);
-    }
 }
