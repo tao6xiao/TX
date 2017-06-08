@@ -161,7 +161,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public InfoErrorOrderRes getInfoErrorOrderById(WorkOrderRequest request) throws RemoteException {
 
-        QueryFilter filter = QueryFilterHelper.toFilter(request);
+        QueryFilter filter = QueryFilterHelper.toFilter(request,siteApiService);
         filter.addCond(IssueTableField.ID, request.getId());
 
         List<InfoErrorOrder> infoErrorOrderList = issueMapper.selectInfoErrorOrder(filter);

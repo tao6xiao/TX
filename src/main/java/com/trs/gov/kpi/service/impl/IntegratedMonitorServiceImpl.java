@@ -34,7 +34,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     @Override
     public List<Statistics> getAllIssueCount(PageDataRequestParam param) {
 
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
@@ -85,7 +85,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         List<Statistics> list = new ArrayList<>();
 
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         //查询失效链接数量
@@ -198,7 +198,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         List<Statistics> list = new ArrayList<>();
 
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), linkAvailabilityService.getEarliestIssueTime()));
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
 
         //查询信息更新预警数量

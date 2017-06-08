@@ -88,7 +88,7 @@ public class IssueCountServiceImpl implements IssueCountService {
     @Override
     public List<IssueHistoryCountResponse> historyCountSort(IssueCountRequest request) {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
-        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), infoErrorService.getEarliestIssueTime()));
+        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(request.getBeginDateTime(), request.getEndDateTime());
 

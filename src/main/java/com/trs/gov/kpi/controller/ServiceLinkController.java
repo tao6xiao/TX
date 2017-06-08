@@ -11,6 +11,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
+import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -40,6 +41,9 @@ public class ServiceLinkController {
     @Resource
     private SiteApiService siteApiService;
 
+    @Resource
+    private IssueService issueService;
+
     /**
      * 处理（批量和单个结合）
      *
@@ -50,7 +54,7 @@ public class ServiceLinkController {
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     @ResponseBody
     public String handIssuesByIds(int siteId, Integer[] ids) {
-        linkAvailabilityService.handIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -64,7 +68,7 @@ public class ServiceLinkController {
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     @ResponseBody
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
-        linkAvailabilityService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -78,7 +82,7 @@ public class ServiceLinkController {
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     @ResponseBody
     public String delIssueByIds(int siteId, Integer[] ids) {
-        linkAvailabilityService.delIssueByIds(siteId, Arrays.asList(ids));
+        issueService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
     }
 

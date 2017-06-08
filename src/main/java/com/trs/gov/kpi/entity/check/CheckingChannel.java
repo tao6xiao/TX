@@ -3,7 +3,6 @@ package com.trs.gov.kpi.entity.check;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.utils.DateUtil;
 import lombok.Data;
-import lombok.NonNull;
 
 import java.text.ParseException;
 

@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 /**

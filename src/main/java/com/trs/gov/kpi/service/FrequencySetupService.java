@@ -6,11 +6,8 @@ import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
-import com.trs.gov.kpi.entity.responsedata.Pager;
 
 import java.text.ParseException;
-import java.util.List;
 
 /**
  * 栏目更新频率设置Service
@@ -20,7 +17,6 @@ public interface FrequencySetupService {
     /**
      * 查询当前站点的当前页数据
      *
-     * @param pager
      * @param selectRequest
      * @return
      */

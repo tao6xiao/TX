@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
-import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBPager;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
