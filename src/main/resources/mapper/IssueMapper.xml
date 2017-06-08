@@ -180,11 +180,11 @@
     <if test="condFields != null">
       AND
       <foreach collection="condFields" item="condField" separator=" AND ">
-        <include refid="where_foreach_field_sql"></include>
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.where_foreach_field_sql"></include>
         <if test='condField.fieldName == "OR_COMPLEX_FIELD"'>
           <foreach collection="condField.condValue.fields" index="index" item="condField" open="("
                    separator=" OR " close=")">
-            <include refid="where_foreach_field_sql"></include>
+            <include refid="com.trs.gov.kpi.dao.IssueMapper.where_foreach_field_sql"></include>
           </foreach>
         </if>
       </foreach>
@@ -226,10 +226,10 @@
   </sql>
 
   <sql id="all_conditions_sql">
-    <include refid="where_sql"/>
-    <include refid="group_sql"/>
-    <include refid="order_sql"/>
-    <include refid="page_sql"/>
+    <include refid="com.trs.gov.kpi.dao.IssueMapper.where_sql"/>
+    <include refid="com.trs.gov.kpi.dao.IssueMapper.group_sql"/>
+    <include refid="com.trs.gov.kpi.dao.IssueMapper.order_sql"/>
+    <include refid="com.trs.gov.kpi.dao.IssueMapper.page_sql"/>
   </sql>
 
   <select id="select" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="com.trs.gov.kpi.entity.Issue">

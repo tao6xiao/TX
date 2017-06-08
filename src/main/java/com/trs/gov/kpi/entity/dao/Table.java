@@ -14,7 +14,8 @@ public enum Table {
     ISSUE("issue", Arrays.asList("id", "siteId", "typeId", "subTypeId",
             "detail", "issueTime", "isResolved", "isDel", "workOrderStatus", "customer1", "customer2", "customer3")),
     WEB_PAGE("webpage", Arrays.asList("id", "siteId", "typeId", "chnlId",
-            "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel"));
+            "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel")),
+    FREQ_SETUP("frequencysetup", Arrays.asList("id", "siteId", "presetFeqId", "chnlId", "setTime", "isOpen"));
 
     // 表名
     @Getter

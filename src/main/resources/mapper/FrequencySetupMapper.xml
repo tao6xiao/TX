@@ -130,6 +130,7 @@
         )
       </otherwise>
     </choose>
+    ORDER BY id
     <include refid="com.trs.gov.kpi.dao.IssueMapper.page_sql"/>
   </select>
   <select id="selectCountFrequencySetupBySiteId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
@@ -178,4 +179,19 @@
     from frequencysetup
     where siteId = #{siteId,jdbcType=INTEGER} AND id = #{id,jdbcType=INTEGER}
   </select>
+
+  <select id="select" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+    SELECT
+    *
+    FROM ${table.tableName} WHERE 1=1
+    <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+  </select>
+
+  <select id="count" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+    SELECT
+    count(1)
+    FROM ${table.tableName} WHERE 1=1
+    <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+  </select>
+
 </mapper>

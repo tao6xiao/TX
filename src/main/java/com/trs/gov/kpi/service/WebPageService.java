@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
@@ -17,7 +18,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    ApiPageData selectReplySpeed(PageDataRequestParam param);
+    ApiPageData selectReplySpeed(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询过大页面
@@ -25,7 +26,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    ApiPageData selectPageSpace(PageDataRequestParam param);
+    ApiPageData selectPageSpace(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询过大页面数量
@@ -33,7 +34,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    int selectPageSpaceCount(PageDataRequestParam param);
+    int selectPageSpaceCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询过深页面
@@ -41,7 +42,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    ApiPageData selectPageDepth(PageDataRequestParam param);
+    ApiPageData selectPageDepth(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询过深页面数量
@@ -49,7 +50,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    int selectPageDepthCount(PageDataRequestParam param);
+    int selectPageDepthCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询冗余代码
@@ -57,7 +58,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    ApiPageData selectRepeatCode(PageDataRequestParam param);
+    ApiPageData selectRepeatCode(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询冗余代码数量
@@ -65,7 +66,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    int selectRepeatCodeCount(PageDataRequestParam param);
+    int selectRepeatCodeCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询过长URL页面
@@ -73,7 +74,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    ApiPageData selectUrlLength(PageDataRequestParam param);
+    ApiPageData selectUrlLength(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询过长URL页面数量
@@ -81,7 +82,7 @@ public interface WebPageService {
      * @param param
      * @return
      */
-    int selectUrlLengthCount(PageDataRequestParam param);
+    int selectUrlLengthCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询监测时间最早的网页分析数据

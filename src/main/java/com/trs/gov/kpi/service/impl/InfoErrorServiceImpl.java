@@ -155,7 +155,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public ApiPageData selectInfoErrorOrder(WorkOrderRequest request) throws RemoteException {
 
-        QueryFilter filter = QueryFilterHelper.toFilter(request);
+        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
         filter.addCond(IssueTableField.WORK_ORDER_STATUS, request.getWorkOrderStatus());
         filter.addCond(IssueTableField.IS_RESOLVED, request.getSolveStatus());

@@ -1,7 +1,9 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
+import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBPager;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -86,4 +88,20 @@ public interface FrequencySetupMapper {
     int closeOrOpen(@Param("siteId") int siteId, @Param("id") int id, @Param("isOpen") byte isOpen);
 
     FrequencySetup selectBySiteIdAndId(@Param("siteId") int siteId, @Param("id") Integer id);
+
+    /**
+     * 查询数量
+     *
+     * @param filter
+     * @return
+     */
+    int count(QueryFilter filter);
+
+    /**
+     * 查询问题
+     *
+     * @param filter
+     * @return
+     */
+    List<FrequencySetup> select(QueryFilter filter);
 }

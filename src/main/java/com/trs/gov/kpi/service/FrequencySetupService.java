@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 
@@ -23,7 +24,7 @@ public interface FrequencySetupService {
      * @param selectRequest
      * @return
      */
-    List<FrequencySetupResponse> getPageDataFrequencySetupList(FrequencySetupSelectRequest selectRequest, Pager pager) throws RemoteException;
+    ApiPageData getPageData(FrequencySetupSelectRequest selectRequest) throws RemoteException;
 
     /**
      * 获取当前siteId的记录总数

@@ -3,13 +3,18 @@ package com.trs.gov.kpi.service.helper;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.dao.FrequencyPresetMapper;
+import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.StringUtil;
 
 import java.util.ArrayList;
@@ -20,6 +25,9 @@ import java.util.List;
  * Created by linwei on 2017/5/22.
  */
 public class QueryFilterHelper {
+
+    public static final String FREQ_SETUP_TABLE_FIELD_CHNL_ID = "chnlId";
+    public static final String FREQ_SETUP_TABLE_FIELD_PRESET_FEQ_ID = "presetFeqId";
 
     private QueryFilterHelper() {
 
@@ -111,7 +119,7 @@ public class QueryFilterHelper {
      * @param request
      * @return
      */
-    public static QueryFilter toFilter(WorkOrderRequest request) {
+    public static QueryFilter toFilter(WorkOrderRequest request, SiteApiService siteApiService) throws RemoteException {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
 
         if (request.getSiteId() != null) {
@@ -120,33 +128,7 @@ public class QueryFilterHelper {
         initTime(request, IssueTableField.ISSUE_TIME, filter);
 
         if (request.getSearchText() != null) {
-            if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("id")) {
-                filter.addCond(IssueTableField.ID, '%' + request.getSearchText() + "%").setLike(true);
-            } else if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("department")) {
-
-                //TODO 等通过部门获取属于它的栏目的接口
-//                CondDBField field = buildIssueTypeCond(request.getSearchText(), issueType);
-//                if (field != null) {
-//                    filter.addCond(field);
-//                } else {
-//                    filter.addCond(new CondDBField(IssueTableField.SUBTYPE_ID, Types.IssueType.INVALID.value));
-//                }
-            } else if (request.getSearchField() == null) {
-                CondDBField idField = new CondDBField(IssueTableField.ID, '%' + request.getSearchText() + "%");
-                idField.setLike(true);
-
-                //TODO 等通过部门获取属于它的栏目的接口
-//                CondDBField issueTypefield = buildIssueTypeCond(request.getSearchText(), issueType);
-//                if (issueTypefield != null) {
-//                    OrCondDBFields orFields = new OrCondDBFields();
-//                    orFields.addCond(idField);
-//                    orFields.addCond(issueTypefield);
-//                    filter.addOrConds(orFields);
-//                } else {
-//                    filter.addCond(idField);
-//                }
-                filter.addCond(idField);
-            }
+            addWorkOrderSearchCond(filter, request, siteApiService);
         }
 
         // sort field
@@ -157,6 +139,63 @@ public class QueryFilterHelper {
 
         return filter;
     }
+
+    private static void addWorkOrderSearchCond(QueryFilter filter, WorkOrderRequest request, SiteApiService siteApiService) throws RemoteException {
+        if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("id")) {
+            filter.addCond(IssueTableField.ID, '%' + request.getSearchText() + "%").setLike(true);
+        } else if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("department")) {
+            List<Integer> chnlIds = siteApiService.findChnlIdsByDepartment("", asList(request.getSiteId()), request.getSearchText());
+            if (chnlIds != null && !chnlIds.isEmpty()) {
+                filter.addCond(IssueTableField.CUSTOMER2, chnlIds);
+            } else {
+                filter.addCond(IssueTableField.CUSTOMER2, -1);
+            }
+        } else if (request.getSearchField() == null) {
+            OrCondDBFields orFields = new OrCondDBFields();
+            orFields.addCond(IssueTableField.ID, '%' + request.getSearchText() + "%").setLike(true);
+
+
+            List<Integer> chnlIds = siteApiService.findChnlIdsByDepartment("", asList(request.getSiteId()), request.getSearchText());
+            if (chnlIds != null && !chnlIds.isEmpty()) {
+                orFields.addCond(IssueTableField.CUSTOMER2, chnlIds);
+            }
+
+            filter.addOrConds(orFields);
+        }
+    }
+
+    private static List<Integer> asList(Integer[] ids) {
+        if (ids == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(ids);
+    }
+
+    private static void addWebPageSearchCond(QueryFilter filter, PageDataRequestParam param, SiteApiService siteApiService) throws RemoteException {
+        if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
+            filter.addCond(WebpageTableField.ID, '%' + param.getSearchText() + "%").setLike(true);
+        } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("chnlName")) {
+
+            List<Integer> chnlIds = siteApiService.findChnlIds("", param.getSiteId(), param.getSearchText());
+            if (!chnlIds.isEmpty()) {
+                filter.addCond(WebpageTableField.CHNL_ID, chnlIds);
+            } else {
+                // 找不到符合条件的记录，构造一个不成立的条件
+                filter.addCond(WebpageTableField.CHNL_ID, -1);
+            }
+        } else if (param.getSearchField() == null) {
+            OrCondDBFields orFields = new OrCondDBFields();
+            orFields.addCond(WebpageTableField.ID, '%' + param.getSearchText() + "%").setLike(true);
+
+            List<Integer> chnlIds = siteApiService.findChnlIds("", param.getSiteId(), param.getSearchText());
+            if (chnlIds != null && !chnlIds.isEmpty()) {
+                orFields.addCond(WebpageTableField.CHNL_ID, chnlIds);
+            }
+
+            filter.addOrConds(orFields);
+        }
+    }
+
 
     private static void initTime(WorkOrderRequest request, String timeField, QueryFilter filter) {
         if (request.getBeginDateTime() != null) {
@@ -211,26 +250,14 @@ public class QueryFilterHelper {
      * @param param
      * @return
      */
-    public static QueryFilter toPageFilter(PageDataRequestParam param) {
+    public static QueryFilter toPageFilter(PageDataRequestParam param, SiteApiService siteApiService) throws RemoteException {
         QueryFilter filter = new QueryFilter(Table.WEB_PAGE);
 
         filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
         initTime(param, WebpageTableField.CHECK_TIME, filter);
 
         if (param.getSearchText() != null) {
-            if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
-                filter.addCond(WebpageTableField.ID, '%' + param.getSearchText() + "%").setLike(true);
-            } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("chnlName")) {
-
-                //TODO  调接口根据名字查栏目id
-
-            } else if (param.getSearchField() == null) {
-                CondDBField idField = new CondDBField(WebpageTableField.ID, '%' + param.getSearchText() + "%");
-                idField.setLike(true);
-
-                //TODO  调接口根据名字查栏目id
-                filter.addCond(idField);
-            }
+            addWebPageSearchCond(filter, param, siteApiService);
         }
 
         // sort field
@@ -258,4 +285,68 @@ public class QueryFilterHelper {
         }
         return filter;
     }
+
+
+    /**
+     * 栏目更新频率设置的filter处理
+     * @param request
+     * @return
+     */
+    public static QueryFilter toFilter(FrequencySetupSelectRequest request, SiteApiService siteService, FrequencyPresetMapper frequencyPresetMapper) throws RemoteException {
+        QueryFilter filter = new QueryFilter(Table.FREQ_SETUP);
+        filter.addCond("siteId", request.getSiteId());
+
+        if (request.getSearchText() == null) {
+            return filter;
+        }
+
+        if (StringUtil.isEmpty(request.getSearchField())) {
+            OrCondDBFields orCond = new OrCondDBFields();
+            orCond.addCond(FREQ_SETUP_TABLE_FIELD_CHNL_ID, "%" + request.getSearchText() + "%").setLike(true);
+
+            List<Integer> chnlIds = siteService.findChnlIds("", request.getSiteId(), request.getSearchText());
+            if (!chnlIds.isEmpty()) {
+                orCond.addCond(FREQ_SETUP_TABLE_FIELD_CHNL_ID, chnlIds);
+            }
+
+            List<Integer> ids = getFrequencyPresetIds(frequencyPresetMapper, request.getSiteId(), request.getSearchText());
+            if (!ids.isEmpty()) {
+                orCond.addCond(FREQ_SETUP_TABLE_FIELD_PRESET_FEQ_ID, ids);
+            }
+
+            filter.addOrConds(orCond);
+        } else if (request.getSearchField().equalsIgnoreCase("chnlId")) {
+            filter.addCond(FREQ_SETUP_TABLE_FIELD_CHNL_ID, "%" + request.getSearchText() + "%").setLike(true);
+        } else if (request.getSearchField().equalsIgnoreCase("chnlName")) {
+            List<Integer> chnlIds = siteService.findChnlIds("", request.getSiteId(), request.getSearchText());
+            if (!chnlIds.isEmpty()) {
+                filter.addCond(FREQ_SETUP_TABLE_FIELD_CHNL_ID, chnlIds);
+            } else {
+                // 找不到符合条件的记录，构造一个不成立的条件
+                filter.addCond(FREQ_SETUP_TABLE_FIELD_CHNL_ID, -1);
+            }
+        } else if (request.getSearchField().equalsIgnoreCase("updateFreq")) {
+            List<Integer> ids = getFrequencyPresetIds(frequencyPresetMapper, request.getSiteId(), request.getSearchText());
+            if (!ids.isEmpty()) {
+                filter.addCond(FREQ_SETUP_TABLE_FIELD_PRESET_FEQ_ID, ids);
+            } else {
+                // 找不到符合条件的记录，构造一个不成立的条件
+                filter.addCond(FREQ_SETUP_TABLE_FIELD_PRESET_FEQ_ID, -1);
+            }
+        }
+
+        return filter;
+    }
+
+    private static List<Integer> getFrequencyPresetIds(FrequencyPresetMapper frequencyPresetMapper, Integer siteId, String presetValue) {
+        List<FrequencyPreset> presetList = frequencyPresetMapper.selectBySiteIdAndUpdateFreq(siteId, presetValue);
+        ArrayList<Integer> ids = new ArrayList<>();
+        if (presetList != null && !presetList.isEmpty()) {
+            for (FrequencyPreset preset : presetList) {
+                ids.add(preset.getId());
+            }
+        }
+        return ids;
+    }
+
 }

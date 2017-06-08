@@ -9,21 +9,14 @@ import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.FrequencySetupResponse;
-import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
-import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * 栏目更新频率Controller
@@ -54,17 +47,8 @@ public class FrequencySetupController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         ParamCheckUtil.pagerCheck(selectRequest.getPageIndex(), selectRequest.getPageSize());
-        int itemCount = frequencySetupService.getCountFrequencySetupBySite(selectRequest.getSiteId());
+        return frequencySetupService.getPageData(selectRequest);
 
-        Pager pager = PageInfoDeal.buildResponsePager(selectRequest.getPageIndex(), selectRequest.getPageSize(), itemCount);
-        List<FrequencySetupResponse> frequencySetupResponses = frequencySetupService.getPageDataFrequencySetupList(selectRequest, pager);
-        Set<FrequencySetupResponse> setupResponseSet = new HashSet<>();
-        for (FrequencySetupResponse setupResponse : frequencySetupResponses) {
-            setupResponseSet.add(setupResponse);
-        }
-        pager.setItemCount(setupResponseSet.size());
-        pager.setPageCount(PageInfoDeal.getPageCount(setupResponseSet.size(), pager.getPageSize()));
-        return new ApiPageData(pager, Arrays.asList(setupResponseSet.toArray()));
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.WebPageService;
@@ -24,55 +25,55 @@ public class WebPageController {
     private WebPageService webPageService;
 
     @RequestMapping(value = "/speed", method = RequestMethod.GET)
-    public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectReplySpeed(param);
     }
 
     @RequestMapping(value = "/size/count", method = RequestMethod.GET)
-    public int selectPageSpaceCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public int selectPageSpaceCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectPageSpaceCount(param);
     }
 
     @RequestMapping(value = "/size", method = RequestMethod.GET)
-    public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectPageSpace(param);
     }
 
     @RequestMapping(value = "/depth/count", method = RequestMethod.GET)
-    public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectPageDepthCount(param);
     }
 
     @RequestMapping(value = "/depth", method = RequestMethod.GET)
-    public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectPageDepth(param);
     }
 
     @RequestMapping(value = "/code/count", method = RequestMethod.GET)
-    public int selectRepeatCodeCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public int selectRepeatCodeCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectRepeatCodeCount(param);
     }
 
     @RequestMapping(value = "/code", method = RequestMethod.GET)
-    public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectRepeatCode(param);
     }
 
     @RequestMapping(value = "/length/count", method = RequestMethod.GET)
-    public int selectUrlLengthCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public int selectUrlLengthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectUrlLengthCount(param);
     }
 
     @RequestMapping(value = "/length", method = RequestMethod.GET)
-    public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return webPageService.selectUrlLength(param);
     }

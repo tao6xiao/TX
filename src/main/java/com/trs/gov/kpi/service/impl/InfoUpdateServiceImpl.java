@@ -302,7 +302,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Override
     public ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) throws RemoteException {
-        QueryFilter filter = QueryFilterHelper.toFilter(request);
+        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond(IssueTableField.WORK_ORDER_STATUS, request.getWorkOrderStatus());
         filter.addCond(IssueTableField.IS_RESOLVED, request.getSolveStatus());
