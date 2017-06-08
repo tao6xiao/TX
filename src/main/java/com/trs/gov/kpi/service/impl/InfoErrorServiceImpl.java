@@ -185,6 +185,30 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         return new ApiPageData(pager, list);
     }
 
+    @Override
+    public InfoErrorOrderRes getInfoErrorOrderById(WorkOrderRequest request) throws RemoteException {
+
+        QueryFilter filter = QueryFilterHelper.toFilter(request);
+        filter.addCond(IssueTableField.ID, request.getId());
+
+        List<InfoErrorOrder> infoErrorOrderList = issueMapper.selectInfoErrorOrder(filter);
+        InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();
+        for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
+            infoErrorOrderRes.setId(infoErrorOrder.getId());
+            infoErrorOrderRes.setChnlName(getChannelName(infoErrorOrder.getChnlId()));
+            infoErrorOrderRes.setSiteName(siteApiService.getSiteById(infoErrorOrder.getSiteId(), null).getSiteDesc());
+            infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
+//            infoErrorOrderRes.setDepartment();TODO
+            infoErrorOrderRes.setUrl(infoErrorOrder.getDetail());
+            infoErrorOrderRes.setCheckTime(infoErrorOrder.getIssueTime());
+            infoErrorOrderRes.setSolveStatus(infoErrorOrder.getIsResolved());
+            infoErrorOrderRes.setIsDeleted(infoErrorOrder.getIsDel());
+            infoErrorOrderRes.setWorkOrderStatus(infoErrorOrder.getWorkOrderStatus());
+        }
+
+        return infoErrorOrderRes;
+    }
+
     private String getChannelName(Integer channelId) {
         if (channelId == null) {
             return "";
