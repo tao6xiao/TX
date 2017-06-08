@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.InfoErrorService;
+import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,9 @@ public class InfoErrorController {
 
     @Resource
     private InfoErrorService infoErrorService;
+
+    @Resource
+    private IssueService issueService;
 
 
     /**
@@ -75,7 +79,7 @@ public class InfoErrorController {
      */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) {
-        infoErrorService.handIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -88,7 +92,7 @@ public class InfoErrorController {
      */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) {
-        infoErrorService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
+        issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
 
@@ -101,7 +105,7 @@ public class InfoErrorController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) {
-        infoErrorService.delIssueByIds(siteId, Arrays.asList(ids));
+        issueService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
     }
 

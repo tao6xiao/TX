@@ -4,7 +4,6 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,13 +33,5 @@ public interface LinkAvailabilityService {
     int getUnhandledIssueCount(PageDataRequestParam param);
 
     List<Statistics> getIssueCount(PageDataRequestParam param);
-
-    void handIssuesByIds(int siteId, List<Integer> ids);
-
-    void ignoreIssuesByIds(int siteId, List<Integer> ids);
-
-    void delIssueByIds(int siteId, List<Integer> ids);
-
-    Date getEarliestIssueTime();
 
 }
