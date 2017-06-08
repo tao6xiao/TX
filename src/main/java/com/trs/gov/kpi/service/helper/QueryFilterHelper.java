@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
+import com.trs.gov.kpi.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,57 +33,76 @@ public class QueryFilterHelper {
     public static QueryFilter toFilter(PageDataRequestParam param, Types.IssueType... issueType) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
-        if (param.getBeginDateTime() != null) {
-            filter.addCond(IssueTableField.ISSUE_TIME, param.getBeginDateTime()).setRangeBegin(true);
-        }
 
-        if (param.getEndDateTime() != null) {
-            filter.addCond(IssueTableField.ISSUE_TIME, param.getEndDateTime()).setRangeEnd(true);
-        }
+        initTime(param, IssueTableField.ISSUE_TIME, filter);
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
                 filter.addCond(IssueTableField.ID, '%' + param.getSearchText() + "%").setLike(true);
             } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("issueType")) {
                 CondDBField field = buildIssueTypeCond(param.getSearchText(), issueType);
-                if (field != null) {
-                    filter.addCond(field);
-                } else {
-                    filter.addCond(new CondDBField(IssueTableField.SUBTYPE_ID, Types.IssueType.INVALID.value));
-                }
+                initSubTypeId(field, filter);
             } else if (param.getSearchField() == null) {
                 CondDBField idField = new CondDBField(IssueTableField.ID, '%' + param.getSearchText() + "%");
                 idField.setLike(true);
 
                 CondDBField issueTypefield = buildIssueTypeCond(param.getSearchText(), issueType);
-                if (issueTypefield != null) {
-                    OrCondDBFields orFields = new OrCondDBFields();
-                    orFields.addCond(idField);
-                    orFields.addCond(issueTypefield);
-                    filter.addOrConds(orFields);
-                } else {
-                    filter.addCond(idField);
-                }
+                initAll(filter, idField, issueTypefield);
             }
         }
 
         // sort field
-        if (param.getSortFields() != null && !param.getSortFields().trim().isEmpty()) {
+        if (!StringUtil.isEmpty(param.getSortFields())) {
             String[] sortFields = param.getSortFields().trim().split(";");
-            for (String sortField : sortFields) {
-                String[] nameAndDirection = sortField.split(",");
-                if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
-                    if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
-                        filter.addSortField(nameAndDirection[0], true);
-                    } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
-                        filter.addSortField(nameAndDirection[0], false);
-                    }
-                }
-            }
+            addSort(filter, sortFields);
         }
 
         return filter;
     }
+
+    private static void initSubTypeId(CondDBField field, QueryFilter filter) {
+        if (field != null) {
+            filter.addCond(field);
+        } else {
+            filter.addCond(new CondDBField(IssueTableField.SUBTYPE_ID, Types.IssueType.INVALID.value));
+        }
+    }
+
+    private static void initAll(QueryFilter filter, CondDBField idField, CondDBField issueTypefield) {
+        if (issueTypefield != null) {
+            OrCondDBFields orFields = new OrCondDBFields();
+            orFields.addCond(idField);
+            orFields.addCond(issueTypefield);
+            filter.addOrConds(orFields);
+        } else {
+            filter.addCond(idField);
+        }
+    }
+
+    private static void initTime(PageDataRequestParam param, String timeField, QueryFilter filter) {
+        if (param.getBeginDateTime() != null) {
+            filter.addCond(timeField, param.getBeginDateTime()).setRangeBegin(true);
+        }
+
+        if (param.getEndDateTime() != null) {
+            filter.addCond(timeField, param.getEndDateTime()).setRangeEnd(true);
+        }
+    }
+
+
+    private static void addSort(QueryFilter filter, String[] sortFields) {
+        for (String sortField : sortFields) {
+            String[] nameAndDirection = sortField.split(",");
+            if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
+                if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
+                    filter.addSortField(nameAndDirection[0], true);
+                } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
+                    filter.addSortField(nameAndDirection[0], false);
+                }
+            }
+        }
+    }
+
 
     /**
      * 把参数转换为工单所需的查询filter
@@ -96,12 +116,7 @@ public class QueryFilterHelper {
         if (request.getSiteId() != null) {
             filter.addCond(IssueTableField.SITE_ID, Arrays.asList(request.getSiteId()));
         }
-        if (request.getBeginDateTime() != null) {
-            filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
-        }
-        if (request.getEndDateTime() != null) {
-            filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
-        }
+        initTime(request, IssueTableField.ISSUE_TIME, filter);
 
         if (request.getSearchText() != null) {
             if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("id")) {
@@ -134,21 +149,22 @@ public class QueryFilterHelper {
         }
 
         // sort field
-        if (request.getSortFields() != null && !request.getSortFields().trim().isEmpty()) {
+        if (!StringUtil.isEmpty(request.getSortFields())) {
             String[] sortFields = request.getSortFields().trim().split(";");
-            for (String sortField : sortFields) {
-                String[] nameAndDirection = sortField.split(",");
-                if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
-                    if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
-                        filter.addSortField(nameAndDirection[0], true);
-                    } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
-                        filter.addSortField(nameAndDirection[0], false);
-                    }
-                }
-            }
+            addSort(filter, sortFields);
         }
 
         return filter;
+    }
+
+    private static void initTime(WorkOrderRequest request, String timeField, QueryFilter filter) {
+        if (request.getBeginDateTime() != null) {
+            filter.addCond(timeField, request.getBeginDateTime()).setRangeBegin(true);
+        }
+
+        if (request.getEndDateTime() != null) {
+            filter.addCond(timeField, request.getEndDateTime()).setRangeEnd(true);
+        }
     }
 
     private static CondDBField buildIssueTypeCond(String issueName, Types.IssueType... issueType) {
@@ -198,13 +214,7 @@ public class QueryFilterHelper {
         QueryFilter filter = new QueryFilter(Table.WEB_PAGE);
 
         filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
-        if (param.getBeginDateTime() != null) {
-            filter.addCond(WebpageTableField.CHECK_TIME, param.getBeginDateTime()).setRangeBegin(true);
-        }
-
-        if (param.getEndDateTime() != null) {
-            filter.addCond(WebpageTableField.CHECK_TIME, param.getEndDateTime()).setRangeEnd(true);
-        }
+        initTime(param, WebpageTableField.CHECK_TIME, filter);
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
@@ -223,18 +233,9 @@ public class QueryFilterHelper {
         }
 
         // sort field
-        if (param.getSortFields() != null && !param.getSortFields().trim().isEmpty()) {
+        if (!StringUtil.isEmpty(param.getSortFields())) {
             String[] sortFields = param.getSortFields().trim().split(";");
-            for (String sortField : sortFields) {
-                String[] nameAndDirection = sortField.split(",");
-                if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
-                    if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
-                        filter.addSortField(nameAndDirection[0], true);
-                    } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
-                        filter.addSortField(nameAndDirection[0], false);
-                    }
-                }
-            }
+            addSort(filter, sortFields);
         }
 
         return filter;
