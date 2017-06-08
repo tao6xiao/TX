@@ -1,8 +1,8 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
+import com.trs.gov.kpi.entity.responsedata.IssueHistoryCountResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -26,14 +26,26 @@ public class IssueCountController {
 
     /**
      * 分类查询问题数量统计
-     * @param countRequest
+     * @param request
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/count",method = RequestMethod.GET)
     @ResponseBody
-    public List<Statistics> countSort(@ModelAttribute IssueCountRequest countRequest) throws BizException {
-        ParamCheckUtil.paramCheck(countRequest);
-        return countService.countSort(countRequest);
+    public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException {
+        ParamCheckUtil.paramCheck(request);
+        return countService.countSort(request);
+    }
+
+    /**
+     * 分类查询统计历史数量
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/count/history",method = RequestMethod.GET)
+    @ResponseBody
+    public List<IssueHistoryCountResponse> historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
+        ParamCheckUtil.paramCheck(request);
+        return countService.historyCountSort(request);
     }
 }
