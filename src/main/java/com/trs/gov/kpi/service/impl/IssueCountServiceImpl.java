@@ -4,8 +4,11 @@ import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IssueCountService;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,12 +24,13 @@ public class IssueCountServiceImpl implements IssueCountService {
     IssueMapper issueMapper;
 
     @Override
-    public List<Statistics> countSort(Integer[] siteIds) {
+    public List<Statistics> countSort(IssueCountRequest request) {
         List<Statistics> list = new ArrayList<>();
+        Integer siteIds[] = StringUtil.stringToIntegerArray(request.getSiteIds());
         //待解决预警
         int waringCount = 0;
         for (int i = 0; i < siteIds.length; i++) {
-            QueryFilter filter = new QueryFilter(Table.ISSUE);
+            QueryFilter filter = QueryFilterHelper.toFilter(request);
             filter.addCond(IssueTableField.SITE_ID, siteIds[i]);
             filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
@@ -41,7 +45,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         //待解决问题
         int issueCount = 0;
         for (int i = 0; i < siteIds.length; i++) {
-            QueryFilter filter = new QueryFilter(Table.ISSUE);
+            QueryFilter filter = QueryFilterHelper.toFilter(request);
             filter.addCond(IssueTableField.SITE_ID, siteIds[i]);
             filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
@@ -60,7 +64,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         //已解决问题和预警
         int resolvedCount = 0;
         for (int i = 0; i < siteIds.length; i++) {
-            QueryFilter filter = new QueryFilter(Table.ISSUE);
+            QueryFilter filter = QueryFilterHelper.toFilter(request);
             filter.addCond(IssueTableField.SITE_ID, siteIds[i]);
             filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);

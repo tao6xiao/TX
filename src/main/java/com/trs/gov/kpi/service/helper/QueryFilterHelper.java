@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 
@@ -237,6 +238,23 @@ public class QueryFilterHelper {
             }
         }
 
+        return filter;
+    }
+
+    /**
+     * 统计分析中的问题统计的filter处理
+     * @param request
+     * @return
+     */
+    public static QueryFilter toFilter(IssueCountRequest request) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        if (request.getBeginDateTime() != null) {
+            filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        }
+
+        if (request.getEndDateTime() != null) {
+            filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
+        }
         return filter;
     }
 }

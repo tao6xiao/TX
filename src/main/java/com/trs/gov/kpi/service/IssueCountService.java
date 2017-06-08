@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public interface IssueCountService {
 
     /**
      * 分类统计问题总数
-     * @param siteIds
+     * @param request
      * @return
      */
-    List<Statistics> countSort(Integer[] siteIds);
+    List<Statistics> countSort(IssueCountRequest request);
 }
