@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class WorkOrderRequest {
 
+    private String id;
+
     private Integer[] siteId;
 
     private String beginDateTime;

@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.InfoErrorOrderRes;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.IssueService;
@@ -44,6 +45,12 @@ public class WorkOrderController {
     public ApiPageData selectInfoErrorOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(request);
         return infoErrorService.selectInfoErrorOrder(request);
+    }
+
+    @RequestMapping(value = "/document/error/single", method = RequestMethod.GET)
+    public InfoErrorOrderRes getInfoErrorOrderById(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
+        ParamCheckUtil.paramCheck(request);
+        return infoErrorService.getInfoErrorOrderById(request);
     }
 
 
