@@ -23,9 +23,12 @@ public class StringUtilTest {
         assertTrue(array[0] == 1);
 
         str = "1.";
-        array = StringUtil.stringToIntegerArray(str);
-        assertTrue(array[0] == 1);
-
+        try {
+            array = StringUtil.stringToIntegerArray(str);
+            assertTrue(false);
+        } catch (NumberFormatException e) {
+            assertTrue(true);
+        }
     }
 
 }
