@@ -20,14 +20,6 @@ public interface InfoUpdateService {
 
     List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
 
-//    void handIssuesByIds(int siteId, List<Integer> ids);
-//
-//    void ignoreIssuesByIds(int siteId, List<Integer> ids);
-//
-//    void delIssueByIds(int siteId, List<Integer> ids);
-//
-//    Date getEarliestIssueTime();
-
     /**
      * 获取栏目信息更新不及时问题的统计信息
      *
