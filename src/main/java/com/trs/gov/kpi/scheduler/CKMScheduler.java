@@ -99,6 +99,7 @@ public class CKMScheduler implements SchedulerTask {
             }
             Issue issue = new Issue();
             issue.setSiteId(document.getSiteId());
+            issue.setCustomer2(Integer.toString(document.getChannelId()));
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
             issue.setDetail(document.getDocPubUrl());
