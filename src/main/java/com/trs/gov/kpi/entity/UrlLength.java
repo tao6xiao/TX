@@ -16,7 +16,7 @@ public class UrlLength {
 
     private String pageLink;
 
-    private String urlLength;
+    private String length;
 
     private String pageSpace;
 

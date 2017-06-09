@@ -16,7 +16,7 @@ public class PageDepth {
 
     private String pageLink;
 
-    private Integer pageDepth;
+    private Integer depth;
 
     private String pageSpace;
 

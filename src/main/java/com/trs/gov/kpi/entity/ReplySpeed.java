@@ -16,7 +16,7 @@ public class ReplySpeed {
 
     private String pageLink;
 
-    private String replySpeed;
+    private String speed;
 
     private String pageSpace;
 
