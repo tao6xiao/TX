@@ -38,12 +38,14 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
 
     @Override
     public int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest) {
+        // TODO: 2017/6/9  validate updateFreq and alertFreq are duplicate
         FrequencyPreset frequencyPreset = toFrequencyPresetByRequest(frequencyPresetRequest);
         return frequencyPresetMapper.insert(frequencyPreset);
     }
 
     @Override
     public int updateBySiteIdAndId(FrequencyPreset frequencyPreset) {
+        // TODO: 2017/6/9  validate updateFreq and alertFreq are duplicate
         return frequencyPresetMapper.updateBySiteIdAndId(frequencyPreset);
     }
 
