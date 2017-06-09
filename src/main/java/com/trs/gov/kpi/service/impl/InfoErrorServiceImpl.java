@@ -92,9 +92,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
         }
-        History history = new History(new Date(), list);
-
-        return history;
+        return new History(new Date(), list);
     }
 
     @Override

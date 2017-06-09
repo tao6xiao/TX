@@ -99,9 +99,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        History history = new History(new Date(), list);
-
-        return history;
+        return new History(new Date(), list);
     }
 
     @Override
