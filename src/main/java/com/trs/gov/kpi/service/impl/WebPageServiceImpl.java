@@ -59,7 +59,7 @@ public class WebPageServiceImpl implements WebPageService {
             replySpeedResponse.setId(replySpeed.getId());
             replySpeedResponse.setChnlName(getChannelName(replySpeed.getChnlId()));
             replySpeedResponse.setPageLink(replySpeed.getPageLink());
-            replySpeedResponse.setReplySpeed(replySpeed.getReplySpeed());
+            replySpeedResponse.setReplySpeed(replySpeed.getSpeed());
             replySpeedResponse.setPageSpace(replySpeed.getPageSpace());
             replySpeedResponse.setCheckTime(replySpeed.getCheckTime());
             replySpeedResponseList.add(replySpeedResponse);
@@ -91,7 +91,7 @@ public class WebPageServiceImpl implements WebPageService {
             pageSpaceResponse.setChnlName(getChannelName(pageSpace.getChnlId()));
             pageSpaceResponse.setPageLink(pageSpace.getPageLink());
             pageSpaceResponse.setReplySpeed(pageSpace.getReplySpeed());
-            pageSpaceResponse.setPageSpace(pageSpace.getPageSpace());
+            pageSpaceResponse.setPageSpace(pageSpace.getSpace());
             pageSpaceResponse.setCheckTime(pageSpace.getCheckTime());
             pageSpaceResponseList.add(pageSpaceResponse);
         }
@@ -136,7 +136,7 @@ public class WebPageServiceImpl implements WebPageService {
             pageDepthResponse.setId(pageDepth.getId());
             pageDepthResponse.setChnlName(getChannelName(pageDepth.getChnlId()));
             pageDepthResponse.setPageLink(pageDepth.getPageLink());
-            pageDepthResponse.setPageDepth(pageDepth.getPageDepth());
+            pageDepthResponse.setPageDepth(pageDepth.getDepth());
             pageDepthResponse.setPageSpace(pageDepth.getPageSpace());
             pageDepthResponse.setCheckTime(pageDepth.getCheckTime());
             pageDepthResponseList.add(pageDepthResponse);
@@ -228,7 +228,7 @@ public class WebPageServiceImpl implements WebPageService {
             urlLengthResponse.setId(urlLength.getId());
             urlLengthResponse.setChnlName(getChannelName(urlLength.getChnlId()));
             urlLengthResponse.setPageLink(urlLength.getPageLink());
-            urlLengthResponse.setUrlLength(urlLength.getUrlLength());
+            urlLengthResponse.setUrlLength(urlLength.getLength());
             urlLengthResponse.setPageSpace(urlLength.getPageSpace());
             urlLengthResponse.setCheckTime(urlLength.getCheckTime());
             urlLengthResponseList.add(urlLengthResponse);
@@ -271,7 +271,7 @@ public class WebPageServiceImpl implements WebPageService {
         return checkChannelName(channel);
     }
 
-    private String checkChannelName(Channel channel){
+    private String checkChannelName(Channel channel) {
         if (channel == null || channel.getChnlName() == null) {
             return "";
         }
