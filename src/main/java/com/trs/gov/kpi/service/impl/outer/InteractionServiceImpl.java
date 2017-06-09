@@ -1,4 +1,4 @@
-package com.trs.gov.kpi.service.impl;
+package com.trs.gov.kpi.service.impl.outer;
 
 import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
@@ -9,7 +9,7 @@ import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDHistoryRes;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
-import com.trs.gov.kpi.service.InteractionService;
+import com.trs.gov.kpi.service.outer.InteractionService;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,7 @@ public class InteractionServiceImpl implements InteractionService {
     @Value("${service.outer.nbhd.url}")
     private String nbhdServiceUrl;
 
-    private final String govMsgboxServiceName = "openGovmsgbox";
+    private final static String govMsgboxServiceName = "openGovmsgbox";
 
     @Override
     public NBHDPageDataResult getGovMsgBoxes(NBHDRequestParam param) throws RemoteException {
@@ -51,12 +51,7 @@ public class InteractionServiceImpl implements InteractionService {
         if (param.getIsDeadLine() != null) {
             params.put("isDeadLine", String.valueOf(param.getIsDeadLine()));
         }
-        if (param.getBeginDateTime() != null) {
-            params.put("beginDateTime", param.getBeginDateTime());
-        }
-        if (param.getEndDateTime() != null) {
-            params.put("endDateTime", param.getEndDateTime());
-        }
+        addCond(param, params);
 
         OkHttpClient client = new OkHttpClient();
         try {
@@ -71,11 +66,11 @@ public class InteractionServiceImpl implements InteractionService {
                 return JSON.parseObject(jsonResult, NBHDPageDataResult.class);
             } else {
                 log.error("failed to listGovmsgboxs, error: " + response);
-                throw new RemoteException("获取失败！");
+                throw new RemoteException("获取咨询列表失败！");
             }
         } catch (IOException e) {
             log.error("failed listGovmsgboxs", e);
-            throw new RemoteException("获取失败！", e);
+            throw new RemoteException("获取咨询列表失败！", e);
         }
 
     }
@@ -86,13 +81,7 @@ public class InteractionServiceImpl implements InteractionService {
 
         Map<String, String> params = new HashMap<>();
         params.put("siteId", String.valueOf(param.getSiteId()));
-
-        if (param.getBeginDateTime() != null) {
-            params.put("beginDateTime", param.getBeginDateTime());
-        }
-        if (param.getEndDateTime() != null) {
-            params.put("endDateTime", param.getEndDateTime());
-        }
+        addCond(param, params);
 
         OkHttpClient client = new OkHttpClient();
         try {
@@ -107,11 +96,11 @@ public class InteractionServiceImpl implements InteractionService {
                 return JSON.parseObject(jsonResult, NBHDStatisticsRes.class);
             } else {
                 log.error("failed to countGovmsgboxs, error: " + response);
-                throw new RemoteException("获取失败！");
+                throw new RemoteException("获取咨询统计失败！");
             }
         } catch (IOException e) {
             log.error("failed countGovmsgboxs", e);
-            throw new RemoteException("获取失败！", e);
+            throw new RemoteException("获取咨询统计失败！", e);
         }
     }
 
@@ -121,12 +110,7 @@ public class InteractionServiceImpl implements InteractionService {
 
         params.put("siteId", String.valueOf(param.getSiteId()));
         params.put("solveStatus", String.valueOf(param.getSolveStatus()));
-        if (param.getBeginDateTime() != null) {
-            params.put("beginDateTime", param.getBeginDateTime());
-        }
-        if (param.getEndDateTime() != null) {
-            params.put("endDateTime", param.getEndDateTime());
-        }
+        addCond(param, params);
         if (param.getGranularity() != null) {
             params.put("granularity", String.valueOf(param.getGranularity()));
         }
@@ -144,11 +128,11 @@ public class InteractionServiceImpl implements InteractionService {
                 return JSON.parseObject(jsonResult, NBHDHistoryRes.class);
             } else {
                 log.error("failed to countDetailGovmsgboxs, error: " + response);
-                throw new RemoteException("获取失败！");
+                throw new RemoteException("获取咨询统计历史记录失败！");
             }
         } catch (IOException e) {
             log.error("failed countDetailGovmsgboxs", e);
-            throw new RemoteException("获取失败！", e);
+            throw new RemoteException("获取咨询统计历史记录失败！", e);
         }
     }
 
@@ -160,6 +144,15 @@ public class InteractionServiceImpl implements InteractionService {
                 .setMethodName(methodName)
                 .setUserName(userName)
                 .setParams(params).build();
+    }
+
+    private void addCond(NBHDRequestParam param, Map<String, String> params) {
+        if (param.getBeginDateTime() != null) {
+            params.put("beginDateTime", param.getBeginDateTime());
+        }
+        if (param.getEndDateTime() != null) {
+            params.put("endDateTime", param.getEndDateTime());
+        }
     }
 
 }

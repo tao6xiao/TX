@@ -5,7 +5,7 @@ import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDHistoryRes;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
-import com.trs.gov.kpi.service.InteractionService;
+import com.trs.gov.kpi.service.outer.InteractionService;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

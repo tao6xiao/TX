@@ -1,4 +1,4 @@
-package com.trs.gov.kpi.service;
+package com.trs.gov.kpi.service.outer;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDHistoryRes;
