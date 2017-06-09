@@ -16,7 +16,7 @@ public class StringUtil {
     //String数组转Integer数组
     public static Integer[] stringToIntegerArray(String str) {
         String[] arrayForString = str.split(",");
-        Integer[] arrayForInteger = null;
+        Integer[] arrayForInteger;
         if (arrayForString.length > 1) {
             arrayForInteger = new Integer[arrayForString.length];
             for (int i = 0; i < arrayForString.length; i++) {

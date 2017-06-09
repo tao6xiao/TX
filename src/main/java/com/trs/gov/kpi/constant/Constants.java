@@ -16,4 +16,10 @@ public final class Constants {
     public static final int WANRNING_BEGIN_ID = 51;
 
     public static final int WANRNING_END_ID = 100;
+
+    // 数据库字段名id
+    public static final String DB_FIELD_ID = "id";
+
+    // 数据哭字段名siteId
+    public static final String DB_FIELD_SITE_ID = "siteId";
 }

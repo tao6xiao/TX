@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
+import com.trs.gov.kpi.entity.responsedata.Chnl;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
@@ -178,36 +179,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         // 获取检查参数和频率
         FrequencySetup freqSetup = setupCache.get(curChnl.getChannelId());
         if (freqSetup == null) {
-
-            // 如果父节点存在，则保持一致
-            if (parent.getData() != null) {
-                CheckingChannel parentChecking = parent.getData();
-                newCheckingChannel.setShouldIssueCheck(parentChecking.isShouldIssueCheck());
-                newCheckingChannel.setShouldSelfCheck(parentChecking.isShouldSelfCheck());
-                newCheckingChannel.setBeginDateTime(parentChecking.getBeginDateTime());
-                newCheckingChannel.setCheckDay(parentChecking.getCheckDay());
-                newCheckingChannel.setWarningDay(parentChecking.getWarningDay());
-                newCheckingChannel.setSelfCheckBeginDate(parentChecking.getSelfCheckBeginDate());
-                newCheckingChannel.setSelfCheckDay(parentChecking.getSelfCheckDay());
-            } else {
-                // 设置自查提醒
-                if (defaultUpdateFreq != null) {
-                    newCheckingChannel.setShouldSelfCheck(true);
-                    Date selfCheckBeginDate = DateUtil.nearestPeriodBeginDate(new Date(), BEGIN_CHECK_DAY, defaultUpdateFreq.getValue());
-                    newCheckingChannel.setSelfCheckBeginDate(DateUtil.toString(DateUtil.addDay(selfCheckBeginDate, -1 * defaultUpdateFreq.getValue())));
-                    newCheckingChannel.setSelfCheckDay(defaultUpdateFreq.getValue());
-                }
-            }
+            setCheckingParamsOfDefaultChannel(newCheckingChannel, parent, defaultUpdateFreq);
         } else {
-            // 设置
-            FrequencyPreset preset = presetCache.get(freqSetup.getPresetFeqId());
-            if (preset != null) {
-                newCheckingChannel.setShouldIssueCheck(true);
-                Date checkBeginDate = DateUtil.nearestPeriodBeginDate(new Date(), BEGIN_CHECK_DAY, preset.getUpdateFreq());
-                newCheckingChannel.setBeginDateTime(DateUtil.toString(checkBeginDate));
-                newCheckingChannel.setCheckDay(preset.getUpdateFreq());
-                newCheckingChannel.setWarningDay(preset.getAlertFreq());
-            }
+            setCheckingParamsOfCheckChannel(newCheckingChannel, freqSetup);
         }
 
         SimpleTree.Node<CheckingChannel> child = new SimpleTree.Node<>(parent, newCheckingChannel);
@@ -215,18 +189,79 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
         // 递归添加子栏目
         if (curChnl.isHasChildren()) {
-            // 查询整个栏目
-            final List<Channel> childChannel = siteApiService.getChildChannel(0, curChnl.getChannelId(), "");
-            if (childChannel == null || childChannel.isEmpty()) {
-                return;
-            }
+            recursiveBuildChilds(curChnl, child);
+        }
+    }
 
-            for (Channel chnl : childChannel) {
-                try {
-                    recursiveBuildChannelTree(chnl, child);
-                } catch (Exception e) {
-                    log.error("", e);
-                }
+    /**
+     * 递归构建子栏目检查树
+     *
+     * @param curChnl
+     * @param parent
+     * @throws RemoteException
+     */
+    private void recursiveBuildChilds(Channel curChnl, SimpleTree.Node<CheckingChannel> parent) throws RemoteException {
+        // 查询子栏目
+        final List<Channel> childChannel = siteApiService.getChildChannel(0, curChnl.getChannelId(), "");
+        if (childChannel == null || childChannel.isEmpty()) {
+            return;
+        }
+
+        for (Channel channel : childChannel) {
+            try {
+                recursiveBuildChannelTree(channel, parent);
+            } catch (Exception e) {
+                log.error("", e);
+            }
+        }
+    }
+
+    /**
+     * 为设置了检测频率的栏目设置检测参数
+     *
+     * @param newCheckingChannel
+     * @param freqSetup
+     * @throws ParseException
+     */
+    private void setCheckingParamsOfCheckChannel(CheckingChannel newCheckingChannel, FrequencySetup freqSetup) throws ParseException {
+        // 设置
+        FrequencyPreset preset = presetCache.get(freqSetup.getPresetFeqId());
+        if (preset != null) {
+            newCheckingChannel.setShouldIssueCheck(true);
+            Date checkBeginDate = DateUtil.nearestPeriodBeginDate(new Date(), BEGIN_CHECK_DAY, preset.getUpdateFreq());
+            newCheckingChannel.setBeginDateTime(DateUtil.toString(checkBeginDate));
+            newCheckingChannel.setCheckDay(preset.getUpdateFreq());
+            newCheckingChannel.setWarningDay(preset.getAlertFreq());
+        } else {
+            log.error("freq setup data is invalid! freqId[" + freqSetup.getPresetFeqId() + "] doesn't have preset");
+        }
+    }
+
+    /**
+     * 为没有设置预警的栏目创建检测的相关参数
+     *
+     * @param newCheckingChannel
+     * @param parent
+     * @param defaultUpdateFreq
+     */
+    private void setCheckingParamsOfDefaultChannel(CheckingChannel newCheckingChannel, SimpleTree.Node<CheckingChannel> parent, DefaultUpdateFreq defaultUpdateFreq) throws ParseException {
+        // 如果父节点存在，则保持一致
+        if (parent.getData() != null) {
+            CheckingChannel parentChecking = parent.getData();
+            newCheckingChannel.setShouldIssueCheck(parentChecking.isShouldIssueCheck());
+            newCheckingChannel.setShouldSelfCheck(parentChecking.isShouldSelfCheck());
+            newCheckingChannel.setBeginDateTime(parentChecking.getBeginDateTime());
+            newCheckingChannel.setCheckDay(parentChecking.getCheckDay());
+            newCheckingChannel.setWarningDay(parentChecking.getWarningDay());
+            newCheckingChannel.setSelfCheckBeginDate(parentChecking.getSelfCheckBeginDate());
+            newCheckingChannel.setSelfCheckDay(parentChecking.getSelfCheckDay());
+        } else {
+            // 设置自查提醒
+            if (defaultUpdateFreq != null) {
+                newCheckingChannel.setShouldSelfCheck(true);
+                Date selfCheckBeginDate = DateUtil.nearestPeriodBeginDate(new Date(), BEGIN_CHECK_DAY, defaultUpdateFreq.getValue());
+                newCheckingChannel.setSelfCheckBeginDate(DateUtil.toString(DateUtil.addDay(selfCheckBeginDate, -1 * defaultUpdateFreq.getValue())));
+                newCheckingChannel.setSelfCheckDay(defaultUpdateFreq.getValue());
             }
         }
     }
@@ -242,49 +277,78 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             return;
         }
 
-        CheckingChannel checkingChannel = root.getData();
-        if (checkingChannel.getChannel() != null) {
-
-            boolean isUpdated = false;
-            if (checkingChannel.isShouldIssueCheck()) {
-                isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getBeginDateTime());
-                // 检查超时未更新和预警
-                if (!isUpdated) {
-                    // 本周期未更新，就看一下上个周期是否更新不及时
-                    boolean isPrevPeroidUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getPrevPeroidBeginDate());
-                    Date now = new Date();
-                    if (isPrevPeroidUpdated) {
-                        // 上一个周期已经更新了，检查是否需要预警
-                        Date beginWarningDate = DateUtil.addDay(DateUtil.toDate(checkingChannel.getBeginDateTime()), checkingChannel.getCheckDay()-checkingChannel.getWarningDay());
-                        if (now.compareTo(beginWarningDate) >= 0) {
-                            checkingChannel.setWarning(true);
-                        }
-                    } else {
-                        // 上一个周期就没有更新，那么就是更新不及时
-                        checkingChannel.setIssue(true);
-                    }
-                } else {
-                    // 本周期已经更新了，就不存在更新不及时和预警问题啊
-                }
-            }
-
-            if (checkingChannel.isShouldSelfCheck()) {
-                // 前一个周期已经更新，才对当前周期做自查更新
-                isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getSelfCheckBeginDate());
-                if (!isUpdated) {
-                    // 上一个周期开始都没有更新则这个周期开始，就要提醒
-                    checkingChannel.setSelfWarning(true);
-                } else {
-                    // 已经更新，就不用提醒了
-                }
-            }
-        }
+        judgeIssueOrWarning(root.getData());
 
         List<SimpleTree.Node<CheckingChannel>> children = root.getChildren();
         if (children != null && !children.isEmpty()) {
             for (SimpleTree.Node<CheckingChannel> node : children) {
                 checkChannelTreeUpdate(node);
             }
+        }
+    }
+
+
+    /**
+     * 判定是否为问题还是预警
+     *
+     * @param checkingChannel
+     */
+    private void judgeIssueOrWarning(CheckingChannel checkingChannel) throws ParseException {
+
+        if (checkingChannel == null || checkingChannel.getChannel() == null) {
+            return;
+        }
+
+        if (checkingChannel.isShouldIssueCheck()) {
+            judgeIssueCheckResult(checkingChannel);
+        }
+
+        if (checkingChannel.isShouldSelfCheck()) {
+            judgeSelfCheckResult(checkingChannel);
+        }
+    }
+
+    /**
+     * 判定自查提醒检查结果
+     *
+     * @param checkingChannel
+     */
+    private void judgeSelfCheckResult(CheckingChannel checkingChannel) {
+        // 前一个周期已经更新，才对当前周期做自查更新
+        boolean isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getSelfCheckBeginDate());
+        if (!isUpdated) {
+            // 上一个周期开始都没有更新则这个周期开始，就要提醒
+            checkingChannel.setSelfWarning(true);
+        } else {
+            // 已经更新，就不用提醒了
+        }
+    }
+
+    /**
+     * 判定错误监测的结果
+     *
+     * @param checkingChannel
+     * @throws ParseException
+     */
+    private void judgeIssueCheckResult(CheckingChannel checkingChannel) throws ParseException {
+        boolean isUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getBeginDateTime());
+        // 检查超时未更新和预警
+        if (!isUpdated) {
+            // 本周期未更新，就看一下上个周期是否更新不及时
+            boolean isPrevPeroidUpdated = isChannelUpdated(checkingChannel.getChannel().getChannelId(), checkingChannel.getPrevPeroidBeginDate());
+            Date now = new Date();
+            if (isPrevPeroidUpdated) {
+                // 上一个周期已经更新了，检查是否需要预警
+                Date beginWarningDate = DateUtil.addDay(DateUtil.toDate(checkingChannel.getBeginDateTime()), checkingChannel.getCheckDay()-checkingChannel.getWarningDay());
+                if (now.compareTo(beginWarningDate) >= 0) {
+                    checkingChannel.setWarning(true);
+                }
+            } else {
+                // 上一个周期就没有更新，那么就是更新不及时
+                checkingChannel.setIssue(true);
+            }
+        } else {
+            // 本周期已经更新了，就不存在更新不及时和预警问题啊
         }
     }
 
@@ -351,37 +415,51 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * @param node
      */
     private void insertOneCheckingChannel(SimpleTree.Node<CheckingChannel> node) {
-        if (node == null) {
+        if (node == null || node.getData() == null || node.getData().getChannel() == null) {
             return;
         }
 
-        if (node.getData() != null && node.getData().getChannel() != null) {
-            CheckingChannel checking = node.getData();
-            if (checking.isShouldIssueCheck()
-                    && setupCache.get(checking.getChannel().getChannelId()) != null) {
+        CheckingChannel checking = node.getData();
+        if (checking.isShouldIssueCheck() && hasSetup(checking.getChannel())) {
+            insertUpdateIssue(checking, node);
+        } else if (checking.isShouldSelfCheck() && checking.isSelfWarning()) {
+            // 插入一条自查提醒
+            insertToDB(checking.getChannel().getChannelId(),
+                    Types.IssueType.INFO_UPDATE_WARNING.value,
+                    Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
+        }
+    }
 
-                if (checking.isIssue()) {
-                    // 查看子栏目是否更新了，如果子栏目更新，则父栏目也算更新了
-                    if (!isChildChannelUpdated(node)) {
-                        // 插入一条更新不及时的记录
-                        insertToDB(checking.getChannel().getChannelId(),
-                                Types.IssueType.INFO_UPDATE_ISSUE.value,
-                                Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-                    }
-                } else if (checking.isWarning()) {
-                    insertToDB(checking.getChannel().getChannelId(),
-                            Types.IssueType.INFO_UPDATE_WARNING.value,
-                            Types.InfoUpdateWarningType.UPDATE_WARNING.value);
-                } else {
-                    // 父栏目有更新，无预警，不插入任何记录
-                }
+    /**
+     * 判定栏目是否设置了监测频率
+     * @param channel
+     * @return
+     */
+    private boolean hasSetup(Channel channel) {
+        return setupCache.get(channel.getChannelId()) != null;
+    }
 
-            } else if (checking.isShouldSelfCheck() && checking.isSelfWarning()) {
-                // 插入一条自查提醒
+    /**
+     * 插入更新问题
+     *
+     * @param checking
+     * @param node
+     */
+    private void insertUpdateIssue(CheckingChannel checking, SimpleTree.Node<CheckingChannel> node) {
+        if (checking.isIssue()) {
+            // 查看子栏目是否更新了，如果子栏目更新，则父栏目也算更新了
+            if (!isChildChannelUpdated(node)) {
+                // 插入一条更新不及时的记录
                 insertToDB(checking.getChannel().getChannelId(),
-                        Types.IssueType.INFO_UPDATE_WARNING.value,
-                        Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
+                        Types.IssueType.INFO_UPDATE_ISSUE.value,
+                        Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
             }
+        } else if (checking.isWarning()) {
+            insertToDB(checking.getChannel().getChannelId(),
+                    Types.IssueType.INFO_UPDATE_WARNING.value,
+                    Types.InfoUpdateWarningType.UPDATE_WARNING.value);
+        } else {
+            // 父栏目有更新，无预警，不插入任何记录
         }
     }
 

@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.entity.dao;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 
@@ -11,11 +12,12 @@ import java.util.List;
  */
 public enum Table {
 
-    ISSUE("issue", Arrays.asList("id", "siteId", "typeId", "subTypeId",
+    ISSUE("issue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "typeId", "subTypeId",
             "detail", "issueTime", "isResolved", "isDel", "workOrderStatus", "customer1", "customer2", "customer3")),
-    WEB_PAGE("webpage", Arrays.asList("id", "siteId", "typeId", "chnlId",
+    WEB_PAGE("webpage", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "typeId", "chnlId",
             "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel")),
-    FREQ_SETUP("frequencysetup", Arrays.asList("id", "siteId", "presetFeqId", "chnlId", "setTime", "isOpen"));
+    FREQ_SETUP("frequencysetup", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "presetFeqId", "chnlId", "setTime", "isOpen"));
+
 
     // 表名
     @Getter
