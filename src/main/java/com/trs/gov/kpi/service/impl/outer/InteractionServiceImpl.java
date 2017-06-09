@@ -31,14 +31,16 @@ public class InteractionServiceImpl implements InteractionService {
     @Value("${service.outer.nbhd.url}")
     private String nbhdServiceUrl;
 
-    private final static String govMsgboxServiceName = "openGovmsgbox";
+    private final static String GOVMSGBOX_SERVICE_NAME = "openGovmsgbox";
+
+    private final static String SITE_ID = "siteId";
 
     @Override
     public NBHDPageDataResult getGovMsgBoxes(NBHDRequestParam param) throws RemoteException {
 
 
         Map<String, String> params = new HashMap<>();
-        params.put("siteId", String.valueOf(param.getSiteId()));
+        params.put(SITE_ID, String.valueOf(param.getSiteId()));
         if (param.getPageIndex() != null) {
             params.put("pageIndex", String.valueOf(param.getPageIndex()));
         }
@@ -56,7 +58,7 @@ public class InteractionServiceImpl implements InteractionService {
         OkHttpClient client = new OkHttpClient();
         try {
             Response response = client.newCall(
-                    buildRequest("listGovmsgboxs", govMsgboxServiceName, param.getUserName(), params)).execute();
+                    buildRequest("listGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
 
             if (response.isSuccessful()) {
                 String jsonResult = response.body().toString();
@@ -80,13 +82,13 @@ public class InteractionServiceImpl implements InteractionService {
 
 
         Map<String, String> params = new HashMap<>();
-        params.put("siteId", String.valueOf(param.getSiteId()));
+        params.put(SITE_ID, String.valueOf(param.getSiteId()));
         addCond(param, params);
 
         OkHttpClient client = new OkHttpClient();
         try {
             Response response = client.newCall(
-                    buildRequest("countGovmsgboxs", govMsgboxServiceName, param.getUserName(), params)).execute();
+                    buildRequest("countGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
 
             if (response.isSuccessful()) {
                 String jsonResult = response.body().toString();
@@ -108,7 +110,7 @@ public class InteractionServiceImpl implements InteractionService {
     public NBHDHistoryRes getGovMsgHistoryCount(NBHDRequestParam param) throws RemoteException {
         Map<String, String> params = new HashMap<>();
 
-        params.put("siteId", String.valueOf(param.getSiteId()));
+        params.put(SITE_ID, String.valueOf(param.getSiteId()));
         params.put("solveStatus", String.valueOf(param.getSolveStatus()));
         addCond(param, params);
         if (param.getGranularity() != null) {
@@ -118,7 +120,7 @@ public class InteractionServiceImpl implements InteractionService {
         OkHttpClient client = new OkHttpClient();
         try {
             Response response = client.newCall(
-                    buildRequest("countDetailGovmsgboxs", govMsgboxServiceName, param.getUserName(), params)).execute();
+                    buildRequest("countDetailGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
 
             if (response.isSuccessful()) {
                 String jsonResult = response.body().toString();
