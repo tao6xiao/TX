@@ -99,11 +99,11 @@ public class IssueCountServiceImpl implements IssueCountService {
         historyResponseList.add(historyResponse);
 
         //待解决预警
-         historyResponse = buildHistoryResponse(IssueIndicator.WARNING, dateList, siteIds);
+        historyResponse = buildHistoryResponse(IssueIndicator.WARNING, dateList, siteIds);
         historyResponseList.add(historyResponse);
 
-        //已解决问题和预警
-        historyResponse = buildHistoryResponse(IssueIndicator.SOLVED_ALL, dateList, siteIds);
+        //待解决问题和预警
+        historyResponse = buildHistoryResponse(IssueIndicator.UN_SOLVED_ALL, dateList, siteIds);
         historyResponseList.add(historyResponse);
 
         return historyResponseList;
@@ -123,19 +123,14 @@ public class IssueCountServiceImpl implements IssueCountService {
                 filter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
                 filter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
                 filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-                if (type == IssueIndicator.UN_SOLVED_ISSUE || type == IssueIndicator.WARNING) {
-                    filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-                    if (type == IssueIndicator.UN_SOLVED_ISSUE) {
-                        filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
-                        filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_END_ID).setRangeEnd(true);
-                    } else {
-                        filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_BEGIN_ID).setRangeBegin(true);
-                        filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_END_ID).setRangeEnd(true);
-                    }
-                } else if (type == IssueIndicator.SOLVED_ALL) {
-                    filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
+                filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+                if (type == IssueIndicator.UN_SOLVED_ISSUE) {
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_END_ID).setRangeEnd(true);
+                } else if (type == IssueIndicator.WARNING) {
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_BEGIN_ID).setRangeBegin(true);
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_END_ID).setRangeEnd(true);
                 }
-
                 count = count + issueMapper.count(filter);
             }
             historyStatistics.setValue(count);
