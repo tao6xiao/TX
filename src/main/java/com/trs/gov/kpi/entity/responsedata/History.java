@@ -14,4 +14,10 @@ public class History {
     private Date checkTime;
 
     private List data;
+
+    public History(Date checkTime, List data){
+        this.checkTime = checkTime;
+        this.data = data;
+
+    }
 }

@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
-import com.trs.gov.kpi.entity.responsedata.IssueHistoryCountResponse;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.util.List;
@@ -24,5 +24,5 @@ public interface IssueCountService {
      * @param request
      * @return
      */
-    List<IssueHistoryCountResponse> historyCountSort(IssueCountRequest request);
+    History historyCountSort(IssueCountRequest request);
 }

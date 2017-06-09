@@ -1,11 +1,15 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.IssueIndicator;
+import com.trs.gov.kpi.constant.IssueTableField;
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.IssueHistoryCountResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -86,7 +91,7 @@ public class IssueCountServiceImpl implements IssueCountService {
     }
 
     @Override
-    public List<IssueHistoryCountResponse> historyCountSort(IssueCountRequest request) {
+    public History historyCountSort(IssueCountRequest request) {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
         request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
@@ -106,7 +111,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         historyResponse = buildHistoryResponse(IssueIndicator.UN_SOLVED_ALL, dateList, siteIds);
         historyResponseList.add(historyResponse);
 
-        return historyResponseList;
+        return new History(new Date(), historyResponseList);
     }
 
     private IssueHistoryCountResponse buildHistoryResponse(IssueIndicator type, List<HistoryDate> dateList, Integer[] siteIds) {

@@ -2,7 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
-import com.trs.gov.kpi.entity.responsedata.IssueHistoryCountResponse;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -44,7 +44,7 @@ public class IssueCountController {
      */
     @RequestMapping(value = "/count/history",method = RequestMethod.GET)
     @ResponseBody
-    public List<IssueHistoryCountResponse> historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
+    public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
         ParamCheckUtil.paramCheck(request);
         return countService.historyCountSort(request);
     }
