@@ -4,7 +4,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.text.ParseException;
@@ -17,7 +17,7 @@ public interface InfoUpdateService {
 
     List<Statistics> getIssueCount(PageDataRequestParam param);
 
-    List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
+    History getIssueHistoryCount(PageDataRequestParam param);
 
     /**
      * 获取栏目信息更新不及时问题的统计信息

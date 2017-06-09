@@ -81,7 +81,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
+    public History getIssueHistoryCount(PageDataRequestParam param) {
 
         param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
@@ -99,7 +99,11 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return list;
+        History history = new History();
+        history.setData(list);
+        history.setCheckTime(new Date());
+
+        return history;
     }
 
     @Override
