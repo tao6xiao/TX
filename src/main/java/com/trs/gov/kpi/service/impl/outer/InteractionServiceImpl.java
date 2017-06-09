@@ -31,9 +31,9 @@ public class InteractionServiceImpl implements InteractionService {
     @Value("${service.outer.nbhd.url}")
     private String nbhdServiceUrl;
 
-    private final static String GOVMSGBOX_SERVICE_NAME = "openGovmsgbox";
+    private static final String GOVMSGBOX_SERVICE_NAME = "openGovmsgbox";
 
-    private final static String SITE_ID = "siteId";
+    private static final String SITE_ID = "siteId";
 
     @Override
     public NBHDPageDataResult getGovMsgBoxes(NBHDRequestParam param) throws RemoteException {
