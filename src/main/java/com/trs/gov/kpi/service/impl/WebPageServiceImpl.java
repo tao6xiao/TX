@@ -60,7 +60,7 @@ public class WebPageServiceImpl implements WebPageService {
             replySpeedResponse.setChnlName(getChannelName(replySpeed.getChnlId()));
             replySpeedResponse.setPageLink(replySpeed.getPageLink());
             replySpeedResponse.setReplySpeed(replySpeed.getSpeed());
-            replySpeedResponse.setPageSpace(replySpeed.getPageSpace());
+            replySpeedResponse.setPageSpace(replySpeed.getSpeed());
             replySpeedResponse.setCheckTime(replySpeed.getCheckTime());
             replySpeedResponseList.add(replySpeedResponse);
         }
@@ -90,7 +90,7 @@ public class WebPageServiceImpl implements WebPageService {
             pageSpaceResponse.setId(pageSpace.getId());
             pageSpaceResponse.setChnlName(getChannelName(pageSpace.getChnlId()));
             pageSpaceResponse.setPageLink(pageSpace.getPageLink());
-            pageSpaceResponse.setReplySpeed(pageSpace.getReplySpeed());
+            pageSpaceResponse.setReplySpeed(pageSpace.getSpeed());
             pageSpaceResponse.setPageSpace(pageSpace.getSpace());
             pageSpaceResponse.setCheckTime(pageSpace.getCheckTime());
             pageSpaceResponseList.add(pageSpaceResponse);
@@ -137,7 +137,7 @@ public class WebPageServiceImpl implements WebPageService {
             pageDepthResponse.setChnlName(getChannelName(pageDepth.getChnlId()));
             pageDepthResponse.setPageLink(pageDepth.getPageLink());
             pageDepthResponse.setPageDepth(pageDepth.getDepth());
-            pageDepthResponse.setPageSpace(pageDepth.getPageSpace());
+            pageDepthResponse.setPageSpace(pageDepth.getSpace());
             pageDepthResponse.setCheckTime(pageDepth.getCheckTime());
             pageDepthResponseList.add(pageDepthResponse);
         }
@@ -229,7 +229,7 @@ public class WebPageServiceImpl implements WebPageService {
             urlLengthResponse.setChnlName(getChannelName(urlLength.getChnlId()));
             urlLengthResponse.setPageLink(urlLength.getPageLink());
             urlLengthResponse.setUrlLength(urlLength.getLength());
-            urlLengthResponse.setPageSpace(urlLength.getPageSpace());
+            urlLengthResponse.setPageSpace(urlLength.getSpace());
             urlLengthResponse.setCheckTime(urlLength.getCheckTime());
             urlLengthResponseList.add(urlLengthResponse);
         }

@@ -18,7 +18,7 @@ public class PageDepth {
 
     private Integer depth;
 
-    private String pageSpace;
+    private String space;
 
     private Date checkTime;
 }

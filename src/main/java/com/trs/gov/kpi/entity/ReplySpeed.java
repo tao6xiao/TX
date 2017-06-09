@@ -18,7 +18,7 @@ public class ReplySpeed {
 
     private String speed;
 
-    private String pageSpace;
+    private String space;
 
     private Date checkTime;
 }

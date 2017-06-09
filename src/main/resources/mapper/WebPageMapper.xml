@@ -5,8 +5,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
-        <result column="replySpeed" jdbcType="VARCHAR" property="replySpeed"/>
-        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="replySpeed" jdbcType="VARCHAR" property="speed"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
@@ -14,8 +14,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
-        <result column="replySpeed" jdbcType="VARCHAR" property="replySpeed"/>
-        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="replySpeed" jdbcType="VARCHAR" property="speed"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
@@ -23,8 +23,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
-        <result column="pageDepth" jdbcType="INTEGER" property="pageDepth"/>
-        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="pageDepth" jdbcType="INTEGER" property="depth"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
@@ -41,8 +41,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
-        <result column="urlLength" jdbcType="VARCHAR" property="urlLength"/>
-        <result column="pageSpace" jdbcType="VARCHAR" property="pageSpace"/>
+        <result column="urlLength" jdbcType="VARCHAR" property="length"/>
+        <result column="pageSpace" jdbcType="VARCHAR" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
