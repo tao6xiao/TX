@@ -93,7 +93,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
+    public History getIssueHistoryCount(PageDataRequestParam param) {
         if (StringUtil.isEmpty(param.getBeginDateTime())) {
             param.setBeginDateTime(DateUtil.toString(issueMapper.getEarliestIssueTime()));
         }
@@ -113,7 +113,11 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
         }
-        return list;
+        History history = new History();
+        history.setData(list);
+        history.setCheckTime(new Date());
+
+        return history;
     }
 
     /**

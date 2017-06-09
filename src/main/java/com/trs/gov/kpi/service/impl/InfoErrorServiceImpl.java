@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -74,7 +75,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
     @Override
-    public List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param) {
+    public History getIssueHistoryCount(PageDataRequestParam param) {
 
         param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
@@ -91,7 +92,11 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             historyStatistics.setTime(date.getMonth());
             list.add(historyStatistics);
         }
-        return list;
+        History history = new History();
+        history.setData(list);
+        history.setCheckTime(new Date());
+
+        return history;
     }
 
     @Override
@@ -161,7 +166,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public InfoErrorOrderRes getInfoErrorOrderById(WorkOrderRequest request) throws RemoteException {
 
-        QueryFilter filter = QueryFilterHelper.toFilter(request,siteApiService);
+        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
         filter.addCond(IssueTableField.ID, request.getId());
 
         List<InfoErrorOrder> infoErrorOrderList = issueMapper.selectInfoErrorOrder(filter);

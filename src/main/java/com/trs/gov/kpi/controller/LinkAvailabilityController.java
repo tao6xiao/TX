@@ -4,7 +4,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -63,7 +63,7 @@ public class LinkAvailabilityController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
 

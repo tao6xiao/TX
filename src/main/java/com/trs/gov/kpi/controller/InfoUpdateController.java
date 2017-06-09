@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -42,7 +43,7 @@ public class InfoUpdateController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public List getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
         ParamCheckUtil.paramCheck(param);
         return infoUpdateService.getIssueHistoryCount(param);
     }

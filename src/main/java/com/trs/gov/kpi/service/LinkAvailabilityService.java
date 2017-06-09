@@ -12,7 +12,7 @@ import java.util.List;
 public interface LinkAvailabilityService {
 
 
-    List<HistoryStatistics> getIssueHistoryCount(PageDataRequestParam param);
+    History getIssueHistoryCount(PageDataRequestParam param);
 
     ApiPageData getIssueList(PageDataRequestParam param);
 
