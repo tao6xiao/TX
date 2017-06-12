@@ -16,6 +16,7 @@ import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
+import com.trs.gov.kpi.utils.ChnlCheckUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -237,7 +238,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         InfoUpdateResponse infoUpdateResponse = null;
         for (InfoUpdate infoUpdate : infoUpdateList) {
             infoUpdateResponse = new InfoUpdateResponse();
-            infoUpdateResponse.setChnlName(getChannelName(infoUpdate.getChnlId()));
+            infoUpdateResponse.setChnlName(ChnlCheckUtil.getChannelName(infoUpdate.getChnlId(), siteApiService));
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
@@ -250,26 +251,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             responseList.add(infoUpdateResponse);
         }
         return responseList;
-    }
-
-    private String getChannelName(Integer channelId) {
-        if (channelId == null) {
-            return "";
-        }
-        Channel channel = null;
-        try {
-            channel = siteApiService.getChannelById(channelId, null);
-        } catch (RemoteException e) {
-            log.error("", e);
-        }
-        return checkChannelName(channel);
-    }
-
-    private String checkChannelName(Channel channel) {
-        if (channel == null || channel.getChnlName() == null) {
-            return "";
-        }
-        return channel.getChnlName();
     }
 
     private Statistics getStatisticsByCount(int i, int count) {
@@ -295,7 +276,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
             InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
             infoUpdateOrderRes.setId(infoUpdateOrder.getId());
-            infoUpdateOrderRes.setChnlName(getChannelName(infoUpdateOrder.getChnlId()));
+            infoUpdateOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
             infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
             infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
 //            infoUpdateOrderRes.setDepartment();TODO

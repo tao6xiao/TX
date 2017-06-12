@@ -10,13 +10,13 @@ import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.InfoErrorOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.ChnlCheckUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -144,7 +144,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
             InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();
             infoErrorOrderRes.setId(infoErrorOrder.getId());
-            infoErrorOrderRes.setChnlName(getChannelName(infoErrorOrder.getChnlId()));
+            infoErrorOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
             infoErrorOrderRes.setSiteName(siteApiService.getSiteById(infoErrorOrder.getSiteId(), null).getSiteDesc());
             infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
 //            infoErrorOrderRes.setDepartment();TODO
@@ -169,7 +169,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();
         for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
             infoErrorOrderRes.setId(infoErrorOrder.getId());
-            infoErrorOrderRes.setChnlName(getChannelName(infoErrorOrder.getChnlId()));
+            infoErrorOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
             infoErrorOrderRes.setSiteName(siteApiService.getSiteById(infoErrorOrder.getSiteId(), null).getSiteDesc());
             infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
 //            infoErrorOrderRes.setDepartment();TODO
@@ -181,25 +181,5 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         }
 
         return infoErrorOrderRes;
-    }
-
-    private String getChannelName(Integer channelId) {
-        if (channelId == null) {
-            return "";
-        }
-        Channel channel = null;
-        try {
-            channel = siteApiService.getChannelById(channelId, null);
-        } catch (RemoteException e) {
-            log.error("", e);
-        }
-        return checkChannelName(channel);
-    }
-
-    private String checkChannelName(Channel channel) {
-        if (channel == null || channel.getChnlName() == null) {
-            return "";
-        }
-        return channel.getChnlName();
     }
 }

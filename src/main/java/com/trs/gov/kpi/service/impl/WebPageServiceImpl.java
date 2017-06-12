@@ -7,12 +7,12 @@ import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.ChnlCheckUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class WebPageServiceImpl implements WebPageService {
         for (ReplySpeed replySpeed : replySpeedList) {
             ReplySpeedResponse replySpeedResponse = new ReplySpeedResponse();
             replySpeedResponse.setId(replySpeed.getId());
-            replySpeedResponse.setChnlName(getChannelName(replySpeed.getChnlId()));
+            replySpeedResponse.setChnlName(ChnlCheckUtil.getChannelName(replySpeed.getChnlId(), siteApiService));
             replySpeedResponse.setPageLink(replySpeed.getPageLink());
             replySpeedResponse.setReplySpeed(replySpeed.getSpeed());
             replySpeedResponse.setPageSpace(replySpeed.getSpeed());
@@ -88,7 +88,7 @@ public class WebPageServiceImpl implements WebPageService {
         for (PageSpace pageSpace : pageSpaceList) {
             PageSpaceResponse pageSpaceResponse = new PageSpaceResponse();
             pageSpaceResponse.setId(pageSpace.getId());
-            pageSpaceResponse.setChnlName(getChannelName(pageSpace.getChnlId()));
+            pageSpaceResponse.setChnlName(ChnlCheckUtil.getChannelName(pageSpace.getChnlId(), siteApiService));
             pageSpaceResponse.setPageLink(pageSpace.getPageLink());
             pageSpaceResponse.setReplySpeed(pageSpace.getSpeed());
             pageSpaceResponse.setPageSpace(pageSpace.getSpace());
@@ -134,7 +134,7 @@ public class WebPageServiceImpl implements WebPageService {
         for (PageDepth pageDepth : pageDepthList) {
             PageDepthResponse pageDepthResponse = new PageDepthResponse();
             pageDepthResponse.setId(pageDepth.getId());
-            pageDepthResponse.setChnlName(getChannelName(pageDepth.getChnlId()));
+            pageDepthResponse.setChnlName(ChnlCheckUtil.getChannelName(pageDepth.getChnlId(), siteApiService));
             pageDepthResponse.setPageLink(pageDepth.getPageLink());
             pageDepthResponse.setPageDepth(pageDepth.getDepth());
             pageDepthResponse.setPageSpace(pageDepth.getSpace());
@@ -180,7 +180,7 @@ public class WebPageServiceImpl implements WebPageService {
         for (RepeatCode repeatCode : repeatCodeList) {
             RepeatCodeResponse repeatCodeResponse = new RepeatCodeResponse();
             repeatCodeResponse.setId(repeatCode.getId());
-            repeatCodeResponse.setChnlName(getChannelName(repeatCode.getChnlId()));
+            repeatCodeResponse.setChnlName(ChnlCheckUtil.getChannelName(repeatCode.getChnlId(), siteApiService));
             repeatCodeResponse.setRepeatPlace(repeatCode.getRepeatPlace());
             repeatCodeResponse.setRepeatDegree(repeatCode.getRepeatDegree());
             repeatCodeResponse.setUpdateTime(repeatCode.getUpdateTime());
@@ -226,7 +226,7 @@ public class WebPageServiceImpl implements WebPageService {
         for (UrlLength urlLength : urlLengthList) {
             UrlLengthResponse urlLengthResponse = new UrlLengthResponse();
             urlLengthResponse.setId(urlLength.getId());
-            urlLengthResponse.setChnlName(getChannelName(urlLength.getChnlId()));
+            urlLengthResponse.setChnlName(ChnlCheckUtil.getChannelName(urlLength.getChnlId(), siteApiService));
             urlLengthResponse.setPageLink(urlLength.getPageLink());
             urlLengthResponse.setUrlLength(urlLength.getLength());
             urlLengthResponse.setPageSpace(urlLength.getSpace());
@@ -257,26 +257,6 @@ public class WebPageServiceImpl implements WebPageService {
         return webPageMapper.getEarliestCheckTime();
     }
 
-
-    private String getChannelName(Integer channelId) {
-        if (channelId == null) {
-            return "";
-        }
-        Channel channel = null;
-        try {
-            channel = siteApiService.getChannelById(channelId, null);
-        } catch (RemoteException e) {
-            log.error("", e);
-        }
-        return checkChannelName(channel);
-    }
-
-    private String checkChannelName(Channel channel) {
-        if (channel == null || channel.getChnlName() == null) {
-            return "";
-        }
-        return channel.getChnlName();
-    }
 
     @Override
     public void handlePageByIds(int siteId, List<Integer> ids) {
