@@ -128,7 +128,7 @@ public class DateUtil {
                     initCalender.set(Calendar.DAY_OF_MONTH, 1);//取当月的第一天
                     firstDay = sdf.format(initCalender.getTime());
 
-                    endCalendar.add(Calendar.DAY_OF_MONTH, 1);//取下个月的第一天
+                    endCalendar.add(Calendar.DAY_OF_MONTH, 1);//增加一天，避免查询时最后一天查不到的情况
                     lastDay = sdf.format(endCalendar.getTime());
 
                     historyDate.setBeginDate(firstDay);
@@ -140,7 +140,7 @@ public class DateUtil {
 
                     initCalender.set(Calendar.DAY_OF_MONTH, currBegin
                             .getActualMaximum(Calendar.DAY_OF_MONTH));
-                    initCalender.add(Calendar.DAY_OF_MONTH, 1);
+                    initCalender.add(Calendar.DAY_OF_MONTH, 1);//增加一天，让结束日期为下个月的第一天，避免查询时最后一天查不到的情况
                     lastDay = sdf.format(initCalender.getTime());
 
                     historyDate.setBeginDate(firstDay);
@@ -179,15 +179,15 @@ public class DateUtil {
     /**
      * 获取离指定时间最近的这个周期的起始时间
      *
-     * @param date 指定的时间
-     * @param beginDate 周期计算的起始时间
+     * @param date        指定的时间
+     * @param beginDate   周期计算的起始时间
      * @param intervalDay 周期间隔时间，天为单位
      * @return
      */
     public static Date nearestPeriodBeginDate(@NonNull Date date, @NonNull String beginDate, int intervalDay) throws ParseException {
         long beginTime = toDate(beginDate).getTime();
         long endTime = date.getTime();
-        int periods = (int)((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
+        int periods = (int) ((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
         return new Date(beginTime + intervalDay * periods * MS_ONE_DAY);
     }
 

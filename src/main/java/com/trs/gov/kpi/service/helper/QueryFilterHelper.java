@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.helper;
 
 import com.trs.gov.kpi.constant.IssueTableField;
+import com.trs.gov.kpi.constant.ReportTableField;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
@@ -15,10 +16,13 @@ import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -352,6 +356,24 @@ public class QueryFilterHelper {
             }
         }
         return ids;
+    }
+
+    public static QueryFilter toReportFilter(PageDataRequestParam param) throws ParseException {
+        QueryFilter filter = new QueryFilter(Table.REPORT);
+        if (param.getSiteId() != null) {
+            filter.addCond(ReportTableField.SITE_ID, param.getSiteId());
+        }
+        filter.addCond(ReportTableField.REPORT_TIME, param.getBeginDateTime()).setRangeBegin(true);
+        if (StringUtil.isEmpty(param.getEndDateTime())) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(DateUtil.toDate(param.getBeginDateTime()));
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            filter.addCond(ReportTableField.REPORT_TIME, DateUtil.toString(calendar.getTime())).setRangeEnd(true);
+        } else {
+            filter.addCond(ReportTableField.REPORT_TIME, param.getEndDateTime()).setRangeEnd(true);
+        }
+
+        return filter;
     }
 
 }
