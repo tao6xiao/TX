@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by linwei on 2017/5/22.
  */
-public class PageDataRequestParam {
+public class PageDataRequestParam extends DateRangeRequest {
 
     /**
      * 问题编号
@@ -19,10 +19,6 @@ public class PageDataRequestParam {
 
     @NotNull
     private Integer siteId;
-
-    private String beginDateTime;
-
-    private String endDateTime;
 
     private String searchField;
 
@@ -40,28 +36,6 @@ public class PageDataRequestParam {
 
     public void setSiteId(Integer siteId) {
         this.siteId = siteId;
-    }
-
-    public String getBeginDateTime() {
-        return beginDateTime;
-    }
-
-    public void setBeginDateTime(String beginDateTime) {
-        if (beginDateTime != null && beginDateTime.trim().isEmpty()) {
-            return;
-        }
-        this.beginDateTime = beginDateTime;
-    }
-
-    public String getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(String endDateTime) {
-        if (endDateTime != null && endDateTime.trim().isEmpty()) {
-            return;
-        }
-        this.endDateTime = endDateTime;
     }
 
     public String getSearchField() {
