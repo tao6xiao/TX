@@ -17,8 +17,9 @@ public final class Types {
         LINK_AVAILABLE_ISSUE(1, "可用性问题"),
         INFO_UPDATE_ISSUE(2, "信息更新问题"),
         INFO_ERROR_ISSUE(3, "信息错误"),
-        INFO_UPDATE_WARNING(51,"信息更新预警"),
-        RESPOND_WARNING(52, "互动回应预警");
+        INFO_UPDATE_WARNING(51, "信息更新预警"),
+        RESPOND_WARNING(52, "互动回应预警"),
+        SERVICE_LINK_AVAILABLE(101, "服务链接");
 
         public final int value;
 
@@ -103,13 +104,69 @@ public final class Types {
         }
     }
 
+    /**
+     * 链接可用性的子类型
+     */
+    public enum ServiceLinkIssueType {
+        INVALID(-1, "未知问题"),
+        INVALID_LINK(IssueType.LINK_AVAILABLE_ISSUE.value * 10 + 1, "链接失效"),
+        INVALID_IMAGE(IssueType.LINK_AVAILABLE_ISSUE.value * 10 + 2, "图片失效"),
+        CONNECTION_TIME_OUT(IssueType.LINK_AVAILABLE_ISSUE.value * 10 + 3, "连接超时"),
+        INVALID_FILE(IssueType.LINK_AVAILABLE_ISSUE.value * 10 + 4, "附件失效"),
+        INVALID_HOME_PAGE(IssueType.LINK_AVAILABLE_ISSUE.value * 10 + 5, "首页失效");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        ServiceLinkIssueType(int type, String name) {
+            this.value = type;
+            this.name = name;
+        }
+
+        public static ServiceLinkIssueType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            ServiceLinkIssueType[] types = ServiceLinkIssueType.values();
+            for (ServiceLinkIssueType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+
+        /**
+         * 查找名字包含指定字符串的type，支持模糊查找
+         *
+         * @param name
+         * @return
+         */
+        public static List<Integer> findByName(String name) {
+            if (name == null || name.isEmpty()) {
+                return new ArrayList<>();
+            }
+            List<Integer> result = new ArrayList<>();
+            ServiceLinkIssueType[] types = ServiceLinkIssueType.values();
+            for (ServiceLinkIssueType type : types) {
+                if (type != INVALID && type.name.contains(name)) {
+                    result.add(type.value);
+                }
+            }
+
+            return result;
+        }
+    }
+
 
     /**
      * 信息更新的子类型
      */
     public enum InfoUpdateIssueType {
         INVALID(-1, "未知问题"),
-        UPDATE_NOT_INTIME(IssueType.INFO_UPDATE_ISSUE.value * 10 + 1,"更新不及时");
+        UPDATE_NOT_INTIME(IssueType.INFO_UPDATE_ISSUE.value * 10 + 1, "更新不及时");
 
         public final int value;
 
@@ -162,8 +219,8 @@ public final class Types {
      */
     public enum InfoErrorIssueType {
         INVALID(-1, "未知问题", "未知"),
-        TYPOS(IssueType.INFO_ERROR_ISSUE.value * 10 + 1,"错别字", "字词"),
-        SENSITIVE_WORDS(IssueType.INFO_ERROR_ISSUE.value * 10 + 2,"敏感词", "敏感词");
+        TYPOS(IssueType.INFO_ERROR_ISSUE.value * 10 + 1, "错别字", "字词"),
+        SENSITIVE_WORDS(IssueType.INFO_ERROR_ISSUE.value * 10 + 2, "敏感词", "敏感词");
 
         public final int value;
 
@@ -178,18 +235,18 @@ public final class Types {
             this.checkType = checkType;
         }
 
-        public static InfoErrorIssueType valueOfName(String name){
+        public static InfoErrorIssueType valueOfName(String name) {
             for (InfoErrorIssueType type : InfoErrorIssueType.values()) {
-                if(name.equals(type.name)){
+                if (name.equals(type.name)) {
                     return type;
                 }
             }
             return INVALID;
         }
 
-        public static InfoErrorIssueType valueOfCheckType(String checkType){
+        public static InfoErrorIssueType valueOfCheckType(String checkType) {
             for (InfoErrorIssueType type : InfoErrorIssueType.values()) {
-                if(checkType.equals(type.checkType)){
+                if (checkType.equals(type.checkType)) {
                     return type;
                 }
             }
@@ -300,8 +357,8 @@ public final class Types {
      */
     public enum RespondWarningType {
         INVALID(-1, "未知问题"),
-        RESPOND_WARNING(IssueType.RESPOND_WARNING.value * 10 + 1,"咨询回应预警"),
-        FEEDBACK_WARNING(IssueType.RESPOND_WARNING.value * 10 + 2,"征集反馈预警");
+        RESPOND_WARNING(IssueType.RESPOND_WARNING.value * 10 + 1, "咨询回应预警"),
+        FEEDBACK_WARNING(IssueType.RESPOND_WARNING.value * 10 + 2, "征集反馈预警");
 
         public final int value;
 
@@ -349,20 +406,20 @@ public final class Types {
     }
 
     public static String getSubTypeName(IssueType issueType, int subType) {
-         switch (issueType) {
-             case LINK_AVAILABLE_ISSUE:
-                 return LinkAvailableIssueType.valueOf(subType).name;
-             case INFO_UPDATE_ISSUE:
-                 return InfoUpdateIssueType.valueOf(subType).name;
-             case INFO_ERROR_ISSUE:
-                 return InfoErrorIssueType.valueOf(subType).name;
-             case INFO_UPDATE_WARNING:
-                 return InfoUpdateWarningType.valueOf(subType).name;
-             case RESPOND_WARNING:
-                 return RespondWarningType.valueOf(subType).name;
-             default:
-                 return "未知问题";
-         }
+        switch (issueType) {
+            case LINK_AVAILABLE_ISSUE:
+                return LinkAvailableIssueType.valueOf(subType).name;
+            case INFO_UPDATE_ISSUE:
+                return InfoUpdateIssueType.valueOf(subType).name;
+            case INFO_ERROR_ISSUE:
+                return InfoErrorIssueType.valueOf(subType).name;
+            case INFO_UPDATE_WARNING:
+                return InfoUpdateWarningType.valueOf(subType).name;
+            case RESPOND_WARNING:
+                return RespondWarningType.valueOf(subType).name;
+            default:
+                return "未知问题";
+        }
     }
 
     /**
@@ -373,7 +430,7 @@ public final class Types {
         REPLY_SPEED(1, "响应速度"),
         OVERSIZE_PAGE(2, "过大页面"),
         OVER_DEEP_PAGE(3, "过深页面"),
-        REPEAT_CODE(4,"冗余代码"),
+        REPEAT_CODE(4, "冗余代码"),
         TOO_LONG_URL(5, "过长URL页面");
 
         public final int value;
