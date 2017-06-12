@@ -5,7 +5,6 @@ import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
-import com.trs.gov.kpi.dao.LinkAvailabilityMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.LinkAvailability;
@@ -31,9 +30,6 @@ import java.util.List;
  */
 @Service
 public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
-
-    @Resource
-    private LinkAvailabilityMapper linkAvailabilityMapper;
 
     @Resource
     private IssueMapper issueMapper;
@@ -116,6 +112,27 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.setPager(pager);
         List<LinkAvailability> linkAvailabilitieList = issueMapper.selectLinkAvailability(queryFilter);
 
+        return new ApiPageData(pager, toResponseList(linkAvailabilitieList));
+    }
+
+    @Override
+    public ApiPageData getServiceLinkList(PageDataRequestParam param) {
+
+        QueryFilter queryFilter = QueryFilterHelper.toFilter(param, Types.IssueType.SERVICE_LINK_AVAILABLE);
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        int count = issueMapper.count(queryFilter);
+
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), count);
+
+        queryFilter.setPager(pager);
+        List<LinkAvailability> linkAvailabilitieList = issueMapper.selectLinkAvailability(queryFilter);
+
+        return new ApiPageData(pager, toResponseList(linkAvailabilitieList));
+    }
+
+    private List<LinkAvailabilityResponse> toResponseList(List<LinkAvailability> linkAvailabilitieList) {
         List<LinkAvailabilityResponse> list = new ArrayList<>();
         for (LinkAvailability link : linkAvailabilitieList) {
             LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
@@ -126,8 +143,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());
             list.add(linkAvailabilityResponse);
         }
-
-        return new ApiPageData(pager, list);
+        return list;
     }
 
     @Override
@@ -135,20 +151,6 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
         Issue issue = getIssueByLinkAvaliability(linkAvailabilityResponse);
         issueMapper.insert(DBUtil.toRow(issue));
-    }
-
-    @Override
-    public List<LinkAvailabilityResponse> getUnsolvedIssueList(QueryFilter filter) {
-        filter.addCond(IssueTableField.IS_RESOLVED, Integer.valueOf(0));
-        filter.addCond(IssueTableField.IS_DEL, Integer.valueOf(0));
-        return linkAvailabilityMapper.getIssueListBySql(filter.getCondFields(), filter.getSortFields(), filter.getPager());
-    }
-
-    @Override
-    public int getUnsolvedIssueCount(QueryFilter filter) {
-        filter.addCond(IssueTableField.IS_RESOLVED, Integer.valueOf(0));
-        filter.addCond(IssueTableField.IS_DEL, Integer.valueOf(0));
-        return linkAvailabilityMapper.getIssueCount(filter.getCondFields());
     }
 
     private Issue getIssueByLinkAvaliability(LinkAvailabilityResponse linkAvailabilityResponse) {

@@ -228,6 +228,9 @@ public class QueryFilterHelper {
                 case RESPOND_WARNING:
                     matchedTypes.addAll(Types.RespondWarningType.findByName(issueName));
                     break;
+                case SERVICE_LINK_AVAILABLE:
+                    matchedTypes.addAll(Types.ServiceLinkIssueType.findByName(issueName));
+                    break;
                 default:
             }
         }
@@ -271,6 +274,7 @@ public class QueryFilterHelper {
 
     /**
      * 统计分析中的问题统计的filter处理
+     *
      * @param request
      * @return
      */
@@ -289,6 +293,7 @@ public class QueryFilterHelper {
 
     /**
      * 栏目更新频率设置的filter处理
+     *
      * @param request
      * @return
      */

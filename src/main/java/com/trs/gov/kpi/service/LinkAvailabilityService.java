@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.service;
 
-import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 
@@ -24,9 +23,13 @@ public interface LinkAvailabilityService {
 
     IndexPage showIndexAvailability(PageDataRequestParam param);
 
-    List<LinkAvailabilityResponse> getUnsolvedIssueList(QueryFilter filter);
-
-    int getUnsolvedIssueCount(QueryFilter filter);
+    /**
+     * 获取服务链接问题的列表
+     *
+     * @param param
+     * @return
+     */
+    ApiPageData getServiceLinkList(PageDataRequestParam param);
 
     int getHandledIssueCount(PageDataRequestParam param);
 
