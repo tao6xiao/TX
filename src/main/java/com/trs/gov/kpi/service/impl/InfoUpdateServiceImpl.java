@@ -152,13 +152,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         Set<Integer> childChnlIds = null;
         List<Integer> chnlIds = chnlGroupMapper.selectAChnlIds(param.getSiteId(), EnumChannelGroup.COMMON.getId());
         if (!chnlIds.isEmpty()) {
-            childChnlIds = new HashSet<>();
-            for (Integer chnlId : chnlIds) {
-                if (chnlId != null) {
-                    childChnlIds.add(chnlId);
-                    childChnlIds = siteApiService.getAllChildChnlIds(null, param.getSiteId(), chnlId, childChnlIds);
-                }
-            }
+            childChnlIds = getAllChildChnlIds(chnlIds, param);
         }
         filter = QueryFilterHelper.toFilter(param);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
@@ -213,6 +207,17 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         statisticsList.add(statistics);
 
         return statisticsList;
+    }
+
+    private Set<Integer> getAllChildChnlIds(List<Integer> chnlIds, PageDataRequestParam param) throws RemoteException {
+        Set<Integer> childChnlIds = new HashSet<>();
+        for (Integer chnlId : chnlIds) {
+            if (chnlId != null) {
+                childChnlIds.add(chnlId);
+                childChnlIds = siteApiService.getAllChildChnlIds(null, param.getSiteId(), chnlId, childChnlIds);
+            }
+        }
+        return childChnlIds;
     }
 
     @Override
