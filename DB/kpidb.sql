@@ -179,6 +179,22 @@ INSERT INTO `webpage` VALUES ('75146', '11', '5', '11', 'www.zhihu.com', null, '
 INSERT INTO `webpage` VALUES ('76544', '11', '4', '11', 'www.zhihu.com', null, null, null, '65', '中', null, '2017-06-07 10:31:46', '2017-06-02 17:24:10', '0', '0');
 INSERT INTO `webpage` VALUES ('95478', '11', '4', '7', 'www.zhihu.com', null, null, null, '78', '高', null, '2017-06-07 10:31:48', '2017-06-06 17:24:16', '0', '0');
 
+-- ----------------------------
+-- Table structure for report
+-- ----------------------------
+DROP TABLE IF EXISTS `report`;
+CREATE TABLE `report` (
+  `id` int(19) NOT NULL AUTO_INCREMENT,
+  `siteId` int(19) NOT NULL,
+  `title` varchar(512) NOT NULL,
+  `reportTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '报表数据对应的时间',
+  `crTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `type` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1-天，2-月',
+  `path` varchar(512) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SET FOREIGN_KEY_CHECKS=1;
+
 
 
 
