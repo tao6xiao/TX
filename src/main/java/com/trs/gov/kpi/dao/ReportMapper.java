@@ -27,4 +27,12 @@ public interface ReportMapper {
      * @return
      */
     int selectReportCount(QueryFilter filter);
+
+    /**
+     * 查询报表所在路径的集合
+     *
+     * @param filter
+     * @return
+     */
+    String selectPathById(QueryFilter filter);
 }

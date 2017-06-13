@@ -112,5 +112,11 @@
         </if>
     </sql>
 
+    <select id="selectPathById" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="String">
+        SELECT
+        path
+        FROM report WHERE 1=1
+        <include refid="where_sql"/>
+    </select>
 
 </mapper>

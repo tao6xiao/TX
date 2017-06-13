@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class ReportRequestParam extends DateRequest {
 
-    private Integer[] ids;
+    private Integer id;
 
     private Integer siteId;
 

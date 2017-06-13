@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
 import java.text.ParseException;
@@ -20,5 +20,12 @@ public interface ReportService {
      * @throws RemoteException
      * @throws ParseException
      */
-    ApiPageData selectReportList(PageDataRequestParam param, boolean isTimeNode) throws RemoteException, ParseException;
+    ApiPageData selectReportList(ReportRequestParam param, boolean isTimeNode) throws RemoteException, ParseException;
+
+    /**
+     * 获取导出报表的文件路径
+     *
+     * @param param
+     */
+    String getReportPath(ReportRequestParam param) throws ParseException;
 }

@@ -5,7 +5,7 @@ import com.trs.gov.kpi.dao.ReportMapper;
 import com.trs.gov.kpi.entity.Report;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.entity.responsedata.ReportResponse;
@@ -33,7 +33,7 @@ public class ReportServiceImpl implements ReportService {
     private SiteApiService siteApiService;
 
     @Override
-    public ApiPageData selectReportList(PageDataRequestParam param, boolean isTimeNode) throws RemoteException, ParseException {
+    public ApiPageData selectReportList(ReportRequestParam param, boolean isTimeNode) throws RemoteException, ParseException {
         QueryFilter filter = QueryFilterHelper.toReportFilter(param);
         if (isTimeNode) {
             filter.addCond(ReportTableField.TYPE, 1);
@@ -54,5 +54,14 @@ public class ReportServiceImpl implements ReportService {
             list.add(reportResponse);
         }
         return new ApiPageData(pager, list);
+    }
+
+    @Override
+    public String getReportPath(ReportRequestParam param) throws ParseException {
+
+        QueryFilter filter = QueryFilterHelper.toReportFilter(param);
+        filter.addCond(ReportTableField.ID, param.getId());
+
+        return reportMapper.selectPathById(filter);
     }
 }

@@ -10,7 +10,7 @@ public class ReportTableField {
     }
 
     public static final String ID = "id";
-    public static final String SITE_ID = "siTeId";
+    public static final String SITE_ID = "siteId";
     public static final String TITLE = "title";
     public static final String REPORT_TIME = "reportTime";
     public static final String CRTIME = "crTime";
