@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.InfoUpdateOrderRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.text.ParseException;
@@ -36,6 +37,14 @@ public interface InfoUpdateService {
      * @return
      */
     ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) throws RemoteException;
+
+    /**
+     * 查询单个信息错误的工单
+     *
+     * @param request
+     * @return
+     */
+    InfoUpdateOrderRes getInfoUpdateOrderById(WorkOrderRequest request) throws RemoteException;
 
 
 }
