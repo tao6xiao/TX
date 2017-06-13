@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 
 /**
@@ -22,7 +21,7 @@ public class PageInfoDeal {
      * @param pageSize
      * @return
      */
-    public static int getPageCount(int itemCount, int pageSize) {
+    private static int getPageCount(int itemCount, int pageSize) {
         return itemCount % pageSize == 0 ? itemCount / pageSize : itemCount / pageSize + 1;
     }
 
@@ -56,12 +55,13 @@ public class PageInfoDeal {
 
     /**
      * 获取返回的ApiPageData对象（不完整，所以调用方法之后需要将List再放入ApiPageData对象）
+     *
      * @param pageIndex 从1开始计数的页
      * @param pageSize
      * @param itemCount
      * @return
      */
-    public static Pager buildResponsePager(Integer pageIndex, Integer pageSize, Integer itemCount){
+    public static Pager buildResponsePager(Integer pageIndex, Integer pageSize, Integer itemCount) {
         int newPageSize = PageInfoDeal.initPageSize(pageSize);
         int newPageIndex = PageInfoDeal.initPageIndex(pageIndex);
         int pageCount = PageInfoDeal.getPageCount(itemCount, newPageSize);
