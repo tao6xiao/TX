@@ -26,9 +26,9 @@ public class ServicePracticalController {
     private SPService spService;
 
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
-    public SPStatistics getSGCount(PageDataRequestParam param) throws BizException {
+    public SPStatistics getSPCount(PageDataRequestParam param) throws BizException {
         ParamCheckUtil.paramCheck(param);
-        return spService.getSGCount(param);
+        return spService.getSPCount(param);
     }
 
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)

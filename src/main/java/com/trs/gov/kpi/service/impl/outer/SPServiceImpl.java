@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.outer.SPService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,12 +22,12 @@ public class SPServiceImpl implements SPService {
     }
 
     @Override
-    public SPStatistics getSGCount(PageDataRequestParam param) {
+    public SPStatistics getSPCount(PageDataRequestParam param) {
         return null;
     }
 
     @Override
     public List<SPHistoryStatistics> getSPHistoryCount(PageDataRequestParam param) {
-        return null;
+        return new ArrayList<>();
     }
 }

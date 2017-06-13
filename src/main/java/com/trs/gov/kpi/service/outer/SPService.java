@@ -26,7 +26,7 @@ public interface SPService {
      * @param param
      * @return
      */
-    SPStatistics getSGCount(PageDataRequestParam param);
+    SPStatistics getSPCount(PageDataRequestParam param);
 
     /**
      * 查询服务实用统计的历史记录
