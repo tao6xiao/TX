@@ -15,7 +15,10 @@ public interface ReportService {
      * 查询报表列表
      *
      * @param param
+     * @param isTimeNode
      * @return
+     * @throws RemoteException
+     * @throws ParseException
      */
     ApiPageData selectReportList(PageDataRequestParam param, boolean isTimeNode) throws RemoteException, ParseException;
 }

@@ -1,9 +1,11 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.ReportService;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,9 +27,9 @@ public class ReportController {
     //TODO  按时间节点和时间区间导出报表
 
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
-    public ApiPageData selectReportByNode(@ModelAttribute PageDataRequestParam requestParam) throws RemoteException, ParseException {
-
-        return reportService.selectReportList(requestParam, true);
+    public ApiPageData selectReportByNode(@ModelAttribute PageDataRequestParam param) throws RemoteException, ParseException, BizException {
+        checkParam(param);
+        return reportService.selectReportList(param, true);
     }
 
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
@@ -36,14 +38,21 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
-    public ApiPageData selectReportByInterval(@ModelAttribute PageDataRequestParam requestParam) throws RemoteException, ParseException {
-
-        return reportService.selectReportList(requestParam, false);
+    public ApiPageData selectReportByInterval(@ModelAttribute PageDataRequestParam param) throws RemoteException, ParseException, BizException {
+        checkParam(param);
+        return reportService.selectReportList(param, false);
     }
 
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
     public String exportReportByInterval() {
         return null;
     }
+
+    private void checkParam(PageDataRequestParam param) throws BizException {
+        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+        ParamCheckUtil.checkTime(param.getBeginDateTime());
+        ParamCheckUtil.checkTime(param.getEndDateTime());
+    }
+
 
 }

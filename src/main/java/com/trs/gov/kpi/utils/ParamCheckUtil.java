@@ -87,7 +87,7 @@ public class ParamCheckUtil {
 
     }
 
-    private static void checkTime(String time) throws BizException {
+    public static void checkTime(String time) throws BizException {
         if (time != null && !time.trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
