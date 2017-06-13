@@ -3,7 +3,7 @@ package com.trs.gov.kpi.entity.requestdata;
 /**
  * Created by he.lang on 2017/6/8.
  */
-public class IssueCountRequest extends DateRangeRequest {
+public class IssueCountRequest extends DateRequest {
 
     private String siteIds;
 
