@@ -24,6 +24,12 @@ public class WebPageController {
     @Resource
     private WebPageService webPageService;
 
+    @RequestMapping(value = "/speed/count", method = RequestMethod.GET)
+    public int selectReplySpeedCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        ParamCheckUtil.paramCheck(param);
+        return webPageService.selectReplySpeedCount(param);
+    }
+
     @RequestMapping(value = "/speed", method = RequestMethod.GET)
     public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);

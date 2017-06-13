@@ -69,6 +69,19 @@ public class WebPageServiceImpl implements WebPageService {
     }
 
     @Override
+    public int selectReplySpeedCount(PageDataRequestParam param) throws RemoteException {
+        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
+        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+
+        QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
+        queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
+        queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+        return webPageMapper.count(queryFilter);
+    }
+
+    @Override
     public ApiPageData selectPageSpace(PageDataRequestParam param) throws RemoteException {
         param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));

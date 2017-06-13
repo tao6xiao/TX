@@ -21,6 +21,14 @@ public interface WebPageService {
     ApiPageData selectReplySpeed(PageDataRequestParam param) throws RemoteException;
 
     /**
+     * 查询响应速度数量
+     *
+     * @param param
+     * @return
+     */
+    int selectReplySpeedCount(PageDataRequestParam param) throws RemoteException;
+
+    /**
      * 查询过大页面
      *
      * @param param
@@ -97,7 +105,7 @@ public interface WebPageService {
      * @param siteId
      * @param ids
      */
-    void handlePageByIds( int siteId,  List<Integer> ids);
+    void handlePageByIds(int siteId, List<Integer> ids);
 
     /**
      * 批量忽略网页问题
@@ -105,7 +113,7 @@ public interface WebPageService {
      * @param siteId
      * @param ids
      */
-    void ignorePageByIds(int siteId,  List<Integer> ids);
+    void ignorePageByIds(int siteId, List<Integer> ids);
 
     /**
      * 批量删除网页问题
@@ -113,5 +121,5 @@ public interface WebPageService {
      * @param siteId
      * @param ids
      */
-    void delPageByIds( int siteId,  List<Integer> ids);
+    void delPageByIds(int siteId, List<Integer> ids);
 }
