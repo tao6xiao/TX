@@ -36,10 +36,6 @@ public class BasServiceImpl implements BasService {
     @Resource
     private MonitorSiteService monitorSiteService;
 
-    private static final MediaType JSON_TYPE = MediaType.parse("application/json; charset=utf-8");
-
-    private static final String DEFAULT_BEGIN_TIME = "20000505";
-
     private static final String SITE_IDS = "mpIds";
     private static final String DAY = "day";
 
@@ -47,22 +43,21 @@ public class BasServiceImpl implements BasService {
     public Integer getVisits(BasRequest basRequest) throws RemoteException, ParseException {
 
         String siteIndexPage = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId()).getIndexUrl();
-
-        String beginDay;
-        String endDay;
-        if (StringUtil.isEmpty(basRequest.getBeginDateTime())) {
-            beginDay = DEFAULT_BEGIN_TIME;
-        } else {
-            beginDay = initTime(basRequest.getBeginDateTime());
-        }
-        if (StringUtil.isEmpty(basRequest.getEndDateTime())) {
-            endDay = initTime(DateUtil.toString(new Date()));
-        } else {
-            endDay = initTime(basRequest.getEndDateTime());
-        }
+        String beginDay = initTime(getPreviousMonthDate());
+        String endDay = initTime(DateUtil.toString(new Date()));
         String url = basServiceUrl + "/api/retrieveWebUV";
 
         return requestBasPV(url, beginDay, endDay, siteIndexPage);
+    }
+
+
+    private String getPreviousMonthDate() {
+
+        Calendar date = Calendar.getInstance();
+        date.setTime(new Date());
+        date.add(Calendar.DAY_OF_MONTH, -31);
+
+        return DateUtil.toString(date.getTime());
     }
 
     @Override
@@ -79,7 +74,7 @@ public class BasServiceImpl implements BasService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate historyDate : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            int pv = requestBasPV(url, historyDate.getBeginDate(), historyDate.getEndDate(), siteIndexPage);
+            Integer pv = requestBasPV(url, historyDate.getBeginDate(), historyDate.getEndDate(), siteIndexPage);
             historyStatistics.setValue(pv);
             historyStatistics.setTime(historyDate.getMonth());
             list.add(historyStatistics);
@@ -98,7 +93,9 @@ public class BasServiceImpl implements BasService {
                 "\"" + siteIndexPage + "\"" +
                 "]" +
                 "}";
-        RequestBody body = RequestBody.create(JSON_TYPE, json);
+        RequestBody body = new FormEncodingBuilder()
+                .add("json", json)
+                .build();
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -107,7 +104,7 @@ public class BasServiceImpl implements BasService {
         try {
             Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
-                String jsonResult = response.body().toString();
+                String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
                     return null;
                 }
@@ -119,6 +116,9 @@ public class BasServiceImpl implements BasService {
         } catch (IOException e) {
             log.error("getVisits failed ", e);
             throw new RemoteException("获取访问量失败！", e);
+        }
+        if (basPVResponse.getRecords().isEmpty()) {
+            return null;
         }
         return basPVResponse.getRecords().get(0).getPv();
     }
@@ -171,8 +171,12 @@ public class BasServiceImpl implements BasService {
     private SiteSummary requestBasSummary(StringBuilder url, Map<String, String> params) throws RemoteException {
         if (!params.isEmpty()) {
             url.append("?");
-            for (Map.Entry<String, String> entry : params.entrySet()) {
+            for (Iterator<Map.Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
+                Map.Entry<String, String> entry = it.next();
                 url.append(entry.getKey()).append("=").append(entry.getValue());
+                if (it.hasNext()) {
+                    url.append("&");
+                }
             }
         }
 
@@ -182,7 +186,7 @@ public class BasServiceImpl implements BasService {
         try {
             Response response = client.newCall(request).execute();
             if (response.isSuccessful()) {
-                String jsonResult = response.body().toString();
+                String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
                     return null;
                 }
@@ -195,14 +199,20 @@ public class BasServiceImpl implements BasService {
             log.error("getStayTime failed ", e);
             throw new RemoteException("获取停留时间失败！", e);
         }
+        if (summaryResponse.getRecords().isEmpty()) {
+            return null;
+        }
         return summaryResponse.getRecords().get(0);
     }
 
     private String initTime(String time) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        Date data = DateUtil.toDate(time);
 
-        return sdf.format(data);
+        SimpleDateFormat sdfIn = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdfOut = new SimpleDateFormat("yyyyMMdd");
+
+        Date data = sdfIn.parse(time);
+
+        return sdfOut.format(data);
     }
 
 }
