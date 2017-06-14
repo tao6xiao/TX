@@ -2,7 +2,6 @@ package com.trs.gov.kpi.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
@@ -11,7 +10,6 @@ import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
