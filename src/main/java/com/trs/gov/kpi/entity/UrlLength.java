@@ -16,9 +16,9 @@ public class UrlLength {
 
     private String pageLink;
 
-    private String length;
+    private Integer length;
 
-    private String space;
+    private Integer space;
 
     private Date checkTime;
 }

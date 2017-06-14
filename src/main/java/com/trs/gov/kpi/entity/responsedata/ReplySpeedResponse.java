@@ -16,9 +16,9 @@ public class ReplySpeedResponse {
 
     private String pageLink;
 
-    private String replySpeed;
+    private Integer replySpeed;
 
-    private String pageSpace;
+    private Integer pageSpace;
 
     private Date checkTime;
 }

@@ -18,7 +18,7 @@ public class PageDepthResponse {
 
     private Integer pageDepth;
 
-    private String pageSpace;
+    private Integer pageSpace;
 
     private Date checkTime;
 }
