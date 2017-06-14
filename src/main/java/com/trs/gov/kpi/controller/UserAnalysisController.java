@@ -32,13 +32,13 @@ public class UserAnalysisController {
     }
 
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public List<HistoryStatistics> getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
         check(basRequest);
         return basService.getHistoryVisits(basRequest);
     }
 
     @RequestMapping(value = "/stay", method = RequestMethod.GET)
-    public Integer getStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public Integer getStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
         check(basRequest);
         return basService.getStayTime(basRequest);
     }

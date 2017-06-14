@@ -16,11 +16,11 @@ public class SiteSummary {
 
     private String strDay;//哪天的统计数据
 
-    private Integer PV; // 该天的浏览量
+    private Integer pv; // 该天的浏览量
 
-    private Integer UV;// 该天的访客数
+    private Integer uv;// 该天的访客数
 
-    private Integer NUV;//该天的新访客数
+    private Integer nuv;//该天的新访客数
 
     private Integer bounceRate;//该天的跳出率
 
@@ -28,11 +28,11 @@ public class SiteSummary {
 
     private Integer avgDuration;// 该天的次均停留时长
 
-    private Integer UV7;// 7天的访客数(该天前7天内，含该天)
+    private Integer uv7;// 7天的访客数(该天前7天内，含该天)
 
-    private Integer UV30;// 30天的访客数(该天前30天内，含该天)
+    private Integer uv30;// 30天的访客数(该天前30天内，含该天)
 
-    private Integer UVAll;// 该网站的总访客数
+    private Integer uvAll;// 该网站的总访客数
 
     private Integer avgViews7;// 7天的人均浏览页数
 
