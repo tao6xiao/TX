@@ -16,9 +16,9 @@ public class PageSpaceResponse {
 
     private String pageLink;
 
-    private Integer replySpeed;
+    private Long replySpeed;
 
-    private Integer pageSpace;
+    private Long pageSpace;
 
     private Date checkTime;
 }

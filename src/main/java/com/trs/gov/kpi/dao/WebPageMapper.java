@@ -92,4 +92,5 @@ public interface WebPageMapper {
      * @param ids
      */
     void delPageByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
+
 }

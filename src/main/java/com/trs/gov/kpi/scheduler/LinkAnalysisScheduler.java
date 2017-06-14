@@ -1,8 +1,10 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -29,6 +32,9 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
     @Resource
     SpiderUtils spider;
+
+    @Resource
+    WebPageService webPageService;
 
     @Setter @Getter
     private Integer siteId;
@@ -53,6 +59,13 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
                 linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
             }
+
+            Set<PageSpace> biggerPageSpace = spider.biggerPageSpace();
+            for (PageSpace pageSpaceto: biggerPageSpace ) {
+                pageSpaceto.setSiteId(siteId);
+                webPageService.insertPageSpace(pageSpaceto);
+            }
+
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
         } finally {

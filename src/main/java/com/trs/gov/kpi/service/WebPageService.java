@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -122,4 +123,11 @@ public interface WebPageService {
      * @param ids
      */
     void delPageByIds(int siteId, List<Integer> ids);
+
+    /**
+     * 插入过大页面信息
+     *
+     * @param pageSpace
+     */
+    void insertPageSpace(PageSpace pageSpace);
 }

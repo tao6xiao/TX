@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.entity.PageSpace;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,9 +25,15 @@ import java.util.*;
 @Scope("prototype")
 public class SpiderUtils {
 
+    // 过大页面阀值
+    private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
+
     private HashMap<String, Set<String>> pageParentMap = new HashMap<>();
 
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
+
+    //过大页面
+    private Set<PageSpace> biggerPage = Collections.synchronizedSet(new HashSet<PageSpace>());
 
     private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
 
@@ -84,16 +91,24 @@ public class SpiderUtils {
 
     private Downloader recordUnavailableUrlDownloader = new HttpClientDownloader() {
 
-        ThreadLocal<Boolean> isUrlUnavailable = new ThreadLocal<>();
+        ThreadLocal<Boolean> isUrlAvailable = new ThreadLocal<>();
 
         @Override
         public Page download(Request request, Task task) {
 
-            isUrlUnavailable.set(true);
+            isUrlAvailable.set(false);
+            Date startDate = new Date();
             Page result = super.download(request, task);
-            if(isUrlUnavailable.get()) {
+            Date endDate = new Date();
+            long useTime = endDate.getTime() - startDate.getTime();
+            Date checkTime = new Date();
 
+            if(!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
+            } else {
+                if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
+                    biggerPage.add(new PageSpace(0, request.getUrl().intern(), useTime, Long.valueOf(result.getRawText().getBytes().length), checkTime));
+                }
             }
             return result;
         }
@@ -101,7 +116,7 @@ public class SpiderUtils {
         @Override
         public void onSuccess(Request request) {
 
-            isUrlUnavailable.set(false);
+            isUrlAvailable.set(true);
         }
     };
 
@@ -173,6 +188,10 @@ public class SpiderUtils {
         }
         log.info("homePageCheck completed!");
         return new LinkedList<>(unavailableUrls);
+    }
+
+    public Set<PageSpace> biggerPageSpace() {
+        return this.biggerPage;
     }
 
     @Data

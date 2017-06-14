@@ -28,7 +28,7 @@ public class DBUtil {
             return null;
         }
 
-        DBRow row = new DBRow();
+        DBRow row = new DBRow(clazz.getAnnotation(DBTable.class).value());
         Field[] fields = clazz.getDeclaredFields();
         for(Field field :fields){
             if (!field.isAnnotationPresent(DBField.class)

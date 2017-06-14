@@ -3,6 +3,7 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -13,6 +14,7 @@ import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.ChnlCheckUtil;
+import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,9 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Resource
     private SiteApiService siteApiService;
+
+    @Resource
+    private CommonMapper commonMapper;
 
     @Resource
     private WebPageMapper webPageMapper;
@@ -284,5 +289,18 @@ public class WebPageServiceImpl implements WebPageService {
     @Override
     public void delPageByIds(int siteId, List<Integer> ids) {
         webPageMapper.delPageByIds(siteId, ids);
+    }
+
+    /**
+     * 插入过大页面信息
+     *
+     * @param pageSpace
+     */
+    @Override
+    public void insertPageSpace(PageSpace pageSpace) {
+        /*
+        * 判断条件待定
+        * */
+        commonMapper.insert(DBUtil.toRow(pageSpace));
     }
 }

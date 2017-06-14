@@ -11,10 +11,17 @@ import java.util.List;
 public class DBRow {
 
     @Getter
+    private String tableName;
+
+    @Getter
     private List<String> fields = new ArrayList<>();
 
     @Getter
     private List<Object> values = new ArrayList<>();
+
+    public DBRow(String tableName) {
+        this.tableName = tableName;
+    }
 
     /**
      * 添加一个字段

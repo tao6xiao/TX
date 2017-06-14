@@ -17,5 +17,5 @@ public @interface DBTable {
      * 数据表名称注解，默认值为类名称
      * @return
      */
-    String name() default "tableName";
+    String value() default "";
 }
