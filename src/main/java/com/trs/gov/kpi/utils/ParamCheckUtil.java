@@ -46,8 +46,8 @@ public class ParamCheckUtil {
         }
 
         pagerCheck(param.getPageIndex(), param.getPageSize());
-        checkTime(param.getBeginDateTime());
-        checkTime(param.getEndDateTime());
+        checkCommonTime(param.getBeginDateTime());
+        checkCommonTime(param.getEndDateTime());
 
     }
 
@@ -60,13 +60,14 @@ public class ParamCheckUtil {
     public static void paramCheck(WorkOrderRequest request) throws BizException {
 
         pagerCheck(request.getPageIndex(), request.getPageSize());
-        checkTime(request.getBeginDateTime());
-        checkTime(request.getEndDateTime());
+        checkCommonTime(request.getBeginDateTime());
+        checkCommonTime(request.getEndDateTime());
 
     }
 
     /**
      * 问题统计参数校验
+     *
      * @param request
      * @throws BizException
      */
@@ -82,12 +83,12 @@ public class ParamCheckUtil {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
-        checkTime(request.getBeginDateTime());
-        checkTime(request.getEndDateTime());
+        checkCommonTime(request.getBeginDateTime());
+        checkCommonTime(request.getEndDateTime());
 
     }
 
-    public static void checkTime(String time) throws BizException {
+    public static void checkCommonTime(String time) throws BizException {
         if (time != null && !time.trim().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
@@ -95,6 +96,19 @@ public class ParamCheckUtil {
                 sdf.parse(time);
             } catch (ParseException e) {
                 log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+        }
+    }
+
+    public static void checkDayTime(String time) throws BizException {
+        if (time != null && !time.trim().isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                sdf.setLenient(false);
+                sdf.parse(time);
+            } catch (ParseException e) {
+                log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }

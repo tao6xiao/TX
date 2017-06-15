@@ -17,6 +17,7 @@ import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -364,7 +365,8 @@ public class QueryFilterHelper {
             if (!StringUtil.isEmpty(param.getDay())) {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getDay()).setRangeBegin(true);
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTime(DateUtil.toDate(param.getDay()));
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                calendar.setTime(format.parse(param.getDay()));
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                 filter.addCond(ReportTableField.REPORT_TIME, DateUtil.toString(calendar.getTime())).setRangeEnd(true);
             }

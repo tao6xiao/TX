@@ -50,7 +50,7 @@ public class UserAnalysisController {
     }
 
     private void check(BasRequest basRequest) throws BizException {
-        ParamCheckUtil.checkTime(basRequest.getBeginDateTime());
-        ParamCheckUtil.checkTime(basRequest.getEndDateTime());
+        ParamCheckUtil.checkCommonTime(basRequest.getBeginDateTime());
+        ParamCheckUtil.checkCommonTime(basRequest.getEndDateTime());
     }
 }

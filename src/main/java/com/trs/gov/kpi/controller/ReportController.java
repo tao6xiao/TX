@@ -39,7 +39,8 @@ public class ReportController {
 
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        checkParam(param);
+        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+        ParamCheckUtil.checkDayTime(param.getDay());
         return reportService.selectReportList(param, true);
     }
 
@@ -63,7 +64,9 @@ public class ReportController {
 
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        checkParam(param);
+        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+        ParamCheckUtil.checkDayTime(param.getBeginDateTime());
+        ParamCheckUtil.checkDayTime(param.getEndDateTime());
         return reportService.selectReportList(param, false);
     }
 
@@ -83,12 +86,6 @@ public class ReportController {
             download(response, fileName);
         }
         return null;
-    }
-
-    private void checkParam(ReportRequestParam param) throws BizException {
-        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
-        ParamCheckUtil.checkTime(param.getBeginDateTime());
-        ParamCheckUtil.checkTime(param.getEndDateTime());
     }
 
     private void download(HttpServletResponse response, String fileName) {
