@@ -61,7 +61,7 @@ public class InteractionServiceImpl implements InteractionService {
                     buildRequest("listGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
 
             if (response.isSuccessful()) {
-                String jsonResult = response.body().toString();
+                String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
                     return null;
                 }
@@ -91,7 +91,7 @@ public class InteractionServiceImpl implements InteractionService {
                     buildRequest("countGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
 
             if (response.isSuccessful()) {
-                String jsonResult = response.body().toString();
+                String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
                     return null;
                 }
@@ -123,7 +123,7 @@ public class InteractionServiceImpl implements InteractionService {
                     buildRequest("countDetailGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
 
             if (response.isSuccessful()) {
-                String jsonResult = response.body().toString();
+                String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
                     return null;
                 }
