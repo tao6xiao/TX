@@ -2,6 +2,7 @@ package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.PageSpace;
+import com.trs.gov.kpi.entity.UrlLength;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
@@ -60,11 +61,20 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
             }
 
+            //获取过大页面信息；信息入库
             Set<PageSpace> biggerPageSpace = spider.biggerPageSpace();
             for (PageSpace pageSpaceto: biggerPageSpace ) {
                 pageSpaceto.setSiteId(siteId);
                 webPageService.insertPageSpace(pageSpaceto);
             }
+
+            //获取过长URL页面信息；信息入库
+            Set<UrlLength> biggerUerLenght = spider.getBiggerUrlPage();
+            for (UrlLength urlLenght: biggerUerLenght) {
+                urlLenght.setSiteId(siteId);
+                webPageService.insertUrlLength(urlLenght);
+            }
+
 
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);

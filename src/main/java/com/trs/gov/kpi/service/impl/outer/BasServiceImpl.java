@@ -150,7 +150,18 @@ public class BasServiceImpl implements BasService {
         }
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
-        for (HistoryDate historyDate : dateList) {
+
+        for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
+            HistoryDate historyDate = iterator.next();
+            //处理最后一个月的数据，如果这月还没结束，就不返回该月的数据
+            if (!iterator.hasNext()) {
+                Calendar lastDate = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                lastDate.setTime(sdf.parse(historyDate.getEndDate()));
+                if (lastDate.get(Calendar.DAY_OF_MONTH) != 1) {//判断是否为当月第一天
+                    break;
+                }
+            }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             Map<String, String> params = new HashMap<>();
             params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));

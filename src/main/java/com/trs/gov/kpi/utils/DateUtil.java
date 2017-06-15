@@ -106,6 +106,17 @@ public class DateUtil {
 
             SimpleDateFormat sdf = new SimpleDateFormat(DAY_FORMAT);
 
+            //起止日期相同时
+            if (currBegin.getTime().equals(endCalendar.getTime())) {
+                HistoryDate historyDate = new HistoryDate();
+                historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatMonth(currBegin.get(Calendar.MONTH)));
+                historyDate.setBeginDate(sdf.format(currBegin.getTime()));
+                endCalendar.add(Calendar.DAY_OF_MONTH, 1);
+                historyDate.setEndDate(sdf.format(endCalendar.getTime()));
+                list.add(historyDate);
+                currBegin.add(Calendar.MONTH, 1);//使得开始日期大于等于结束时间，跳过后两次判断
+            }
+
 
             while (currBegin.getTime().before(endDate)) {// 判断是否到结束日期
                 HistoryDate historyDate = new HistoryDate();
@@ -132,6 +143,7 @@ public class DateUtil {
 
                     endCalendar.add(Calendar.DAY_OF_MONTH, 1);//增加一天，避免查询时最后一天查不到的情况
                     lastDay = sdf.format(endCalendar.getTime());
+                    endCalendar.add(Calendar.DAY_OF_MONTH, -1);//减去一天，还原结束日期
 
                     historyDate.setBeginDate(firstDay);
                     historyDate.setEndDate(lastDay);
@@ -157,7 +169,7 @@ public class DateUtil {
 
             }
 
-            //起止日期相同时
+            //处理结束日期为当月第一天的情况
             if (currBegin.getTime().equals(endCalendar.getTime())) {
                 HistoryDate historyDate = new HistoryDate();
                 historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatMonth(currBegin.get(Calendar.MONTH)));
