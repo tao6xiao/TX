@@ -117,7 +117,7 @@ public class BasServiceImpl implements BasService {
             log.error("getVisits failed ", e);
             throw new RemoteException("获取访问量失败！", e);
         }
-        if (basPVResponse.getRecords().isEmpty()) {
+        if (basPVResponse.getRecords() == null || basPVResponse.getRecords().isEmpty()) {
             return null;
         }
         return basPVResponse.getRecords().get(0).getPv();
@@ -199,7 +199,7 @@ public class BasServiceImpl implements BasService {
             log.error("getStayTime failed ", e);
             throw new RemoteException("获取停留时间失败！", e);
         }
-        if (summaryResponse.getRecords().isEmpty()) {
+        if (summaryResponse.getRecords() == null || summaryResponse.getRecords().isEmpty()) {
             return null;
         }
         return summaryResponse.getRecords().get(0);
