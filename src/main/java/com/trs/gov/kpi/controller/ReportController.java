@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
@@ -40,7 +41,10 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)
-    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletRequest request, HttpServletResponse response) throws ParseException {
+    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletRequest request, HttpServletResponse response) throws ParseException, BizException {
+        if (param.getId() == null) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
         reportService.getReportPath(param);
 
         String fileName = null;
