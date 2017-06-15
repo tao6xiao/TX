@@ -141,7 +141,7 @@ public class DateUtil {
 
                     endCalendar.add(Calendar.DAY_OF_MONTH, 1);//增加一天，避免查询时最后一天查不到的情况
                     lastDay = sdf.format(endCalendar.getTime());
-                    endCalendar.add(Calendar.DAY_OF_MONTH, 1);//减去一天，还原结束日期
+                    endCalendar.add(Calendar.DAY_OF_MONTH, -1);//减去一天，还原结束日期
 
                     historyDate.setBeginDate(firstDay);
                     historyDate.setEndDate(lastDay);
