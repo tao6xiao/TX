@@ -34,7 +34,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ApiPageData selectReportList(ReportRequestParam param, boolean isTimeNode) throws RemoteException, ParseException {
-        QueryFilter filter = QueryFilterHelper.toReportFilter(param);
+        QueryFilter filter = QueryFilterHelper.toReportFilter(param, isTimeNode);
         if (isTimeNode) {
             filter.addCond(ReportTableField.TYPE, 1);
         } else {
@@ -57,10 +57,15 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public String getReportPath(ReportRequestParam param) throws ParseException {
+    public String getReportPath(ReportRequestParam param, boolean isTimeNode) throws ParseException {
 
-        QueryFilter filter = QueryFilterHelper.toReportFilter(param);
+        QueryFilter filter = QueryFilterHelper.toReportFilter(param, isTimeNode);
         filter.addCond(ReportTableField.ID, param.getId());
+        if (isTimeNode) {
+            filter.addCond(ReportTableField.TYPE, 1);
+        } else {
+            filter.addCond(ReportTableField.TYPE, 2);
+        }
 
         return reportMapper.selectPathById(filter);
     }

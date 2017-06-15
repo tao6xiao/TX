@@ -26,6 +26,9 @@ public interface ReportService {
      * 获取导出报表的文件路径
      *
      * @param param
+     * @param isTimeNode
+     * @return
+     * @throws ParseException
      */
-    String getReportPath(ReportRequestParam param) throws ParseException;
+    String getReportPath(ReportRequestParam param, boolean isTimeNode) throws ParseException;
 }

@@ -12,4 +12,6 @@ public class ReportRequestParam extends DateRequest {
 
     private Integer siteId;
 
+    private String day;
+
 }

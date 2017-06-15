@@ -355,19 +355,24 @@ public class QueryFilterHelper {
         return ids;
     }
 
-    public static QueryFilter toReportFilter(ReportRequestParam param) throws ParseException {
+    public static QueryFilter toReportFilter(ReportRequestParam param, boolean isTimeNode) throws ParseException {
         QueryFilter filter = new QueryFilter(Table.REPORT);
         if (param.getSiteId() != null) {
             filter.addCond(ReportTableField.SITE_ID, param.getSiteId());
         }
-        if (!StringUtil.isEmpty(param.getBeginDateTime())) {
-            filter.addCond(ReportTableField.REPORT_TIME, param.getBeginDateTime()).setRangeBegin(true);
-            if (StringUtil.isEmpty(param.getEndDateTime())) {
+        if (isTimeNode) {
+            if (!StringUtil.isEmpty(param.getDay())) {
+                filter.addCond(ReportTableField.REPORT_TIME, param.getDay()).setRangeBegin(true);
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTime(DateUtil.toDate(param.getBeginDateTime()));
+                calendar.setTime(DateUtil.toDate(param.getDay()));
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                 filter.addCond(ReportTableField.REPORT_TIME, DateUtil.toString(calendar.getTime())).setRangeEnd(true);
-            } else {
+            }
+        } else {
+            if (!StringUtil.isEmpty(param.getBeginDateTime())) {
+                filter.addCond(ReportTableField.REPORT_TIME, param.getBeginDateTime()).setRangeBegin(true);
+            }
+            if (!StringUtil.isEmpty(param.getEndDateTime())) {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getEndDateTime()).setRangeEnd(true);
             }
         }

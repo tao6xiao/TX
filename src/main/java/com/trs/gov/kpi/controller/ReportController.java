@@ -43,16 +43,16 @@ public class ReportController {
         return reportService.selectReportList(param, true);
     }
 
-    @RequestMapping(value = "/export", method = RequestMethod.GET)
+    @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
     public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException {
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        reportService.getReportPath(param);
+        reportService.getReportPath(param, true);
 
         String fileName = null;
         if (param.getId() != null) {
-            fileName = "desktsop.ini";
+            fileName = "7z1604-x64.exe";
         }
 
         if (fileName != null) {
@@ -65,6 +65,24 @@ public class ReportController {
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
         checkParam(param);
         return reportService.selectReportList(param, false);
+    }
+
+    @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
+    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException {
+        if (param.getId() == null) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        reportService.getReportPath(param, false);
+
+        String fileName = null;
+        if (param.getId() != null) {
+            fileName = "7z1604-x64.exe";
+        }
+
+        if (fileName != null) {
+            download(response, fileName);
+        }
+        return null;
     }
 
     private void checkParam(ReportRequestParam param) throws BizException {
