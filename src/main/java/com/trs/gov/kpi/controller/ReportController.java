@@ -8,13 +8,13 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.ReportService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -30,6 +30,9 @@ import java.text.ParseException;
 @RequestMapping(value = "/gov/kpi/report")
 public class ReportController {
 
+    @Value("${issue.report.dir}")
+    private String reportDir;
+
     @Resource
     private ReportService reportService;
 
@@ -41,7 +44,7 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)
-    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletRequest request, HttpServletResponse response) throws ParseException, BizException {
+    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException {
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
@@ -49,11 +52,11 @@ public class ReportController {
 
         String fileName = null;
         if (param.getId() != null) {
-            fileName = "version.ini";
+            fileName = "desktsop.ini";
         }
 
         if (fileName != null) {
-            download(request, response, fileName);
+            download(response, fileName);
         }
         return null;
     }
@@ -70,11 +73,9 @@ public class ReportController {
         ParamCheckUtil.checkTime(param.getEndDateTime());
     }
 
-    private void download(HttpServletRequest request, HttpServletResponse response, String fileName) {
+    private void download(HttpServletResponse response, String fileName) {
         //TODO 文件路径待确定
-        String realPath = request.getServletContext().getRealPath("/");
-        realPath = realPath + "../";
-        File file = new File(realPath, fileName);
+        File file = new File(reportDir, fileName);
         if (file.exists()) {
             response.setContentType("application/force-download");// 设置强制下载不打开
             response.addHeader("Content-Disposition",
