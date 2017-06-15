@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.PageSpace;
+import com.trs.gov.kpi.entity.UrlLength;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -130,4 +131,11 @@ public interface WebPageService {
      * @param pageSpace
      */
     void insertPageSpace(PageSpace pageSpace);
+
+    /**
+     * 插入过长URL页面信息
+     *
+     * @param urlLength
+     */
+    void insertUrlLength(UrlLength urlLength);
 }

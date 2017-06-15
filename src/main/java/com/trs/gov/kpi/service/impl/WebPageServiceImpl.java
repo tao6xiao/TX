@@ -298,9 +298,19 @@ public class WebPageServiceImpl implements WebPageService {
      */
     @Override
     public void insertPageSpace(PageSpace pageSpace) {
-        /*
-        * 判断条件待定
-        * */
+
         commonMapper.insert(DBUtil.toRow(pageSpace));
     }
+
+    /**
+     * 插入过长URL页面信息
+     *
+     * @param urlLength
+     */
+    @Override
+    public void insertUrlLength(UrlLength urlLength) {
+
+        commonMapper.insert(DBUtil.toRow(urlLength));
+    }
+
 }
