@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
 import com.trs.gov.kpi.service.outer.InteractionService;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -139,12 +140,13 @@ public class InteractionServiceImpl implements InteractionService {
     }
 
     private Request buildRequest(String methodName, String serviceName, String userName, Map<String, String> params) {
+        OuterApiServiceUtil.addUserNameParam(userName, params);
         return newServiceRequestBuilder()
-                .setUrlFormat("%s/fdy/%s.do?method=%s&userName=%s")
+                .setUrlFormat("%s/fdy/%s.do?method=%s")
                 .setServiceUrl(nbhdServiceUrl)
                 .setServiceName(serviceName)
                 .setMethodName(methodName)
-                .setUserName(userName)
+//                .setUserName(userName)
                 .setParams(params).build();
     }
 

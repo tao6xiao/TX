@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -140,12 +141,12 @@ public class DocumentApiServiceImpl implements DocumentApiService {
     }
 
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
+        OuterApiServiceUtil.addUserNameParam(userName, params);
         return newServiceRequestBuilder()
-                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")
+                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
                 .setServiceUrl(editCenterServiceUrl)
                 .setServiceName(SERVICE_NAME)
                 .setMethodName(methodName)
-                .setUserName(userName)
                 .setParams(params).build();
     }
 }

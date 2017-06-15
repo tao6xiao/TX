@@ -27,6 +27,8 @@ public class DateUtil {
     // 一天的毫秒数
     private static final long MS_ONE_DAY = 24 * 60 * 60 * 1000L;
 
+    private static final String MONTH_FORMAT = "yyyy-MM";
+
     private static final String DAY_FORMAT = "yyyy-MM-dd";
 
     // 惯用时间格式
@@ -189,6 +191,15 @@ public class DateUtil {
         long endTime = date.getTime();
         int periods = (int) ((endTime - beginTime) * 1.0f / MS_ONE_DAY / intervalDay);
         return new Date(beginTime + intervalDay * periods * MS_ONE_DAY);
+    }
+
+    /**
+     * 获取当前月， yyyy-MM-dd HH:mm:ss 格式，比如 2017-06-01 00:00:00
+     * @return
+     */
+    public static String curMonth() {
+        final SimpleDateFormat format = new SimpleDateFormat(MONTH_FORMAT);
+        return format.format(new Date()) + "-01 00:00:00";
     }
 
 }

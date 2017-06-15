@@ -23,7 +23,6 @@ public class OuterApiServiceUtil {
         private String urlFormat;
         private String serviceName;
         private String methodName;
-        private String userName;
         private Map<String, String> params;
 
         protected ServiceRequestBuilder() {
@@ -44,11 +43,6 @@ public class OuterApiServiceUtil {
             return this;
         }
 
-        public ServiceRequestBuilder setUserName(String userName) {
-            this.userName = userName;
-            return this;
-        }
-
         public ServiceRequestBuilder setParams(Map<String, String> params) {
             this.params = params;
             return this;
@@ -60,11 +54,8 @@ public class OuterApiServiceUtil {
         }
 
         public Request build() {
-            if (userName == null || userName.trim().isEmpty()) {
-                userName = "admin";
-            }
             StringBuilder url = new StringBuilder(
-                    String.format(urlFormat, serviceUrl, serviceName, methodName, userName));
+                    String.format(urlFormat, serviceUrl, serviceName, methodName));
             if (params != null && !params.isEmpty()) {
                 Iterator<String> iter = params.keySet().iterator();
                 while (iter.hasNext()) {
@@ -77,6 +68,14 @@ public class OuterApiServiceUtil {
                     .url(url.toString())
                     .addHeader("Accept", "application/json; charset=utf-8")
                     .build();
+        }
+    }
+
+    public static void addUserNameParam(String userName, Map<String, String> params) {
+        if (StringUtil.isEmpty(userName)) {
+            params.put("CurrUserName", "admin");
+        } else {
+            params.put("CurrUserName", userName);
         }
     }
 }
