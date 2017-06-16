@@ -1,20 +1,27 @@
 package com.trs.gov.kpi.entity.responsedata;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
  */
-@Data
 public class DepDocMultiCounterResponse extends DocMultiCounterResponse{
 
     // 部门
+    @Getter
     private Long departmentId;
 
     // 部门名称
+    @Getter
     private String departmentName;
+
+    public void setDepartmentId(Long id) {
+        this.departmentId = id;
+        // TODO wait for editcenter
+        this.departmentName = String.valueOf(id);
+    }
 
     @Override
     public boolean equals(Object o) {
