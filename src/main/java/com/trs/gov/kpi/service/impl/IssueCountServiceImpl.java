@@ -9,10 +9,7 @@ import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
-import com.trs.gov.kpi.entity.responsedata.History;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.IssueHistoryCountResponse;
-import com.trs.gov.kpi.entity.responsedata.Statistics;
+import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
@@ -48,8 +45,8 @@ public class IssueCountServiceImpl implements IssueCountService {
             filter.addCond(IssueTableField.SITE_ID, siteIds[i]);
             filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-            filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_BEGIN_ID).setRangeBegin(true);
-            filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_END_ID).setRangeEnd(true);
+            filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
+            filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
             int count = issueMapper.count(filter);
             waringCount = waringCount + count;
         }
@@ -114,6 +111,69 @@ public class IssueCountServiceImpl implements IssueCountService {
         return new History(new Date(), historyResponseList);
     }
 
+    @Override
+    public List<DeptCountResponse> deptCountSort(IssueCountRequest request) {
+        Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
+        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
+        request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
+        List<DeptCountResponse> deptCountResponses = new ArrayList<>();
+        //待解决问题
+        List<DeptCountResponse> responseIssue = getResponseList(siteIds, IssueIndicator.UN_SOLVED_ISSUE, request);
+        deptCountResponses.addAll(responseIssue);
+
+        //待解决预警
+        List<DeptCountResponse> responseWarning = getResponseList(siteIds, IssueIndicator.WARNING, request);
+        deptCountResponses.addAll(responseWarning);
+
+        //已解决问题和预警
+        List<DeptCountResponse> responseAll = getResponseList(siteIds, IssueIndicator.SOLVED_ALL, request);
+        deptCountResponses.addAll(responseAll);
+
+        return deptCountResponses;
+    }
+
+    private List<DeptCountResponse> getResponseList(Integer[] siteIds, IssueIndicator type, IssueCountRequest request) {
+        List<DeptCountResponse> deptCountResponses = new ArrayList<>();
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addGroupField(IssueTableField.DEPT_ID);
+        if(type == IssueIndicator.UN_SOLVED_ISSUE || type == IssueIndicator.WARNING) {
+            filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+            if(type == IssueIndicator.UN_SOLVED_ISSUE){
+                filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
+                filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_END_ID).setRangeEnd(true);
+            }else {
+                filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
+                filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
+            }
+        }else if(type == IssueIndicator.SOLVED_ALL){
+            filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
+        }
+        for(int i = 0; i < siteIds.length; i++){
+            DeptCountResponse countResponse = new DeptCountResponse();
+            countResponse.setType(type.value);
+            countResponse.setName(type.getName());
+            filter.removeCond(IssueTableField.SITE_ID);
+            filter.addCond(IssueTableField.SITE_ID, siteIds[i]);
+            List<Integer> deptIdList = issueMapper.getDeptIdList(filter);
+            List<DeptCount> deptCounts = new ArrayList<>();
+            for (Integer deptId : deptIdList) {
+                if (deptId != null){
+                    filter.removeCond(IssueTableField.DEPT_ID);
+                    filter.addCond(IssueTableField.DEPT_ID, deptId);
+                    // TODO: 2017/6/16 get dept by deptId editor center
+                    DeptCount deptCount = new DeptCount(deptId.toString(), issueMapper.count(filter));
+                    deptCounts.add(deptCount);
+                }
+            }
+            countResponse.setCount(deptCounts);
+            deptCountResponses.add(countResponse);
+        }
+        return deptCountResponses;
+    }
+
     private IssueHistoryCountResponse buildHistoryResponse(IssueIndicator type, List<HistoryDate> dateList, Integer[] siteIds) {
         IssueHistoryCountResponse historyResponse = new IssueHistoryCountResponse();
         historyResponse.setType(type.value);
@@ -133,8 +193,8 @@ public class IssueCountServiceImpl implements IssueCountService {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
                     filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_END_ID).setRangeEnd(true);
                 } else if (type == IssueIndicator.WARNING) {
-                    filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_BEGIN_ID).setRangeBegin(true);
-                    filter.addCond(IssueTableField.TYPE_ID, Constants.WANRNING_END_ID).setRangeEnd(true);
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
                 }
                 count = count + issueMapper.count(filter);
             }

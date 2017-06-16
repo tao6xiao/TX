@@ -27,7 +27,7 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.*;
 
-import static com.trs.gov.kpi.constant.Constants.WANRNING_BEGIN_ID;
+import static com.trs.gov.kpi.constant.Constants.WARNING_BEGIN_ID;
 
 /**
  * Created by rw103 on 2017/5/13.
@@ -247,7 +247,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
-            if (infoUpdate.getSubTypeId() < WANRNING_BEGIN_ID) {
+            if (infoUpdate.getSubTypeId() < WARNING_BEGIN_ID) {
                 infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).getName());
             } else {
                 infoUpdateResponse.setIssueTypeName(Types.InfoUpdateWarningType.valueOf(infoUpdate.getSubTypeId()).getName());

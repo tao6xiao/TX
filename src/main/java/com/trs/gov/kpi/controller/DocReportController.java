@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -27,6 +28,8 @@ public class DocReportController {
 
     @Resource
     private ReportApiService reportApiService;
+
+    private static final String PREX_EDIT_CENTER_REPORT = "editcenter_";
 
     @RequestMapping(value = "/curmonth/bytype", method = RequestMethod.GET)
     @ResponseBody
@@ -76,23 +79,36 @@ public class DocReportController {
 
     @RequestMapping(value = "/curmonth/byday", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Long> getCurMonthCounterByDay(String month) {
+    public Map<String, String> getCurMonthCounterByDay() throws RemoteException {
+        Calendar now = Calendar.getInstance();// 当前起始日期
+        Date curDate = new Date();
+        now.setTime(curDate);
 
-        return new LinkedHashMap<>();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        String monthPrefix = format.format(curDate);
+        final int curDay = now.get(Calendar.DAY_OF_MONTH);
+        Map<String, String> allMonthReport = new LinkedHashMap<>();
+        for (int index = 1; index <= curDay; index++) {
+            allMonthReport.put(monthPrefix +  String.format("-%02d", index), "0");
+        }
+
+        final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_yifa_doc_byday", "CRDay", null, null);
+        allMonthReport.putAll(reportData);
+        return allMonthReport;
     }
 
     private <T extends DocMultiCounterResponse> List<Pair<String, SetFunc<T, String>>> getMultiReportList(String byName) {
         List<Pair<String, SetFunc<T, String>>> reports = new ArrayList<>();
-        reports.add(new Pair<>("editcenter_" + byName + "_new_doc_byday", (counter, value) ->  counter.setNewDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_copy_doc_byday", (counter, value) ->  counter.setCopyDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_quote_doc_byday", (counter, value) ->  counter.setQuoteDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_mirror_doc_byday", (counter, value) ->  counter.setMirrorDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_daibian_doc_byday", (counter, value) ->  counter.setDaibianDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_daishen_doc_byday", (counter, value) ->  counter.setDaishenDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_daiqian_doc_byday", (counter, value) ->  counter.setDaiqianDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_yifa_doc_byday", (counter, value) ->  counter.setYifaDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_push_doc_byday", (counter, value) ->  counter.setPushDocCount(Long.valueOf(value))));
-        reports.add(new Pair<>("editcenter_" + byName + "_distribute_doc_byday", (counter, value) ->  counter.setDistributeDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_new_doc_byday", (counter, value) ->  counter.setNewDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_copy_doc_byday", (counter, value) ->  counter.setCopyDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_quote_doc_byday", (counter, value) ->  counter.setQuoteDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_mirror_doc_byday", (counter, value) ->  counter.setMirrorDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_daibian_doc_byday", (counter, value) ->  counter.setDaibianDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_daishen_doc_byday", (counter, value) ->  counter.setDaishenDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_daiqian_doc_byday", (counter, value) ->  counter.setDaiqianDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_yifa_doc_byday", (counter, value) ->  counter.setYifaDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_push_doc_byday", (counter, value) ->  counter.setPushDocCount(Long.valueOf(value))));
+        reports.add(new Pair<>(PREX_EDIT_CENTER_REPORT + byName + "_distribute_doc_byday", (counter, value) ->  counter.setDistributeDocCount(Long.valueOf(value))));
         return reports;
     }
 

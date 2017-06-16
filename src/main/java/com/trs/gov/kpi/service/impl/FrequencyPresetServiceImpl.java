@@ -6,7 +6,6 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.service.FrequencyPresetService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
