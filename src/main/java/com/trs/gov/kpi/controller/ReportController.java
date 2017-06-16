@@ -49,16 +49,10 @@ public class ReportController {
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        reportService.getReportPath(param, true);
+        String[] str = reportService.getReportPath(param, true).split("/");
 
-        String fileName = null;
-        if (param.getId() != null) {
-            fileName = "7z1604-x64.exe";
-        }
+        download(response, "/" + str[1] + "/", str[2] + ".xlsx");
 
-        if (fileName != null) {
-            download(response, fileName);
-        }
         return null;
     }
 
@@ -76,21 +70,12 @@ public class ReportController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         reportService.getReportPath(param, false);
-
-        String fileName = null;
-        if (param.getId() != null) {
-            fileName = "7z1604-x64.exe";
-        }
-
-        if (fileName != null) {
-            download(response, fileName);
-        }
         return null;
     }
 
-    private void download(HttpServletResponse response, String fileName) {
+    private void download(HttpServletResponse response, String relativePath, String fileName) {
         //TODO 文件路径待确定
-        File file = new File(reportDir, fileName);
+        File file = new File(reportDir + relativePath, fileName);
         if (file.exists()) {
             response.setContentType("application/force-download");// 设置强制下载不打开
             response.addHeader("Content-Disposition",
