@@ -1,7 +1,9 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
+import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
@@ -60,6 +62,12 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
                 linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
             }
+            //获取响应速度基本信息，信息入库
+            Set<ReplySpeed> replySpeedSet = spider.getReplySpeeds();
+            for (ReplySpeed replySpeed : replySpeedSet){
+                replySpeed.setSiteId(siteId);
+                webPageService.insertReplyspeed(replySpeed);
+            }
 
             //获取过大页面信息；信息入库
             Set<PageSpace> biggerPageSpace = spider.biggerPageSpace();
@@ -75,6 +83,12 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 webPageService.insertUrlLength(urlLenght);
             }
 
+            //获取过深页面信息；信息入库
+            Set<PageDepth> pageDepthSet = spider.getPageDepths();
+            for (PageDepth pageDepth: pageDepthSet ) {
+                pageDepth.setSiteId(siteId);
+                webPageService.insertPageDepth(pageDepth);
+            }
 
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
