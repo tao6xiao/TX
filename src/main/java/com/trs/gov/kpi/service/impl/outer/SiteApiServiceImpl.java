@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +40,15 @@ public class SiteApiServiceImpl implements SiteApiService {
     public Site getSiteById(int siteId, String userName) throws RemoteException {
 
         try {
-            Map<String, String> params = Collections.singletonMap(SITE_ID, String.valueOf(siteId));
+            Map<String, String> params = new HashMap<>();
+            params.put(SITE_ID, String.valueOf(siteId));
+
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
                     buildRequest("findSiteById", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = getValidResult(response, "获取站点");
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取站点");
                 if (StringUtil.isEmpty(result.getData())) {
                     return null;
                 }
@@ -72,7 +75,7 @@ public class SiteApiServiceImpl implements SiteApiService {
                     buildRequest("queryChildrenChannelsOnEditorCenter", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = getValidResult(response, "获取子栏目");
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取子栏目");
 
                 if (StringUtil.isEmpty(result.getData())) {
                     return new ArrayList<>();
@@ -98,12 +101,14 @@ public class SiteApiServiceImpl implements SiteApiService {
     public Channel getChannelById(int channelId, String userName) throws RemoteException {
 
         try {
-            Map<String, String> params = Collections.singletonMap("ChannelId", String.valueOf(channelId));
+            Map<String, String> params = new HashMap<>();
+            params.put("ChannelId", String.valueOf(channelId));
+
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(buildRequest("findChannelById", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = getValidResult(response, "获取栏目");
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目");
                 if (StringUtil.isEmpty(result.getData())) {
                     return null;
                 }
@@ -128,7 +133,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             Response response = client.newCall(buildRequest("getSiteOrChannelPubUrl", userName, params)).execute();
 
             if (response.isSuccessful()) {
-                ApiResult result = getValidResult(response, "获取栏目发布地址");
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目发布地址");
                 return result.getData();
             } else {
                 log.error("failed to get channel publish url, error: " + response);
@@ -190,27 +195,12 @@ public class SiteApiServiceImpl implements SiteApiService {
     }
 
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
+        OuterApiServiceUtil.addUserNameParam(userName, params);
         return newServiceRequestBuilder()
-                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s&CurrUserName=%s")
+                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
                 .setServiceUrl(editCenterServiceUrl)
                 .setServiceName(SERVICE_NAME)
                 .setMethodName(methodName)
-                .setUserName(userName)
                 .setParams(params).build();
-    }
-
-    private ApiResult getValidResult(Response response, String errMsg) throws RemoteException,
-            IOException {
-        String ret = response.body().string();
-        ApiResult result = OuterApiUtil.toResultObj(ret);
-        if (result == null) {
-            log.error("invalid result msg: " + ret + ", response: " + response);
-            throw new RemoteException(errMsg + "失败！");
-        }
-        if (!result.isOk()) {
-            log.error("fail result: " + result.getMsg());
-            throw new RemoteException(errMsg + "失败！[" + result.getMsg() + "]");
-        }
-        return result;
     }
 }

@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.service.FrequencyPresetService;
@@ -37,16 +38,24 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
     }
 
     @Override
-    public int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest) {
-        // TODO: 2017/6/9  validate updateFreq and alertFreq are duplicate
-        FrequencyPreset frequencyPreset = toFrequencyPresetByRequest(frequencyPresetRequest);
-        return frequencyPresetMapper.insert(frequencyPreset);
+    public int addFrequencyPreset(FrequencyPresetRequest presetRequest) throws BizException {
+        FrequencyPreset preset = toFrequencyPresetByRequest(presetRequest);
+        if (isPresetExist(preset)) {
+            return 0;
+        }
+        return frequencyPresetMapper.insert(preset);
+    }
+
+    private boolean isPresetExist(FrequencyPreset preset) {
+        return frequencyPresetMapper.selectByPreset(preset) != null;
     }
 
     @Override
-    public int updateBySiteIdAndId(FrequencyPreset frequencyPreset) {
-        // TODO: 2017/6/9  validate updateFreq and alertFreq are duplicate
-        return frequencyPresetMapper.updateBySiteIdAndId(frequencyPreset);
+    public int updateBySiteIdAndId(FrequencyPreset preset) {
+        if (isPresetExist(preset)) {
+            return 0;
+        }
+        return frequencyPresetMapper.updateBySiteIdAndId(preset);
     }
 
     @Override

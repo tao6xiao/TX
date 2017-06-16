@@ -137,7 +137,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         for (LinkAvailability link : linkAvailabilitieList) {
             LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
             linkAvailabilityResponse.setId(link.getId());
-            linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).getName());
+            linkAvailabilityResponse.setIssueTypeName(Types.ServiceLinkIssueType.valueOf(link.getIssueTypeId()).getName());
             linkAvailabilityResponse.setInvalidLink(link.getInvalidLink());
             linkAvailabilityResponse.setSnapshot(link.getSnapshot());
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());

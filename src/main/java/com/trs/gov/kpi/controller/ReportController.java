@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.ReportService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -49,16 +50,13 @@ public class ReportController {
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        reportService.getReportPath(param, true);
-
-        String fileName = null;
-        if (param.getId() != null) {
-            fileName = "7z1604-x64.exe";
+        String path = reportService.getReportPath(param, true);
+        if (StringUtil.isEmpty(path)) {
+            return null;
         }
+        String[] str = path.split("/");
 
-        if (fileName != null) {
-            download(response, fileName);
-        }
+        download(response, "/" + str[1] + "/" + str[2] + "/", str[3] + ".xlsx");
         return null;
     }
 
@@ -75,22 +73,19 @@ public class ReportController {
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        reportService.getReportPath(param, false);
-
-        String fileName = null;
-        if (param.getId() != null) {
-            fileName = "7z1604-x64.exe";
+        String path = reportService.getReportPath(param, false);
+        if (StringUtil.isEmpty(path)) {
+            return null;
         }
+        String[] str = path.split("/");
 
-        if (fileName != null) {
-            download(response, fileName);
-        }
+        download(response, "/" + str[1] + "/" + str[2] + "/", str[3] + ".xlsx");
         return null;
     }
 
-    private void download(HttpServletResponse response, String fileName) {
+    private void download(HttpServletResponse response, String relativePath, String fileName) {
         //TODO 文件路径待确定
-        File file = new File(reportDir, fileName);
+        File file = new File(reportDir + relativePath, fileName);
         if (file.exists()) {
             response.setContentType("application/force-download");// 设置强制下载不打开
             response.addHeader("Content-Disposition",

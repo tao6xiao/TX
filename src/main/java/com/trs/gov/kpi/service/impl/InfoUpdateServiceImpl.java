@@ -27,7 +27,7 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.*;
 
-import static com.trs.gov.kpi.constant.Constants.WANRNING_BEGIN_ID;
+import static com.trs.gov.kpi.constant.Constants.WARNING_BEGIN_ID;
 
 /**
  * Created by rw103 on 2017/5/13.
@@ -247,7 +247,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getCheckTime());
-            if (infoUpdate.getSubTypeId() < WANRNING_BEGIN_ID) {
+            if (infoUpdate.getSubTypeId() < WARNING_BEGIN_ID) {
                 infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).getName());
             } else {
                 infoUpdateResponse.setIssueTypeName(Types.InfoUpdateWarningType.valueOf(infoUpdate.getSubTypeId()).getName());
@@ -277,21 +277,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         Pager pager = PageInfoDeal.buildResponsePager(request.getPageIndex(), request.getPageSize(), itemCount);
         filter.setPager(pager);
         List<InfoUpdateOrder> infoUpdateOrderList = issueMapper.selectInfoUpdateOrder(filter);
-        List<InfoUpdateOrderRes> list = new ArrayList<>();
-        for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
-            InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
-            infoUpdateOrderRes.setId(infoUpdateOrder.getId());
-            infoUpdateOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
-            infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
-            infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
-//            infoUpdateOrderRes.setDepartment();TODO
-            infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());
-            infoUpdateOrderRes.setCheckTime(infoUpdateOrder.getIssueTime());
-            infoUpdateOrderRes.setSolveStatus(infoUpdateOrder.getIsResolved());
-            infoUpdateOrderRes.setIsDeleted(infoUpdateOrder.getIsDel());
-            infoUpdateOrderRes.setWorkOrderStatus(infoUpdateOrder.getWorkOrderStatus());
-            list.add(infoUpdateOrderRes);
-        }
+        List<InfoUpdateOrderRes> list = toOrderResponse(infoUpdateOrderList);
 
         return new ApiPageData(pager, list);
     }
@@ -302,11 +288,21 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         filter.addCond(IssueTableField.ID, request.getId());
 
         List<InfoUpdateOrder> infoUpdateOrderList = issueMapper.selectInfoUpdateOrder(filter);
-        InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
+        List<InfoUpdateOrderRes> list = toOrderResponse(infoUpdateOrderList);
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+    }
+
+    private List<InfoUpdateOrderRes> toOrderResponse(List<InfoUpdateOrder> infoUpdateOrderList) throws RemoteException {
+        List<InfoUpdateOrderRes> responseList = new ArrayList<>();
         for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
+            InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
             infoUpdateOrderRes.setId(infoUpdateOrder.getId());
             infoUpdateOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
             infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
+            infoUpdateOrderRes.setParentTypeName(Types.IssueType.valueOf(infoUpdateOrder.getTypeId()).getName());
             infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
 //            infoUpdateOrderRes.setDepartment();TODO
             infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());
@@ -314,8 +310,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateOrderRes.setSolveStatus(infoUpdateOrder.getIsResolved());
             infoUpdateOrderRes.setIsDeleted(infoUpdateOrder.getIsDel());
             infoUpdateOrderRes.setWorkOrderStatus(infoUpdateOrder.getWorkOrderStatus());
+            responseList.add(infoUpdateOrderRes);
         }
-
-        return infoUpdateOrderRes;
+        return responseList;
     }
 }

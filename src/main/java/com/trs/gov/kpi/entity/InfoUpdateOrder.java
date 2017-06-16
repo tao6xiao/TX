@@ -16,6 +16,8 @@ public class InfoUpdateOrder {
 
     private Integer siteId;
 
+    private Integer typeId;
+
     private Integer subTypeId;
 
     private String detail;

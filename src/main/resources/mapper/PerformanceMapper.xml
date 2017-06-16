@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.PerformanceMapper">
+    <resultMap id="PerformanceMap" type="com.trs.gov.kpi.entity.Performance">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="siteId" jdbcType="INTEGER" property="siteId"/>
+        <result column="performance" jdbcType="DOUBLE" property="index"/>
+        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+    </resultMap>
+
+    <select id="getRecentPerformance" resultType="Double">
+      SELECT performance
+      FROM performanceindex
+      WHERE siteId = 11
+	  AND checkTime = (SELECT max(checkTime)
+                       FROM performanceindex
+                       WHERE siteId = 11)
+    </select>
+
+    <select id="getHistoryPerformance" resultMap="PerformanceMap">
+      SELECT *
+      FROM performanceindex
+      WHERE siteId = #{param.siteId}
+      <if test="param.beginDateTime != null and param.beginDateTime != ''">
+          AND checkTime
+          <![CDATA[
+           >=
+            ]]>
+          #{param.beginDateTime}
+      </if>
+        <if test="param.endDateTime != null and param.endDateTime != ''">
+            AND checkTime
+            <![CDATA[
+           <=
+            ]]>
+            #{param.endDateTime}
+        </if>
+    </select>
+
+</mapper>
