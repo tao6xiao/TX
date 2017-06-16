@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
+import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -138,4 +140,17 @@ public interface WebPageService {
      * @param urlLength
      */
     void insertUrlLength(UrlLength urlLength);
+
+    /**
+     * 插入响应速度信息
+     * @param replySpeed
+     */
+    void insertReplyspeed(ReplySpeed replySpeed);
+
+    /**
+     * 插入过深页面
+     *
+     * @param pageDepth
+     */
+    void insertPageDepth(PageDepth pageDepth);
 }

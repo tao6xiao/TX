@@ -298,7 +298,6 @@ public class WebPageServiceImpl implements WebPageService {
      */
     @Override
     public void insertPageSpace(PageSpace pageSpace) {
-
         commonMapper.insert(DBUtil.toRow(pageSpace));
     }
 
@@ -309,8 +308,26 @@ public class WebPageServiceImpl implements WebPageService {
      */
     @Override
     public void insertUrlLength(UrlLength urlLength) {
-
         commonMapper.insert(DBUtil.toRow(urlLength));
+    }
+
+    /**
+     * 插入响应速度信息
+     *
+     * @param replySpeed
+     */
+    @Override
+    public void insertReplyspeed(ReplySpeed replySpeed) {
+        commonMapper.insert(DBUtil.toRow(replySpeed));
+    }
+
+    /**
+     * 插入过深页面
+     *
+     * @param pageDepth
+     */
+    public void insertPageDepth(PageDepth pageDepth) {
+        commonMapper.insert(DBUtil.toRow(pageDepth));
     }
 
 }
