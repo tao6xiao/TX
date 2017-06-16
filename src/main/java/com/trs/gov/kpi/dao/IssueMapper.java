@@ -150,4 +150,11 @@ public interface IssueMapper {
      */
     void updateOrderByIds(@Param("workOrderStatus") int workOrderStatus, @Param("ids") List<Integer> ids);
 
+    /**
+     * 获取当前站点下部门的id
+     * @param filter
+     * @return
+     */
+    List<Integer> getDeptIdList(QueryFilter filter);
+
 }

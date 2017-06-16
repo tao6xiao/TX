@@ -41,6 +41,9 @@ public class Issue {
     private Integer isDel = 0;
 
     @DBField
+    private Integer deptId;
+
+    @DBField
     private String customer1;
 
     @DBField
@@ -145,5 +148,13 @@ public class Issue {
 
     public void setCustomer3(String customer3) {
         this.customer3 = customer3;
+    }
+
+    public Integer getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Integer deptId) {
+        this.deptId = deptId;
     }
 }
