@@ -3,7 +3,6 @@ package com.trs.gov.kpi.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.responsedata.DepDocMultiCounterResponse;
 import com.trs.gov.kpi.entity.responsedata.DocTypeCounterResponse;

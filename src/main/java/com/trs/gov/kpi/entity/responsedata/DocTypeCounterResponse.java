@@ -21,6 +21,24 @@ public class DocTypeCounterResponse {
     public DocTypeCounterResponse(Integer type, Long count) {
         this.type = type;
         this.count = count;
+        this.name = getTypeName(this.type);
+    }
+
+    private String getTypeName(Integer type) {
+        switch (type) {
+            case 20:
+                return "文字";
+            case 30:
+                return "链接";
+            case 40:
+                return "文件";
+            case 50:
+                return "图片";
+            case 60:
+                return "视频";
+            default:
+                return "未知类型";
+        }
     }
 
 }
