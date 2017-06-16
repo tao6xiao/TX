@@ -18,7 +18,7 @@ public class PageDepth {
 
     private Integer depth;
 
-    private Integer space;
+    private Long space;
 
     private Date checkTime;
 }

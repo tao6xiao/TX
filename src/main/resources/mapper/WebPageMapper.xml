@@ -5,8 +5,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
-        <result column="replySpeed" jdbcType="INTEGER" property="speed"/>
-        <result column="pageSpace" jdbcType="INTEGER" property="space"/>
+        <result column="replySpeed" jdbcType="BIGINT" property="speed"/>
+        <result column="pageSpace" jdbcType="BIGINT" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
@@ -14,8 +14,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
-        <result column="replySpeed" jdbcType="INTEGER" property="speed"/>
-        <result column="pageSpace" jdbcType="INTEGER" property="space"/>
+        <result column="replySpeed" jdbcType="BIGINT" property="speed"/>
+        <result column="pageSpace" jdbcType="BIGINT" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
@@ -24,7 +24,7 @@
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="pageDepth" jdbcType="INTEGER" property="depth"/>
-        <result column="pageSpace" jdbcType="INTEGER" property="space"/>
+        <result column="pageSpace" jdbcType="BIGINT" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
@@ -41,8 +41,8 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
-        <result column="urlLength" jdbcType="INTEGER" property="length"/>
-        <result column="pageSpace" jdbcType="INTEGER" property="space"/>
+        <result column="urlLength" jdbcType="BIGINT" property="length"/>
+        <result column="pageSpace" jdbcType="BIGINT" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 

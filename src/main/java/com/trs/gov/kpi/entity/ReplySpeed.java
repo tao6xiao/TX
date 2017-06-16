@@ -16,9 +16,9 @@ public class ReplySpeed {
 
     private String pageLink;
 
-    private Integer speed;
+    private Long speed;
 
-    private Integer space;
+    private Long space;
 
     private Date checkTime;
 }
