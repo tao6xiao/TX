@@ -67,8 +67,16 @@ public interface FrequencyPresetMapper {
 
     /**
      * 通过频率查询对应的记录
-     * @param UpdateFreq
+     * @param siteId
+     * @param updateFreq
      * @return
      */
     List<FrequencyPreset> selectBySiteIdAndUpdateFreq(@Param("siteId") Integer siteId,@Param("updateFreq") String updateFreq);
+
+    /**
+     * 通过站点，预设的频率，预警时限查询是否存在当前记录
+     * @param preset
+     * @return
+     */
+    FrequencyPreset selectByPreset(FrequencyPreset preset);
 }
