@@ -12,6 +12,8 @@ public class Site {
 
     private int siteId;
 
+    private String siteName;
+
 
 //    "SITEDESC" : "TRS演示站点",
 //            "CRUSER" : "admin",

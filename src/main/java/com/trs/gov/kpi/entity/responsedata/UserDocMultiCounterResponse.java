@@ -1,17 +1,25 @@
 package com.trs.gov.kpi.entity.responsedata;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
  */
-@Data
 public class UserDocMultiCounterResponse extends DocMultiCounterResponse {
 
+    @Getter
     private Long userId;
+
+    @Getter
     private String userName;
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+        // TODO wait for editcenter
+        this.userName = "UserId[" + String.valueOf(userId) + "]";
+    }
 
     @Override
     public boolean equals(Object o) {

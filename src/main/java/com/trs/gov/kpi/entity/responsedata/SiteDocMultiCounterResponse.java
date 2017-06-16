@@ -1,20 +1,42 @@
 package com.trs.gov.kpi.entity.responsedata;
 
-import lombok.Data;
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
+import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.SpringContextUtil;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
  */
-@Data
+@Slf4j
 public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
 
     // 站点编号
+    @Getter
     private Long siteId;
 
     // 站点名称
+    @Getter
     private String siteName;
+
+    public void setSiteId(Long id) {
+        this.siteId = id;
+        try {
+            SiteApiService siteApiService = (SiteApiService) SpringContextUtil.getBean(SiteApiService.class);
+            final Site site = siteApiService.getSiteById(id.intValue(), null);
+            if (site != null) {
+                this.siteName = site.getSiteName();
+            } else {
+                this.siteName = "SiteId[" + String.valueOf(id) + "]";
+            }
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
+    }
 
     @Override
     public boolean equals(Object o) {
