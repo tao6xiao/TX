@@ -237,15 +237,6 @@ public class SpiderUtils {
         }
     }
 
-    private int deepSize(String url, int deep){
-        Set<String> parentUrls = pageParentMap.get(url);
-
-
-
-        return deep;
-    }
-
-
 
     /**
      * 检索首页是否可用
