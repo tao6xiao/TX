@@ -73,11 +73,7 @@ public class FrequencyPresetController {
             log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        int num =  frequencyPresetService.addFrequencyPreset(request);
-        if(num == 0){
-            log.error("向站点siteId"+request.getSiteId()+"添加的预设记录已经存在");
-            throw new BizException("添加的预设记录已经存在");
-        }
+        frequencyPresetService.addFrequencyPreset(request);
         return null;
     }
 
@@ -100,11 +96,7 @@ public class FrequencyPresetController {
             log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        int num = frequencyPresetService.updateBySiteIdAndId(preset);
-        if(num == 0){
-            log.error("在站点siteId"+preset.getSiteId()+"修改的预设记录已经存在");
-            throw new BizException("修改的预设记录已经存在");
-        }
+        frequencyPresetService.updateBySiteIdAndId(preset);
         return null;
     }
 
