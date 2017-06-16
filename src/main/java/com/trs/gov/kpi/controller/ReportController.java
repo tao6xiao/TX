@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.ReportService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -49,10 +50,13 @@ public class ReportController {
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        String[] str = reportService.getReportPath(param, true).split("/");
+        String path = reportService.getReportPath(param, true);
+        if (StringUtil.isEmpty(path)) {
+            return null;
+        }
+        String[] str = path.split("/");
 
-        download(response, "/" + str[1] + "/", str[2] + ".xlsx");
-
+        download(response, "/" + str[1] + "/" + str[2] + "/", str[3] + ".xlsx");
         return null;
     }
 
@@ -69,7 +73,13 @@ public class ReportController {
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        reportService.getReportPath(param, false);
+        String path = reportService.getReportPath(param, false);
+        if (StringUtil.isEmpty(path)) {
+            return null;
+        }
+        String[] str = path.split("/");
+
+        download(response, "/" + str[1] + "/" + str[2] + "/", str[3] + ".xlsx");
         return null;
     }
 
