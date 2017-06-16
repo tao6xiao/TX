@@ -1,8 +1,8 @@
 package com.trs.gov.kpi.service.outer;
 
+import com.trs.gov.kpi.entity.outerapi.sp.SGHistoryStatistics;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
-import com.trs.gov.kpi.entity.outerapi.sp.SPHistoryStatistics;
-import com.trs.gov.kpi.entity.outerapi.sp.SPStatistics;
+import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by ranwei on 2017/6/12.
  */
-public interface SPService {
+public interface SGService {
 
     /**
      * 查询服务指南的问题列表
@@ -26,7 +26,7 @@ public interface SPService {
      * @param param
      * @return
      */
-    SPStatistics getSPCount(PageDataRequestParam param);
+    SGStatistics getSGCount(PageDataRequestParam param);
 
     /**
      * 查询服务实用统计的历史记录
@@ -34,5 +34,5 @@ public interface SPService {
      * @param param
      * @return
      */
-    List<SPHistoryStatistics> getSPHistoryCount(PageDataRequestParam param);
+    List<SGHistoryStatistics> getSGHistoryCount(PageDataRequestParam param);
 }

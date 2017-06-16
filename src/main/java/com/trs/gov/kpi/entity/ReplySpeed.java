@@ -31,10 +31,10 @@ public class ReplySpeed {
     private String pageLink;//网页链接
 
     @DBField("pageSpeed")
-    private Long speed;//响应速度
+    private Long speed;
 
     @DBField("pageSpace")
-    private Long space;//页面大小
+    private Long space;
 
     @DBField
     private Date checkTime;//监测时间

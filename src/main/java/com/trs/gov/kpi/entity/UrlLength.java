@@ -39,6 +39,9 @@ public class UrlLength {
     @DBField
     private Date checkTime;//监测时间
 
+    public UrlLength() {
+    }
+
     public UrlLength(Integer typeId, Integer chnlId, String pageLink, Long length, Long space, Date checkTime) {
         this.typeId = typeId;
         this.chnlId = chnlId;
