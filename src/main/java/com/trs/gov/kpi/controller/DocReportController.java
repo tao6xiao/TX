@@ -29,6 +29,9 @@ import java.util.*;
 @RequestMapping(value = "/gov/kpi/doc/report")
 public class DocReportController {
 
+    public static final String KEY_TOTAL_COUNT = "totalCount";
+    public static final String KEY_DATA = "data";
+    public static final String SITE_YIFA_DOC_BYDAY = "site_yifa_doc_byday";
     @Resource
     private ReportApiService reportApiService;
 
@@ -63,8 +66,8 @@ public class DocReportController {
         SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) ->  counter.setDepartmentId(Long.valueOf(value));
         List<DepDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
         Map<String, Object> result = new HashMap<>();
-        result.put("totalCount", countAll(allReports));
-        result.put("data", allReports);
+        result.put(KEY_TOTAL_COUNT, countAll(allReports));
+        result.put(KEY_DATA, allReports);
         return result;
 
     }
@@ -76,8 +79,8 @@ public class DocReportController {
         SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) ->  counter.setSiteId(Long.valueOf(value));
         final java.util.List<SiteDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class, setSiteIdFunc);
         Map<String, Object> result = new HashMap<>();
-        result.put("totalCount", countAll(allReports));
-        result.put("data", allReports);
+        result.put(KEY_TOTAL_COUNT, countAll(allReports));
+        result.put(KEY_DATA, allReports);
         return result;
     }
 
@@ -88,8 +91,8 @@ public class DocReportController {
         SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) ->  counter.setUserId(Long.valueOf(value));
         final List<UserDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
         Map<String, Object> result = new HashMap<>();
-        result.put("totalCount", countAll(allReports));
-        result.put("data", allReports);
+        result.put(KEY_TOTAL_COUNT, countAll(allReports));
+        result.put(KEY_DATA, allReports);
         return result;
     }
 
@@ -108,7 +111,7 @@ public class DocReportController {
             allMonthReport.put(monthPrefix +  String.format("-%02d", index), "0");
         }
 
-        final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_yifa_doc_byday", "CRDay", null, null);
+        final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", null, null);
         allMonthReport.putAll(reportData);
         return allMonthReport;
     }
@@ -133,12 +136,29 @@ public class DocReportController {
         Map<String, Long> result = new HashMap<>();
         final Map<String, String> newDocReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_new_doc_byday", "Site", beginDay, endDay);
         result.put("newDoc", countMap(newDocReportData));
-        final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_yifa_doc_byday", "Site", beginDay, endDay);
+        final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, endDay);
         result.put("yifa", countMap(yifaReportData));
         final Map<String, String> pushReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_push_doc_byday", "Site", beginDay, endDay);
         result.put("push", countMap(pushReportData));
         final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
         result.put("distribute", countMap(distributeReportData));
+
+        return result;
+    }
+
+    @RequestMapping(value = "/curmonth/bystatus", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Long> getCurMonthDocStatusReport() throws RemoteException {
+        String beginDay = DateUtil.curMonth();
+        Map<String, Long> result = new HashMap<>();
+        final Map<String, String> daibianReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daibian_doc_byday", "Site", beginDay, null);
+        result.put("daibian", countMap(daibianReportData));
+        final Map<String, String> daishenReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daishen_doc_byday", "Site", beginDay, null);
+        result.put("daishen", countMap(daishenReportData));
+        final Map<String, String> daiqianReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daiqian_doc_byday", "Site", beginDay, null);
+        result.put("daiqian", countMap(daiqianReportData));
+        final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
+        result.put("yifa", countMap(yifaReportData));
 
         return result;
     }
