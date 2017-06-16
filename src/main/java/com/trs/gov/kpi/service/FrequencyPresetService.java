@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.FrequencyPreset;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 
@@ -33,14 +34,14 @@ public interface FrequencyPresetService {
      * @param frequencyPresetRequest
      * @return
      */
-    int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest);
+    int addFrequencyPreset(FrequencyPresetRequest frequencyPresetRequest) throws BizException;
 
     /**
      * 通过站点id和id修改更新频率和预警预设记录
      * @param frequencyPreset
      * @return
      */
-    int updateBySiteIdAndId(FrequencyPreset frequencyPreset);
+    int updateBySiteIdAndId(FrequencyPreset frequencyPreset) throws BizException;
 
     /**
      * 通过站点id和id删除更新频率和预警预设记录
