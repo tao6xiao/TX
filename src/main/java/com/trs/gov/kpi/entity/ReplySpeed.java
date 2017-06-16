@@ -1,25 +1,54 @@
 package com.trs.gov.kpi.entity;
 
+import com.trs.gov.kpi.annotation.DBField;
+import com.trs.gov.kpi.annotation.DBTable;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
+ *  响应速度
+ *
  * Created by ranwei on 2017/6/6.
  */
 @Data
+@DBTable("webpage")
 public class ReplySpeed {
 
+    @DBField
     private String id;
 
-    private Integer chnlId;
+    @DBField
+    private Integer typeId;//类型编号
 
-    private String pageLink;
+    @DBField
+    private Integer siteId;//站点编号
 
-    private Integer speed;
+    @DBField
+    private Integer chnlId;//所在栏目编号
 
-    private Integer space;
+    @DBField
+    private String pageLink;//网页链接
 
-    private Date checkTime;
+    @DBField("pageSpeed")
+    private Long speed;//响应速度
+
+    @DBField("pageSpace")
+    private Long space;//页面大小
+
+    @DBField
+    private Date checkTime;//监测时间
+
+    public ReplySpeed(Integer typeId, Integer chnlId, String pageLink, Long speed, Long space, Date checkTime) {
+        this.typeId = typeId;
+        this.chnlId = chnlId;
+        this.pageLink = pageLink;
+        this.speed = speed;
+        this.space = space;
+        this.checkTime = checkTime;
+    }
+
+    public ReplySpeed() {
+    }
 }
 
