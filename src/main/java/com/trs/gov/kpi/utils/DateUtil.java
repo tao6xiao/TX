@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Created by linwei on 2017/5/23.
@@ -212,6 +213,19 @@ public class DateUtil {
     public static String curMonth() {
         final SimpleDateFormat format = new SimpleDateFormat(MONTH_FORMAT);
         return format.format(new Date()) + "-01 00:00:00";
+    }
+
+    /**
+     * 判定是否为合法的月份，格式为 yyyy-MM, 比如 2017-01
+     * @param month
+     * @return
+     */
+    public static boolean isValidMonth(String month) {
+        // 1-9月
+        String pattern = "^\\d{4}\\-0[1-9]$";
+        // 11,12月
+        String pattern2 = "^\\d{4}\\-1[1-2]$";
+        return Pattern.matches(pattern, month) || Pattern.matches(pattern2, month);
     }
 
 }

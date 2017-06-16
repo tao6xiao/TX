@@ -39,4 +39,10 @@ public class DateUtilTest {
         assertEquals("2017-05-21 03:10:05", DateUtil.toString(result));
     }
 
+    @Test
+    public void isValidMonth() {
+        assertTrue(DateUtil.isValidMonth("2017-02"));
+        assertFalse(DateUtil.isValidMonth("2017-13"));
+    }
+
 }

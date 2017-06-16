@@ -3,6 +3,8 @@ package com.trs.gov.kpi.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.outer.ReportApiService;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -96,6 +99,45 @@ public class DocReportController {
         allMonthReport.putAll(reportData);
         return allMonthReport;
     }
+
+    @RequestMapping(value = "/multi/onemonth", method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Long> getMultiOfOneMonth(String month) throws RemoteException, ParseException, BizException {
+        if (StringUtil.isEmpty(month)) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        if (!DateUtil.isValidMonth(month)) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+
+        Calendar nextMonthCalendar = Calendar.getInstance();// 当前起始日期
+
+        String beginDay = month + "-01 00:00:00";
+        nextMonthCalendar.setTime(DateUtil.toDate(beginDay));
+        nextMonthCalendar.set(Calendar.MONTH, nextMonthCalendar.get(Calendar.MONTH) + 1);
+        String endDay = DateUtil.toString(new Date(nextMonthCalendar.getTime().getTime() - 1000));
+
+        Map<String, Long> result = new HashMap<>();
+        final Map<String, String> newDocReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_new_doc_byday", "Site", beginDay, endDay);
+        result.put("newDoc", countMap(newDocReportData));
+        final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_yifa_doc_byday", "Site", beginDay, endDay);
+        result.put("yifa", countMap(yifaReportData));
+        final Map<String, String> pushReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_push_doc_byday", "Site", beginDay, endDay);
+        result.put("push", countMap(pushReportData));
+        final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
+        result.put("distribute", countMap(distributeReportData));
+
+        return result;
+    }
+
+    private Long countMap(Map<String, String> countMap) {
+        Long result = 0L;
+        for (String value : countMap.values()) {
+            result += Long.valueOf(value);
+        }
+        return result;
+    }
+
 
     private <T extends DocMultiCounterResponse> List<Pair<String, SetFunc<T, String>>> getMultiReportList(String byName) {
         List<Pair<String, SetFunc<T, String>>> reports = new ArrayList<>();
