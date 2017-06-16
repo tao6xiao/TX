@@ -18,7 +18,7 @@ public class UserDocMultiCounterResponse extends DocMultiCounterResponse {
     public void setUserId(Long userId) {
         this.userId = userId;
         // TODO wait for editcenter
-        this.userName = "UserId[" + String.valueOf(userId) + "]";
+        this.userName = "UserId[" + userId + "]";
     }
 
     @Override
