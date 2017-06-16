@@ -2,6 +2,8 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.PerformanceRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -17,11 +19,37 @@ import java.util.List;
  * 综合实时监测
  */
 @RestController
-@RequestMapping("/gov/kpi/issue")
+@RequestMapping("/gov/kpi")
 public class IntegratedMonitorController {
 
     @Resource
     private IntegratedMonitorService integratedMonitorService;
+
+    /**
+     * 查询最近一个月的绩效指数得分
+     *
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/index/now", method = RequestMethod.GET)
+    public PerformanceRes getRecentPerformance(@ModelAttribute PageDataRequestParam param) throws BizException {
+
+        ParamCheckUtil.paramCheck(param);
+        return integratedMonitorService.getRecentPerformance(param);
+    }
+
+    /**
+     * 查询绩效指数得分的历史记录
+     *
+     * @param param
+     * @return
+     */
+    @RequestMapping(value = "/index/history", method = RequestMethod.GET)
+    public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException {
+
+        ParamCheckUtil.paramCheck(param);
+        return integratedMonitorService.getHistoryPerformance(param);
+    }
 
     /**
      * 查询所有问题数量
@@ -29,7 +57,7 @@ public class IntegratedMonitorController {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/all/count", method = RequestMethod.GET)
+    @RequestMapping(value = "/issue/all/count", method = RequestMethod.GET)
     public List<Statistics> getAllIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
@@ -42,7 +70,7 @@ public class IntegratedMonitorController {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/unhandled/bytype/count", method = RequestMethod.GET)
+    @RequestMapping(value = "/issue/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
@@ -55,7 +83,7 @@ public class IntegratedMonitorController {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/warning/bytype/count")
+    @RequestMapping(value = "/issue/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);

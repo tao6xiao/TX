@@ -11,4 +11,6 @@ public class HistoryStatistics {
     private String time;
 
     private Integer value;
+
+    private Double doubleValue;
 }
