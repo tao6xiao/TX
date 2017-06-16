@@ -324,6 +324,11 @@ public class QueryFilterHelperTest {
         public List<FrequencyPreset> selectBySiteIdAndUpdateFreq(@Param("siteId") Integer siteId, @Param("updateFreq") String updateFreq) {
             return presets;
         }
+
+        @Override
+        public FrequencyPreset selectByPreset(@Param("preset") FrequencyPreset preset) {
+            return null;
+        }
     }
 
     private class MockSiteApiService implements SiteApiService {
