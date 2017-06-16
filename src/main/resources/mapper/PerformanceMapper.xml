@@ -4,15 +4,17 @@
     <resultMap id="PerformanceMap" type="com.trs.gov.kpi.entity.Performance">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="siteId" jdbcType="INTEGER" property="siteId"/>
-        <result column="index" jdbcType="DOUBLE" property="index"/>
+        <result column="performance" jdbcType="DOUBLE" property="index"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
-    <select id="getRecentPerformance" resultMap="PerformanceMap">
-      SELECT *
+    <select id="getRecentPerformance" resultType="Double">
+      SELECT performance
       FROM performanceindex
-      WHERE siteId = #{param.siteId}
-      HAVING checkTime = max(checkTime)
+      WHERE siteId = 11
+	  AND checkTime = (SELECT max(checkTime)
+                       FROM performanceindex
+                       WHERE siteId = 11)
     </select>
 
     <select id="getHistoryPerformance" resultMap="PerformanceMap">

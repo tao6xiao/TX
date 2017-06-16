@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface PerformanceMapper {
 
-    Performance getRecentPerformance(@Param("param") PageDataRequestParam param);
+    Double getRecentPerformance(@Param("param") PageDataRequestParam param);
 
     List<Performance> getHistoryPerformance(@Param("param") PageDataRequestParam param);
 }

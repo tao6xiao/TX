@@ -10,7 +10,6 @@ import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.PerformanceRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
@@ -261,14 +260,8 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     }
 
     @Override
-    public PerformanceRes getRecentPerformance(PageDataRequestParam param) {
-
-        Performance performance = performanceMapper.getRecentPerformance(param);
-        PerformanceRes performanceRes = new PerformanceRes();
-        performanceRes.setId(performance.getId());
-        performanceRes.setIndex(performance.getIndex());
-        performanceRes.setCheckTime(performance.getCheckTime());
-        return performanceRes;
+    public Double getRecentPerformance(PageDataRequestParam param) {
+        return performanceMapper.getRecentPerformance(param);
     }
 
     @Override

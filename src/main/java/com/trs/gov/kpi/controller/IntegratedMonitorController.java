@@ -3,7 +3,6 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.PerformanceRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -32,7 +31,7 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/index/now", method = RequestMethod.GET)
-    public PerformanceRes getRecentPerformance(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public Double getRecentPerformance(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorService.getRecentPerformance(param);

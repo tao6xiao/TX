@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.entity.responsedata.PerformanceRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public interface IntegratedMonitorService {
 
     List<Statistics> getWarningCount(PageDataRequestParam param);
 
-    PerformanceRes getRecentPerformance(PageDataRequestParam param);
+    Double getRecentPerformance(PageDataRequestParam param);
 
     List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param);
 }
