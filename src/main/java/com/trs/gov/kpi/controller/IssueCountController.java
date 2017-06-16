@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
+import com.trs.gov.kpi.entity.responsedata.DeptCountResponse;
 import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IssueCountService;
@@ -47,5 +48,17 @@ public class IssueCountController {
     public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
         ParamCheckUtil.paramCheck(request);
         return countService.historyCountSort(request);
+    }
+
+    /**
+     * 部门分类查询统计数量
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/bydept/count",method = RequestMethod.GET)
+    @ResponseBody
+    public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
+        ParamCheckUtil.paramCheck(request);
+        return countService.deptCountSort(request);
     }
 }

@@ -13,9 +13,9 @@ public final class Constants {
 
     public static final int ISSUE_END_ID = 50;
 
-    public static final int WANRNING_BEGIN_ID = 51;
+    public static final int WARNING_BEGIN_ID = 51;
 
-    public static final int WANRNING_END_ID = 100;
+    public static final int WARNING_END_ID = 100;
 
     // 数据库字段名id
     public static final String DB_FIELD_ID = "id";

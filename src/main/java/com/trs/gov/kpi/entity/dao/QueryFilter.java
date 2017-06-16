@@ -117,6 +117,28 @@ public class QueryFilter {
     }
 
     /**
+     * 删除某个字段的查询条件
+     *
+     * @param fieldName
+     * @return
+     */
+    public boolean removeCond(String fieldName) {
+        if (StringUtil.isEmpty(fieldName)) {
+            return false;
+        }
+
+        boolean isRemoved = false;
+        for (int index = condFields.size() - 1; index >= 0; index--) {
+            if (condFields.get(index).getFieldName().equals(fieldName)) {
+                condFields.remove(index);
+                isRemoved = true;
+            }
+        }
+
+        return isRemoved;
+    }
+
+    /**
      * 检查字段名是否合法
      *
      * @param fieldName
