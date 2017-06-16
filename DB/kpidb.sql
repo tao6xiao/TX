@@ -195,6 +195,25 @@ CREATE TABLE `report` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET FOREIGN_KEY_CHECKS=1;
 
+-- ----------------------------
+-- Table structure for performanceindex
+-- ----------------------------
+DROP TABLE IF EXISTS `performanceindex`;
+CREATE TABLE `performanceindex` (
+  `id` int(255) NOT NULL AUTO_INCREMENT COMMENT '绩效指数编号',
+  `siteId` int(255) NOT NULL COMMENT '站点编号',
+  `performance` double(255,2) NOT NULL COMMENT '月末绩效指数',
+  `checkTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '监测时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of performanceindex
+-- ----------------------------
+INSERT INTO `performanceindex` VALUES ('1', '11', '80.95', '2017-04-30 11:55:38');
+INSERT INTO `performanceindex` VALUES ('2', '11', '77.45', '2017-03-31 11:55:34');
+INSERT INTO `performanceindex` VALUES ('3', '11', '78.65', '2017-05-31 11:55:30');
+
 
 
 
