@@ -59,7 +59,7 @@ public class PerformanceService {
     @Resource
     private InteractionService interactionService;
 
-    public Integer calPerformanceIndex(PageDataRequestParam param) throws ParseException, RemoteException {
+    public Double calPerformanceIndex(PageDataRequestParam param) throws ParseException, RemoteException {
 
         //网站可用得分
         double availabilityScore = 37.5;
@@ -114,7 +114,7 @@ public class PerformanceService {
         interactionService.getGovMsgBoxesCount(nbhdRequestParam);
 
 
-        return null;
+        return availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;
     }
 
 
