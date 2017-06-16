@@ -31,7 +31,7 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
             if (site != null) {
                 this.siteName = site.getSiteName();
             } else {
-                this.siteName = "SiteId[" + String.valueOf(id) + "]";
+                this.siteName = "SiteId[" + id + "]";
             }
         } catch (RemoteException e) {
             log.error("", e);
