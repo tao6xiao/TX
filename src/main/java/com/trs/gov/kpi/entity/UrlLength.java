@@ -2,7 +2,6 @@ package com.trs.gov.kpi.entity;
 
 import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
-import com.trs.gov.kpi.constant.Types;
 import lombok.Data;
 
 import java.util.Date;
