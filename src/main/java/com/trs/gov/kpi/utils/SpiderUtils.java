@@ -117,7 +117,7 @@ public class SpiderUtils {
                     biggerPage.add(new PageSpace(0, request.getUrl().intern(), useTime, Long.valueOf(result.getRawText().getBytes().length), new Date()));
                 }
 
-                String urlSize[] = request.getUrl().split("/");
+                String[] urlSize = request.getUrl().split("/");
                 if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
                     int typeId = Types.AnalysisType.TOO_LONG_URL.value;
                     biggerUrlPage.add(new UrlLength(typeId, 0, request.getUrl().intern(), Long.valueOf(request.getUrl().getBytes().length), Long.valueOf(result.getRawText().getBytes().length), new Date()));

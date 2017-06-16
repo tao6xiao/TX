@@ -1,20 +1,23 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.IssueIndicator;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
-import com.trs.gov.kpi.constant.IssueIndicator;
+import com.trs.gov.kpi.dao.PerformanceMapper;
+import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
-import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,10 +29,10 @@ import java.util.List;
 public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
     @Resource
-    private LinkAvailabilityService linkAvailabilityService;
+    private IssueMapper issueMapper;
 
     @Resource
-    private IssueMapper issueMapper;
+    private PerformanceMapper performanceMapper;
 
     @Override
     public List<Statistics> getAllIssueCount(PageDataRequestParam param) {
@@ -253,6 +256,25 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         list.add(respondStatistics);
 
+        return list;
+    }
+
+    @Override
+    public Double getRecentPerformance(PageDataRequestParam param) {
+        return performanceMapper.getRecentPerformance(param);
+    }
+
+    @Override
+    public List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param) {
+        List<Performance> performanceList = performanceMapper.getHistoryPerformance(param);
+        List<HistoryStatistics> list = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for (Performance performance : performanceList) {
+            HistoryStatistics historyStatistics = new HistoryStatistics();
+            historyStatistics.setDoubleValue(performance.getIndex());
+            historyStatistics.setTime(sdf.format(performance.getCheckTime()));
+            list.add(historyStatistics);
+        }
         return list;
     }
 }

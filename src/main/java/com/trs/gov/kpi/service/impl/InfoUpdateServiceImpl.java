@@ -283,6 +283,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateOrderRes.setId(infoUpdateOrder.getId());
             infoUpdateOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
             infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
+            infoUpdateOrderRes.setParentTypeName(Types.IssueType.valueOf(infoUpdateOrder.getTypeId()).getName());
             infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
 //            infoUpdateOrderRes.setDepartment();TODO
             infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());
@@ -307,6 +308,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateOrderRes.setId(infoUpdateOrder.getId());
             infoUpdateOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
             infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
+            infoUpdateOrderRes.setParentTypeName(Types.IssueType.valueOf(infoUpdateOrder.getTypeId()).getName());
             infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
 //            infoUpdateOrderRes.setDepartment();TODO
             infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());

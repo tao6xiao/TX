@@ -30,6 +30,7 @@
     <id column="id" property="id"/>
     <result column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="customer2" property="chnlId"/>
+    <result column="typeId" property="typeId"/>
     <result column="subTypeId" property="subTypeId"/>
     <result column="detail" property="detail"/>
     <result column="issueTime" property="issueTime"/>
@@ -51,6 +52,7 @@
     <id column="id" property="id"/>
     <result column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="customer2" property="chnlId"/>
+    <result column="typeId" property="typeId"/>
     <result column="subTypeId" property="subTypeId"/>
     <result column="detail" property="detail"/>
     <result column="customer1" property="errorDetail"/>
