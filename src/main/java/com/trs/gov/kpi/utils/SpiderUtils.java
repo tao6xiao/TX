@@ -1,7 +1,9 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
+import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +35,15 @@ public class SpiderUtils {
     //栏目URL地址层级阀值
     private static final int THRESHOLD_MAX_URL_LENGHT = 6;
 
+    //页面深度阀值
+    private static final int THRESHOLD_MAX_PAGE_DEPTH = 0;
+
     private HashMap<String, Set<String>> pageParentMap = new HashMap<>();
 
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
+
+    //响应速度
+    private Set<ReplySpeed> replySpeeds = Collections.synchronizedSet(new HashSet<ReplySpeed>());
 
     //过大页面
     private Set<PageSpace> biggerPage = Collections.synchronizedSet(new HashSet<PageSpace>());
@@ -43,7 +51,12 @@ public class SpiderUtils {
     //过长URL页面
     private Set<UrlLength> biggerUrlPage = Collections.synchronizedSet(new HashSet<UrlLength>());
 
+    //过深页面
+    private Set<PageDepth> pageDepths = Collections.synchronizedSet(new HashSet<PageDepth>());
+
     private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
+
+    private String baseUrl;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -113,14 +126,39 @@ public class SpiderUtils {
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
             } else {
+                replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
+                        0,
+                        request.getUrl().intern(),
+                        useTime,
+                        Long.valueOf(result.getRawText().getBytes().length),
+                        new Date()));
+
                 if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
-                    biggerPage.add(new PageSpace(0, request.getUrl().intern(), useTime, Long.valueOf(result.getRawText().getBytes().length), new Date()));
+                    biggerPage.add(new PageSpace(0,
+                            request.getUrl().intern(),
+                            useTime,
+                            Long.valueOf(result.getRawText().getBytes().length),
+                            new Date()));
                 }
 
                 String[] urlSize = request.getUrl().split("/");
                 if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
-                    int typeId = Types.AnalysisType.TOO_LONG_URL.value;
-                    biggerUrlPage.add(new UrlLength(typeId, 0, request.getUrl().intern(), Long.valueOf(request.getUrl().getBytes().length), Long.valueOf(result.getRawText().getBytes().length), new Date()));
+                    biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
+                            0,
+                            request.getUrl().intern(),
+                            Long.valueOf(request.getUrl().getBytes().length),
+                            Long.valueOf(result.getRawText().getBytes().length),
+                            new Date()));
+                }
+
+                int deepSize = calcDeep(request.getUrl(), 1);
+                if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
+                    pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
+                            0,
+                            request.getUrl().intern(),
+                            deepSize,
+                            Long.valueOf(result.getRawText().getBytes().length),
+                            new Date()));
                 }
             }
             return result;
@@ -133,8 +171,8 @@ public class SpiderUtils {
         }
     };
 
-    private synchronized void init() {
-
+    private synchronized void init(String baseUrl) {
+        this.baseUrl = baseUrl;
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
     }
@@ -148,8 +186,9 @@ public class SpiderUtils {
      */
     public synchronized List<Pair<String, String>> linkCheck(int threadNum, String baseUrl) {
 
+
         log.info("linkCheck started!");
-        init();
+        init(baseUrl);
         if (StringUtils.isBlank(baseUrl)) {
 
             log.info("linkCheck completed, no URL has been checked!");
@@ -175,6 +214,39 @@ public class SpiderUtils {
         return unavailableUrlAndParentUrls;
     }
 
+    private int calcDeep(String url, int deep) {
+
+        Set<String> parentUrls = pageParentMap.get(url);
+        if (CollectionUtils.isNotEmpty(parentUrls)) {
+            if (parentUrls.contains(baseUrl)) {
+                return deep + 1;
+            } else {
+                Integer minDeep = null;
+                for (String parentUrl : parentUrls) {
+                    int newDeep = calcDeep(parentUrl, deep + 1);
+                    if (minDeep == null) {
+                        minDeep = newDeep;
+                    } else {
+                        minDeep = minDeep > newDeep ? newDeep : minDeep;
+                    }
+                }
+                return minDeep;
+            }
+        } else {
+            return deep;
+        }
+    }
+
+    private int deepSize(String url, int deep){
+        Set<String> parentUrls = pageParentMap.get(url);
+
+
+
+        return deep;
+    }
+
+
+
     /**
      * 检索首页是否可用
      *
@@ -184,7 +256,7 @@ public class SpiderUtils {
     public synchronized List<String> homePageCheck(String... homePageUrls) {
 
         log.info("homePageCheck started!");
-        init();
+        init(baseUrl);
         for (String homePageUrl : homePageUrls) {
 
             recordUnavailableUrlDownloader.download(new Request(homePageUrl), new Task() {
@@ -221,6 +293,24 @@ public class SpiderUtils {
      */
     public Set<UrlLength> getBiggerUrlPage() {
         return this.biggerUrlPage;
+    }
+
+    /**
+     * 响应熟读
+     *
+     * @return
+     */
+    public Set<ReplySpeed> getReplySpeeds() {
+        return this.replySpeeds;
+    }
+
+    /**
+     * 过深页面
+     *
+     * @return
+     */
+    public Set<PageDepth> getPageDepths() {
+        return this.pageDepths;
     }
 
     @Data
