@@ -58,26 +58,39 @@ public class DocReportController {
 
     @RequestMapping(value = "/bydepartment", method = RequestMethod.GET)
     @ResponseBody
-    public List<DepDocMultiCounterResponse> getCounterByDep(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
+    public Map<String, Object>  getCounterByDep(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
         List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
         SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) ->  counter.setDepartmentId(Long.valueOf(value));
-        return getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
+        List<DepDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalCount", countAll(allReports));
+        result.put("data", allReports);
+        return result;
+
     }
 
     @RequestMapping(value = "/bysite", method = RequestMethod.GET)
     @ResponseBody
-    public List<SiteDocMultiCounterResponse> getCounterBySite(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
+    public Map<String, Object> getCounterBySite(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
         List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
         SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) ->  counter.setSiteId(Long.valueOf(value));
-        return getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class, setSiteIdFunc);
+        final java.util.List<SiteDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class, setSiteIdFunc);
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalCount", countAll(allReports));
+        result.put("data", allReports);
+        return result;
     }
 
     @RequestMapping(value = "/byuser", method = RequestMethod.GET)
     @ResponseBody
-    public List<UserDocMultiCounterResponse> getCounterByUser(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
+    public Map<String, Object> getCounterByUser(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
         List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports  = getMultiReportList("user");
         SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) ->  counter.setUserId(Long.valueOf(value));
-        return getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
+        final List<UserDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
+        Map<String, Object> result = new HashMap<>();
+        result.put("totalCount", countAll(allReports));
+        result.put("data", allReports);
+        return result;
     }
 
     @RequestMapping(value = "/curmonth/byday", method = RequestMethod.GET)
@@ -127,6 +140,17 @@ public class DocReportController {
         final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
         result.put("distribute", countMap(distributeReportData));
 
+        return result;
+    }
+
+    private <T extends DocMultiCounterResponse> Long countAll(List<T> counters) {
+        Long result = 0L;
+        for (T counter : counters) {
+            result += counter.getNewDocCount();
+            result += counter.getCopyDocCount();
+            result += counter.getQuoteDocCount();
+            result += counter.getMirrorDocCount();
+        }
         return result;
     }
 
