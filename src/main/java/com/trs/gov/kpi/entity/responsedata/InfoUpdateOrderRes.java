@@ -16,9 +16,11 @@ public class InfoUpdateOrderRes {
 
     private String siteName;
 
-    private String department = "";//TODO 等接口，暂时设为空串
+    private String parentTypeName;
 
     private String issueTypeName;
+
+    private String department = "";//TODO 等接口，暂时设为空串
 
     private String chnlUrl;
 

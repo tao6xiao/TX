@@ -146,6 +146,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorOrderRes.setId(infoErrorOrder.getId());
             infoErrorOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
             infoErrorOrderRes.setSiteName(siteApiService.getSiteById(infoErrorOrder.getSiteId(), null).getSiteDesc());
+            infoErrorOrderRes.setParentTypeName(Types.IssueType.valueOf(infoErrorOrder.getTypeId()).getName());
             infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
 //            infoErrorOrderRes.setDepartment();TODO
             infoErrorOrderRes.setUrl(infoErrorOrder.getDetail());
@@ -171,6 +172,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorOrderRes.setId(infoErrorOrder.getId());
             infoErrorOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
             infoErrorOrderRes.setSiteName(siteApiService.getSiteById(infoErrorOrder.getSiteId(), null).getSiteDesc());
+            infoErrorOrderRes.setParentTypeName(Types.IssueType.valueOf(infoErrorOrder.getTypeId()).getName());
             infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
 //            infoErrorOrderRes.setDepartment();TODO
             infoErrorOrderRes.setUrl(infoErrorOrder.getDetail());
