@@ -277,7 +277,26 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         Pager pager = PageInfoDeal.buildResponsePager(request.getPageIndex(), request.getPageSize(), itemCount);
         filter.setPager(pager);
         List<InfoUpdateOrder> infoUpdateOrderList = issueMapper.selectInfoUpdateOrder(filter);
-        List<InfoUpdateOrderRes> list = new ArrayList<>();
+        List<InfoUpdateOrderRes> list = toOrderResponse(infoUpdateOrderList);
+
+        return new ApiPageData(pager, list);
+    }
+
+    @Override
+    public InfoUpdateOrderRes getInfoUpdateOrderById(WorkOrderRequest request) throws RemoteException {
+        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
+        filter.addCond(IssueTableField.ID, request.getId());
+
+        List<InfoUpdateOrder> infoUpdateOrderList = issueMapper.selectInfoUpdateOrder(filter);
+        List<InfoUpdateOrderRes> list = toOrderResponse(infoUpdateOrderList);
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+    }
+
+    private List<InfoUpdateOrderRes> toOrderResponse(List<InfoUpdateOrder> infoUpdateOrderList) throws RemoteException {
+        List<InfoUpdateOrderRes> responseList = new ArrayList<>();
         for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
             InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
             infoUpdateOrderRes.setId(infoUpdateOrder.getId());
@@ -291,33 +310,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateOrderRes.setSolveStatus(infoUpdateOrder.getIsResolved());
             infoUpdateOrderRes.setIsDeleted(infoUpdateOrder.getIsDel());
             infoUpdateOrderRes.setWorkOrderStatus(infoUpdateOrder.getWorkOrderStatus());
-            list.add(infoUpdateOrderRes);
+            responseList.add(infoUpdateOrderRes);
         }
-
-        return new ApiPageData(pager, list);
-    }
-
-    @Override
-    public InfoUpdateOrderRes getInfoUpdateOrderById(WorkOrderRequest request) throws RemoteException {
-        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
-        filter.addCond(IssueTableField.ID, request.getId());
-
-        List<InfoUpdateOrder> infoUpdateOrderList = issueMapper.selectInfoUpdateOrder(filter);
-        InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
-        for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
-            infoUpdateOrderRes.setId(infoUpdateOrder.getId());
-            infoUpdateOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
-            infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
-            infoUpdateOrderRes.setParentTypeName(Types.IssueType.valueOf(infoUpdateOrder.getTypeId()).getName());
-            infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
-//            infoUpdateOrderRes.setDepartment();TODO
-            infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());
-            infoUpdateOrderRes.setCheckTime(infoUpdateOrder.getIssueTime());
-            infoUpdateOrderRes.setSolveStatus(infoUpdateOrder.getIsResolved());
-            infoUpdateOrderRes.setIsDeleted(infoUpdateOrder.getIsDel());
-            infoUpdateOrderRes.setWorkOrderStatus(infoUpdateOrder.getWorkOrderStatus());
-        }
-
-        return infoUpdateOrderRes;
+        return responseList;
     }
 }

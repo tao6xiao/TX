@@ -140,6 +140,28 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         filter.setPager(pager);
 
         List<InfoErrorOrder> infoErrorOrderList = issueMapper.selectInfoErrorOrder(filter);
+        List<InfoErrorOrderRes> list = toOrderResponse(infoErrorOrderList);
+
+        return new ApiPageData(pager, list);
+    }
+
+    @Override
+    public InfoErrorOrderRes getInfoErrorOrderById(WorkOrderRequest request) throws RemoteException {
+
+        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
+        filter.addCond(IssueTableField.ID, request.getId());
+
+        List<InfoErrorOrder> infoErrorOrderList = issueMapper.selectInfoErrorOrder(filter);
+        List<InfoErrorOrderRes> list = toOrderResponse(infoErrorOrderList);
+
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+    }
+
+
+    private List<InfoErrorOrderRes> toOrderResponse(List<InfoErrorOrder> infoErrorOrderList) throws RemoteException {
         List<InfoErrorOrderRes> list = new ArrayList<>();
         for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
             InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();
@@ -156,32 +178,6 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorOrderRes.setWorkOrderStatus(infoErrorOrder.getWorkOrderStatus());
             list.add(infoErrorOrderRes);
         }
-
-        return new ApiPageData(pager, list);
-    }
-
-    @Override
-    public InfoErrorOrderRes getInfoErrorOrderById(WorkOrderRequest request) throws RemoteException {
-
-        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
-        filter.addCond(IssueTableField.ID, request.getId());
-
-        List<InfoErrorOrder> infoErrorOrderList = issueMapper.selectInfoErrorOrder(filter);
-        InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();
-        for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
-            infoErrorOrderRes.setId(infoErrorOrder.getId());
-            infoErrorOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
-            infoErrorOrderRes.setSiteName(siteApiService.getSiteById(infoErrorOrder.getSiteId(), null).getSiteDesc());
-            infoErrorOrderRes.setParentTypeName(Types.IssueType.valueOf(infoErrorOrder.getTypeId()).getName());
-            infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
-//            infoErrorOrderRes.setDepartment();TODO
-            infoErrorOrderRes.setUrl(infoErrorOrder.getDetail());
-            infoErrorOrderRes.setCheckTime(infoErrorOrder.getIssueTime());
-            infoErrorOrderRes.setSolveStatus(infoErrorOrder.getIsResolved());
-            infoErrorOrderRes.setIsDeleted(infoErrorOrder.getIsDel());
-            infoErrorOrderRes.setWorkOrderStatus(infoErrorOrder.getWorkOrderStatus());
-        }
-
-        return infoErrorOrderRes;
+        return list;
     }
 }
