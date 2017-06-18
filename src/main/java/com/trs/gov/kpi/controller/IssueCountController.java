@@ -1,7 +1,10 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
+import com.trs.gov.kpi.entity.responsedata.DeptCount;
 import com.trs.gov.kpi.entity.responsedata.DeptCountResponse;
 import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -60,5 +63,21 @@ public class IssueCountController {
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
         ParamCheckUtil.paramCheck(request);
         return countService.deptCountSort(request);
+    }
+
+    /**
+     * 部门分类查询统计数量
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/unhandled/count",method = RequestMethod.GET)
+    @ResponseBody
+    public List<DeptCount> getDeptIssueCountByType(@ModelAttribute IssueCountByTypeRequest request) throws BizException {
+        ParamCheckUtil.paramCheck(request);
+        if (request.getTypeId() > 5 || request.getTypeId() < 1) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+
+        return countService.getDeptCountByType(request);
     }
 }

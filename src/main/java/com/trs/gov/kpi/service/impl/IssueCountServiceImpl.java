@@ -1,13 +1,11 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.IssueIndicator;
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
@@ -19,9 +17,7 @@ import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by he.lang on 2017/6/7.
@@ -132,6 +128,14 @@ public class IssueCountServiceImpl implements IssueCountService {
         return deptCountResponses;
     }
 
+    @Override
+    public List<DeptCount> getDeptCountByType(IssueCountByTypeRequest request) {
+        Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
+        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
+        request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
+        return getDepCountByType(siteIds, request);
+    }
+
     private List<DeptCountResponse> getResponseList(Integer[] siteIds, IssueIndicator type, IssueCountRequest request) {
         List<DeptCountResponse> deptCountResponses = new ArrayList<>();
         QueryFilter filter = new QueryFilter(Table.ISSUE);
@@ -172,6 +176,44 @@ public class IssueCountServiceImpl implements IssueCountService {
             deptCountResponses.add(countResponse);
         }
         return deptCountResponses;
+    }
+
+    private List<DeptCount> getDepCountByType(Integer[] siteIds, IssueCountByTypeRequest request) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+
+        if (siteIds != null) {
+            filter.addCond(IssueTableField.SITE_ID, Arrays.asList(siteIds));
+        }
+
+        filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addGroupField(IssueTableField.DEPT_ID);
+
+        switch (request.getTypeId()) {
+            case IssueCountByTypeRequest.TYPE_SITE_AVALIABLE:
+                filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                break;
+            case IssueCountByTypeRequest.TYPE_INFO_UPDATE:
+                filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+                break;
+            case IssueCountByTypeRequest.TYPE_INFO_ERROR:
+                filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+                break;
+            // TODO 在线服务和互动问题等待数据联调
+            default:
+                filter.addCond(IssueTableField.TYPE_ID, -1);
+
+        }
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        List<Map<String, Object>> depIssueCountList = issueMapper.getDepIssueCount(filter);
+        List<DeptCount> result = new ArrayList<>();
+        for (Map<String, Object> countMap : depIssueCountList) {
+            Integer depId = (Integer)countMap.get("deptId");
+            Long count = (Long)countMap.get("count");
+            result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+        }
+        return result;
     }
 
     private IssueHistoryCountResponse buildHistoryResponse(IssueIndicator type, List<HistoryDate> dateList, Integer[] siteIds) {

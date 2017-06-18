@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
+import com.trs.gov.kpi.entity.responsedata.DeptCount;
 import com.trs.gov.kpi.entity.responsedata.DeptCountResponse;
 import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -33,4 +35,11 @@ public interface IssueCountService {
      * @return
      */
     List<DeptCountResponse> deptCountSort(IssueCountRequest request);
+
+    /**
+     * 获取某一个类型下，各个部门待解决问题数量
+     * @param request
+     * @return
+     */
+    List<DeptCount> getDeptCountByType(IssueCountByTypeRequest request);
 }

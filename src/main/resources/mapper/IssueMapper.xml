@@ -357,6 +357,12 @@
     <include refid="where_sql"/>
     ORDER BY issueTime DESC LIMIT 1
   </select>
+  <select id="getDepIssueCount" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="java.util.Map">
+    SELECT
+    deptId, count(*) as count
+    FROM issue WHERE 1=1
+    <include refid="all_conditions_sql"/>
+  </select>
   <select id="getDeptIdList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="java.lang.Integer">
     SELECT
     deptId

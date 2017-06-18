@@ -54,7 +54,7 @@ public class PerformanceService {
     private InfoUpdateService infoUpdateService;
 
     @Resource
-    private SGService SGService;
+    private SGService sgService;
 
     @Resource
     private InteractionService interactionService;
@@ -102,7 +102,7 @@ public class PerformanceService {
         }
 
         //办事指南要素的完整性、准确性
-        SGStatistics sgStatistics = SGService.getSGCount(param);
+        SGStatistics sgStatistics = sgService.getSGCount(param);
         int handleIssueCount = sgStatistics.getAbandonedCounts();
         handleGuideScore *= 1 - handleIssueCount * 0.1;
         if (handleGuideScore < 0) {

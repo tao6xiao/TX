@@ -155,6 +155,13 @@ public interface IssueMapper {
      * @param filter
      * @return
      */
+    List<Map<String, Object>> getDepIssueCount(QueryFilter filter);
+
+    /**
+     * 获取当前站点下部门的id
+     * @param filter
+     * @return
+     */
     List<Integer> getDeptIdList(QueryFilter filter);
 
 }
