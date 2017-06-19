@@ -19,9 +19,7 @@ import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by he.lang on 2017/6/7.
@@ -118,60 +116,104 @@ public class IssueCountServiceImpl implements IssueCountService {
         request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
         List<DeptCountResponse> deptCountResponses = new ArrayList<>();
         //待解决问题
-        List<DeptCountResponse> responseIssue = getResponseList(siteIds, IssueIndicator.UN_SOLVED_ISSUE, request);
-        deptCountResponses.addAll(responseIssue);
+        DeptCountResponse responseIssue = getResponse(siteIds, IssueIndicator.UN_SOLVED_ISSUE, request);
+        deptCountResponses.add(responseIssue);
 
         //待解决预警
-        List<DeptCountResponse> responseWarning = getResponseList(siteIds, IssueIndicator.WARNING, request);
-        deptCountResponses.addAll(responseWarning);
+        DeptCountResponse responseWarning = getResponse(siteIds, IssueIndicator.WARNING, request);
+        deptCountResponses.add(responseWarning);
 
         //已解决问题和预警
-        List<DeptCountResponse> responseAll = getResponseList(siteIds, IssueIndicator.SOLVED_ALL, request);
-        deptCountResponses.addAll(responseAll);
+        DeptCountResponse responseAll = getResponse(siteIds, IssueIndicator.SOLVED_ALL, request);
+        deptCountResponses.add(responseAll);
 
         return deptCountResponses;
     }
 
-    private List<DeptCountResponse> getResponseList(Integer[] siteIds, IssueIndicator type, IssueCountRequest request) {
-        List<DeptCountResponse> deptCountResponses = new ArrayList<>();
+    @Override
+    public DeptInductionResponse[] deptInductionSort(IssueCountRequest request) {
+        Map<Integer, DeptInductionResponse> result = new HashMap<>();
+
+        Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
+        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
+        request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
+
+        getInductionResponse(siteIds, IssueIndicator.UN_SOLVED_ISSUE, request, result);
+        getInductionResponse(siteIds, IssueIndicator.WARNING, request, result);
+        getInductionResponse(siteIds, IssueIndicator.SOLVED_ALL, request, result);
+
+        DeptInductionResponse[] inductionArray = new DeptInductionResponse[result.values().size()];
+        return result.values().toArray(inductionArray);
+    }
+
+    private void getInductionResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request, Map<Integer, DeptInductionResponse> result) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
         filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addGroupField(IssueTableField.DEPT_ID);
-        if(type == IssueIndicator.UN_SOLVED_ISSUE || type == IssueIndicator.WARNING) {
+        buildFilter(type, filter);
+        filter.addCond(IssueTableField.SITE_ID, Arrays.asList(siteIds));
+        List<Map<String, Object>> mapList = issueMapper.getDeptIdMap(filter);
+        for (Map<String, Object> map : mapList) {
+
+            if (map.get(IssueTableField.DEPT_ID) != null) {
+                Integer deptId = (Integer) map.get(IssueTableField.DEPT_ID);
+                DeptInductionResponse induction = result.get(deptId);
+                if (induction == null) {
+                    induction = new DeptInductionResponse();
+                    // TODO: 2017/6/19 get dept by deptId from editor center
+                    induction.setDept(deptId.toString());
+                    result.put(deptId, induction);
+                }
+
+                Statistics statistics = new Statistics();
+                statistics.setType(type.value);
+                statistics.setName(type.getName());
+                statistics.setCount(((Long) map.get("count")).intValue());
+                induction.addStatistics(statistics);
+            }
+        }
+
+    }
+
+    private DeptCountResponse getResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request) {
+        DeptCountResponse countResponse = new DeptCountResponse();
+        countResponse.setType(type.value);
+        countResponse.setName(type.getName());
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addGroupField(IssueTableField.DEPT_ID);
+        buildFilter(type, filter);
+        filter.addCond(IssueTableField.SITE_ID, Arrays.asList(siteIds));
+        List<DeptCount> deptCountList = new ArrayList<>();
+        List<Map<String, Object>> mapList = issueMapper.getDeptIdMap(filter);
+        for (Map<String, Object> map : mapList) {
+            // TODO: 2017/6/19 get dept by deptId from editor center
+            if (map.get(IssueTableField.DEPT_ID) != null) {
+                DeptCount deptCount = new DeptCount(map.get(IssueTableField.DEPT_ID).toString(), ((Long) map.get("count")).intValue());
+                deptCountList.add(deptCount);
+            }
+        }
+        countResponse.setCount(deptCountList);
+        return countResponse;
+    }
+
+    private void buildFilter(IssueIndicator type, QueryFilter filter) {
+        if (type == IssueIndicator.UN_SOLVED_ISSUE || type == IssueIndicator.WARNING) {
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-            if(type == IssueIndicator.UN_SOLVED_ISSUE){
+            if (type == IssueIndicator.UN_SOLVED_ISSUE) {
                 filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
                 filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_END_ID).setRangeEnd(true);
-            }else {
+            } else {
                 filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
                 filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
             }
-        }else if(type == IssueIndicator.SOLVED_ALL){
+        } else if (type == IssueIndicator.SOLVED_ALL) {
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
         }
-        for(int i = 0; i < siteIds.length; i++){
-            DeptCountResponse countResponse = new DeptCountResponse();
-            countResponse.setType(type.value);
-            countResponse.setName(type.getName());
-            filter.removeCond(IssueTableField.SITE_ID);
-            filter.addCond(IssueTableField.SITE_ID, siteIds[i]);
-            List<Integer> deptIdList = issueMapper.getDeptIdList(filter);
-            List<DeptCount> deptCounts = new ArrayList<>();
-            for (Integer deptId : deptIdList) {
-                if (deptId != null){
-                    filter.removeCond(IssueTableField.DEPT_ID);
-                    filter.addCond(IssueTableField.DEPT_ID, deptId);
-                    // TODO: 2017/6/16 get dept by deptId editor center
-                    DeptCount deptCount = new DeptCount(deptId.toString(), issueMapper.count(filter));
-                    deptCounts.add(deptCount);
-                }
-            }
-            countResponse.setCount(deptCounts);
-            deptCountResponses.add(countResponse);
-        }
-        return deptCountResponses;
     }
 
     private IssueHistoryCountResponse buildHistoryResponse(IssueIndicator type, List<HistoryDate> dateList, Integer[] siteIds) {

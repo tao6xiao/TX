@@ -155,6 +155,6 @@ public interface IssueMapper {
      * @param filter
      * @return
      */
-    List<Integer> getDeptIdList(QueryFilter filter);
+    List<Map<String,Object>> getDeptIdMap(QueryFilter filter);
 
 }
