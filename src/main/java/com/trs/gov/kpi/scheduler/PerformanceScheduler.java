@@ -31,6 +31,10 @@ public class PerformanceScheduler implements SchedulerTask {
     @Getter
     private Integer siteId;
 
+    @Setter
+    @Getter
+    private Boolean isTimeNode;
+
     @Resource
     private PerformanceService performanceService;
 

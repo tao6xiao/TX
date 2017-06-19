@@ -39,11 +39,17 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     WebPageService webPageService;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private Integer siteId;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private String baseUrl;
+
+    @Setter
+    @Getter
+    private Boolean isTimeNode;
 
     @Override
     public void run() {
@@ -53,7 +59,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
             List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
             Date checkTime = new Date();
-            for(Pair<String, String> unavailableUrlAndParentUrl: unavailableUrlAndParentUrls) {
+            for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
                 LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
                 linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
                 linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
@@ -64,28 +70,28 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             }
             //获取响应速度基本信息，信息入库
             Set<ReplySpeed> replySpeedSet = spider.getReplySpeeds();
-            for (ReplySpeed replySpeed : replySpeedSet){
+            for (ReplySpeed replySpeed : replySpeedSet) {
                 replySpeed.setSiteId(siteId);
                 webPageService.insertReplyspeed(replySpeed);
             }
 
             //获取过大页面信息；信息入库
             Set<PageSpace> biggerPageSpace = spider.biggerPageSpace();
-            for (PageSpace pageSpaceto: biggerPageSpace ) {
+            for (PageSpace pageSpaceto : biggerPageSpace) {
                 pageSpaceto.setSiteId(siteId);
                 webPageService.insertPageSpace(pageSpaceto);
             }
 
             //获取过长URL页面信息；信息入库
             Set<UrlLength> biggerUerLenght = spider.getBiggerUrlPage();
-            for (UrlLength urlLenght: biggerUerLenght) {
+            for (UrlLength urlLenght : biggerUerLenght) {
                 urlLenght.setSiteId(siteId);
                 webPageService.insertUrlLength(urlLenght);
             }
 
             //获取过深页面信息；信息入库
             Set<PageDepth> pageDepthSet = spider.getPageDepths();
-            for (PageDepth pageDepth: pageDepthSet ) {
+            for (PageDepth pageDepth : pageDepthSet) {
                 pageDepth.setSiteId(siteId);
                 webPageService.insertPageDepth(pageDepth);
             }
@@ -104,17 +110,17 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     private Types.LinkAvailableIssueType getTypeByLink(String url) {
 
         String suffix = url.substring(url.lastIndexOf('.') + 1);
-        for(String imageSuffix: imageSuffixs) {
+        for (String imageSuffix : imageSuffixs) {
 
-            if(StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
+            if (StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
 
                 return Types.LinkAvailableIssueType.INVALID_IMAGE;
             }
         }
 
-        for(String fileSuffix: fileSuffixs) {
+        for (String fileSuffix : fileSuffixs) {
 
-            if(StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
+            if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
 
                 return Types.LinkAvailableIssueType.INVALID_FILE;
             }

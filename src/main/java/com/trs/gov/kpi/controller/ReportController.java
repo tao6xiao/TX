@@ -84,7 +84,6 @@ public class ReportController {
     }
 
     private void download(HttpServletResponse response, String relativePath, String fileName) {
-        //TODO 文件路径待确定
         File file = new File(reportDir + relativePath, fileName);
         if (file.exists()) {
             response.setContentType("application/force-download");// 设置强制下载不打开
