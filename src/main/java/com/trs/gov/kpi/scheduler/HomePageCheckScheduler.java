@@ -26,11 +26,17 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     SpiderUtils spider;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private String baseUrl;
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private Integer siteId;
+
+    @Setter
+    @Getter
+    private Boolean isTimeNode;
 
     @Resource
     private IssueMapper issueMapper;
@@ -41,7 +47,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
         log.info("HomePageCheckScheduler " + siteId + " start...");
         try {
             List<String> unavailableUrls = spider.homePageCheck(baseUrl);
-            if(unavailableUrls.contains(baseUrl)) {
+            if (unavailableUrls.contains(baseUrl)) {
                 Issue issue = new Issue();
                 issue.setSiteId(siteId);
                 issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);

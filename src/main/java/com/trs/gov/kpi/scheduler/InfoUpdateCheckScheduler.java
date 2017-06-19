@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.responsedata.Chnl;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
@@ -58,11 +57,17 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     @Resource
     IssueMapper issueMapper;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private Integer siteId;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String baseUrl;
+
+    @Setter
+    @Getter
+    private Boolean isTimeNode;
 
     // 检测时缓存频率设置
     private Map<Integer, FrequencySetup> setupCache;
@@ -160,9 +165,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 递归添加子栏目
+     *
      * @param curChnl
      * @param parent
-     *
      * @throws RemoteException
      */
     private void recursiveBuildChannelTree(
@@ -339,7 +344,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             Date now = new Date();
             if (isPrevPeroidUpdated) {
                 // 上一个周期已经更新了，检查是否需要预警
-                Date beginWarningDate = DateUtil.addDay(DateUtil.toDate(checkingChannel.getBeginDateTime()), checkingChannel.getCheckDay()-checkingChannel.getWarningDay());
+                Date beginWarningDate = DateUtil.addDay(DateUtil.toDate(checkingChannel.getBeginDateTime()), checkingChannel.getCheckDay() - checkingChannel.getWarningDay());
                 if (now.compareTo(beginWarningDate) >= 0) {
                     checkingChannel.setWarning(true);
                 }
@@ -354,6 +359,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 检查一个栏目是否更新
+     *
      * @param channelId 栏目ID
      * @return
      */
@@ -412,6 +418,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 插入一个栏目的检测结果
+     *
      * @param node
      */
     private void insertOneCheckingChannel(SimpleTree.Node<CheckingChannel> node) {
@@ -432,6 +439,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 判定栏目是否设置了监测频率
+     *
      * @param channel
      * @return
      */
@@ -488,6 +496,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 递归判定子栏目是否已更新
+     *
      * @param parent
      * @return
      */

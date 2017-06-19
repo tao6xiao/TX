@@ -136,6 +136,13 @@
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
 
+		<!--Excel生成 -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.9</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
