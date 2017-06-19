@@ -7,6 +7,6 @@ import lombok.Data;
  */
 @Data
 public class UpdateNotInTimeChnl extends EmptyChnl{
-    private Integer countMonth;
+    private Double countMonth;
 
 }

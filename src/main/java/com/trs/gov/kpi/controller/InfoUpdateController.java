@@ -87,17 +87,16 @@ public class InfoUpdateController extends IssueHandler {
      * @param siteId
      * @return
      * @throws BizException
-     * @throws ParseException
      * @throws RemoteException
      */
     @RequestMapping(value = "/month/count", method = RequestMethod.GET)
     @ResponseBody
-    public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, ParseException, RemoteException {
+    public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, RemoteException {
         if(siteId == null){
             log.error("Invalid parameter: 参数siteId为null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return null;
+        return infoUpdateService.getNotInTimeCountMonth(siteId);
     }
 
 }
