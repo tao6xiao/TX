@@ -369,5 +369,10 @@
     FROM issue WHERE 1=1
     <include refid="all_conditions_sql"/>
   </select>
-
+  <select id="getMaxIssueTime" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="java.util.Date">
+    SELECT
+    MAX(issueTime)
+    FROM issue WHERE 1=1
+    <include refid="all_conditions_sql"/>
+  </select>
 </mapper>

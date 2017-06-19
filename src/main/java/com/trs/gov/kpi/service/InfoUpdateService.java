@@ -3,10 +3,7 @@ package com.trs.gov.kpi.service;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
-import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.History;
-import com.trs.gov.kpi.entity.responsedata.InfoUpdateOrderRes;
-import com.trs.gov.kpi.entity.responsedata.Statistics;
+import com.trs.gov.kpi.entity.responsedata.*;
 
 import java.text.ParseException;
 import java.util.List;
@@ -46,5 +43,10 @@ public interface InfoUpdateService {
      */
     InfoUpdateOrderRes getInfoUpdateOrderById(WorkOrderRequest request) throws RemoteException;
 
-
+    /**
+     * 获取当前站点下面更新不及时栏目的月数以及空栏目
+     * @param siteId
+     * @return
+     */
+    MonthUpdateResponse getNotInTimeCountMonth(int siteId) throws RemoteException;
 }
