@@ -8,9 +8,10 @@ public enum EnumCheckJobType {
     CHECK_HOME_PAGE(1),
     CHECK_LINK(2),
     CHECK_CONTENT(3),
-    CHECK_INFO_UPDATE(4);
+    CHECK_INFO_UPDATE(4),
+    CALCULATE_PERFORMANCE(5);
 
-    public final int value ;
+    public final int value;
 
     EnumCheckJobType(int value) {
         this.value = value;

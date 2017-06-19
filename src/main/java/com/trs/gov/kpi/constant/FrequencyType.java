@@ -9,7 +9,8 @@ public enum FrequencyType {
 
     HOMEPAGE_AVAILABILITY(1, "首页可用性", FreqUnit.TIMES_PER_DAY),
     TOTAL_BROKEN_LINKS(2, "全站失效链接", FreqUnit.DAYS_PER_TIME),
-    WRONG_INFORMATION(3, "信息错误", FreqUnit.DAYS_PER_TIME);
+    WRONG_INFORMATION(3, "信息错误", FreqUnit.DAYS_PER_TIME),
+    CALCULATE_PERFORMANCE(4, "绩效指数", FreqUnit.TIMES_PER_MONTH);
 
     @Getter
     private int typeId;//类型id
@@ -20,7 +21,7 @@ public enum FrequencyType {
     @Getter
     private FreqUnit freqUnit;//粒度
 
-    private FrequencyType(int typeId, String name,FreqUnit freqUnit) {
+    private FrequencyType(int typeId, String name, FreqUnit freqUnit) {
         this.typeId = typeId;
         this.name = name;
         this.freqUnit = freqUnit;

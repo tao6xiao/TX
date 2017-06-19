@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -19,5 +20,5 @@ public interface IntegratedMonitorService {
 
     Double getRecentPerformance(PageDataRequestParam param);
 
-    List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param);
+    List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param) throws ParseException;
 }

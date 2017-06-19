@@ -13,7 +13,27 @@ import java.util.List;
 @Mapper
 public interface PerformanceMapper {
 
+    /**
+     * 查询最近一个月的绩效指数得分
+     *
+     * @param param
+     * @return
+     */
     Double getRecentPerformance(@Param("param") PageDataRequestParam param);
 
+    /**
+     * 查询绩效指得分的历史记录
+     *
+     * @param param
+     * @return
+     */
     List<Performance> getHistoryPerformance(@Param("param") PageDataRequestParam param);
+
+
+    /**
+     * 插入绩效指数得分数据
+     *
+     * @param performance
+     */
+    void insert(@Param("performance") Performance performance);
 }
