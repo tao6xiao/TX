@@ -151,7 +151,51 @@ public class IssueCountServiceImpl implements IssueCountService {
         getInductionResponse(siteIds, IssueIndicator.SOLVED_ALL, request, result);
 
         DeptInductionResponse[] inductionArray = new DeptInductionResponse[result.values().size()];
-        return result.values().toArray(inductionArray);
+        inductionArray = result.values().toArray(inductionArray);
+        for (int i = 0; i < inductionArray.length; i++){
+            buildInductionResponse(inductionArray[i]);
+        }
+        return inductionArray;
+    }
+
+    private void buildInductionResponse(DeptInductionResponse response) {
+        int countIssue = 0;
+        int countWarning = 0;
+        int countAll = 0;
+        if(response.getData().size() < 3){
+            for (Statistics stat : response.getData()) {
+                if(stat.getType() == IssueIndicator.UN_SOLVED_ISSUE.value){
+                    countIssue++;
+                }else if(stat.getType() == IssueIndicator.WARNING.value){
+                    countWarning++;
+                }else if(stat.getType() == IssueIndicator.SOLVED_ALL.value){
+                    countAll++;
+                }
+            }
+            Statistics stat2 = null;
+            if(countIssue == 0){
+                stat2 = new Statistics();
+                stat2.setType(IssueIndicator.UN_SOLVED_ISSUE.value);
+                stat2.setName(IssueIndicator.UN_SOLVED_ISSUE.getName());
+                stat2.setCount(0);
+                response.addStatistics(stat2);
+            }
+            if (countWarning == 0){
+                stat2 = new Statistics();
+                stat2.setType(IssueIndicator.WARNING.value);
+                stat2.setName(IssueIndicator.WARNING.getName());
+                stat2.setCount(0);
+                response.addStatistics(stat2);
+            }
+            if (countAll == 0){
+                stat2 = new Statistics();
+                stat2.setType(IssueIndicator.SOLVED_ALL.value);
+                stat2.setName(IssueIndicator.SOLVED_ALL.getName());
+                stat2.setCount(0);
+                response.addStatistics(stat2);
+            }
+
+        }
     }
 
     private void getInductionResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request, Map<Integer, DeptInductionResponse> result) {
