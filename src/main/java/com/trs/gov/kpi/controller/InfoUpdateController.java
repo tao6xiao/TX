@@ -1,13 +1,16 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.MonthUpdateResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -17,6 +20,7 @@ import java.util.List;
 /**
  * 信息更新问题
  */
+@Slf4j
 @RestController
 @RequestMapping("/gov/kpi/channel/issue")
 public class InfoUpdateController extends IssueHandler {
@@ -75,6 +79,25 @@ public class InfoUpdateController extends IssueHandler {
     public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return infoUpdateService.getUpdateNotInTimeCountList(param);
+    }
+
+    /**
+     * 获取更新不及时栏目的更新不及时总月数以及空栏目
+     *
+     * @param siteId
+     * @return
+     * @throws BizException
+     * @throws ParseException
+     * @throws RemoteException
+     */
+    @RequestMapping(value = "/month/count", method = RequestMethod.GET)
+    @ResponseBody
+    public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, ParseException, RemoteException {
+        if(siteId == null){
+            log.error("Invalid parameter: 参数siteId为null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return null;
     }
 
 }
