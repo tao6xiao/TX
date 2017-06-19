@@ -221,20 +221,25 @@ public class SpiderUtils {
             if (parentUrls.contains(baseUrl)) {
                 return deep + 1;
             } else {
-                Integer minDeep = null;
-                for (String parentUrl : parentUrls) {
-                    int newDeep = calcDeep(parentUrl, deep + 1);
-                    if (minDeep == null) {
-                        minDeep = newDeep;
-                    } else {
-                        minDeep = minDeep > newDeep ? newDeep : minDeep;
-                    }
-                }
-                return minDeep;
+                return this.deepSize(parentUrls, deep);
             }
         } else {
             return deep;
         }
+    }
+
+    private int deepSize (Set<String> parentUrls, int deeps){
+
+        Integer minDeep = null;
+        for (String parentUrl : parentUrls) {
+            int newDeep = calcDeep(parentUrl, deeps + 1);
+            if (minDeep == null) {
+                minDeep = newDeep;
+            } else {
+                minDeep = minDeep > newDeep ? newDeep : minDeep;
+            }
+        }
+        return minDeep;
     }
 
 
