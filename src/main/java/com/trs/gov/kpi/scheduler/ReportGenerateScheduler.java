@@ -2,10 +2,15 @@ package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.IssueIndicator;
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.dao.ReportMapper;
+import com.trs.gov.kpi.entity.Report;
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.IssueCountService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +55,12 @@ public class ReportGenerateScheduler implements SchedulerTask {
     @Resource
     IssueCountService countService;
 
+    @Resource
+    private SiteApiService siteApiService;
+
+    @Resource
+    private ReportMapper reportMapper;
+
     private int rowIndex = 0;//excel行的索引
     private int cellIndex = 0;//excel列的索引
 
@@ -59,15 +70,33 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
         IssueCountRequest request = new IssueCountRequest();
         request.setSiteIds(Integer.toString(siteId));
+        Report report = new Report();
+        report.setSiteId(siteId);
+        report.setReportTime(new Date());
+        Site site = null;
+        try {
+            site = siteApiService.getSiteById(siteId, "");
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
+        String title = "";
+        if (site != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            title = site.getSiteDesc() + "报表" + "(" + sdf.format(new Date()) + ")";
+        }
+        report.setTitle(title);
+
         String granularity;
         if (isTimeNode) {
             granularity = "day";
+            report.setTypeId(1);
         } else {
             granularity = "month";
+            report.setTypeId(2);
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        String fileDir = reportDir + "/" + Integer.toString(siteId) + "/" + granularity + "/";
+        String fileDir = "c:" + "/" + Integer.toString(siteId) + "/" + granularity + "/";
         String fileName = sdf.format(new Date()) + ".xlsx";
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet();// 创建工作表(Sheet)
@@ -178,42 +207,36 @@ public class ReportGenerateScheduler implements SchedulerTask {
         changeIndex();
 
         //写入文件
-        FileOutputStream out = null;
-        try {
+        try (FileOutputStream out = new FileOutputStream(fileDir + fileName)) {
             File dir = new File(fileDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            out = new FileOutputStream(fileDir + fileName);
             workbook.write(out);
         } catch (IOException e) {
             log.error("", e);
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
         }
-
+        report.setPath(fileDir + fileName);
+        report.setCrTime(new Date());
+        //入库
+        reportMapper.insert(report);
         log.info("ReportGenerateScheduler " + siteId + " end...");
     }
 
     private void writeDeptCount(List<DeptCount> deptCountList, HSSFSheet sheet, HSSFRow row, int index) {
+        HSSFRow tempRow = row;
+        int tempIndex = index;
         for (DeptCount deptCount : deptCountList) {
-            row.createCell(cellIndex).setCellValue(deptCount.getDept());
-            row.createCell(cellIndex + 1).setCellValue(deptCount.getValue());
-            row.createCell(cellIndex + 2).setCellValue("");
+            tempRow.createCell(cellIndex).setCellValue(deptCount.getDept());
+            tempRow.createCell(cellIndex + 1).setCellValue(deptCount.getValue());
+            tempRow.createCell(cellIndex + 2).setCellValue("");
             cellIndex += 3;
             //满6个就换行
-            if (index % 5 == 0) {
+            if (tempIndex % 5 == 0) {
                 changeIndex();
-                row = sheet.createRow(rowIndex);
+                tempRow = sheet.createRow(rowIndex);
             }
-            index++;
+            tempIndex++;
         }
     }
 

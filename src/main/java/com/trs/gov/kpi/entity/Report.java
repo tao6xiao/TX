@@ -16,5 +16,11 @@ public class Report {
 
     private String title;
 
+    private int typeId;
+
+    private Date reportTime;
+
     private Date crTime;
+
+    private String path;
 }
