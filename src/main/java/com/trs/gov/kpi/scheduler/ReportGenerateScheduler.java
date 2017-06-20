@@ -96,7 +96,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
-        String fileDir = reportDir + "/" + Integer.toString(siteId) + "/" + granularity + "/";
+        String fileDir = "/" + Integer.toString(siteId) + "/" + granularity + "/";
         String fileName = sdf.format(new Date()) + ".xlsx";
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet();// 创建工作表(Sheet)
@@ -193,12 +193,12 @@ public class ReportGenerateScheduler implements SchedulerTask {
         changeIndex();
 
         //创建目录
-        File dir = new File(fileDir);
+        File dir = new File(reportDir + fileDir);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         //写入文件
-        try (FileOutputStream out = new FileOutputStream(fileDir + fileName)) {
+        try (FileOutputStream out = new FileOutputStream(reportDir + fileDir + fileName)) {
             workbook.write(out);
         } catch (IOException e) {
             log.error("", e);
