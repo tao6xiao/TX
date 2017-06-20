@@ -61,7 +61,7 @@ public class DocReportController {
 
     @RequestMapping(value = "/bydepartment", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object>  getCounterByDep(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
+    public Map<String, Object>  getCounterByDep(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
         List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
         SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) ->  counter.setDepartmentId(Long.valueOf(value));
         List<DepDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
@@ -74,7 +74,7 @@ public class DocReportController {
 
     @RequestMapping(value = "/bysite", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterBySite(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
+    public Map<String, Object> getCounterBySite(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
         List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
         SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) ->  counter.setSiteId(Long.valueOf(value));
         final java.util.List<SiteDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class, setSiteIdFunc);
@@ -86,7 +86,7 @@ public class DocReportController {
 
     @RequestMapping(value = "/byuser", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterByUser(@ModelAttribute String beginDateTime, @ModelAttribute String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
+    public Map<String, Object> getCounterByUser(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException {
         List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports  = getMultiReportList("user");
         SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) ->  counter.setUserId(Long.valueOf(value));
         final List<UserDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
