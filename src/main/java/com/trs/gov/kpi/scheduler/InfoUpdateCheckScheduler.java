@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.IssueTableField;
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
@@ -121,6 +122,12 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         setupCache = new HashMap<>();
         presetCache = new HashMap<>();
         for (FrequencySetup setup : frequencySetups) {
+
+            // 关闭状态不检测
+            if (setup.getIsOpen() == null || setup.getIsOpen().intValue() == Status.Open.CLOSE.value) {
+                continue;
+            }
+
             setupCache.put(setup.getChnlId(), setup);
             if (presetCache.get(setup.getPresetFeqId()) == null) {
                 FrequencyPreset preset = frequencyPresetMapper.selectById(siteId, setup.getPresetFeqId());
