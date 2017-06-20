@@ -364,22 +364,33 @@ public class QueryFilterHelper {
         if (isTimeNode) {
             if (!StringUtil.isEmpty(param.getDay())) {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getDay()).setRangeBegin(true);
-                Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                calendar.setTime(format.parse(param.getDay()));
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-                filter.addCond(ReportTableField.REPORT_TIME, DateUtil.toString(calendar.getTime())).setRangeEnd(true);
+                String endTime = initEndTime(param.getDay(), isTimeNode);
+                filter.addCond(ReportTableField.REPORT_TIME, endTime).setRangeEnd(true);
             }
         } else {
             if (!StringUtil.isEmpty(param.getBeginDateTime())) {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getBeginDateTime()).setRangeBegin(true);
             }
             if (!StringUtil.isEmpty(param.getEndDateTime())) {
-                filter.addCond(ReportTableField.REPORT_TIME, param.getEndDateTime()).setRangeEnd(true);
+                String endTime = initEndTime(param.getEndDateTime(), isTimeNode);
+                filter.addCond(ReportTableField.REPORT_TIME, endTime).setRangeEnd(true);
             }
         }
 
         return filter;
+    }
+
+    private static String initEndTime(String day, boolean isTimeNode) throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format;
+        if (isTimeNode) {
+            format = new SimpleDateFormat("yyyy-MM-dd");
+        } else {
+            format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        }
+        calendar.setTime(format.parse(day));
+        calendar.add(Calendar.DAY_OF_MONTH, 1);//加一天，解决结束日期当天数据查不到的情况
+        return DateUtil.toString(calendar.getTime());
     }
 
 }
