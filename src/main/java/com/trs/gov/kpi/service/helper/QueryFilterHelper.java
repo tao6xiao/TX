@@ -364,7 +364,7 @@ public class QueryFilterHelper {
         if (isTimeNode) {
             if (!StringUtil.isEmpty(param.getDay())) {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getDay()).setRangeBegin(true);
-                String endTime = initEndTime(param.getDay(), isTimeNode);
+                String endTime = initEndTime(param.getDay());
                 filter.addCond(ReportTableField.REPORT_TIME, endTime).setRangeEnd(true);
             }
         } else {
@@ -372,7 +372,7 @@ public class QueryFilterHelper {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getBeginDateTime()).setRangeBegin(true);
             }
             if (!StringUtil.isEmpty(param.getEndDateTime())) {
-                String endTime = initEndTime(param.getEndDateTime(), isTimeNode);
+                String endTime = initEndTime(param.getEndDateTime());
                 filter.addCond(ReportTableField.REPORT_TIME, endTime).setRangeEnd(true);
             }
         }
@@ -380,14 +380,9 @@ public class QueryFilterHelper {
         return filter;
     }
 
-    private static String initEndTime(String day, boolean isTimeNode) throws ParseException {
+    private static String initEndTime(String day) throws ParseException {
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat format;
-        if (isTimeNode) {
-            format = new SimpleDateFormat("yyyy-MM-dd");
-        } else {
-            format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         calendar.setTime(format.parse(day));
         calendar.add(Calendar.DAY_OF_MONTH, 1);//加一天，解决结束日期当天数据查不到的情况
         return DateUtil.toString(calendar.getTime());
