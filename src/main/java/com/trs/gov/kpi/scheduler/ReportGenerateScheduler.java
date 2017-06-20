@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -100,17 +101,21 @@ public class ReportGenerateScheduler implements SchedulerTask {
         String fileDir = "/" + Integer.toString(siteId) + "/" + granularity + "/";
         String fileName = sdf.format(new Date()) + ".xlsx";
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet();// 创建工作表(Sheet)
+        Sheet sheet = workbook.createSheet("问题统计");// 创建工作表(Sheet)
 
         //各状态问题数量统计
         List<Statistics> statisticsList = countService.countSort(request);
         Row row = sheet.createRow(rowIndex);
         for (Statistics statistics : statisticsList) {
             row.createCell(cellIndex).setCellValue(statistics.getName());
-            row.createCell(cellIndex + 1).setCellValue(statistics.getCount());
-            row.createCell(cellIndex + 2).setCellValue("");
-            cellIndex += 3;
+            CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex, cellIndex + 1);
+            sheet.addMergedRegion(region);
+            row.createCell(cellIndex + 2).setCellValue(statistics.getCount());
+            row.createCell(cellIndex + 3).setCellValue("");
+            cellIndex += 4;
         }
+        changeIndex();
+        sheet.createRow(rowIndex);
         changeIndex();
 
         //各状态问题数量统计的历史记录
@@ -118,16 +123,22 @@ public class ReportGenerateScheduler implements SchedulerTask {
         for (Object object : list) {
             IssueHistoryCountResponse response = (IssueHistoryCountResponse) object;
             sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(response.getName());
+            CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex, cellIndex + 1);
+            sheet.addMergedRegion(region);
             changeIndex();
             row = sheet.createRow(rowIndex);
             writeHistoryCount(response.getData(), row, cellIndex);
             changeIndex();
         }
+        sheet.createRow(rowIndex);
+        changeIndex();
 
         //按状态再按部门统计问题的数量
         List<DeptCountResponse> deptCountResponseList = countService.deptCountSort(request);
         for (DeptCountResponse deptCountResponse : deptCountResponseList) {
             sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(deptCountResponse.getName());
+            CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex, cellIndex + 1);
+            sheet.addMergedRegion(region);
             changeIndex();
             row = sheet.createRow(rowIndex);
             for (DeptCount deptCount : deptCountResponse.getCount()) {
@@ -138,12 +149,16 @@ public class ReportGenerateScheduler implements SchedulerTask {
             }
             changeIndex();
         }
+        sheet.createRow(rowIndex);
+        changeIndex();
 
         //按部门再按状态统计问题的数量
         DeptInductionResponse[] induction = countService.deptInductionSort(request);
         row = sheet.createRow(rowIndex);
         row.createCell(cellIndex).setCellValue("部门");
         row.createCell(cellIndex + 1).setCellValue("待解决问题/待解决预警/已解决问题和预警");
+        CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex + 1, cellIndex + 5);
+        sheet.addMergedRegion(region);
         changeIndex();
         row = sheet.createRow(rowIndex);
         for (int i = 0; i < induction.length; i++) {
@@ -160,6 +175,8 @@ public class ReportGenerateScheduler implements SchedulerTask {
                 row = sheet.createRow(rowIndex);
             }
         }
+        changeIndex();
+        sheet.createRow(rowIndex);
         changeIndex();
 
         //按问题类型再按部门统计未处理的问题数量
