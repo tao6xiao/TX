@@ -35,6 +35,7 @@
             ]]>
             #{param.endDateTime}
         </if>
+        ORDER BY checkTime
     </select>
 
     <insert id="insert">
