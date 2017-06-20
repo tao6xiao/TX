@@ -97,9 +97,27 @@ public class SpiderUtils {
                     }
                 }
                 Set<String> parentUrlSet = pageParentMap.get(targetUrl);
-                parentUrlSet.add(page.getUrl().get().intern());
-            }
+                if (!targetUrl.equals(page.getUrl().get().intern())) {
 
+                    boolean isEqual = false;
+                    if (targetUrl.startsWith(page.getUrl().get())) {
+                        String remainStr = targetUrl.substring(page.getUrl().get().length());
+                        if (remainStr.equals("/")  || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                            isEqual = true;
+                        }
+                    }
+                    if (page.getUrl().get().startsWith(targetUrl)) {
+                        String remainStr = page.getUrl().get().substring(targetUrl.length());
+                        if (remainStr.equals("/") ||  remainStr.equals("#") ||  remainStr.endsWith("/#")) {
+                            isEqual = true;
+                        }
+                    }
+
+                    if (!isEqual) {
+                        parentUrlSet.add(page.getUrl().get().intern());
+                    }
+                }
+            }
             page.addTargetRequests(targetUrls);
         }
 
@@ -151,7 +169,7 @@ public class SpiderUtils {
                             new Date()));
                 }
 
-                int deepSize = calcDeep(request.getUrl(), 1);
+                int deepSize = calcDeep(request.getUrl(), 100, 1);
                 if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
                     pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
                             0,
@@ -170,6 +188,7 @@ public class SpiderUtils {
             isUrlAvailable.set(true);
         }
     };
+
 
     private synchronized void init(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -214,27 +233,38 @@ public class SpiderUtils {
         return unavailableUrlAndParentUrls;
     }
 
-    private int calcDeep(String url, int deep) {
+    private int calcDeep(String url, int minDeep, int deep) {
 
         Set<String> parentUrls = pageParentMap.get(url);
         if (CollectionUtils.isNotEmpty(parentUrls)) {
-            if (parentUrls.contains(baseUrl)) {
-                return deep + 1;
-            } else {
-                Integer minDeep = null;
-                for (String parentUrl : parentUrls) {
-                    int newDeep = calcDeep(parentUrl, deep + 1);
-                    if (minDeep == null) {
-                        minDeep = newDeep;
-                    } else {
-                        minDeep = minDeep > newDeep ? newDeep : minDeep;
-                    }
-                }
-                return minDeep;
-            }
+            return this.deepSize(parentUrls, minDeep, deep);
         } else {
-            return deep;
+            return minDeep < deep ? minDeep : deep;
         }
+    }
+
+    private int deepSize (Set<String> parentUrls, int minDeep, int deeps){
+
+        // 规避页面循环引用导致的无限递归问题
+        if (deeps > 100) {
+            return minDeep < deeps ? minDeep : deeps;
+        }
+
+        if (deeps > minDeep) {
+            return minDeep;
+        }
+
+        int newMinDeep = minDeep;
+        for (String parentUrl : parentUrls) {
+            if (parentUrl.equals(baseUrl)){
+                return deeps + 1 < newMinDeep ? deeps + 1 : newMinDeep;
+            }else{
+                int newDeep = calcDeep(parentUrl, newMinDeep, deeps + 1);
+                newMinDeep = newMinDeep >  newDeep ? newDeep : newMinDeep;
+            }
+        }
+
+        return newMinDeep;
     }
 
 

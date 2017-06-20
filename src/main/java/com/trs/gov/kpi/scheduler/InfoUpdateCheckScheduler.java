@@ -19,6 +19,7 @@ import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -71,6 +72,10 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     @Getter @Setter
     private String baseUrl;
+
+    @Setter
+    @Getter
+    private Boolean isTimeNode;
 
     // 检测时缓存频率设置
     private Map<Integer, FrequencySetup> setupCache;
@@ -507,7 +512,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         update.setSiteId(siteId);
         update.setTypeId(issueTypeId);
         update.setSubTypeId(subIssueTypeId);
-        update.setIssueTime(new Date());
+        Date curDate = new Date();
+        update.setIssueTime(curDate);
+        update.setCheckTime(curDate);
         update.setChnlId(channelId);
         try {
             update.setChnlUrl(siteApiService.getChannelPublishUrl("", 0, channelId));

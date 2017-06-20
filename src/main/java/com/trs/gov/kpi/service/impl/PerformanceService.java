@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumIndexUpdateType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -59,7 +58,10 @@ public class PerformanceService {
     @Resource
     private InteractionService interactionService;
 
-    public Double calPerformanceIndex(PageDataRequestParam param) throws ParseException, RemoteException {
+    public Double calPerformanceIndex(Integer siteId) throws ParseException, RemoteException {
+
+        PageDataRequestParam param = new PageDataRequestParam();
+        param.setSiteId(siteId);
 
         //网站可用得分
         double availabilityScore = 37.5;
@@ -103,15 +105,21 @@ public class PerformanceService {
 
         //办事指南要素的完整性、准确性
         SGStatistics sgStatistics = sgService.getSGCount(param);
-        int handleIssueCount = sgStatistics.getAbandonedCounts();
+        int handleIssueCount = 0;
+        if (sgStatistics != null) {
+            handleIssueCount = sgStatistics.getAbandonedCounts();
+        }
+
         handleGuideScore *= 1 - handleIssueCount * 0.1;
         if (handleGuideScore < 0) {
             handleGuideScore = 0;
         }
 
         //咨询信件答复质量情况
-        NBHDRequestParam nbhdRequestParam = new NBHDRequestParam();
-        interactionService.getGovMsgBoxesCount(nbhdRequestParam);
+        advisoryScore *= (1);
+
+        //年度在线访谈情况
+        interviewScore *= (1);
 
 
         return availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;

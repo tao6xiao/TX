@@ -37,4 +37,10 @@
         </if>
     </select>
 
+    <insert id="insert">
+        INSERT INTO performanceindex
+        (siteId,performance,checkTime)
+        VALUES (#{performance.siteId},#{performance.index},#{performance.checkTime})
+    </insert>
+
 </mapper>

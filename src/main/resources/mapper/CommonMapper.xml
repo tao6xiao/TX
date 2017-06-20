@@ -41,11 +41,11 @@
         <if test="filter.condFields != null">
             AND
             <foreach collection="filter.condFields" item="condField" separator=" AND ">
-                <include refid="com.trs.gov.report.dao.ReportMapper.where_foreach_field_sql"></include>
+                <include refid="com.trs.gov.kpi.dao.CommonMapper.where_foreach_field_sql"></include>
                 <if test='condField.fieldName == "OR_COMPLEX_FIELD"'>
                     <foreach collection="condField.condValue.fields" index="index" item="condField" open="("
                              separator=" OR " close=")">
-                        <include refid="com.trs.gov.report.dao.ReportMapper.where_foreach_field_sql"></include>
+                        <include refid="com.trs.gov.kpi.dao.CommonMapper.where_foreach_field_sql"></include>
                     </foreach>
                 </if>
             </foreach>
@@ -87,22 +87,11 @@
     </sql>
 
     <sql id="all_conditions_sql">
-        <include refid="com.trs.gov.report.dao.ReportMapper.where_sql"/>
-        <include refid="com.trs.gov.report.dao.ReportMapper.group_sql"/>
-        <include refid="com.trs.gov.report.dao.ReportMapper.order_sql"/>
-        <include refid="com.trs.gov.report.dao.ReportMapper.page_sql"/>
+        <include refid="com.trs.gov.kpi.dao.CommonMapper.where_sql"/>
+        <include refid="com.trs.gov.kpi.dao.CommonMapper.group_sql"/>
+        <include refid="com.trs.gov.kpi.dao.CommonMapper.order_sql"/>
+        <include refid="com.trs.gov.kpi.dao.CommonMapper.page_sql"/>
     </sql>
-
-    <insert id="insert" parameterType="com.trs.gov.report.dao.entity.DBRow">
-        insert into ${tableName}
-        <foreach collection="fields" item="fieldName" open="(" separator="," close=")">
-            ${fieldName}
-        </foreach>
-        values
-        <foreach collection="values" item="value" open="(" separator="," close=")">
-            #{value}
-        </foreach>
-    </insert>
 
     <select id="select" resultType="java.util.Map">
         SELECT *

@@ -19,7 +19,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by he.lang on 2017/5/24.
@@ -36,6 +38,10 @@ public class CKMScheduler implements SchedulerTask {
     @Setter
     @Getter
     private Integer siteId;
+
+    @Setter
+    @Getter
+    private Boolean isTimeNode;
 
     @Resource
     private IssueMapper issueMapper;
@@ -84,7 +90,7 @@ public class CKMScheduler implements SchedulerTask {
         }
 
         if (result.getResult() != null) {
-            issueList = toIssueList(document, checkTypeList,result);
+            issueList = toIssueList(document, checkTypeList, result);
         }
         return issueList;
     }
@@ -110,7 +116,7 @@ public class CKMScheduler implements SchedulerTask {
         return issueList;
     }
 
-    private void insert(List<Issue> issueList){
+    private void insert(List<Issue> issueList) {
         //插入监测出的信息错误数据
         for (Issue issue : issueList) {
             issueMapper.insert(DBUtil.toRow(issue));
@@ -118,9 +124,9 @@ public class CKMScheduler implements SchedulerTask {
         log.info("buildCheckContent insert error count: " + issueList.size());
     }
 
-    private StringBuilder buildCheckContent(Document document){
+    private StringBuilder buildCheckContent(Document document) {
         StringBuilder checkContent = new StringBuilder();
-        if (document.getDocTitle() != null &&  !document.getDocTitle().trim().isEmpty()) {
+        if (document.getDocTitle() != null && !document.getDocTitle().trim().isEmpty()) {
             checkContent.append(document.getDocTitle());
             checkContent.append("。");
         }

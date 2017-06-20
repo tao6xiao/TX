@@ -35,7 +35,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class SchedulerServiceImpl implements SchedulerService, ApplicationListener<ContextRefreshedEvent> {
 
 
-
     @Resource
     SchedulerTask[] schedulerTasks;
 
@@ -70,6 +69,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                 case CHECK_LINK:
                     scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
                     break;
+                default:
             }
 
         } catch (SchedulerException e) {
@@ -117,6 +117,15 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
                 // 文档内容错误检测
                 initContentCheckJob(scheduler);
+
+                //计算绩效指数
+                initPerformanceCheckJob(scheduler);
+
+                //按时间节点生成报表
+                initTimeNodeCheckJob(scheduler);
+
+                //按时间区间生成报表
+                initTimeIntervalCheckJob(scheduler);
 
             } catch (SchedulerException e) {
                 log.error("", e);
@@ -194,6 +203,57 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
     }
 
+    /**
+     * 绩效指数计算
+     *
+     * @param scheduler
+     */
+    private void initPerformanceCheckJob(Scheduler scheduler) {
+        // 查询数据库里面的所有站点
+        final List<MonitorSite> allMonitorSites = monitorSiteService.getAllMonitorSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        for (MonitorSite site : allMonitorSites) {
+            scheduleCheckJob(scheduler, site, FrequencyType.CALCULATE_PERFORMANCE, EnumCheckJobType.CALCULATE_PERFORMANCE);
+        }
+    }
+
+    /**
+     * 按时间节点生成报表
+     *
+     * @param scheduler
+     */
+    private void initTimeNodeCheckJob(Scheduler scheduler) {
+        // 查询数据库里面的所有站点
+        final List<MonitorSite> allMonitorSites = monitorSiteService.getAllMonitorSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        for (MonitorSite site : allMonitorSites) {
+            scheduleCheckJob(scheduler, site, FrequencyType.TIMENODE_REPORT, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
+        }
+    }
+
+    /**
+     * 按时间区间生成报表
+     *
+     * @param scheduler
+     */
+    private void initTimeIntervalCheckJob(Scheduler scheduler) {
+        // 查询数据库里面的所有站点
+        final List<MonitorSite> allMonitorSites = monitorSiteService.getAllMonitorSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        for (MonitorSite site : allMonitorSites) {
+            scheduleCheckJob(scheduler, site, FrequencyType.TIMEINTERVAL_REPORT, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
+        }
+    }
+
     private void scheduleCheckJob(Scheduler scheduler, MonitorSite site, FrequencyType freqType, EnumCheckJobType jobType) {
         final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
                 .queryBySiteId(site.getSiteId());
@@ -225,6 +285,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         } else if (unit == FreqUnit.TIMES_PER_DAY) {
             // 计算间隔的时间，秒
             interval = 24 * 60 * 60 / value;
+        } else if (unit == FreqUnit.TIMES_PER_MONTH) {
+            // 计算间隔的时间，秒
+            interval = 30 * 24 * 60 * 60 / value;
         }
         return interval;
     }
@@ -237,7 +300,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
      * @param site
      * @param interval
      */
-    private void scheduleJob(Scheduler scheduler,  EnumCheckJobType jobType, MonitorSite site, int interval) {
+    private void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, int interval) {
 
         SchedulerTask task = newTask(jobType);
         if (task == null) {
@@ -251,6 +314,11 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         // 真正的执行任务
         task.setSiteId(site.getSiteId());
         task.setBaseUrl(site.getIndexUrl());
+        if (jobType == EnumCheckJobType.TIMENODE_REPORT_GENERATE) {
+            task.setIsTimeNode(true);
+        } else if (jobType == EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE) {
+            task.setIsTimeNode(false);
+        }
         job.getJobDataMap().put("task", task);
 
         // 每天执行一次
@@ -295,6 +363,15 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
             case CHECK_CONTENT:
                 return applicationContext.getBean
                         (CKMScheduler.class);
+            case CALCULATE_PERFORMANCE:
+                return applicationContext.getBean
+                        (PerformanceScheduler.class);
+            case TIMENODE_REPORT_GENERATE:
+                return applicationContext.getBean
+                        (ReportGenerateScheduler.class);
+            case TIMEINTERVAL_REPORT_GENERATE:
+                return applicationContext.getBean
+                        (ReportGenerateScheduler.class);
             default:
                 return null;
         }

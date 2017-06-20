@@ -158,10 +158,17 @@ public interface IssueMapper {
     List<Map<String, Object>> getDepIssueCount(QueryFilter filter);
 
     /**
-     * 获取当前站点下部门的id
+     * 获取指定站点下面部门的对应类型的map List
      * @param filter
      * @return
      */
-    List<Integer> getDeptIdList(QueryFilter filter);
+	List<Map<String,Object>> getDeptIdMap(QueryFilter filter);
+
+    /**
+     * 获取当前栏目最近一条记录的发现问题时间
+     * @param filter
+     * @return
+     */
+    Date getMaxIssueTime(QueryFilter filter);
 
 }

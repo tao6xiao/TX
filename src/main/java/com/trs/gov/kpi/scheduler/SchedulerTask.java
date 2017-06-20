@@ -13,4 +13,8 @@ public interface SchedulerTask {
     void setBaseUrl(String baseUrl);
 
     void setSiteId(Integer siteId);
+
+    Boolean getIsTimeNode();
+
+    void setIsTimeNode(Boolean isTimeNode);
 }

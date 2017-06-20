@@ -3,6 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.Report;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -35,4 +36,12 @@ public interface ReportMapper {
      * @return
      */
     String selectPathById(QueryFilter filter);
+
+    /**
+     * 查询报表所在路径的集合
+     *
+     * @param report
+     * @return
+     */
+    void insert(@Param("report") Report report);
 }

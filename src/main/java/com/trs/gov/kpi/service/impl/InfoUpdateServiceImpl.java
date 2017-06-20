@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.InfoUpdateOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -294,6 +295,97 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         }
         return list.get(0);
     }
+
+    @Override
+    public MonthUpdateResponse getNotInTimeCountMonth(int siteId) throws RemoteException {
+        MonthUpdateResponse monthUpdateResponse = new MonthUpdateResponse();
+        List<UpdateNotInTimeChnl> notInTimeChnls = new ArrayList<>();
+        List<EmptyChnl> emptyChnls = new ArrayList<>();
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
+        List<InfoUpdate> updateList = issueMapper.selectInfoUpdate(filter);
+        for (InfoUpdate update : updateList) {
+            if (update.getChnlId() == null) {
+                continue;
+            }
+            buildNotInTimeChnls(update, siteId, notInTimeChnls);
+        }
+        monthUpdateResponse.setUpdateNotInTimeChnl(notInTimeChnls);
+        buildEmptyChnls(siteId, emptyChnls);
+        monthUpdateResponse.setEmptyChnl(emptyChnls);
+        return monthUpdateResponse;
+    }
+
+    private void buildEmptyChnls(int siteId, List<EmptyChnl> emptyChnls) throws RemoteException {
+        List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
+        for (Integer chnlId : chnlIdList) {
+            if (chnlId != null) {
+                Channel chnl = siteApiService.getChannelById(chnlId, "");
+                if (chnl != null) {
+                    EmptyChnl emptyChnl = new EmptyChnl();
+                    emptyChnl.setChnlId(chnlId);
+                    emptyChnl.setChnlName(chnl.getChnlName());
+                    emptyChnls.add(emptyChnl);
+                }
+            }
+        }
+    }
+
+    private void buildNotInTimeChnls(InfoUpdate update, int siteId, List<UpdateNotInTimeChnl> notInTimeChnls) throws RemoteException {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.CUSTOMER2, update.getChnlId());
+        Date maxIssueTime = issueMapper.getMaxIssueTime(filter);
+        Date nowTime = new Date();
+        double countMonth;
+        Calendar c = Calendar.getInstance();
+
+        c.setTime(maxIssueTime);
+        int yearIssue = c.get(Calendar.YEAR);
+        int monthIssue = c.get(Calendar.MONTH);
+        int dayIssue = c.get(Calendar.DATE);
+
+        c.setTime(nowTime);
+        int yearNow = c.get(Calendar.YEAR);
+        int monthNow = c.get(Calendar.MONTH);
+        int dayNow = c.get(Calendar.DATE);
+
+        if (monthNow < monthIssue) {
+            return;
+        }
+        if (yearIssue == yearNow) {
+            countMonth = (double) (monthNow - monthIssue);
+        } else {
+            countMonth = (double) (12 * (yearNow - yearIssue) + monthNow - monthIssue);
+        }
+        if (dayNow > dayIssue) {
+            if (dayNow - dayIssue <= 15) {
+                countMonth += 0.5;
+            } else {
+                countMonth += 1;
+            }
+        } else if (dayNow < dayIssue) {
+            c.setTime(maxIssueTime);
+            int maxDayOfMonthIssue = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+            if ((maxDayOfMonthIssue - dayIssue + dayNow) <= 15) {
+                countMonth -= 0.5;
+            }
+        }
+        Channel chnl = siteApiService.getChannelById(update.getChnlId(), "");
+        if (chnl != null) {
+            UpdateNotInTimeChnl notInTimeChnl = new UpdateNotInTimeChnl();
+            notInTimeChnl.setChnlId(update.getChnlId());
+            notInTimeChnl.setChnlName(chnl.getChnlName());
+            notInTimeChnl.setCountMonth(countMonth);
+            notInTimeChnls.add(notInTimeChnl);
+        }
+    }
+
 
     private List<InfoUpdateOrderRes> toOrderResponse(List<InfoUpdateOrder> infoUpdateOrderList) throws RemoteException {
         List<InfoUpdateOrderRes> responseList = new ArrayList<>();

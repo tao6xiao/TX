@@ -119,4 +119,10 @@
         <include refid="where_sql"/>
     </select>
 
+    <insert id="insert">
+        INSERT INTO report
+         (siteId,title,reportTime,crTime,type,path)
+         VALUES (#{report.siteId},#{report.title},#{report.reportTime},#{report.crTime},#{report.typeId},#{report.path})
+    </insert>
+
 </mapper>

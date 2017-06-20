@@ -4,10 +4,7 @@ import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
-import com.trs.gov.kpi.entity.responsedata.DeptCount;
-import com.trs.gov.kpi.entity.responsedata.DeptCountResponse;
-import com.trs.gov.kpi.entity.responsedata.History;
-import com.trs.gov.kpi.entity.responsedata.Statistics;
+import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -79,5 +76,18 @@ public class IssueCountController {
         }
 
         return countService.getDeptCountByType(request);
+    }
+	
+	
+    /**
+     * 部门分类归纳查询统计数量
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/bytype/count",method = RequestMethod.GET)
+    @ResponseBody
+    public DeptInductionResponse[] deptInductionSort(@ModelAttribute IssueCountRequest request) throws BizException {
+        ParamCheckUtil.paramCheck(request);
+        return countService.deptInductionSort(request);
     }
 }
