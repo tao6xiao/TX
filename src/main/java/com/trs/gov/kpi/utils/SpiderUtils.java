@@ -164,7 +164,7 @@ public class SpiderUtils {
                     biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
                             0,
                             request.getUrl().intern(),
-                            Long.valueOf(request.getUrl().getBytes().length),
+                            Long.valueOf(request.getUrl().length()),
                             Long.valueOf(result.getRawText().getBytes().length),
                             new Date()));
                 }
