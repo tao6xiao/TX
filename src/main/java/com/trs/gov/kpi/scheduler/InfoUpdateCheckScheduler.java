@@ -1,14 +1,18 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.check.CheckingChannel;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.responsedata.Chnl;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
@@ -16,6 +20,7 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
@@ -57,6 +62,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     @Resource
     IssueMapper issueMapper;
+
+    @Resource
+    CommonMapper commonMapper;
 
     @Getter @Setter
     private Integer siteId;
@@ -424,9 +432,17 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             insertUpdateIssue(checking, node);
         } else if (checking.isShouldSelfCheck() && checking.isSelfWarning()) {
             // 插入一条自查提醒
-            insertToDB(checking.getChannel().getChannelId(),
+            QueryFilter filter = buildQueryFilter(checking.getChannel().getChannelId(),
                     Types.IssueType.INFO_UPDATE_WARNING.value,
-                    Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
+                    Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value,
+                    checking.getSelfCheckBeginDate());
+            if (isExist(filter)) {
+                updateToDB(filter, checking.getChannel().getChannelId());
+            } else {
+                insertToDB(checking.getChannel().getChannelId(),
+                        Types.IssueType.INFO_UPDATE_WARNING.value,
+                        Types.InfoUpdateWarningType.SELF_CHECK_WARNING.value);
+            }
         }
     }
 
@@ -450,14 +466,30 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             // 查看子栏目是否更新了，如果子栏目更新，则父栏目也算更新了
             if (!isChildChannelUpdated(node)) {
                 // 插入一条更新不及时的记录
-                insertToDB(checking.getChannel().getChannelId(),
+                QueryFilter filter = buildQueryFilter(checking.getChannel().getChannelId(),
                         Types.IssueType.INFO_UPDATE_ISSUE.value,
-                        Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+                        Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value,
+                        checking.getBeginDateTime());
+                if (isExist(filter)) {
+                    updateToDB(filter, checking.getChannel().getChannelId());
+                } else {
+                    insertToDB(checking.getChannel().getChannelId(),
+                            Types.IssueType.INFO_UPDATE_ISSUE.value,
+                            Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+                }
             }
         } else if (checking.isWarning()) {
-            insertToDB(checking.getChannel().getChannelId(),
+            QueryFilter filter = buildQueryFilter(checking.getChannel().getChannelId(),
                     Types.IssueType.INFO_UPDATE_WARNING.value,
-                    Types.InfoUpdateWarningType.UPDATE_WARNING.value);
+                    Types.InfoUpdateWarningType.UPDATE_WARNING.value,
+                    checking.getBeginDateTime());
+            if (isExist(filter)) {
+                updateToDB(filter, checking.getChannel().getChannelId());
+            } else {
+                insertToDB(checking.getChannel().getChannelId(),
+                        Types.IssueType.INFO_UPDATE_WARNING.value,
+                        Types.InfoUpdateWarningType.UPDATE_WARNING.value);
+            }
         } else {
             // 父栏目有更新，无预警，不插入任何记录
         }
@@ -475,7 +507,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         update.setSiteId(siteId);
         update.setTypeId(issueTypeId);
         update.setSubTypeId(subIssueTypeId);
-        update.setCheckTime(new Date());
+        update.setIssueTime(new Date());
         update.setChnlId(channelId);
         try {
             update.setChnlUrl(siteApiService.getChannelPublishUrl("", 0, channelId));
@@ -484,6 +516,56 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         }
 
         issueMapper.insert(DBUtil.toRow(update));
+    }
+
+    /**
+     * 判定更新不及时记录是否存在
+     *
+     * @return
+     */
+    private boolean isExist(@NonNull QueryFilter filter) {
+        final List<Issue> issues = issueMapper.select(filter);
+        return !issues.isEmpty();
+    }
+
+    /**
+     * 构造查询过滤器
+     *
+     * @param channelId
+     * @param issueTypeId
+     * @param subIssueTypeId
+     * @param beginDateTime
+     * @return
+     */
+    private QueryFilter buildQueryFilter(int channelId, int issueTypeId, int subIssueTypeId, String beginDateTime) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.CUSTOMER2, channelId);
+        filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
+        filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
+        filter.addCond(IssueTableField.CHECK_TIME, beginDateTime).setRangeBegin(true);
+        return filter;
+    }
+
+    /**
+     * 更新到数据库
+     *
+     * @param filter    查询条件
+     * @param channelId 栏目id
+     */
+    private void updateToDB(QueryFilter filter, int channelId) {
+        String chnlUrl = null;
+        try {
+            chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
+        } catch (Exception e) {
+            log.error("", e);
+        }
+        DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+        if (chnlUrl != null) {
+            updater.addField(IssueTableField.DETAIL, chnlUrl);
+        }
+        updater.addField(IssueTableField.CHECK_TIME, new Date());
+        commonMapper.update(updater, filter);
     }
 
     /**

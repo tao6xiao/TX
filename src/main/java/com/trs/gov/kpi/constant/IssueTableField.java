@@ -12,6 +12,7 @@ public class IssueTableField {
     public static final String SUBTYPE_ID = "subTypeId";
     public static final String DETAIL = "detail";
     public static final String ISSUE_TIME = "issueTime";
+    public static final String CHECK_TIME = "checkTime";
     public static final String IS_RESOLVED = "isResolved";
     public static final String IS_DEL = "isDel";
     public static final String WORK_ORDER_STATUS = "workOrderStatus";
