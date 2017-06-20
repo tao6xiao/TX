@@ -12,31 +12,16 @@ import java.util.Date;
  */
 @Data
 @DBTable("webpage")
-public class PageSpace {
-
-    @DBField(autoInc = true)
-    private String id;
+public class PageSpace extends PageIssue {
 
     @DBField
     private Integer typeId = Types.AnalysisType.OVERSIZE_PAGE.value;
-
-    @DBField
-    private Integer siteId;
-
-    @DBField
-    private Integer chnlId;//所在栏目编号
-
-    @DBField
-    private String pageLink;//网页链接
 
     @DBField("pageSpeed")
     private Long speed;//响应速度
 
     @DBField("pageSpace")
     private Long space;//页面大小
-
-    @DBField
-    private Date checkTime;//监测时间
 
     public PageSpace() {
     }

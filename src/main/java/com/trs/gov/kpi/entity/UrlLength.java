@@ -8,36 +8,18 @@ import java.util.Date;
 
 /**
  * 过长URL页面
- *
+ * <p>
  * Created by ranwei on 2017/6/6.
  */
 @Data
 @DBTable("webpage")
-public class UrlLength {
-
-    @DBField
-    private String id;
-
-    @DBField
-    private Integer typeId;//类型编号
-
-    @DBField
-    private Integer siteId;//站点编号
-
-    @DBField
-    private Integer chnlId;//所在栏目编号
-
-    @DBField
-    private String pageLink;//网页链接
+public class UrlLength extends PageIssue {
 
     @DBField("urlLength")
     private Long length;//URL长度
 
     @DBField("pageSpace")
     private Long space;//页面大小
-
-    @DBField
-    private Date checkTime;//监测时间
 
     public UrlLength() {
     }

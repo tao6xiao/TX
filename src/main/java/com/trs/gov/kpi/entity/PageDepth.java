@@ -8,36 +8,18 @@ import java.util.Date;
 
 /**
  * 页面深度
- *
+ * <p>
  * Created by ranwei on 2017/6/6.
  */
 @Data
 @DBTable("webpage")
-public class PageDepth {
-
-    @DBField
-    private String id;
-
-    @DBField
-    private Integer typeId;//类型编号
-
-    @DBField
-    private Integer siteId;//站点编号
-
-    @DBField
-    private Integer chnlId;//所在栏目编号
-
-    @DBField
-    private String pageLink;//网页链接
+public class PageDepth extends PageIssue {
 
     @DBField("pageDepth")
     private Integer depth;//页面深度
 
     @DBField("pageSpace")
     private Long space;//页面大小
-
-    @DBField
-    private Date checkTime;//监测时间
 
     public PageDepth(Integer typeId, Integer chnlId, String pageLink, Integer depth, Long space, Date checkTime) {
         this.typeId = typeId;

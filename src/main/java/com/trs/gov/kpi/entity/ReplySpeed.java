@@ -7,37 +7,19 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- *  响应速度
- *
+ * 响应速度
+ * <p>
  * Created by ranwei on 2017/6/6.
  */
 @Data
 @DBTable("webpage")
-public class ReplySpeed {
-
-    @DBField
-    private String id;
-
-    @DBField
-    private Integer typeId;//类型编号
-
-    @DBField
-    private Integer siteId;//站点编号
-
-    @DBField
-    private Integer chnlId;//所在栏目编号
-
-    @DBField
-    private String pageLink;//网页链接
+public class ReplySpeed extends PageIssue {
 
     @DBField("pageSpeed")
     private Long speed;
 
     @DBField("pageSpace")
     private Long space;
-
-    @DBField
-    private Date checkTime;//监测时间
 
     public ReplySpeed(Integer typeId, Integer chnlId, String pageLink, Long speed, Long space, Date checkTime) {
         this.typeId = typeId;
