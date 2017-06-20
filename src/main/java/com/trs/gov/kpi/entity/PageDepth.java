@@ -15,6 +15,9 @@ import java.util.Date;
 @DBTable("webpage")
 public class PageDepth extends PageIssue {
 
+    @DBField
+    private Integer typeId;//类型编号
+
     @DBField("pageDepth")
     private Integer depth;//页面深度
 
@@ -31,5 +34,15 @@ public class PageDepth extends PageIssue {
     }
 
     public PageDepth() {
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

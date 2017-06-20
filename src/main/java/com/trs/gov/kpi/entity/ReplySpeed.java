@@ -15,6 +15,9 @@ import java.util.Date;
 @DBTable("webpage")
 public class ReplySpeed extends PageIssue {
 
+    @DBField
+    private Integer typeId;//类型编号
+
     @DBField("pageSpeed")
     private Long speed;
 
@@ -31,6 +34,16 @@ public class ReplySpeed extends PageIssue {
     }
 
     public ReplySpeed() {
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
 

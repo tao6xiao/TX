@@ -33,4 +33,14 @@ public class PageSpace extends PageIssue {
         this.space = space;
         this.checkTime = checkTime;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

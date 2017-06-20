@@ -10,10 +10,22 @@ import java.util.Date;
 @Data
 public class RepeatCode extends PageIssue {
 
+    private Integer typeId;//类型编号
+
     private Integer repeatPlace;
 
     private String repeatDegree;
 
     private Date updateTime;//更新时间
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 
 }

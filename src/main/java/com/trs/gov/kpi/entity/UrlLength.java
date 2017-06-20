@@ -15,6 +15,9 @@ import java.util.Date;
 @DBTable("webpage")
 public class UrlLength extends PageIssue {
 
+    @DBField
+    private Integer typeId;//类型编号
+
     @DBField("urlLength")
     private Long length;//URL长度
 
@@ -31,5 +34,15 @@ public class UrlLength extends PageIssue {
         this.length = length;
         this.space = space;
         this.checkTime = checkTime;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

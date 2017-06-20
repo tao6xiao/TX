@@ -20,9 +20,6 @@ public class PageIssue {
     Integer siteId;//站点编号
 
     @DBField
-    Integer typeId;//类型编号
-
-    @DBField
     Integer chnlId;//所在栏目编号
 
     @DBField
