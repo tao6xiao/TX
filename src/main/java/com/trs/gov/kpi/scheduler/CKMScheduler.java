@@ -44,13 +44,13 @@ public class CKMScheduler implements SchedulerTask {
     private Boolean isTimeNode;
 
     @Resource
-    private IssueMapper issueMapper;
-
-    @Resource
     private DocumentApiService documentApiService;
 
     @Resource
     private ContentCheckApiService contentCheckApiService;
+
+    @Resource
+    private IssueMapper issueMapper;
 
     @Override
     public void run() {

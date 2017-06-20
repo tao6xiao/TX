@@ -32,11 +32,11 @@ public class HomePageCheckScheduler implements SchedulerTask {
 
     @Setter
     @Getter
-    private Integer siteId;
+    private Boolean isTimeNode;
 
     @Setter
     @Getter
-    private Boolean isTimeNode;
+    private Integer siteId;
 
     @Resource
     private IssueMapper issueMapper;
