@@ -11,7 +11,11 @@ public class UpdateNotInTimeChnl extends EmptyChnl {
 
     @Override
     public boolean equals(Object obj) {
-       return false;
+        if (!super.equals(obj)) {
+            return true;
+        }
+        UpdateNotInTimeChnl notInTimeChnl = (UpdateNotInTimeChnl) obj;
+        return countMonth.equals(notInTimeChnl.getCountMonth());
     }
 
     @Override
