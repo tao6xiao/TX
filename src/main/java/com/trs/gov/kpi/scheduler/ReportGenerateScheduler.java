@@ -14,9 +14,10 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -98,12 +99,12 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
         String fileDir = "/" + Integer.toString(siteId) + "/" + granularity + "/";
         String fileName = sdf.format(new Date()) + ".xlsx";
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet();// 创建工作表(Sheet)
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet();// 创建工作表(Sheet)
 
         //各状态问题数量统计
         List<Statistics> statisticsList = countService.countSort(request);
-        HSSFRow row = sheet.createRow(rowIndex);
+        Row row = sheet.createRow(rowIndex);
         for (Statistics statistics : statisticsList) {
             row.createCell(cellIndex).setCellValue(statistics.getName());
             row.createCell(cellIndex + 1).setCellValue(statistics.getCount());
@@ -217,7 +218,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
      * @param row
      * @param cellIndex
      */
-    private void writeHistoryCount(List<HistoryStatistics> data, HSSFRow row, int cellIndex) {
+    private void writeHistoryCount(List<HistoryStatistics> data, Row row, int cellIndex) {
         int tempIndex = cellIndex;
         for (HistoryStatistics historyStatistics : data) {
             row.createCell(tempIndex).setCellValue(historyStatistics.getTime());
@@ -251,8 +252,8 @@ public class ReportGenerateScheduler implements SchedulerTask {
      * @param row
      * @param index
      */
-    private void writeDeptCount(List<DeptCount> deptCountList, HSSFSheet sheet, HSSFRow row, int index) {
-        HSSFRow tempRow = row;
+    private void writeDeptCount(List<DeptCount> deptCountList, Sheet sheet, Row row, int index) {
+        Row tempRow = row;
         int tempIndex = index;
         for (DeptCount deptCount : deptCountList) {
             tempRow.createCell(cellIndex).setCellValue(deptCount.getDept());
