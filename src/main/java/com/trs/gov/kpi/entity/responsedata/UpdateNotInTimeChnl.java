@@ -20,4 +20,10 @@ public class UpdateNotInTimeChnl extends EmptyChnl{
         return false;
     }
 
+    @Override
+    public int hashCode() {
+    /* ... */
+    return 0;
+    }
+
 }
