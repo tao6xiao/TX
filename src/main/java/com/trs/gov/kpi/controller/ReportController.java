@@ -56,7 +56,7 @@ public class ReportController {
         }
         String[] str = path.split("/");
 
-        download(response, "/" + str[1] + "/" + str[2] + "/", str[3] + ".xlsx");
+        download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
         return null;
     }
 
@@ -79,7 +79,7 @@ public class ReportController {
         }
         String[] str = path.split("/");
 
-        download(response, "/" + str[1] + "/" + str[2] + "/", str[3] + ".xlsx");
+        download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
         return null;
     }
 
