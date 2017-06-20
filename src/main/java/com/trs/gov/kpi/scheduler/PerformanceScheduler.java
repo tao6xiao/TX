@@ -31,15 +31,15 @@ public class PerformanceScheduler implements SchedulerTask {
     @Getter
     private Integer siteId;
 
-    @Setter
-    @Getter
-    private Boolean isTimeNode;
-
     @Resource
     private PerformanceService performanceService;
 
     @Resource
     private PerformanceMapper performanceMapper;
+
+    @Setter
+    @Getter
+    private Boolean isTimeNode;
 
     @Override
     public void run() {

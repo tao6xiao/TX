@@ -96,7 +96,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
-        String fileDir = reportDir + "/" + Integer.toString(siteId) + "/" + granularity + "/";
+        String fileDir = "c:" + "/" + Integer.toString(siteId) + "/" + granularity + "/";
         String fileName = sdf.format(new Date()) + ".xlsx";
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet();// 创建工作表(Sheet)
@@ -119,12 +119,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(response.getName());
             changeIndex();
             row = sheet.createRow(rowIndex);
-            for (HistoryStatistics historyStatistics : response.getData()) {
-                row.createCell(cellIndex).setCellValue(historyStatistics.getTime());
-                row.createCell(cellIndex + 1).setCellValue(historyStatistics.getValue());
-                row.createCell(cellIndex + 2).setCellValue("");
-                cellIndex += 3;
-            }
+            writeHistoryCount(response.getData(), row, cellIndex);
             changeIndex();
         }
 
@@ -152,18 +147,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
         row = sheet.createRow(rowIndex);
         for (int i = 0; i < induction.length; i++) {
             row.createCell(cellIndex).setCellValue(induction[i].getDept());
-            String unhandleIssue = "";
-            String unhandleWarning = "";
-            String handled = "";
-            for (Statistics statistics : induction[i].getData()) {
-                if (statistics.getType() == IssueIndicator.UN_SOLVED_ISSUE.value) {
-                    unhandleIssue = Integer.toString(statistics.getCount());
-                } else if (statistics.getType() == IssueIndicator.WARNING.value) {
-                    unhandleWarning = Integer.toString(statistics.getCount());
-                } else if (statistics.getType() == IssueIndicator.SOLVED_ALL.value) {
-                    handled = Integer.toString(statistics.getCount());
-                }
-            }
+            String unhandleIssue = getStringCount(induction[i].getData(), IssueIndicator.UN_SOLVED_ISSUE);
+            String unhandleWarning = getStringCount(induction[i].getData(), IssueIndicator.WARNING);
+            String handled = getStringCount(induction[i].getData(), IssueIndicator.SOLVED_ALL);
             row.createCell(cellIndex + 1).setCellValue(String.format("%s/%s/%s", unhandleIssue, unhandleWarning, handled));
             row.createCell(cellIndex + 2).setCellValue("");
             cellIndex += 3;
@@ -206,12 +192,13 @@ public class ReportGenerateScheduler implements SchedulerTask {
         writeDeptCount(deptCountList, sheet, row, index);
         changeIndex();
 
+        //创建目录
+        File dir = new File(fileDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         //写入文件
         try (FileOutputStream out = new FileOutputStream(fileDir + fileName)) {
-            File dir = new File(fileDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
             workbook.write(out);
         } catch (IOException e) {
             log.error("", e);
@@ -223,6 +210,47 @@ public class ReportGenerateScheduler implements SchedulerTask {
         log.info("ReportGenerateScheduler " + siteId + " end...");
     }
 
+    /**
+     * 将问题的历史记录写入excel
+     *
+     * @param data
+     * @param row
+     * @param cellIndex
+     */
+    private void writeHistoryCount(List<HistoryStatistics> data, HSSFRow row, int cellIndex) {
+        int tempIndex = cellIndex;
+        for (HistoryStatistics historyStatistics : data) {
+            row.createCell(tempIndex).setCellValue(historyStatistics.getTime());
+            row.createCell(tempIndex + 1).setCellValue(historyStatistics.getValue());
+            row.createCell(tempIndex + 2).setCellValue("");
+            tempIndex += 3;
+        }
+    }
+
+    /**
+     * 获得各状态的问题统计数量
+     *
+     * @param data
+     * @param indicator
+     * @return
+     */
+    private String getStringCount(List<Statistics> data, IssueIndicator indicator) {
+        for (Statistics statistics : data) {
+            if (statistics.getType() == indicator.value) {
+                return Integer.toString(statistics.getCount());
+            }
+        }
+        return "";
+    }
+
+    /**
+     * 将各部门的数据写入excel
+     *
+     * @param deptCountList
+     * @param sheet
+     * @param row
+     * @param index
+     */
     private void writeDeptCount(List<DeptCount> deptCountList, HSSFSheet sheet, HSSFRow row, int index) {
         HSSFRow tempRow = row;
         int tempIndex = index;
@@ -241,7 +269,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
     }
 
 
-    //索引指向下一行第一个单元格
+    /**
+     * 索引指向下一行第一个单元格
+     */
     private void changeIndex() {
         rowIndex++;
         cellIndex = 0;
