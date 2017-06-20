@@ -197,7 +197,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目ids");
                 if (StringUtil.isEmpty(result.getData())) {
-                    return null;
+                    return new ArrayList<>();
                 }
                 return JSON.parseArray(result.getData(), Integer.class);
             } else {
