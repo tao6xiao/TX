@@ -61,15 +61,11 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public List<HistoryStatistics> getHistoryVisits(BasRequest basRequest) throws RemoteException {
+    public List<HistoryStatistics> getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
         String siteIndexPage = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId()).getIndexUrl();
         String url = basServiceUrl + "/api/retrieveWebUV";
-        if (StringUtil.isEmpty(basRequest.getBeginDateTime())) {
-            basRequest.setBeginDateTime("2017-05-01");
-        }
-        if (StringUtil.isEmpty(basRequest.getEndDateTime())) {
-            basRequest.setEndDateTime(DateUtil.toString(new Date()));
-        }
+        setDefaultDate(basRequest);
+
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate historyDate : dateList) {
@@ -81,6 +77,24 @@ public class BasServiceImpl implements BasService {
         }
 
         return list;
+    }
+
+    /**
+     * 设置默认起止日期
+     *
+     * @param basRequest
+     * @throws ParseException
+     */
+    private void setDefaultDate(BasRequest basRequest) throws ParseException {
+        if (StringUtil.isEmpty(basRequest.getEndDateTime())) {
+            basRequest.setEndDateTime(DateUtil.toString(new Date()));
+        }
+        if (StringUtil.isEmpty(basRequest.getBeginDateTime())) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(DateUtil.toDayDate(basRequest.getEndDateTime()));
+            calendar.add(Calendar.MONTH, -6);
+            basRequest.setBeginDateTime(DateUtil.toDayString(calendar.getTime()));
+        }
     }
 
     private Integer requestBasPV(String url, String beginDay, String endDay, String siteIndexPage) throws RemoteException {
@@ -142,12 +156,8 @@ public class BasServiceImpl implements BasService {
     public List<HistoryStatistics> geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
 
         StringBuilder url = new StringBuilder(basServiceUrl + "/api/mpSummary");
-        if (StringUtil.isEmpty(basRequest.getBeginDateTime())) {
-            basRequest.setBeginDateTime("2017-05-01");
-        }
-        if (StringUtil.isEmpty(basRequest.getEndDateTime())) {
-            basRequest.setEndDateTime(DateUtil.toString(new Date()));
-        }
+        setDefaultDate(basRequest);
+
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
 

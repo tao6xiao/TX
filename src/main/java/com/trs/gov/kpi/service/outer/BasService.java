@@ -26,7 +26,7 @@ public interface BasService {
      * @param request
      * @return
      */
-    List<HistoryStatistics> getHistoryVisits(BasRequest request) throws RemoteException;
+    List<HistoryStatistics> getHistoryVisits(BasRequest request) throws RemoteException, ParseException;
 
     /**
      * 获取最近一个月的次均停留时间
