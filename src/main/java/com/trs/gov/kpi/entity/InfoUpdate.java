@@ -28,7 +28,10 @@ public class InfoUpdate {
     @DBField("detail")
     private String chnlUrl;
 
-    @DBField("issueTime")
+    @DBField
+    private Date issueTime;
+
+    @DBField
     private Date checkTime;
 
     @DBField

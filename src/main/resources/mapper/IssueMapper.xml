@@ -20,7 +20,8 @@
     <result column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="subTypeId" property="subTypeId"/>
     <result column="detail" property="chnlUrl"/>
-    <result column="issueTime" property="checkTime"/>
+    <result column="issueTime" property="issueTime"/>
+    <result column="checkTime" property="checkTime"/>
     <result column="isResolved" jdbcType="BIT" property="isResolved" />
     <result column="isDel" jdbcType="BIT" property="isDel" />
     <result column="customer2" property="chnlId"/>

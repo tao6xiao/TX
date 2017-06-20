@@ -8,5 +8,16 @@ import lombok.Data;
 @Data
 public class UpdateNotInTimeChnl extends EmptyChnl{
     private Double countMonth;
+    @Override
+    public boolean equals(Object obj) {
+        if (! super.equals(obj)) {
+            return true;
+        }
+        UpdateNotInTimeChnl notInTimeChnl = (UpdateNotInTimeChnl) obj;
+        if (countMonth.equals(notInTimeChnl.getCountMonth())) {
+            return true;
+        }
+        return false;
+    }
 
 }
