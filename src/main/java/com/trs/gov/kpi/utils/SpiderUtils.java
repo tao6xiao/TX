@@ -36,7 +36,7 @@ public class SpiderUtils {
     private static final int THRESHOLD_MAX_URL_LENGHT = 6;
 
     //页面深度阀值
-    private static final int THRESHOLD_MAX_PAGE_DEPTH = 0;
+    private static final int THRESHOLD_MAX_PAGE_DEPTH = 2;
 
     private HashMap<String, Set<String>> pageParentMap = new HashMap<>();
 
