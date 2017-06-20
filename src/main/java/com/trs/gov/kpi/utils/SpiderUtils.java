@@ -36,7 +36,7 @@ public class SpiderUtils {
     private static final int THRESHOLD_MAX_URL_LENGHT = 6;
 
     //页面深度阀值
-    private static final int THRESHOLD_MAX_PAGE_DEPTH = 0;
+    private static final int THRESHOLD_MAX_PAGE_DEPTH = 2;
 
     private HashMap<String, Set<String>> pageParentMap = new HashMap<>();
 
@@ -164,7 +164,7 @@ public class SpiderUtils {
                     biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
                             0,
                             request.getUrl().intern(),
-                            Long.valueOf(request.getUrl().getBytes().length),
+                            Long.valueOf(request.getUrl().length()),
                             Long.valueOf(result.getRawText().getBytes().length),
                             new Date()));
                 }
