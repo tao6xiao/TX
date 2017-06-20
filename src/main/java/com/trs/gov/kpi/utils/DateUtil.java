@@ -60,6 +60,32 @@ public class DateUtil {
         return format.format(date);
     }
 
+
+    /**
+     * 将yyyy-MM-dd格式日期字符串转换为日期
+     *
+     * @param dateString
+     * @return
+     */
+    public static Date toDayDate(@NonNull String dateString) throws ParseException {
+        final SimpleDateFormat format = new SimpleDateFormat(DAY_FORMAT);
+        return format.parse(dateString);
+    }
+
+    /**
+     * 格式化 yyyy-MM-dd格式日期为字符串
+     *
+     * @param date
+     * @return
+     */
+    public static String toDayString(Date date) {
+        if (date == null) {
+            return "";
+        }
+        final SimpleDateFormat format = new SimpleDateFormat(DAY_FORMAT);
+        return format.format(date);
+    }
+
     /**
      * 计算两个日期之间相差的天数
      *
@@ -208,6 +234,7 @@ public class DateUtil {
 
     /**
      * 获取当前月， yyyy-MM-dd HH:mm:ss 格式，比如 2017-06-01 00:00:00
+     *
      * @return
      */
     public static String curMonth() {
@@ -217,6 +244,7 @@ public class DateUtil {
 
     /**
      * 判定是否为合法的月份，格式为 yyyy-MM, 比如 2017-01
+     *
      * @param month
      * @return
      */
