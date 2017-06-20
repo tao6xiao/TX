@@ -94,9 +94,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
             granularity = "month";
             report.setTypeId(2);
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
-        String fileDir = "c:" + "/" + Integer.toString(siteId) + "/" + granularity + "/";
+        String fileDir = reportDir + "/" + Integer.toString(siteId) + "/" + granularity + "/";
         String fileName = sdf.format(new Date()) + ".xlsx";
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet();// 创建工作表(Sheet)
