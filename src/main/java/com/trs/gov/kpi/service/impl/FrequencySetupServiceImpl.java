@@ -46,6 +46,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
         int itemCount = frequencySetupMapper.count(filter);
         Pager pager = PageInfoDeal.buildResponsePager(selectRequest.getPageIndex(), selectRequest.getPageSize(), itemCount);
         filter.setPager(pager);
+        filter.addSortField("id");
         List<FrequencySetup> frequencySetupList = frequencySetupMapper.select(filter);
         return new ApiPageData(pager, getFrequencySetupDetailListByFrequencySetupList(frequencySetupList));
     }
