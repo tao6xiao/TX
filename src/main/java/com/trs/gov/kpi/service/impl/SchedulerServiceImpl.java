@@ -216,7 +216,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-            int interval = getInterval(FrequencyType.CALCULATE_PERFORMANCE.getFreqUnit(), (short)1);
+            int interval = getInterval(FreqUnit.TIMES_PER_MONTH, (short) 1);
             scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, interval);
         }
     }
@@ -234,7 +234,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-            int interval = getInterval(FrequencyType.TIMENODE_REPORT.getFreqUnit(), (short)1);
+            int interval = getInterval(FreqUnit.TIMES_PER_DAY, (short) 1);
             scheduleJob(scheduler, EnumCheckJobType.TIMENODE_REPORT_GENERATE, site, interval);
         }
     }
@@ -252,7 +252,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-            int interval = getInterval(FrequencyType.TIMEINTERVAL_REPORT.getFreqUnit(), (short)1);
+            int interval = getInterval(FreqUnit.TIMES_PER_MONTH, (short) 1);
             scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, interval);
         }
     }
