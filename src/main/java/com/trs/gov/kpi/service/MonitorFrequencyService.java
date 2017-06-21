@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorFrequency;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyResponse;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 
@@ -23,7 +24,7 @@ public interface MonitorFrequencyService {
      * @param monitorFrequencySetUp
      * @return
      */
-    int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp);
+    int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) throws BizException;
 
     /**
      * 通过siteId去验证当前传入的对象是否存在，存在将做修改记录，不存在将插入记录，实际也是一次通过siteId的查询
@@ -37,5 +38,5 @@ public interface MonitorFrequencyService {
      * @param monitorFrequencySetUp
      * @return
      */
-    int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp);
+    int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) throws BizException;
 }
