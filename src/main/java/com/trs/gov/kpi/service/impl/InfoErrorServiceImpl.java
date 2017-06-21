@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.InfoErrorOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -161,13 +162,22 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
 
-    private List<InfoErrorOrderRes> toOrderResponse(List<InfoErrorOrder> infoErrorOrderList) throws RemoteException {
+    private List<InfoErrorOrderRes> toOrderResponse(List<InfoErrorOrder> infoErrorOrderList)  {
         List<InfoErrorOrderRes> list = new ArrayList<>();
         for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
             InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();
             infoErrorOrderRes.setId(infoErrorOrder.getId());
             infoErrorOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
-            infoErrorOrderRes.setSiteName(siteApiService.getSiteById(infoErrorOrder.getSiteId(), null).getSiteDesc());
+
+            try {
+                final Site site = siteApiService.getSiteById(infoErrorOrder.getSiteId(), null);
+                if (site != null) {
+                    infoErrorOrderRes.setSiteName(site.getSiteName());
+                }
+            } catch (RemoteException e) {
+                log.error("", e);
+            }
+
             infoErrorOrderRes.setParentTypeName(Types.IssueType.valueOf(infoErrorOrder.getTypeId()).getName());
             infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
 //            infoErrorOrderRes.setDepartment();TODO

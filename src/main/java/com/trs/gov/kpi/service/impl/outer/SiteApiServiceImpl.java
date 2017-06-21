@@ -52,15 +52,16 @@ public class SiteApiServiceImpl implements SiteApiService {
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取站点");
                 if (StringUtil.isEmpty(result.getData())) {
-                    return null;
+                    log.error("site[" + siteId + "] result is empty, response: " + response);
+                    throw new RemoteException("获取站点失败！");
                 }
                 return JSON.parseObject(result.getData(), Site.class);
             } else {
-                log.error("failed to getSiteById, error: " + response);
+                log.error("failed to get site[" + siteId + "], error: " + response);
                 throw new RemoteException("获取站点失败！");
             }
         } catch (IOException e) {
-            log.error("failed getSiteById", e);
+            log.error("failed get site[" + siteId + "]", e);
             throw new RemoteException("获取站点失败！", e);
         }
     }
