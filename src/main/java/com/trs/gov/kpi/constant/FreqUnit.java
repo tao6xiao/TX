@@ -7,7 +7,7 @@ import lombok.Getter;
  */
 public enum FreqUnit {
     TIMES_PER_DAY(1, "次/天"),
-    TIMES_PER_MONTH(1, "次/月"),
+    TIMES_PER_MONTH(3, "次/月"),
     DAYS_PER_TIME(2, "天/次");
 
     @Getter
