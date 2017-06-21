@@ -77,7 +77,7 @@ public class BasServiceImpl implements BasService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate historyDate : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            Integer pv = requestBasPV(url, historyDate.getBeginDate(), historyDate.getEndDate(), siteIndexPage);
+            Integer pv = requestBasPV(url, initTime(historyDate.getBeginDate()), initTime(historyDate.getEndDate()), siteIndexPage);
             historyStatistics.setValue(pv);
             historyStatistics.setTime(historyDate.getMonth());
             list.add(historyStatistics);
@@ -139,7 +139,7 @@ public class BasServiceImpl implements BasService {
             throw new RemoteException("获取访问量失败！", e);
         }
         if (basPVResponse.getRecords() == null || basPVResponse.getRecords().isEmpty()) {
-            return null;
+            return 0;
         }
         return basPVResponse.getRecords().get(0).getPv();
     }
@@ -153,7 +153,7 @@ public class BasServiceImpl implements BasService {
         StringBuilder url = new StringBuilder(basServiceUrl + "/api/mpSummary");
         SiteSummary siteSummary = requestBasSummary(url, params);
         if (siteSummary == null) {
-            return null;
+            return 0;
         } else {
             return siteSummary.getAvgDuration30();
         }
