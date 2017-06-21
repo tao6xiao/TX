@@ -3,6 +3,7 @@ package com.trs.gov.kpi.service.impl.outer;
 import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.*;
 import com.trs.gov.kpi.entity.HistoryDate;
+import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.bas.BasPVResponse;
 import com.trs.gov.kpi.entity.outerapi.bas.SiteSummary;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -41,8 +41,11 @@ public class BasServiceImpl implements BasService {
 
     @Override
     public Integer getVisits(BasRequest basRequest) throws RemoteException, ParseException {
-
-        String siteIndexPage = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId()).getIndexUrl();
+        MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId());
+        String siteIndexPage = "";
+        if (monitorSiteDeal != null) {
+            siteIndexPage = monitorSiteDeal.getIndexUrl();
+        }
         String beginDay = initTime(getPreviousMonthDate());
         String endDay = initTime(DateUtil.toString(new Date()));
         String url = basServiceUrl + "/api/retrieveWebUV";
@@ -62,7 +65,11 @@ public class BasServiceImpl implements BasService {
 
     @Override
     public List<HistoryStatistics> getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
-        String siteIndexPage = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId()).getIndexUrl();
+        MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId());
+        String siteIndexPage = "";
+        if (monitorSiteDeal != null) {
+            siteIndexPage = monitorSiteDeal.getIndexUrl();
+        }
         String url = basServiceUrl + "/api/retrieveWebUV";
         setDefaultDate(basRequest);
 
@@ -127,7 +134,7 @@ public class BasServiceImpl implements BasService {
                 log.error("failed to getVisits, error: " + response);
                 throw new RemoteException("获取访问量失败！");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("getVisits failed ", e);
             throw new RemoteException("获取访问量失败！", e);
         }
@@ -216,7 +223,7 @@ public class BasServiceImpl implements BasService {
                 log.error("failed to getStayTime, error: " + response);
                 throw new RemoteException("获取停留时间失败！");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("getStayTime failed ", e);
             throw new RemoteException("获取停留时间失败！", e);
         }
