@@ -176,6 +176,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
                 }
             } catch (RemoteException e) {
                 log.error("", e);
+                infoErrorOrderRes.setSiteName("站点[id=" + infoErrorOrder.getSiteId() + "]");
             }
 
             infoErrorOrderRes.setParentTypeName(Types.IssueType.valueOf(infoErrorOrder.getTypeId()).getName());
