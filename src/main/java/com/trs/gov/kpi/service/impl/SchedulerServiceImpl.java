@@ -1,11 +1,13 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.FreqUnit;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.job.CheckJob;
 import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
@@ -49,12 +51,16 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
 
     @Override
-    public void addCheckJob(int siteId, EnumCheckJobType checkType) {
+    public void addCheckJob(int siteId, EnumCheckJobType checkType) throws BizException {
 
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             final MonitorSite site = monitorSiteService.getMonitorSiteBySiteId
                     (siteId);
+            if(site == null){
+                log.error("Invalid parameter: 当前站点不是监测中的站点");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
 
             switch (checkType) {
                 case CHECK_HOME_PAGE:

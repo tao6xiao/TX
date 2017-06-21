@@ -4,6 +4,7 @@ import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyResponse;
@@ -46,7 +47,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     }
 
     @Override
-    public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
+    public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) throws BizException {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
         updateMonitorScheduler(monitorFrequencyList);
@@ -59,7 +60,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     }
 
     @Override
-    public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) {
+    public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) throws BizException {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.updateMonitorFrequencySetUp(monitorFrequencyList);
         updateMonitorScheduler(monitorFrequencyList);
@@ -100,7 +101,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
      *
      * @param monitorFrequencyList
      */
-    private void updateMonitorScheduler(List<MonitorFrequency> monitorFrequencyList) {
+    private void updateMonitorScheduler(List<MonitorFrequency> monitorFrequencyList) throws BizException {
 
         if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {
             return;
