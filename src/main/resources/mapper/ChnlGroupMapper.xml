@@ -91,6 +91,7 @@
         <include refid="Base_Column_List"/>
         from chnlgroup
         where siteId = #{siteId,jdbcType=INTEGER} AND groupId = #{groupId,jdbcType=INTEGER}
+        ORDER BY id DESC
         limit #{pageCalculate,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
     </select>
     <select id="selectItemCountBySiteIdAndGroupId" parameterType="java.lang.Integer" resultType="java.lang.Integer">

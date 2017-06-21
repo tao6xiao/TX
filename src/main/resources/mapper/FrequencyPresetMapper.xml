@@ -90,6 +90,7 @@
         <include refid="Base_Column_List"/>
         from frequencypreset
         where siteId = #{siteId,jdbcType=INTEGER}
+        ORDER BY id DESC
         limit #{pageCalculate,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
     </select>
     <select id="selectById" resultMap="BaseResultMap">
