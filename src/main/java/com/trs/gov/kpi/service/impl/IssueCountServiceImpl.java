@@ -200,7 +200,9 @@ public class IssueCountServiceImpl implements IssueCountService {
 
     private void getInductionResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request, Map<Integer, DeptInductionResponse> result) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        if(request.getBeginDateTime() != null){
+            filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        }
         filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addGroupField(IssueTableField.DEPT_ID);
@@ -234,7 +236,9 @@ public class IssueCountServiceImpl implements IssueCountService {
         countResponse.setType(type.value);
         countResponse.setName(type.getName());
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        if(request.getBeginDateTime() != null){
+            filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        }
         filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addGroupField(IssueTableField.DEPT_ID);
@@ -275,7 +279,9 @@ public class IssueCountServiceImpl implements IssueCountService {
             filter.addCond(IssueTableField.SITE_ID, Arrays.asList(siteIds));
         }
 
-        filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        if(request.getBeginDateTime() != null){
+            filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
+        }
         filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addGroupField(IssueTableField.DEPT_ID);
