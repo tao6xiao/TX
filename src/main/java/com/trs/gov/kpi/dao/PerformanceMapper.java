@@ -14,14 +14,6 @@ import java.util.List;
 public interface PerformanceMapper {
 
     /**
-     * 查询最近一个月的绩效指数得分
-     *
-     * @param param
-     * @return
-     */
-    Double getRecentPerformance(@Param("param") PageDataRequestParam param);
-
-    /**
      * 查询绩效指得分的历史记录
      *
      * @param param

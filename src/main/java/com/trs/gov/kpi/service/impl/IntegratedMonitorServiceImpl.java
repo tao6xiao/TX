@@ -8,6 +8,7 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -17,6 +18,7 @@ import com.trs.gov.kpi.utils.InitTime;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +35,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
     @Resource
     private PerformanceMapper performanceMapper;
+
+    @Resource
+    private PerformanceService performanceService;
 
     @Override
     public List<Statistics> getAllIssueCount(PageDataRequestParam param) {
@@ -260,8 +265,8 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     }
 
     @Override
-    public Double getRecentPerformance(PageDataRequestParam param) {
-        return performanceMapper.getRecentPerformance(param);
+    public Double getPerformance(PageDataRequestParam param) throws ParseException, RemoteException {
+        return performanceService.calPerformanceIndex(param.getSiteId());
     }
 
     @Override

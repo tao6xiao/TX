@@ -8,15 +8,6 @@
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
-    <select id="getRecentPerformance" resultType="Double">
-      SELECT performance
-      FROM performanceindex
-      WHERE siteId = 11
-	  AND checkTime = (SELECT max(checkTime)
-                       FROM performanceindex
-                       WHERE siteId = 11)
-    </select>
-
     <select id="getHistoryPerformance" resultMap="PerformanceMap">
       SELECT *
       FROM performanceindex

@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -25,16 +27,16 @@ public class IntegratedMonitorController {
     private IntegratedMonitorService integratedMonitorService;
 
     /**
-     * 查询最近一个月的绩效指数得分
+     * 查询当前的绩效指数得分
      *
      * @param param
      * @return
      */
     @RequestMapping(value = "/index/now", method = RequestMethod.GET)
-    public Double getRecentPerformance(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public Double getPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
 
         ParamCheckUtil.paramCheck(param);
-        return integratedMonitorService.getRecentPerformance(param);
+        return integratedMonitorService.getPerformance(param);
     }
 
     /**
