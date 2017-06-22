@@ -17,7 +17,7 @@ public class PageSpace extends PageIssue {
     @DBField
     private Integer typeId = Types.AnalysisType.OVERSIZE_PAGE.value;
 
-    @DBField("pageSpeed")
+    @DBField("replySpeed")
     private Long speed;//响应速度
 
     @DBField("pageSpace")

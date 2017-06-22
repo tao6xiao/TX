@@ -18,7 +18,7 @@ public class ReplySpeed extends PageIssue {
     @DBField
     private Integer typeId;//类型编号
 
-    @DBField("pageSpeed")
+    @DBField("replySpeed")
     private Long speed;
 
     @DBField("pageSpace")

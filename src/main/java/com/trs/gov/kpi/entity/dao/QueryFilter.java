@@ -145,7 +145,7 @@ public class QueryFilter {
      */
     private void checkFieldName(String fieldName) {
         if (!fieldName.equals(OR_COMPLEX_FIELD_NAME) && !table.containsField(fieldName)) {
-            log.error("invalid field name: 没有当前表并且fieldName与OR_COMPLEX_FIELD_NAME常量也不相等");
+            log.error("invalid field name: 没有当前表并且fieldName与OR_COMPLEX_FIELD_NAME常量也不相等", new RuntimeException());
             throw new IllegalArgumentException("invalid field name " + fieldName + " of table " + table.getTableName());
         }
     }

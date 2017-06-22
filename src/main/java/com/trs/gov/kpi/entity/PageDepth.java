@@ -18,7 +18,7 @@ public class PageDepth extends PageIssue {
     @DBField
     private Integer typeId;//类型编号
 
-    @DBField("pageDepth")
+    @DBField("replySpeed")
     private Integer depth;//页面深度
 
     @DBField("pageSpace")
