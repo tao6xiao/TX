@@ -65,7 +65,7 @@ public class WebPageServiceImpl implements WebPageService {
             replySpeedResponse.setChnlName(ChnlCheckUtil.getChannelName(replySpeed.getChnlId(), siteApiService));
             replySpeedResponse.setPageLink(replySpeed.getPageLink());
             replySpeedResponse.setReplySpeed(replySpeed.getSpeed());
-            replySpeedResponse.setPageSpace(replySpeed.getSpeed());
+            replySpeedResponse.setPageSpace(replySpeed.getSpace());
             replySpeedResponse.setCheckTime(replySpeed.getCheckTime());
             replySpeedResponseList.add(replySpeedResponse);
         }
