@@ -21,5 +21,5 @@ public interface IntegratedMonitorService {
 
     Double getPerformance(PageDataRequestParam param) throws ParseException, RemoteException;
 
-    List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param);
+    List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param) throws ParseException;
 }

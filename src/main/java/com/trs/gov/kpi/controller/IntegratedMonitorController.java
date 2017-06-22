@@ -46,7 +46,7 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/index/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
 
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorService.getHistoryPerformance(param);

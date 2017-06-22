@@ -14,15 +14,15 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
+import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ranwei on 2017/5/24.
@@ -270,7 +270,24 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     }
 
     @Override
-    public List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param) {
+    public List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param) throws ParseException {
+        Calendar calendar = Calendar.getInstance();
+        if (StringUtil.isEmpty(param.getEndDateTime()) && StringUtil.isEmpty(param.getBeginDateTime())) {
+            calendar.setTime(new Date());
+            calendar.set(Calendar.MONTH, 0);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            calendar.set(Calendar.HOUR,0);
+            calendar.set(Calendar.MINUTE,0);
+            calendar.set(Calendar.SECOND,0);
+            param.setBeginDateTime(DateUtil.toString(calendar.getTime()));
+            param.setEndDateTime(DateUtil.toString(new Date()));
+        } else if (StringUtil.isEmpty(param.getEndDateTime())) {
+            param.setEndDateTime(DateUtil.toString(new Date()));
+        } else if (StringUtil.isEmpty(param.getBeginDateTime())) {
+            calendar.setTime(DateUtil.toDate(param.getEndDateTime()));
+            calendar.add(Calendar.YEAR, -1);
+            param.setBeginDateTime(DateUtil.toString(calendar.getTime()));
+        }
         List<Performance> performanceList = performanceMapper.getHistoryPerformance(param);
         List<HistoryStatistics> list = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
