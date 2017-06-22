@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -49,7 +50,10 @@ public class PerformanceScheduler implements SchedulerTask {
             Performance performance = new Performance();
             performance.setSiteId(siteId);
             performance.setIndex(score);
-            performance.setCheckTime(new Date());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.DAY_OF_MONTH, -1);
+            performance.setCheckTime(calendar.getTime());
             performanceMapper.insert(performance);
         } catch (ParseException | RemoteException e) {
             log.error("", e);
