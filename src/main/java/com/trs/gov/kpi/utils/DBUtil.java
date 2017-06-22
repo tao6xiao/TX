@@ -29,6 +29,17 @@ public class DBUtil {
         }
 
         DBRow row = new DBRow(clazz.getAnnotation(DBTable.class).value());
+
+        do {
+            row = getFields(po, row, clazz);
+            clazz = clazz.getSuperclass();
+        } while (clazz != Object.class);
+
+        return row;
+    }
+
+    private static DBRow getFields(Object po, DBRow row, Class<?> clazz) {
+
         Field[] fields = clazz.getDeclaredFields();
         for(Field field :fields){
             if (!field.isAnnotationPresent(DBField.class)
@@ -57,7 +68,9 @@ public class DBUtil {
                 log.error("", e);
             }
         }
+
         return row;
     }
+
 
 }
