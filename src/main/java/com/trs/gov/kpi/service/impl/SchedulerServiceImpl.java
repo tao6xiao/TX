@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -222,8 +223,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-            int interval = getInterval(FreqUnit.TIMES_PER_MONTH, (short) 1);
-            scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, interval);
+            // 每个月1日凌晨0点执行一次
+            scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, "0 0 0 1 * ?");
         }
     }
 
@@ -307,9 +308,35 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
      * @param scheduler
      * @param jobType
      * @param site
-     * @param interval
+     * @param cronExpress cron 表达式
+     */
+    private void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, String cronExpress) {
+        scheduleJob(scheduler, jobType, site, cronSchedule(cronExpress));
+    }
+
+    /**
+     * 注册调度任务
+     *
+     * @param scheduler
+     * @param jobType
+     * @param site
+     * @param interval 间隔时间
      */
     private void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, int interval) {
+        scheduleJob(scheduler, jobType, site, simpleSchedule()
+                .withIntervalInSeconds(interval)
+                .repeatForever());
+    }
+
+    /**
+     * 注册调度任务
+     *
+     * @param scheduler
+     * @param jobType
+     * @param site
+     * @param builder
+     */
+    private <T extends Trigger> void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, ScheduleBuilder<T> builder) {
 
         SchedulerTask task = newTask(jobType);
         if (task == null) {
@@ -335,9 +362,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                 .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .startNow()
                 .forJob(job.getKey())
-                .withSchedule(simpleSchedule()
-                        .withIntervalInSeconds(interval)
-                        .repeatForever())
+                .withSchedule(builder)
                 .build();
         try {
             scheduler.scheduleJob(job, trigger);
