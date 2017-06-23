@@ -7,6 +7,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 访问分析-->响应速度、页面大小、页面深度、冗余代码、过长url 提取共有字段组成的基类
  * Created by ranwei on 2017/6/20.
  */
 @Data
@@ -14,7 +15,7 @@ import java.util.Date;
 public class PageIssue {
 
     @DBField(autoInc = true)
-    String id;
+    String id;//问题编号
 
     @DBField
     Integer siteId;//站点编号

@@ -8,6 +8,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 页面大小
  * Created by ranwei on 2017/6/6.
  */
 @Data

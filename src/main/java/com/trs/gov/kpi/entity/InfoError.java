@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ *信息错误
  * Created by ranwei on 2017/5/27.
  */
 @Data

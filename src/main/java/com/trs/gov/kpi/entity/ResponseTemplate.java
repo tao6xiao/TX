@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
+ * 返回json的模板
  * Created by wangxuan on 2017/5/11.
  */
 @Data

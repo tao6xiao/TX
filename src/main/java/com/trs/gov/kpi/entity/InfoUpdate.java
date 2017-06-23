@@ -7,6 +7,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 信息更新
  * Created by he.lang on 2017/5/26.
  */
 @Data

@@ -5,13 +5,16 @@ import com.trs.gov.kpi.annotation.DBTable;
 
 import java.util.Date;
 
+/**
+ * issue表对应的实体类
+ */
 @DBTable
 public class Issue {
 
     /**
      * 问题编号
      */
-    @DBField(autoInc=true)
+    @DBField(autoInc = true)
     private String id;
 
     /**
@@ -21,36 +24,36 @@ public class Issue {
     private Integer siteId;
 
     @DBField
-    private Integer typeId;
+    private Integer typeId;//问题类型编号
 
     @DBField
-    private Integer subTypeId;
+    private Integer subTypeId;//问题子类型编号
 
-    private String subTypeName;
-
-    @DBField
-    private String detail = "";
+    private String subTypeName;//问题子类型
 
     @DBField
-    private Date issueTime;
+    private String detail = "";//详情
 
     @DBField
-    private Integer isResolved = 0;
+    private Date issueTime;//监测时间
 
     @DBField
-    private Integer isDel = 0;
+    private Integer isResolved = 0;//处理状态
 
     @DBField
-    private Integer deptId;
+    private Integer isDel = 0;//删除状态
 
     @DBField
-    private String customer1;
+    private Integer deptId;//所属部门编号
 
     @DBField
-    private String customer2;
+    private String customer1;//扩展字段1
 
     @DBField
-    private String customer3;
+    private String customer2;//扩展字段2
+
+    @DBField
+    private String customer3;//扩展字段3
 
     public String getId() {
         return id;

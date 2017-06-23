@@ -19,10 +19,10 @@ public class ReplySpeed extends PageIssue {
     private Integer typeId;//类型编号
 
     @DBField("replySpeed")
-    private Long speed;
+    private Long speed;//响应速度
 
     @DBField("pageSpace")
-    private Long space;
+    private Long space;//页面大小
 
     public ReplySpeed(Integer typeId, Integer chnlId, String pageLink, Long speed, Long space, Date checkTime) {
         this.typeId = typeId;

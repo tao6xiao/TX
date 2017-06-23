@@ -12,9 +12,9 @@ public class RepeatCode extends PageIssue {
 
     private Integer typeId;//类型编号
 
-    private Integer repeatPlace;
+    private Integer repeatPlace;//冗余位置
 
-    private String repeatDegree;
+    private String repeatDegree;//冗余程度
 
     private Date updateTime;//更新时间
 

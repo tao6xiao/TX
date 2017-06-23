@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 信息更新工单
  * Created by ranwei on 2017/6/7.
  */
 @Data
@@ -28,5 +29,5 @@ public class InfoUpdateOrder {
 
     private Integer isDel;
 
-    private Integer workOrderStatus;
+    private Integer workOrderStatus;//工单状态
 }
