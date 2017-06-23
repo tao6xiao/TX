@@ -3,11 +3,13 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.entity.MonitorFrequency;
+import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyResponse;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
+import com.trs.gov.kpi.service.MonitorSiteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,9 @@ import java.util.List;
 public class MonitorFrequencyController {
     @Resource
     MonitorFrequencyService monitorFrequencyService;
+
+    @Resource
+    MonitorSiteService monitorSiteService;
 
     /**
      * 通过siteId获取当前站点监测频率的设置记录集合
@@ -61,7 +66,7 @@ public class MonitorFrequencyController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
 
-            if(FrequencyType.valueOf(freqs[i].getId()) == null){
+            if (FrequencyType.valueOf(freqs[i].getId()) == null) {
                 log.error("Invalid parameter: 参数freqs[]中id（类型编号）无对应的频率设置类型");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
@@ -72,6 +77,10 @@ public class MonitorFrequencyController {
         }
 
         int siteId = freqSetUp.getSiteId();
+        if (monitorSiteService.getMonitorSiteBySiteId(siteId) == null) {
+            log.error("Invalid parameter: 当前站点" + siteId + "不是监测站点");
+            throw new BizException("请先进行监测站点模块相关设置");
+        }
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
         if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
             monitorFrequencyService.addMonitorFrequencySetUp(freqSetUp);

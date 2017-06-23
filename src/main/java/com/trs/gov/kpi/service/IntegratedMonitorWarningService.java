@@ -12,33 +12,6 @@ import java.text.ParseException;
 public interface IntegratedMonitorWarningService{
 
     /**
-     * 处理预警提醒
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     */
-    int dealWithWarningBySiteIdAndId(int siteId, Integer[] ids);
-
-    /**
-     * 忽略预警提醒
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     */
-    int ignoreWarningBySiteIdAndId(int siteId, Integer[] ids);
-
-    /**
-     * 删除预警提醒
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     */
-    int deleteWarningBySiteIdAndId(int siteId, Integer[] ids);
-
-    /**
      * 获取预警提醒的分页数据
      * @param param
      * @return

@@ -16,7 +16,7 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping("/gov/kpi/issue")
-public class IntegratedMonitorIssueController {
+public class IntegratedMonitorIssueController extends IssueHandler{
 
     @Resource
     private IssueService issueService;
@@ -32,63 +32,6 @@ public class IntegratedMonitorIssueController {
     public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
         ParamCheckUtil.paramCheck(param);
         return issueService.get(param);
-    }
-
-    /**
-     * 处理对应siteId和id的待解决记录（批量和单个）
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     * @throws BizException
-     */
-    @RequestMapping(value = "/handle", method = RequestMethod.POST)
-    @ResponseBody
-    public Object handIssuesByIds(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
-        if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        ParamCheckUtil.integerArrayParamCheck(ids);
-        issueService.handIssuesByIds(siteId, Arrays.asList(ids));
-        return null;
-    }
-
-    /**
-     * 忽略对应siteId和id的待解决记录（批量和单个）
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     * @throws BizException
-     */
-    @RequestMapping(value = "/ignore", method = RequestMethod.POST)
-    @ResponseBody
-    public Object ignoreIssuesByIds(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
-        if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数不合法！");
-        }
-        ParamCheckUtil.integerArrayParamCheck(ids);
-        issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
-        return null;
-    }
-
-    /**
-     * 删除对应siteId和id的待解决记录（批量和单个）
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     * @throws BizException
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    @ResponseBody
-    public Object delIssueByIds(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
-        if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数不合法！");
-        }
-        ParamCheckUtil.integerArrayParamCheck(ids);
-        issueService.delIssueByIds(siteId, Arrays.asList(ids));
-        return null;
     }
 
 }

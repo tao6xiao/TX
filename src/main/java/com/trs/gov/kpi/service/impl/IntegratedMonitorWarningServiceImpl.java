@@ -32,28 +32,6 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
     @Resource
     IssueMapper issueMapper;
 
-
-    @Override
-    public int dealWithWarningBySiteIdAndId(int siteId, Integer[] ids) {
-        List<Integer> idList = Arrays.asList(ids);
-        issueMapper.handIssuesByIds(siteId, idList);
-        return 0;
-    }
-
-    @Override
-    public int ignoreWarningBySiteIdAndId(int siteId, Integer[] ids) {
-        List<Integer> idList = Arrays.asList(ids);
-        issueMapper.ignoreIssuesByIds(siteId, idList);
-        return 0;
-    }
-
-    @Override
-    public int deleteWarningBySiteIdAndId(int siteId, Integer[] ids) {
-        List<Integer> idList = Arrays.asList(ids);
-        issueMapper.delIssueByIds(siteId, idList);
-        return 0;
-    }
-
     private IssueWarningResponse getIssueWarningResponseDetailByIssue(Issue is) {
         IssueWarningResponse issueWarningResponse = new IssueWarningResponse();
         issueWarningResponse.setId(is.getId());
