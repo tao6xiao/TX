@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -74,7 +75,10 @@ public class ReportGenerateScheduler implements SchedulerTask {
         request.setSiteIds(Integer.toString(siteId));
         Report report = new Report();
         report.setSiteId(siteId);
-        report.setReportTime(new Date());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.HOUR,-1);//数据对应时间往前退一小时，使数据与时间对应
+        report.setReportTime(calendar.getTime());
         Site site = null;
         try {
             site = siteApiService.getSiteById(siteId, "");

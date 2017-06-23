@@ -241,8 +241,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-            int interval = getInterval(FreqUnit.TIMES_PER_DAY, (short) 1);
-            scheduleJob(scheduler, EnumCheckJobType.TIMENODE_REPORT_GENERATE, site, interval);
+            // 每天凌晨0点执行一次
+            scheduleJob(scheduler, EnumCheckJobType.TIMENODE_REPORT_GENERATE, site, "0 0 0 * * ?");
         }
     }
 
@@ -259,8 +259,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
 
         for (MonitorSite site : allMonitorSites) {
-            int interval = getInterval(FreqUnit.TIMES_PER_MONTH, (short) 1);
-            scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, interval);
+            // 每个月1日凌晨0点执行一次
+            scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, "0 0 0 1 * ?");
         }
     }
 

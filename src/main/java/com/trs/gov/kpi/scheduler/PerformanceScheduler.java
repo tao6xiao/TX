@@ -46,13 +46,13 @@ public class PerformanceScheduler implements SchedulerTask {
     public void run() {
         log.info("PerformanceScheduler " + siteId + " start...");
         try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应
             Double score = performanceService.calPerformanceIndex(siteId);
             Performance performance = new Performance();
             performance.setSiteId(siteId);
             performance.setIndex(score);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
-            calendar.add(Calendar.DAY_OF_MONTH, -1);
             performance.setCheckTime(calendar.getTime());
             performanceMapper.insert(performance);
         } catch (ParseException | RemoteException e) {
