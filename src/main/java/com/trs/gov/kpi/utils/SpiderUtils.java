@@ -20,6 +20,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -38,7 +39,10 @@ public class SpiderUtils {
     //页面深度阀值
     private static final int THRESHOLD_MAX_PAGE_DEPTH = 8;
 
-    private HashMap<String, Set<String>> pageParentMap = new HashMap<>();
+    //响应速度阈值
+    private static final int THRESHOLD_MAX_REPLY_SPEED = 10 * 1000;
+
+    private Map<String, Set<String>> pageParentMap = new ConcurrentHashMap<>();
 
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
 
@@ -144,12 +148,15 @@ public class SpiderUtils {
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
             } else {
-                replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
-                        0,
-                        request.getUrl().intern(),
-                        useTime,
-                        Long.valueOf(result.getRawText().getBytes().length),
-                        new Date()));
+
+                if(useTime > THRESHOLD_MAX_REPLY_SPEED){
+                    replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
+                            0,
+                            request.getUrl().intern(),
+                            useTime,
+                            Long.valueOf(result.getRawText().getBytes().length),
+                            new Date()));
+                }
 
                 if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
                     biggerPage.add(new PageSpace(0,
