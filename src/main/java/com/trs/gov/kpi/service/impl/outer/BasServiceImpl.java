@@ -75,7 +75,12 @@ public class BasServiceImpl implements BasService {
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
-        for (HistoryDate historyDate : dateList) {
+        for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
+            HistoryDate historyDate = iterator.next();
+            //不返回当月的数据，因为当月还未结束
+            if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
+                break;
+            }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             Integer pv = requestBasPV(url, initTime(historyDate.getBeginDate()), initTime(historyDate.getEndDate()), siteIndexPage);
             historyStatistics.setValue(pv);
@@ -84,6 +89,19 @@ public class BasServiceImpl implements BasService {
         }
 
         return list;
+    }
+
+    private boolean isFirstOfMonth(HistoryDate historyDate) throws ParseException {
+        boolean flag;
+        Calendar lastDate = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        lastDate.setTime(sdf.parse(historyDate.getEndDate()));
+        if (lastDate.get(Calendar.DAY_OF_MONTH) == 1) {//判断是否为当月第一天,如果为当月第一天，就说明上一个月已结束，具体查看DateUtil.splitDateByMonth分割日期的规则
+            flag = true;
+        } else {
+            flag = false;
+        }
+        return flag;
     }
 
     /**
@@ -160,7 +178,7 @@ public class BasServiceImpl implements BasService {
 
     @Override
     public List<HistoryStatistics> geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
-        
+
         setDefaultDate(basRequest);
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
@@ -168,14 +186,9 @@ public class BasServiceImpl implements BasService {
 
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
             HistoryDate historyDate = iterator.next();
-            //处理最后一个月的数据，如果这月还没结束，就不返回该月的数据
-            if (!iterator.hasNext()) {
-                Calendar lastDate = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                lastDate.setTime(sdf.parse(historyDate.getEndDate()));
-                if (lastDate.get(Calendar.DAY_OF_MONTH) != 1) {//判断是否为当月第一天
-                    break;
-                }
+            //不返回当月的数据，因为当月还未结束
+            if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
+                break;
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             Map<String, String> params = new HashMap<>();
