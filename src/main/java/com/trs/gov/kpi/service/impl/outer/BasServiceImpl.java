@@ -150,8 +150,7 @@ public class BasServiceImpl implements BasService {
         Map<String, String> params = new HashMap<>();
         params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));
 
-        StringBuilder url = new StringBuilder(basServiceUrl + "/api/mpSummary");
-        SiteSummary siteSummary = requestBasSummary(url, params);
+        SiteSummary siteSummary = requestBasSummary(params);
         if (siteSummary == null) {
             return 0;
         } else {
@@ -161,8 +160,7 @@ public class BasServiceImpl implements BasService {
 
     @Override
     public List<HistoryStatistics> geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
-
-        StringBuilder url = new StringBuilder(basServiceUrl + "/api/mpSummary");
+        
         setDefaultDate(basRequest);
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
@@ -183,7 +181,7 @@ public class BasServiceImpl implements BasService {
             Map<String, String> params = new HashMap<>();
             params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));
             params.put(DAY, initTime(historyDate.getEndDate()));
-            SiteSummary siteSummary = requestBasSummary(url, params);
+            SiteSummary siteSummary = requestBasSummary(params);
             historyStatistics.setTime(historyDate.getMonth());
             if (siteSummary != null) {
                 historyStatistics.setValue(siteSummary.getAvgDuration30());
@@ -196,7 +194,9 @@ public class BasServiceImpl implements BasService {
         return list;
     }
 
-    private SiteSummary requestBasSummary(StringBuilder url, Map<String, String> params) throws RemoteException {
+    private SiteSummary requestBasSummary(Map<String, String> params) throws RemoteException {
+        StringBuilder url = new StringBuilder(basServiceUrl + "/api/mpSummary");
+
         if (!params.isEmpty()) {
             url.append("?");
             for (Iterator<Map.Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
