@@ -17,7 +17,7 @@ import java.text.ParseException;
  */
 @RestController
 @RequestMapping("/gov/kpi/alert")
-public class IntegratedMonitorWarningController {
+public class IntegratedMonitorWarningController extends IssueHandler{
 
     @Resource
     IntegratedMonitorWarningService integratedMonitorWarningService;
@@ -34,62 +34,5 @@ public class IntegratedMonitorWarningController {
     public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorWarningService.get(param);
-    }
-
-    /**
-     * 处理对应siteId和id的预警记录（批量和单个）
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     * @throws BizException
-     */
-    @RequestMapping(value = "/handle", method = RequestMethod.POST)
-    @ResponseBody
-    public Object dealWithWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
-        if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        ParamCheckUtil.integerArrayParamCheck(ids);
-        integratedMonitorWarningService.dealWithWarningBySiteIdAndId(siteId, ids);
-        return null;
-    }
-
-    /**
-     * 忽略对应siteId和id的预警记录（批量和单个）
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     * @throws BizException
-     */
-    @RequestMapping(value = "/ignore", method = RequestMethod.POST)
-    @ResponseBody
-    public Object ignoreWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
-        if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数不合法！");
-        }
-        ParamCheckUtil.integerArrayParamCheck(ids);
-        integratedMonitorWarningService.ignoreWarningBySiteIdAndId(siteId, ids);
-        return null;
-    }
-
-    /**
-     * 删除对应siteId和id的预警记录（批量和单个）
-     *
-     * @param siteId
-     * @param ids
-     * @return
-     * @throws BizException
-     */
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    @ResponseBody
-    public Object deleteWarningBySiteIdAndId(@RequestParam Integer siteId, @RequestParam Integer[] ids) throws BizException {
-        if (siteId == null || ids == null || ids.length == 0) {
-            throw new BizException("参数不合法！");
-        }
-        ParamCheckUtil.integerArrayParamCheck(ids);
-        integratedMonitorWarningService.deleteWarningBySiteIdAndId(siteId, ids);
-        return null;
     }
 }
