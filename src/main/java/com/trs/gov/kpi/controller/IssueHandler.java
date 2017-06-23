@@ -54,5 +54,18 @@ public class IssueHandler {
         return null;
     }
 
+    /**
+     * 批量更新所属部门
+     *
+     * @param siteId
+     * @param ids
+     * @param deptId
+     * @return
+     */
+    @RequestMapping(value = "/updatedept", method = RequestMethod.POST)
+    public String updateDeptByIds(int siteId, Integer[] ids, int deptId) {
+        issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
+        return null;
+    }
 
 }

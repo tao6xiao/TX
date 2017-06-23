@@ -141,6 +141,14 @@ public interface IssueMapper {
      */
     void delIssueByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
 
+    /**
+     * 根据id批量设置问题所属部门
+     *
+     * @param siteId
+     * @param ids
+     */
+    void updateDeptByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids, @Param("deptId") int deptId);
+
 
     /**
      * 根据id批量更新工单状态
@@ -152,6 +160,7 @@ public interface IssueMapper {
 
     /**
      * 获取当前站点下部门的id
+     *
      * @param filter
      * @return
      */
@@ -159,13 +168,15 @@ public interface IssueMapper {
 
     /**
      * 获取指定站点下面部门的对应类型的map List
+     *
      * @param filter
      * @return
      */
-	List<Map<String,Object>> getDeptIdMap(QueryFilter filter);
+    List<Map<String, Object>> getDeptIdMap(QueryFilter filter);
 
     /**
      * 获取当前栏目最近一条记录的发现问题时间
+     *
      * @param filter
      * @return
      */

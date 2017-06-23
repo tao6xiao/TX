@@ -315,6 +315,12 @@
     <include refid="siteid_and_ids_where_sql"/>
   </update>
 
+  <update id="updateDeptByIds" parameterType="java.util.List">
+    UPDATE issue
+    SET deptId = #{deptId}
+    <include refid="siteid_and_ids_where_sql"/>
+  </update>
+
   <update id="updateOrderByIds" >
     UPDATE issue
     SET workOrderStatus = #{workOrderStatus}

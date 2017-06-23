@@ -9,12 +9,25 @@ import java.text.ParseException;
 import java.util.List;
 
 /**
- * Created by rw103 on 2017/5/13.
+ * 信息更新
+ * Created by ranwei on 2017/5/13.
  */
 public interface InfoUpdateService {
 
+    /**
+     * 查询已解决和未解决的问题数量
+     *
+     * @param param
+     * @return
+     */
     List<Statistics> getIssueCount(PageDataRequestParam param);
 
+    /**
+     * 查询每月新增问题数量的历史记录
+     *
+     * @param param
+     * @return
+     */
     History getIssueHistoryCount(PageDataRequestParam param);
 
     /**
@@ -25,6 +38,13 @@ public interface InfoUpdateService {
      */
     List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException;
 
+    /**
+     * 查询未解决问题的列表
+     *
+     * @param param
+     * @return
+     * @throws RemoteException
+     */
     ApiPageData get(PageDataRequestParam param) throws RemoteException;
 
     /**
@@ -45,6 +65,7 @@ public interface InfoUpdateService {
 
     /**
      * 获取当前站点下面更新不及时栏目的月数以及空栏目
+     *
      * @param siteId
      * @return
      */
