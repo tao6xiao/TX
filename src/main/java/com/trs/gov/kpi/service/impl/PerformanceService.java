@@ -124,9 +124,8 @@ public class PerformanceService {
 
         //总分
         double sum = availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;
-        BigDecimal decimal = new BigDecimal(sum);
 
-        return decimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return Double.parseDouble(String.format("%.2f",sum));
     }
 
 
