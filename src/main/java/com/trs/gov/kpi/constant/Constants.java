@@ -29,6 +29,6 @@ public final class Constants {
     public static final String INPUT = "input";
     public static final String OUTPUT = "output";
 
-    //用于issue表中的depyt为null或者字符串的空值情况
+    //用于issue表中的deptId（部门编号）为null或者字符串的空值情况
     public static final String DEPT_NULL = "未归属部门";
 }
