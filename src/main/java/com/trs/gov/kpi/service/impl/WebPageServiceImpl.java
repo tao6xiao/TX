@@ -13,10 +13,7 @@ import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.ChnlCheckUtil;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.InitTime;
-import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +43,9 @@ public class WebPageServiceImpl implements WebPageService {
     public ApiPageData selectReplySpeed(PageDataRequestParam param) throws RemoteException {
         param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);

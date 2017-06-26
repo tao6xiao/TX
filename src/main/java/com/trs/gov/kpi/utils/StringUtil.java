@@ -1,8 +1,14 @@
 package com.trs.gov.kpi.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Created by linwei on 2017/5/18.
  */
+@Slf4j
 public class StringUtil {
 
     private StringUtil() {
@@ -15,7 +21,7 @@ public class StringUtil {
 
     //String数组转Integer数组
     public static Integer[] stringToIntegerArray(String str) {
-        if(str == null){
+        if (str == null) {
             return new Integer[0];
         }
         String[] arrayForString = str.split(",");
@@ -32,6 +38,34 @@ public class StringUtil {
             arrayForInteger[0] = elementForInteger;
         }
         return arrayForInteger;
+    }
+
+    /**
+     * 处理接受参数中的特殊字符
+     *
+     * @param str
+     * @return
+     */
+    public static String escape(String str) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        return str.replaceAll("((?=[\\x21-\\x7e]+)[^A-Za-z0-9])", "\\\\$1");
+    }
+
+    /**
+     * 处理请求url中的特殊字符
+     *
+     * @param value
+     * @return
+     */
+    public static String encodeUrlParam(String value) {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error("", e);
+            return value;
+        }
     }
 
 
