@@ -247,11 +247,14 @@ public class IssueCountServiceImpl implements IssueCountService {
         List<DeptCount> deptCountList = new ArrayList<>();
         List<Map<String, Object>> mapList = issueMapper.getDeptIdMap(filter);
         for (Map<String, Object> map : mapList) {
-            // TODO: 2017/6/19 get dept by deptId from editor center
-            if (map.get(IssueTableField.DEPT_ID) != null) {
-                DeptCount deptCount = new DeptCount(map.get(IssueTableField.DEPT_ID).toString(), ((Long) map.get(COUNT)).intValue());
-                deptCountList.add(deptCount);
+            DeptCount deptCount;
+            if (map.get(IssueTableField.DEPT_ID) == null || "".equals(map.get(IssueTableField.DEPT_ID))) {
+                deptCount = new DeptCount(Constants.DEPT_NULL, ((Long) map.get(COUNT)).intValue());
+            }else {
+                // TODO: 2017/6/19 get dept by deptId from editor center
+                deptCount = new DeptCount(map.get(IssueTableField.DEPT_ID).toString(), ((Long) map.get(COUNT)).intValue());
             }
+            deptCountList.add(deptCount);
         }
         countResponse.setCount(deptCountList);
         return countResponse;
