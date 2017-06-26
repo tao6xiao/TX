@@ -15,6 +15,7 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +34,9 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
     @Override
     public ApiPageData getPageDataIsResolvedList(PageDataRequestParam param, Boolean isResolved) {
 
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.LINK_AVAILABLE_ISSUE, Types.IssueType.INFO_ERROR_ISSUE, Types.IssueType
                 .INFO_UPDATE_WARNING, Types.IssueType.RESPOND_WARNING);

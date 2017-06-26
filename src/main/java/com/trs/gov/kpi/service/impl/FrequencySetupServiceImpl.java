@@ -18,6 +18,7 @@ import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -42,6 +43,11 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
 
     @Override
     public ApiPageData getPageData(FrequencySetupSelectRequest selectRequest) throws RemoteException {
+
+        if (!StringUtil.isEmpty(selectRequest.getSearchText())) {
+            selectRequest.setSearchText(StringUtil.escape(selectRequest.getSearchText()));
+        }
+
         QueryFilter filter = QueryFilterHelper.toFilter(selectRequest, siteApiService, frequencyPresetMapper);
         int itemCount = frequencySetupMapper.count(filter);
         Pager pager = PageInfoDeal.buildResponsePager(selectRequest.getPageIndex(), selectRequest.getPageSize(), itemCount);

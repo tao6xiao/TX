@@ -13,10 +13,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.InitTime;
-import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -100,6 +97,10 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Override
     public ApiPageData getIssueList(PageDataRequestParam param) {
+
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param, Types.IssueType.LINK_AVAILABLE_ISSUE);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
