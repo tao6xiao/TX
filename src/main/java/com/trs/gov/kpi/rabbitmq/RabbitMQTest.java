@@ -17,7 +17,7 @@ public class RabbitMQTest {
         factory.setUsername("admin");
         factory.setPassword("admin");
         factory.setVirtualHost("/");
-        factory.setHost("59.110.25.125");
+        factory.setHost("");//59.110.25.125
         factory.setPort(5672);
         Connection conn = factory.newConnection();
         Channel channel = conn.createChannel();
