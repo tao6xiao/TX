@@ -12,6 +12,7 @@ import com.trs.gov.kpi.service.outer.SGService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
 
@@ -121,8 +122,11 @@ public class PerformanceService {
         //年度在线访谈情况
         interviewScore *= (1);
 
+        //总分
+        double sum = availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;
+        BigDecimal decimal = new BigDecimal(sum);
 
-        return availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;
+        return decimal.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
 
