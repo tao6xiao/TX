@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumChannelGroup;
-import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChannelGroup;
 import com.trs.gov.kpi.entity.exception.BizException;
