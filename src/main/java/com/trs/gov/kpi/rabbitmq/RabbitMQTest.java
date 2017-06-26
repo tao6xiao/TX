@@ -21,7 +21,6 @@ public class RabbitMQTest {
         factory.setPort(5672);
         Connection conn = factory.newConnection();
         Channel channel = conn.createChannel();
-        System.out.print(channel.getChannelNumber());
         channel.close();
         conn.close();
     }
