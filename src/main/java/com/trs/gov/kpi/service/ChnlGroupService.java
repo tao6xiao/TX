@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequest;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChnlsAddRequest;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChannelResponse;
@@ -57,7 +58,7 @@ public interface ChnlGroupService {
      * @param chnlGroupChnlRequestDetail
      * @return
      */
-    int updateBySiteIdAndId(ChnlGroupChannelRequest chnlGroupChnlRequestDetail);
+    int updateBySiteIdAndId(ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException;
 
     /**
      * 删除当前站点、当前id的对应记录

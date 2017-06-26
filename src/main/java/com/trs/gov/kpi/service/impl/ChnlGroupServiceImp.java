@@ -1,8 +1,10 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumChannelGroup;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChannelGroup;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequest;
@@ -100,7 +102,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
     }
 
     @Override
-    public int updateBySiteIdAndId(ChnlGroupChannelRequest chnlGroupChnlRequestDetail) {
+    public int updateBySiteIdAndId(ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException {
         ChannelGroup channelGroup = chnlGroupMapper.selectBySiteIdAndGroupIdAndChnlId(chnlGroupChnlRequestDetail.getSiteId(), chnlGroupChnlRequestDetail.getGroupId(), chnlGroupChnlRequestDetail.getChnlId());
         int num = 0;
         if (channelGroup == null) {
@@ -108,6 +110,8 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
             num = chnlGroupMapper.updateBySiteIdAndId(channelGroup);
         } else {
             //不为null，证明修改之后的记录与数据库表中记录相同，继续修改将冲突，所以不做操作
+            log.info("当前站点："+chnlGroupChnlRequestDetail.getSiteId()+"下该栏目:"+ EnumChannelGroup.valueOf(chnlGroupChnlRequestDetail.getGroupId())+"下面已经存在此子栏目"+chnlGroupChnlRequestDetail.getChnlId());
+            throw new BizException("该栏目下面已经存在此子栏目");
         }
         return num;
     }
