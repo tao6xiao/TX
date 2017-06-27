@@ -63,7 +63,7 @@ public class IssueCountController {
     }
 
     /**
-     * 部门分类查询统计数量
+     * 更具问题类型部门分类查询统计数量
      * @param request
      * @return
      */
