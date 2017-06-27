@@ -5,11 +5,7 @@ public class MonitorSite {
 
     private String departmentName;
 
-    private String guarderName;
-
-    private String guarderAccount;
-
-    private String guarderPhone;
+    private Integer guarderId;
 
     private String indexUrl;
 
@@ -29,28 +25,12 @@ public class MonitorSite {
         this.departmentName = departmentName == null ? null : departmentName.trim();
     }
 
-    public String getGuarderName() {
-        return guarderName;
+    public Integer getGuarderId() {
+        return guarderId;
     }
 
-    public void setGuarderName(String guarderName) {
-        this.guarderName = guarderName == null ? null : guarderName.trim();
-    }
-
-    public String getGuarderAccount() {
-        return guarderAccount;
-    }
-
-    public void setGuarderAccount(String guarderAccount) {
-        this.guarderAccount = guarderAccount == null ? null : guarderAccount.trim();
-    }
-
-    public String getGuarderPhone() {
-        return guarderPhone;
-    }
-
-    public void setGuarderPhone(String guarderPhone) {
-        this.guarderPhone = guarderPhone == null ? null : guarderPhone.trim();
+    public void setGuarderId(Integer guarderId) {
+        this.guarderId = guarderId;
     }
 
     public String getIndexUrl() {

@@ -3,7 +3,9 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.MonitorSiteMapper;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.MonitorSiteService;
+import com.trs.gov.kpi.service.outer.UserApiService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,8 +19,11 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     @Resource
     MonitorSiteMapper monitorSiteMapper;
 
+    @Resource
+    UserApiService userApiService;
+
     @Override
-    public MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId) {
+    public MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId) throws RemoteException {
         MonitorSite monitorSite = monitorSiteMapper.selectByPrimaryKey(siteId);
         MonitorSiteDeal monitorSiteDeal = null;
         if (monitorSite != null) {
@@ -53,20 +58,21 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         MonitorSite monitorSite = new MonitorSite();
         monitorSite.setSiteId(monitorSiteDeal.getSiteId());
         monitorSite.setDepartmentName(monitorSiteDeal.getDepartmentName());
-        monitorSite.setGuarderName(monitorSiteDeal.getGuarderName());
-        monitorSite.setGuarderAccount(monitorSiteDeal.getGuarderAccount());
-        monitorSite.setGuarderPhone(monitorSiteDeal.getGuarderPhone());
+        monitorSite.setGuarderId(monitorSiteDeal.getGuarderId());
         monitorSite.setIndexUrl(monitorSiteDeal.getIndexUrl());
         return monitorSite;
     }
 
-    private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite) {
+    private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite) throws RemoteException {
+        if (monitorSite.getGuarderId() == null) {
+            return new MonitorSiteDeal();
+        }
         MonitorSiteDeal monitorSiteDeal = new MonitorSiteDeal();
         monitorSiteDeal.setSiteId(monitorSite.getSiteId());
         monitorSiteDeal.setDepartmentName(monitorSite.getDepartmentName());
-        monitorSiteDeal.setGuarderName(monitorSite.getGuarderName());
-        monitorSiteDeal.setGuarderAccount(monitorSite.getGuarderAccount());
-        monitorSiteDeal.setGuarderPhone(monitorSite.getGuarderPhone());
+        monitorSiteDeal.setGuarderName(userApiService.findUserById("", monitorSite.getGuarderId()).getTrueName());
+        monitorSiteDeal.setGuarderAccount(userApiService.findUserById("", monitorSite.getGuarderId()).getUserName());
+        monitorSiteDeal.setGuarderPhone(userApiService.findUserById("", monitorSite.getGuarderId()).getMobile());
         monitorSiteDeal.setIndexUrl(monitorSite.getIndexUrl());
         return monitorSiteDeal;
     }
