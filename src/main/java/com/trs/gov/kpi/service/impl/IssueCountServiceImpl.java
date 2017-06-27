@@ -335,6 +335,9 @@ public class IssueCountServiceImpl implements IssueCountService {
                 } else if (type == IssueIndicator.WARNING) {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
+                } else if(type == IssueIndicator.UN_SOLVED_ALL){
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
                 }
                 count = count + issueMapper.count(filter);
             }
