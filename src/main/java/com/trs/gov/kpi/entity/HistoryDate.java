@@ -13,7 +13,9 @@ public class HistoryDate {
 
     private String endDate;
 
-    private String day;
+    private String date;
+
+    private String week;
 
     private String month;
 
