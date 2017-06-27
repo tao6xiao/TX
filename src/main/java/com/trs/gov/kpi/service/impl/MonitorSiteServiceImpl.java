@@ -3,7 +3,9 @@ package com.trs.gov.kpi.service.impl;
 import com.trs.gov.kpi.dao.MonitorSiteMapper;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.MonitorSiteService;
+import com.trs.gov.kpi.service.outer.UserApiService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -17,8 +19,11 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     @Resource
     MonitorSiteMapper monitorSiteMapper;
 
+    @Resource
+    UserApiService userApiService;
+
     @Override
-    public MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId) {
+    public MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId) throws RemoteException {
         MonitorSite monitorSite = monitorSiteMapper.selectByPrimaryKey(siteId);
         MonitorSiteDeal monitorSiteDeal = null;
         if (monitorSite != null) {
@@ -58,14 +63,16 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         return monitorSite;
     }
 
-    private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite) {
+    private MonitorSiteDeal getMonitorSiteDealFromMonitorSiteAndSiteIdsArray(MonitorSite monitorSite) throws RemoteException {
+        if (monitorSite.getGuarderId() == null) {
+            return new MonitorSiteDeal();
+        }
         MonitorSiteDeal monitorSiteDeal = new MonitorSiteDeal();
         monitorSiteDeal.setSiteId(monitorSite.getSiteId());
         monitorSiteDeal.setDepartmentName(monitorSite.getDepartmentName());
-        // TODO: 2017/6/27 get guarder detail by guarderId from editor center
-        monitorSiteDeal.setGuarderName("暂未获取");
-        monitorSiteDeal.setGuarderAccount("暂未获取");
-        monitorSiteDeal.setGuarderPhone("暂未获取");
+        monitorSiteDeal.setGuarderName(userApiService.findUserById("", monitorSite.getGuarderId()).getTrueName());
+        monitorSiteDeal.setGuarderAccount(userApiService.findUserById("", monitorSite.getGuarderId()).getUserName());
+        monitorSiteDeal.setGuarderPhone(userApiService.findUserById("", monitorSite.getGuarderId()).getMobile());
         monitorSiteDeal.setIndexUrl(monitorSite.getIndexUrl());
         return monitorSiteDeal;
     }

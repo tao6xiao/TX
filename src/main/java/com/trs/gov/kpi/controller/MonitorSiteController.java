@@ -5,6 +5,7 @@ import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import lombok.Setter;
@@ -38,7 +39,7 @@ public class MonitorSiteController {
      */
     @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
-    public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException {
+    public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
         if (siteId == null) {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
