@@ -11,6 +11,8 @@ public class MonitorSiteDeal {
 
     private String departmentName;
 
+    private Integer guarderId;
+
     private String guarderName;
 
     private String guarderAccount;
