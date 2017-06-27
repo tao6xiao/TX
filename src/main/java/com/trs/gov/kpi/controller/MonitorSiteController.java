@@ -55,9 +55,9 @@ public class MonitorSiteController {
      */
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
-    public Object save(@RequestBody MonitorSiteDeal monitorSiteDeal) throws BizException {
-        if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null) {
-            log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl三个属性中至少有一个存在null值");
+    public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException {
+        if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getGuarderId() == null) {
+            log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
 

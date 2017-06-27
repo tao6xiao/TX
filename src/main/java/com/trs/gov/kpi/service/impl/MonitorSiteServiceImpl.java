@@ -53,9 +53,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         MonitorSite monitorSite = new MonitorSite();
         monitorSite.setSiteId(monitorSiteDeal.getSiteId());
         monitorSite.setDepartmentName(monitorSiteDeal.getDepartmentName());
-        monitorSite.setGuarderName(monitorSiteDeal.getGuarderName());
-        monitorSite.setGuarderAccount(monitorSiteDeal.getGuarderAccount());
-        monitorSite.setGuarderPhone(monitorSiteDeal.getGuarderPhone());
+        monitorSite.setGuarderId(monitorSiteDeal.getGuarderId());
         monitorSite.setIndexUrl(monitorSiteDeal.getIndexUrl());
         return monitorSite;
     }
@@ -64,9 +62,10 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         MonitorSiteDeal monitorSiteDeal = new MonitorSiteDeal();
         monitorSiteDeal.setSiteId(monitorSite.getSiteId());
         monitorSiteDeal.setDepartmentName(monitorSite.getDepartmentName());
-        monitorSiteDeal.setGuarderName(monitorSite.getGuarderName());
-        monitorSiteDeal.setGuarderAccount(monitorSite.getGuarderAccount());
-        monitorSiteDeal.setGuarderPhone(monitorSite.getGuarderPhone());
+        // TODO: 2017/6/27 get guarder detail by guarderId from editor center
+        monitorSiteDeal.setGuarderName("暂未获取");
+        monitorSiteDeal.setGuarderAccount("暂未获取");
+        monitorSiteDeal.setGuarderPhone("暂未获取");
         monitorSiteDeal.setIndexUrl(monitorSite.getIndexUrl());
         return monitorSiteDeal;
     }

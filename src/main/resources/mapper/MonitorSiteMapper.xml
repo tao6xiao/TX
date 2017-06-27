@@ -4,13 +4,11 @@
   <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.MonitorSite">
     <id column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="departmentName" jdbcType="VARCHAR" property="departmentName" />
-    <result column="guarderName" jdbcType="VARCHAR" property="guarderName" />
-    <result column="guarderAccount" jdbcType="VARCHAR" property="guarderAccount" />
-    <result column="guarderPhone" jdbcType="VARCHAR" property="guarderPhone" />
+    <result column="guarderId" jdbcType="INTEGER" property="guarderId" />
     <result column="indexUrl" jdbcType="VARCHAR" property="indexUrl" />
   </resultMap>
   <sql id="Base_Column_List">
-    siteId, departmentName, guarderName, guarderAccount, guarderPhone, indexUrl
+    siteId, departmentName, guarderId, indexUrl
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -28,10 +26,8 @@
     where siteId = #{siteId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.trs.gov.kpi.entity.MonitorSite">
-    insert into monitorsite (siteId, departmentName, guarderName, 
-      guarderAccount, guarderPhone, indexUrl)
-    values (#{siteId,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{guarderName,jdbcType=VARCHAR}, 
-      #{guarderAccount,jdbcType=VARCHAR}, #{guarderPhone,jdbcType=VARCHAR}, #{indexUrl,jdbcType=VARCHAR})
+    insert into monitorsite (siteId, departmentName, guarderId, indexUrl)
+    values (#{siteId,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{guarderId,jdbcType=INTEGER},  #{indexUrl,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.MonitorSite">
     insert into monitorsite
@@ -42,14 +38,8 @@
       <if test="departmentName != null">
         departmentName,
       </if>
-      <if test="guarderName != null">
-        guarderName,
-      </if>
-      <if test="guarderAccount != null">
-        guarderAccount,
-      </if>
-      <if test="guarderPhone != null">
-        guarderPhone,
+      <if test="guarderId != null">
+        guarderId,
       </if>
       <if test="indexUrl != null">
         indexUrl,
@@ -62,14 +52,8 @@
       <if test="departmentName != null">
         #{departmentName,jdbcType=VARCHAR},
       </if>
-      <if test="guarderName != null">
-        #{guarderName,jdbcType=VARCHAR},
-      </if>
-      <if test="guarderAccount != null">
-        #{guarderAccount,jdbcType=VARCHAR},
-      </if>
-      <if test="guarderPhone != null">
-        #{guarderPhone,jdbcType=VARCHAR},
+      <if test="guarderId != null">
+        #{guarderId,jdbcType=INTEGER},
       </if>
       <if test="indexUrl != null">
         #{indexUrl,jdbcType=VARCHAR},
@@ -82,14 +66,8 @@
       <if test="departmentName != null">
         departmentName = #{departmentName,jdbcType=VARCHAR},
       </if>
-      <if test="guarderName != null">
-        guarderName = #{guarderName,jdbcType=VARCHAR},
-      </if>
-      <if test="guarderAccount != null">
-        guarderAccount = #{guarderAccount,jdbcType=VARCHAR},
-      </if>
-      <if test="guarderPhone != null">
-        guarderPhone = #{guarderPhone,jdbcType=VARCHAR},
+      <if test="guarderId != null">
+        guarderId = #{guarderId,jdbcType=INTEGER},
       </if>
       <if test="indexUrl != null">
         indexUrl = #{indexUrl,jdbcType=VARCHAR},
@@ -100,9 +78,7 @@
   <update id="updateByPrimaryKey" parameterType="com.trs.gov.kpi.entity.MonitorSite">
     update monitorsite
     set departmentName = #{departmentName,jdbcType=VARCHAR},
-      guarderName = #{guarderName,jdbcType=VARCHAR},
-      guarderAccount = #{guarderAccount,jdbcType=VARCHAR},
-      guarderPhone = #{guarderPhone,jdbcType=VARCHAR},
+      guarderId = #{guarderId,jdbcType=INTEGER},
       indexUrl = #{indexUrl,jdbcType=VARCHAR}
     where siteId = #{siteId,jdbcType=INTEGER}
   </update>
