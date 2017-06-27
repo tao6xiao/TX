@@ -310,7 +310,11 @@ public class IssueCountServiceImpl implements IssueCountService {
         for (Map<String, Object> countMap : depIssueCountList) {
             Integer depId = (Integer)countMap.get(IssueTableField.DEPT_ID);
             Long count = (Long)countMap.get(COUNT);
-            result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+            if(depId == null) {
+                result.add(new DeptCount(Constants.DEPT_NULL, count.intValue()));
+            }else {
+                result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+            }
         }
         return result;
     }
