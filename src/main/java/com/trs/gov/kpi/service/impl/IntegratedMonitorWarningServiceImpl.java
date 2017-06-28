@@ -15,12 +15,12 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -49,6 +49,11 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
 
     @Override
     public ApiPageData get(PageDataRequestParam param) throws ParseException {
+
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
+
         QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_WARNING, Types.IssueType.RESPOND_WARNING);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);

@@ -61,7 +61,7 @@ public class InfoErrorController extends IssueHandler {
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
-        return infoErrorService.getIssueList(param);
+        return infoErrorService.getInfoErrorList(param);
     }
 
 }

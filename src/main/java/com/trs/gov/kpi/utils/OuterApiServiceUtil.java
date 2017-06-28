@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.squareup.okhttp.Request;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -8,9 +9,10 @@ import java.util.Map;
 /**
  * Created by linwei on 2017/5/23.
  */
+@Slf4j
 public class OuterApiServiceUtil {
 
-    private OuterApiServiceUtil(){
+    private OuterApiServiceUtil() {
     }
 
     public static ServiceRequestBuilder newServiceRequestBuilder() {
@@ -60,7 +62,7 @@ public class OuterApiServiceUtil {
                 Iterator<String> iter = params.keySet().iterator();
                 while (iter.hasNext()) {
                     String paramKey = iter.next();
-                    url.append("&").append(paramKey).append("=").append(params.get(paramKey));
+                    url.append("&").append(paramKey).append("=").append(StringUtil.encodeUrlParam(params.get(paramKey)));
                 }
             }
 

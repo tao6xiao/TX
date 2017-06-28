@@ -17,10 +17,7 @@ import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.ChnlCheckUtil;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.InitTime;
-import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -97,8 +94,11 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
     @Override
-    public ApiPageData getIssueList(PageDataRequestParam param) {
+    public ApiPageData getInfoErrorList(PageDataRequestParam param) {
 
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_ERROR_ISSUE);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -162,7 +162,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
 
-    private List<InfoErrorOrderRes> toOrderResponse(List<InfoErrorOrder> infoErrorOrderList)  {
+    private List<InfoErrorOrderRes> toOrderResponse(List<InfoErrorOrder> infoErrorOrderList) {
         List<InfoErrorOrderRes> list = new ArrayList<>();
         for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
             InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();

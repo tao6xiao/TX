@@ -357,7 +357,7 @@
     <include refid="where_sql"/>
   </select>
 
-  <select id="getMonitorTime" resultType="java.sql.Date">
+  <select id="getMonitorTime" resultType="java.util.Date">
     SELECT issueTime
     FROM issue
     WHERE 1=1

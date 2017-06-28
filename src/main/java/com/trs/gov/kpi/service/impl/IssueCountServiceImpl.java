@@ -247,11 +247,14 @@ public class IssueCountServiceImpl implements IssueCountService {
         List<DeptCount> deptCountList = new ArrayList<>();
         List<Map<String, Object>> mapList = issueMapper.getDeptIdMap(filter);
         for (Map<String, Object> map : mapList) {
-            // TODO: 2017/6/19 get dept by deptId from editor center
-            if (map.get(IssueTableField.DEPT_ID) != null) {
-                DeptCount deptCount = new DeptCount(map.get(IssueTableField.DEPT_ID).toString(), ((Long) map.get(COUNT)).intValue());
-                deptCountList.add(deptCount);
+            DeptCount deptCount;
+            if (map.get(IssueTableField.DEPT_ID) == null || "".equals(map.get(IssueTableField.DEPT_ID))) {
+                deptCount = new DeptCount(Constants.DEPT_NULL, ((Long) map.get(COUNT)).intValue());
+            }else {
+                // TODO: 2017/6/19 get dept by deptId from editor center
+                deptCount = new DeptCount(map.get(IssueTableField.DEPT_ID).toString(), ((Long) map.get(COUNT)).intValue());
             }
+            deptCountList.add(deptCount);
         }
         countResponse.setCount(deptCountList);
         return countResponse;
@@ -307,7 +310,11 @@ public class IssueCountServiceImpl implements IssueCountService {
         for (Map<String, Object> countMap : depIssueCountList) {
             Integer depId = (Integer)countMap.get(IssueTableField.DEPT_ID);
             Long count = (Long)countMap.get(COUNT);
-            result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+            if(depId == null) {
+                result.add(new DeptCount(Constants.DEPT_NULL, count.intValue()));
+            }else {
+                result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+            }
         }
         return result;
     }
@@ -331,6 +338,9 @@ public class IssueCountServiceImpl implements IssueCountService {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_END_ID).setRangeEnd(true);
                 } else if (type == IssueIndicator.WARNING) {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
+                } else if(type == IssueIndicator.UN_SOLVED_ALL){
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
                 }
                 count = count + issueMapper.count(filter);

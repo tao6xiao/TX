@@ -18,6 +18,7 @@ public interface InfoErrorService {
 
     /**
      * 查询已解决和未解决的问题数量
+     *
      * @param param
      * @return
      */
@@ -25,6 +26,7 @@ public interface InfoErrorService {
 
     /**
      * 查询每月新增问题数量的历史记录
+     *
      * @param param
      * @return
      */
@@ -32,10 +34,11 @@ public interface InfoErrorService {
 
     /**
      * 查询未解决问题的列表
+     *
      * @param param
      * @return
      */
-    ApiPageData getIssueList(PageDataRequestParam param);
+    ApiPageData getInfoErrorList(PageDataRequestParam param);
 
     /**
      * 查询信息错误的工单

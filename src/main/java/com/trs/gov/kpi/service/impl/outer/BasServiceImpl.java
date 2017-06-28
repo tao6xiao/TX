@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.outerapi.bas.BasPVResponse;
 import com.trs.gov.kpi.entity.outerapi.bas.SiteSummary;
 import com.trs.gov.kpi.entity.outerapi.bas.SummaryResponse;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.BasService;
@@ -64,7 +65,7 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public List<HistoryStatistics> getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
+    public History getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId());
         String siteIndexPage = "";
         if (monitorSiteDeal != null) {
@@ -75,7 +76,12 @@ public class BasServiceImpl implements BasService {
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
         List<HistoryStatistics> list = new ArrayList<>();
-        for (HistoryDate historyDate : dateList) {
+        for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
+            HistoryDate historyDate = iterator.next();
+            //不返回当月的数据，因为当月还未结束
+            if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
+                break;
+            }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             Integer pv = requestBasPV(url, initTime(historyDate.getBeginDate()), initTime(historyDate.getEndDate()), siteIndexPage);
             historyStatistics.setValue(pv);
@@ -83,7 +89,20 @@ public class BasServiceImpl implements BasService {
             list.add(historyStatistics);
         }
 
-        return list;
+        return new History(new Date(), list);
+    }
+
+    private boolean isFirstOfMonth(HistoryDate historyDate) throws ParseException {
+        boolean flag;
+        Calendar lastDate = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        lastDate.setTime(sdf.parse(historyDate.getEndDate()));
+        if (lastDate.get(Calendar.DAY_OF_MONTH) == 1) {//判断是否为当月第一天,如果为当月第一天，就说明上一个月已结束，具体查看DateUtil.splitDateByMonth分割日期的规则
+            flag = true;
+        } else {
+            flag = false;
+        }
+        return flag;
     }
 
     /**
@@ -159,8 +178,8 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public List<HistoryStatistics> geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
-        
+    public History geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
+
         setDefaultDate(basRequest);
 
         List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
@@ -168,14 +187,9 @@ public class BasServiceImpl implements BasService {
 
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
             HistoryDate historyDate = iterator.next();
-            //处理最后一个月的数据，如果这月还没结束，就不返回该月的数据
-            if (!iterator.hasNext()) {
-                Calendar lastDate = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                lastDate.setTime(sdf.parse(historyDate.getEndDate()));
-                if (lastDate.get(Calendar.DAY_OF_MONTH) != 1) {//判断是否为当月第一天
-                    break;
-                }
+            //不返回当月的数据，因为当月还未结束
+            if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
+                break;
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             Map<String, String> params = new HashMap<>();
@@ -191,7 +205,7 @@ public class BasServiceImpl implements BasService {
 
             list.add(historyStatistics);
         }
-        return list;
+        return new History(new Date(), list);
     }
 
     private SiteSummary requestBasSummary(Map<String, String> params) throws RemoteException {

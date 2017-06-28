@@ -3,7 +3,6 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.entity.MonitorFrequency;
-import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;

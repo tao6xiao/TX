@@ -15,14 +15,13 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.ChnlCheckUtil;
 import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,8 +43,9 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public ApiPageData selectReplySpeed(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
@@ -75,9 +75,6 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public int selectReplySpeedCount(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
-
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
         queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
@@ -88,8 +85,9 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public ApiPageData selectPageSpace(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
@@ -119,23 +117,19 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public int selectPageSpaceCount(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
-
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
         queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
-
         return webPageMapper.count(queryFilter);
-
     }
 
     @Override
     public ApiPageData selectPageDepth(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
@@ -165,23 +159,19 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public int selectPageDepthCount(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
-
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
         queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
-
         return webPageMapper.count(queryFilter);
-
     }
 
     @Override
     public ApiPageData selectRepeatCode(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPEAT_CODE.value);
@@ -211,14 +201,10 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public int selectRepeatCodeCount(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
-
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPEAT_CODE.value);
         queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-
 
         return webPageMapper.count(queryFilter);
 
@@ -226,8 +212,9 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public ApiPageData selectUrlLength(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+        if (!StringUtil.isEmpty(param.getSearchText())) {
+            param.setSearchText(StringUtil.escape(param.getSearchText()));
+        }
 
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
@@ -257,24 +244,13 @@ public class WebPageServiceImpl implements WebPageService {
 
     @Override
     public int selectUrlLengthCount(PageDataRequestParam param) throws RemoteException {
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), getEarliestCheckTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
-
         QueryFilter queryFilter = QueryFilterHelper.toPageFilter(param, siteApiService);
         queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
         queryFilter.addCond(WebpageTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         queryFilter.addCond(WebpageTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
-
         return webPageMapper.count(queryFilter);
-
     }
-
-    @Override
-    public Date getEarliestCheckTime() {
-        return webPageMapper.getEarliestCheckTime();
-    }
-
 
     @Override
     public void handlePageByIds(int siteId, List<Integer> ids) {
