@@ -32,4 +32,6 @@ public class InfoUpdateResponse {
 
     private Date checkTime;
 
+    private String workOrderStatus;
+
 }

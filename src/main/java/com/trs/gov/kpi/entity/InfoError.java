@@ -22,4 +22,6 @@ public class InfoError {
     private Date checkTime;
 
     private String errorDetail;
+
+    private Integer workOrderStatus;
 }

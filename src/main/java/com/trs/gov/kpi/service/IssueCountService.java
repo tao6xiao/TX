@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -31,19 +32,19 @@ public interface IssueCountService {
      * @param request
      * @return
      */
-    List<DeptCountResponse> deptCountSort(IssueCountRequest request);
+    List<DeptCountResponse> deptCountSort(IssueCountRequest request) throws RemoteException;
 
     /**
      * 获取某一个类型下，各个部门待解决问题数量
      * @param request
      * @return
      */
-    List<DeptCount> getDeptCountByType(IssueCountByTypeRequest request);
+    List<DeptCount> getDeptCountByType(IssueCountByTypeRequest request) throws RemoteException;
 	
 	/**
      * 部门分类归纳查询统计数量
      * @param request
      * @return
      */
-    DeptInductionResponse[] deptInductionSort(IssueCountRequest request);
+    DeptInductionResponse[] deptInductionSort(IssueCountRequest request) throws RemoteException;
 }

@@ -120,6 +120,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
             if (infoError.getErrorDetail() != null) {
                 infoErrorResponse.setErrorDetail(infoError.getErrorDetail());
+                infoErrorResponse.setWorkOrderStatus(Status.WorkOrder.valueOf(infoError.getWorkOrderStatus()).getName());
                 infoErrorResponses.add(infoErrorResponse);
             }
         }

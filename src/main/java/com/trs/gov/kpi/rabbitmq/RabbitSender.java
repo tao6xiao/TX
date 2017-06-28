@@ -22,7 +22,7 @@ public class RabbitSender {
             source.logOutPut().send(MessageBuilder.withPayload(o).build());
             log.info("发送");
         }catch (Exception e){
-
+            log.error("发送失败", e);
         }
         return null;
     }

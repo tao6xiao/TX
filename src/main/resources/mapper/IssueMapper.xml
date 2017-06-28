@@ -25,6 +25,7 @@
     <result column="isResolved" jdbcType="BIT" property="isResolved" />
     <result column="isDel" jdbcType="BIT" property="isDel" />
     <result column="customer2" property="chnlId"/>
+    <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
   </resultMap>
 
   <resultMap id="InfoUpdateOrderMap" type="com.trs.gov.kpi.entity.InfoUpdateOrder">
@@ -47,6 +48,7 @@
     <result column="detail" property="snapshot"/>
     <result column="issueTime" property="checkTime"/>
     <result column="customer1" property="errorDetail"/>
+    <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
   </resultMap>
 
   <resultMap id="InfoErrorOrderMap" type="com.trs.gov.kpi.entity.InfoErrorOrder">

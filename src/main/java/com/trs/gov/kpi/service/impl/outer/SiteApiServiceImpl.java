@@ -38,6 +38,8 @@ public class SiteApiServiceImpl implements SiteApiService {
 
     private static final String SERVICE_NAME_CHANNEL = "gov_channel";
 
+    private static final String FAIL_GET_SITE = "获取站点失败！";
+
     @Override
     public Site getSiteById(int siteId, String userName) throws RemoteException {
 
@@ -53,16 +55,16 @@ public class SiteApiServiceImpl implements SiteApiService {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取站点");
                 if (StringUtil.isEmpty(result.getData())) {
                     log.error("site[id=" + siteId + "] result is empty, response: " + response);
-                    throw new RemoteException("获取站点失败！");
+                    throw new RemoteException(FAIL_GET_SITE);
                 }
                 return JSON.parseObject(result.getData(), Site.class);
             } else {
                 log.error("failed to get site[id=" + siteId + "], error: " + response);
-                throw new RemoteException("获取站点失败！");
+                throw new RemoteException(FAIL_GET_SITE);
             }
         } catch (IOException e) {
             log.error("failed get site[id=" + siteId + "]", e);
-            throw new RemoteException("获取站点失败！", e);
+            throw new RemoteException(FAIL_GET_SITE, e);
         }
     }
 

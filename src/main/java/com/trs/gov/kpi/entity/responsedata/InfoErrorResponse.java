@@ -20,4 +20,6 @@ public class InfoErrorResponse {
 
     private String errorDetail;
 
+    private String workOrderStatus;
+
 }
