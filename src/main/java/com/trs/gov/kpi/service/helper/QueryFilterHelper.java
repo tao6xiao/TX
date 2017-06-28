@@ -166,13 +166,6 @@ public class QueryFilterHelper {
         }
     }
 
-    private static List<Integer> asList(Integer[] ids) {
-        if (ids == null) {
-            return new ArrayList<>();
-        }
-        return Arrays.asList(ids);
-    }
-
     private static void addWebPageSearchCond(QueryFilter filter, PageDataRequestParam param, SiteApiService siteApiService) throws RemoteException {
         if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
             filter.addCond(WebpageTableField.ID, '%' + param.getSearchText() + "%").setLike(true);

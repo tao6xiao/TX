@@ -393,7 +393,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
 
-    private List<InfoUpdateOrderRes> toOrderResponse(List<InfoUpdateOrder> infoUpdateOrderList) throws RemoteException {
+    private List<InfoUpdateOrderRes> toOrderResponse(List<InfoUpdateOrder> infoUpdateOrderList) {
         List<InfoUpdateOrderRes> responseList = new ArrayList<>();
         for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
             InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
