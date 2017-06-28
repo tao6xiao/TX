@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.InfoErrorOrderRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -31,7 +30,7 @@ public interface InfoErrorService {
      * @param param
      * @return
      */
-    History getIssueHistoryCount(PageDataRequestParam param) throws ParseException;
+    History getIssueHistoryCount(PageDataRequestParam param);
 
     /**
      * 查询未解决问题的列表

@@ -47,7 +47,7 @@ public class InfoUpdateController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
+    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
         ParamCheckUtil.paramCheck(param);
         return infoUpdateService.getIssueHistoryCount(param);
     }
@@ -92,7 +92,7 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/month/count", method = RequestMethod.GET)
     @ResponseBody
     public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, RemoteException {
-        if(siteId == null){
+        if (siteId == null) {
             log.error("Invalid parameter: 参数siteId为null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }

@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -98,12 +97,8 @@ public class IssueCountServiceImpl implements IssueCountService {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
         if (StringUtil.isEmpty(request.getBeginDateTime()) && StringUtil.isEmpty(request.getEndDateTime())) {
             String date = DateUtil.toString(new Date());
-            try {
-                request.setBeginDateTime(DateUtil.getDefaultBeginDate(date, request.getGranularity()));
-                request.setEndDateTime(date);
-            } catch (ParseException e) {
-                log.error("解析开始日期失败！", e);
-            }
+            request.setBeginDateTime(DateUtil.getDefaultBeginDate(date, request.getGranularity()));
+            request.setEndDateTime(date);
         }
         List<HistoryDate> dateList = DateUtil.splitDate(request.getBeginDateTime(), request.getEndDateTime(), request.getGranularity());
 

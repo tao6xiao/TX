@@ -95,7 +95,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) throws ParseException {
+    public History getIssueHistoryCount(PageDataRequestParam param) {
         if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
             String date = DateUtil.toString(new Date());
             param.setBeginDateTime(DateUtil.getDefaultBeginDate(date, param.getGranularity()));

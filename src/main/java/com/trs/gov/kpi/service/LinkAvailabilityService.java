@@ -3,7 +3,6 @@ package com.trs.gov.kpi.service;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -18,7 +17,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    History getIssueHistoryCount(PageDataRequestParam param) throws ParseException;
+    History getIssueHistoryCount(PageDataRequestParam param);
 
     /**
      * 查询未解决问题的列表
