@@ -91,7 +91,7 @@ public class QueryFilterHelper {
         }
     }
 
-    private static void initTime(PageDataRequestParam param, String timeField, QueryFilter filter) {
+    private static void initTime(DateRequest param, String timeField, QueryFilter filter) {
         if (param.getBeginDateTime() != null) {
             filter.addCond(timeField, param.getBeginDateTime()).setRangeBegin(true);
         }
@@ -195,17 +195,6 @@ public class QueryFilterHelper {
             }
 
             filter.addOrConds(orFields);
-        }
-    }
-
-
-    private static void initTime(WorkOrderRequest request, String timeField, QueryFilter filter) {
-        if (request.getBeginDateTime() != null) {
-            filter.addCond(timeField, request.getBeginDateTime()).setRangeBegin(true);
-        }
-
-        if (request.getEndDateTime() != null) {
-            filter.addCond(timeField, request.getEndDateTime()).setRangeEnd(true);
         }
     }
 
