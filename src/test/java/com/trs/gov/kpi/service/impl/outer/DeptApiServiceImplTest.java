@@ -6,11 +6,11 @@ import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.utils.StringUtil;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Created by he.lang on 2017/6/28.
@@ -84,8 +84,8 @@ public class DeptApiServiceImplTest {
         }
 
         @Override
-        public List<Integer> queryDeptsByName(String userName, String deptName) throws IOException, RemoteException {
-            if(StringUtil.isEmpty(deptName)){
+        public List<Integer> queryDeptsByName(String userName, String deptName) throws RemoteException {
+            if (StringUtil.isEmpty(deptName)) {
                 return new ArrayList<>();
             }
             List<Integer> list = null;

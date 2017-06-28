@@ -15,11 +15,12 @@ import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.ChnlCheckUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ResultCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Resource
     private ChnlGroupMapper chnlGroupMapper;
+
+    @Resource
+    private DeptApiService deptApiService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
@@ -245,7 +249,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         InfoUpdateResponse infoUpdateResponse = null;
         for (InfoUpdate infoUpdate : infoUpdateList) {
             infoUpdateResponse = new InfoUpdateResponse();
-            infoUpdateResponse.setChnlName(ChnlCheckUtil.getChannelName(infoUpdate.getChnlId(), siteApiService));
+            infoUpdateResponse.setChnlName(ResultCheckUtil.getChannelName(infoUpdate.getChnlId(), siteApiService));
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getIssueTime());
@@ -271,7 +275,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Override
     public ApiPageData selectInfoUpdateOrder(WorkOrderRequest request) throws RemoteException {
-        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
+        QueryFilter filter = QueryFilterHelper.toFilter(request, deptApiService);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
         filter.addCond(IssueTableField.WORK_ORDER_STATUS, request.getWorkOrderStatus());
         filter.addCond(IssueTableField.IS_RESOLVED, request.getSolveStatus());
@@ -287,7 +291,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Override
     public InfoUpdateOrderRes getInfoUpdateOrderById(WorkOrderRequest request) throws RemoteException {
-        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
+        QueryFilter filter = QueryFilterHelper.toFilter(request, deptApiService);
         filter.addCond(IssueTableField.ID, request.getId());
 
         List<InfoUpdateOrder> infoUpdateOrderList = issueMapper.selectInfoUpdateOrder(filter);
@@ -394,11 +398,11 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         for (InfoUpdateOrder infoUpdateOrder : infoUpdateOrderList) {
             InfoUpdateOrderRes infoUpdateOrderRes = new InfoUpdateOrderRes();
             infoUpdateOrderRes.setId(infoUpdateOrder.getId());
-            infoUpdateOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
-            infoUpdateOrderRes.setSiteName(siteApiService.getSiteById(infoUpdateOrder.getSiteId(), null).getSiteDesc());
+            infoUpdateOrderRes.setChnlName(ResultCheckUtil.getChannelName(infoUpdateOrder.getChnlId(), siteApiService));
+            infoUpdateOrderRes.setSiteName(ResultCheckUtil.getSiteName(infoUpdateOrder.getSiteId(), siteApiService));
             infoUpdateOrderRes.setParentTypeName(Types.IssueType.valueOf(infoUpdateOrder.getTypeId()).getName());
             infoUpdateOrderRes.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdateOrder.getSubTypeId()).getName());
-//            infoUpdateOrderRes.setDepartment();TODO
+            infoUpdateOrderRes.setDepartment(ResultCheckUtil.getDeptName(infoUpdateOrder.getDeptId(), deptApiService));
             infoUpdateOrderRes.setChnlUrl(infoUpdateOrder.getDetail());
             infoUpdateOrderRes.setCheckTime(infoUpdateOrder.getIssueTime());
             infoUpdateOrderRes.setSolveStatus(infoUpdateOrder.getIsResolved());

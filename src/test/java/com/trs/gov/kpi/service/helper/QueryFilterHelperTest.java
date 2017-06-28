@@ -6,11 +6,13 @@ import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
+import com.trs.gov.kpi.entity.outerapi.Dept;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import lombok.Setter;
 import org.apache.ibatis.annotations.Param;
@@ -70,7 +72,7 @@ public class QueryFilterHelperTest {
         request.setEndDateTime("2017-06-05 12:00:00");
         request.setSearchText("123");
         request.setSortFields("id,asc");
-        QueryFilter filter = QueryFilterHelper.toFilter(request, new MockSiteApiService());
+        QueryFilter filter = QueryFilterHelper.toFilter(request, new MockDeptApiService());
         assertEquals(3, filter.getCondFields().size());
         assertEquals(1, filter.getSortFields().size());
     }
@@ -83,7 +85,7 @@ public class QueryFilterHelperTest {
         request.setEndDateTime("2017-06-05 12:00:00");
         request.setSearchField("id");
         request.setSearchText("123");
-        QueryFilter filter = QueryFilterHelper.toFilter(request, new MockSiteApiService());
+        QueryFilter filter = QueryFilterHelper.toFilter(request, new MockDeptApiService());
         assertEquals(4, filter.getCondFields().size());
     }
 
@@ -95,7 +97,7 @@ public class QueryFilterHelperTest {
         request.setEndDateTime("2017-06-05 12:00:00");
         request.setSearchField("department");
         request.setSearchText("123");
-        QueryFilter filter = QueryFilterHelper.toFilter(request, new MockSiteApiService());
+        QueryFilter filter = QueryFilterHelper.toFilter(request, new MockDeptApiService());
         assertEquals(4, filter.getCondFields().size());
     }
 
@@ -135,13 +137,13 @@ public class QueryFilterHelperTest {
         QueryFilter filter = QueryFilterHelper.toPageFilter(param, new MockSiteApiService());
         assertEquals(4, filter.getCondFields().size());
     }
-	
-	@Test
-	public void toFilter() throws Exception {
+
+    @Test
+    public void toFilter() throws Exception {
         IssueCountRequest request = new IssueCountRequest();
         request.setBeginDateTime("2017-06-07 00:00:00");
         request.setEndDateTime("2017-06-08 00:00:00");
-        QueryFilter filter =  QueryFilterHelper.toFilter(request);
+        QueryFilter filter = QueryFilterHelper.toFilter(request);
         assertTrue(!filter.getCondFields().isEmpty());
 
     }
@@ -174,7 +176,7 @@ public class QueryFilterHelperTest {
         filter = QueryFilterHelper.toFilter(request, siteApiService, new MockFreqPreset());
         assertEquals(2, filter.getCondFields().size());
         assertEquals("chnlId", filter.getCondFields().get(1).getFieldName());
-        Collection value = (Collection)filter.getCondFields().get(1).getCondValue();
+        Collection value = (Collection) filter.getCondFields().get(1).getCondValue();
         assertEquals(3, value.size());
     }
 
@@ -214,7 +216,7 @@ public class QueryFilterHelperTest {
         filter = QueryFilterHelper.toFilter(request, siteApiService, preset);
         assertEquals(2, filter.getCondFields().size());
         assertEquals("presetFeqId", filter.getCondFields().get(1).getFieldName());
-        Collection ids = (Collection)filter.getCondFields().get(1).getCondValue();
+        Collection ids = (Collection) filter.getCondFields().get(1).getCondValue();
         assertEquals(1, ids.size());
         assertEquals(11, ids.iterator().next());
     }
@@ -230,7 +232,7 @@ public class QueryFilterHelperTest {
         QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService, new MockFreqPreset());
         assertEquals(2, filter.getCondFields().size());
         assertEquals("OR_COMPLEX_FIELD", filter.getCondFields().get(1).getFieldName());
-        OrCondDBFields orFields = (OrCondDBFields)filter.getCondFields().get(1).getCondValue();
+        OrCondDBFields orFields = (OrCondDBFields) filter.getCondFields().get(1).getCondValue();
         assertEquals(1, orFields.getFields().size());
 
         request.setSearchField(null);
@@ -238,7 +240,7 @@ public class QueryFilterHelperTest {
         filter = QueryFilterHelper.toFilter(request, siteApiService, new MockFreqPreset());
         assertEquals(2, filter.getCondFields().size());
         assertEquals("OR_COMPLEX_FIELD", filter.getCondFields().get(1).getFieldName());
-        orFields = (OrCondDBFields)filter.getCondFields().get(1).getCondValue();
+        orFields = (OrCondDBFields) filter.getCondFields().get(1).getCondValue();
         assertEquals(2, orFields.getFields().size());
 
         request.setSearchField("");
@@ -250,11 +252,11 @@ public class QueryFilterHelperTest {
         filter = QueryFilterHelper.toFilter(request, siteApiService, preset);
         assertEquals(2, filter.getCondFields().size());
         assertEquals("OR_COMPLEX_FIELD", filter.getCondFields().get(1).getFieldName());
-        orFields = (OrCondDBFields)filter.getCondFields().get(1).getCondValue();
+        orFields = (OrCondDBFields) filter.getCondFields().get(1).getCondValue();
         assertEquals(3, orFields.getFields().size());
     }
 
-    private class MockFreqPreset implements FrequencyPresetMapper{
+    private class MockFreqPreset implements FrequencyPresetMapper {
 
         @Setter
         List<FrequencyPreset> presets = new ArrayList<>();
@@ -376,6 +378,18 @@ public class QueryFilterHelperTest {
 
         @Override
         public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
+            return null;
+        }
+    }
+
+    private class MockDeptApiService implements DeptApiService {
+        @Override
+        public Dept findDeptById(String userName, int groupId) throws RemoteException {
+            return null;
+        }
+
+        @Override
+        public List<Integer> queryDeptsByName(String userName, String deptName) throws RemoteException {
             return null;
         }
     }

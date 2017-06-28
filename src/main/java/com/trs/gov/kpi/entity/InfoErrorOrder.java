@@ -15,6 +15,8 @@ public class InfoErrorOrder {
 
     private Integer chnlId;
 
+    private Integer deptId;
+
     private Integer siteId;
 
     private Integer typeId;

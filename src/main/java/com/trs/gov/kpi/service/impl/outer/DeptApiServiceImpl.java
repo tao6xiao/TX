@@ -63,10 +63,10 @@ public class DeptApiServiceImpl implements DeptApiService {
     }
 
     @Override
-    public List<Integer> queryDeptsByName(String userName, String deptName) throws IOException, RemoteException {
+    public List<Integer> queryDeptsByName(String userName, String deptName) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
-            if(StringUtil.isEmpty(deptName)) {
+            if (StringUtil.isEmpty(deptName)) {
                 return new ArrayList<>();
             }
             params.put("GNAME", deptName);

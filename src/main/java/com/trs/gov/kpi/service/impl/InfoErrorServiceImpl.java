@@ -10,16 +10,16 @@ import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.InfoErrorOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.ChnlCheckUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.ResultCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,6 +42,9 @@ public class InfoErrorServiceImpl implements InfoErrorService {
 
     @Resource
     private SiteApiService siteApiService;
+
+    @Resource
+    private DeptApiService deptApiService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
@@ -132,7 +135,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public ApiPageData selectInfoErrorOrder(WorkOrderRequest request) throws RemoteException {
 
-        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
+        QueryFilter filter = QueryFilterHelper.toFilter(request, deptApiService);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
         filter.addCond(IssueTableField.WORK_ORDER_STATUS, request.getWorkOrderStatus());
         filter.addCond(IssueTableField.IS_RESOLVED, request.getSolveStatus());
@@ -151,7 +154,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     @Override
     public InfoErrorOrderRes getInfoErrorOrderById(WorkOrderRequest request) throws RemoteException {
 
-        QueryFilter filter = QueryFilterHelper.toFilter(request, siteApiService);
+        QueryFilter filter = QueryFilterHelper.toFilter(request, deptApiService);
         filter.addCond(IssueTableField.ID, request.getId());
 
         List<InfoErrorOrder> infoErrorOrderList = issueMapper.selectInfoErrorOrder(filter);
@@ -169,21 +172,11 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         for (InfoErrorOrder infoErrorOrder : infoErrorOrderList) {
             InfoErrorOrderRes infoErrorOrderRes = new InfoErrorOrderRes();
             infoErrorOrderRes.setId(infoErrorOrder.getId());
-            infoErrorOrderRes.setChnlName(ChnlCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
-
-            try {
-                final Site site = siteApiService.getSiteById(infoErrorOrder.getSiteId(), null);
-                if (site != null) {
-                    infoErrorOrderRes.setSiteName(site.getSiteName());
-                }
-            } catch (RemoteException e) {
-                log.error("", e);
-                infoErrorOrderRes.setSiteName("站点[id=" + infoErrorOrder.getSiteId() + "]");
-            }
-
+            infoErrorOrderRes.setChnlName(ResultCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
+            infoErrorOrderRes.setSiteName(ResultCheckUtil.getSiteName(infoErrorOrder.getSiteId(), siteApiService));
             infoErrorOrderRes.setParentTypeName(Types.IssueType.valueOf(infoErrorOrder.getTypeId()).getName());
             infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
-//            infoErrorOrderRes.setDepartment();TODO
+            infoErrorOrderRes.setDepartment(ResultCheckUtil.getDeptName(infoErrorOrder.getDeptId(), deptApiService));
             infoErrorOrderRes.setUrl(infoErrorOrder.getDetail());
             infoErrorOrderRes.setCheckTime(infoErrorOrder.getIssueTime());
             infoErrorOrderRes.setSolveStatus(infoErrorOrder.getIsResolved());

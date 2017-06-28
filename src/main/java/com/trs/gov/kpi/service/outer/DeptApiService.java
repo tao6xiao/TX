@@ -3,7 +3,6 @@ package com.trs.gov.kpi.service.outer;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Dept;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,6 +26,6 @@ public interface DeptApiService {
      * @param deptName
      * @return
      */
-    List<Integer> queryDeptsByName(String userName, String deptName) throws IOException, RemoteException;
+    List<Integer> queryDeptsByName(String userName, String deptName) throws RemoteException;
 
 }

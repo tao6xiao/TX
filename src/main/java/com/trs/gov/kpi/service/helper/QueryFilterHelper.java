@@ -12,6 +12,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.*;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -121,7 +122,7 @@ public class QueryFilterHelper {
      * @param request
      * @return
      */
-    public static QueryFilter toFilter(WorkOrderRequest request, SiteApiService siteApiService) throws RemoteException {
+    public static QueryFilter toFilter(WorkOrderRequest request, DeptApiService deptApiService) throws RemoteException {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
 
         if (request.getSiteId() != null) {
@@ -130,7 +131,7 @@ public class QueryFilterHelper {
         initTime(request, IssueTableField.ISSUE_TIME, filter);
 
         if (request.getSearchText() != null) {
-            addWorkOrderSearchCond(filter, request, siteApiService);
+            addWorkOrderSearchCond(filter, request, deptApiService);
         }
 
         // sort field
@@ -142,24 +143,23 @@ public class QueryFilterHelper {
         return filter;
     }
 
-    private static void addWorkOrderSearchCond(QueryFilter filter, WorkOrderRequest request, SiteApiService siteApiService) throws RemoteException {
+    private static void addWorkOrderSearchCond(QueryFilter filter, WorkOrderRequest request, DeptApiService deptApiService) throws RemoteException {
         if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("id")) {
             filter.addCond(IssueTableField.ID, '%' + request.getSearchText() + "%").setLike(true);
         } else if (request.getSearchField() != null && request.getSearchField().equalsIgnoreCase("department")) {
-            List<Integer> chnlIds = siteApiService.findChnlIdsByDepartment("", asList(request.getSiteId()), request.getSearchText());
-            if (chnlIds != null && !chnlIds.isEmpty()) {
-                filter.addCond(IssueTableField.CUSTOMER2, chnlIds);
+            List<Integer> deptIds = deptApiService.queryDeptsByName("", request.getSearchText());
+            if (deptIds != null && !deptIds.isEmpty()) {
+                filter.addCond(IssueTableField.DEPT_ID, deptIds);
             } else {
-                filter.addCond(IssueTableField.CUSTOMER2, -1);
+                filter.addCond(IssueTableField.DEPT_ID, -1);
             }
         } else if (request.getSearchField() == null) {
             OrCondDBFields orFields = new OrCondDBFields();
             orFields.addCond(IssueTableField.ID, '%' + request.getSearchText() + "%").setLike(true);
 
-
-            List<Integer> chnlIds = siteApiService.findChnlIdsByDepartment("", asList(request.getSiteId()), request.getSearchText());
-            if (chnlIds != null && !chnlIds.isEmpty()) {
-                orFields.addCond(IssueTableField.CUSTOMER2, chnlIds);
+            List<Integer> deptIds = deptApiService.queryDeptsByName("", request.getSearchText());
+            if (deptIds != null && !deptIds.isEmpty()) {
+                orFields.addCond(IssueTableField.DEPT_ID, deptIds);
             }
 
             filter.addOrConds(orFields);
