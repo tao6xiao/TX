@@ -2,6 +2,7 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.Granularity;
 import com.trs.gov.kpi.entity.HistoryDate;
+import com.trs.gov.kpi.entity.requestdata.DateRequest;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -149,41 +150,41 @@ public class DateUtil {
     }
 
     /**
-     * 根据粒度获取默认的开始时间
+     * 设置默认起止时间
      *
-     * @param beginDateTime
-     * @param granularity
-     * @return
-     * @throws ParseException
+     * @param param
      */
-    public static String getDefaultBeginDate(String beginDateTime, Integer granularity) {
+    public static void setDefaultDate(DateRequest param) {
+        if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
+            Date endDate = new Date();
+            param.setEndDateTime(toString(endDate));
+            String beginDateTime;
+            Calendar calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(toDate(param.getEndDateTime()));
+            } catch (ParseException e) {
+                log.error("解析开始日期失败！", e);
+            }
 
-        String endDateTime;
-        Calendar calendar = Calendar.getInstance();
-        try {
-            calendar.setTime(DateUtil.toDate(beginDateTime));
-        } catch (ParseException e) {
-            log.error("解析开始日期失败！", e);
+            if (Granularity.DAY.equals(param.getGranularity())) {
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            } else if (Granularity.WEEK.equals(param.getGranularity())) {
+                calendar.add(Calendar.WEEK_OF_YEAR, -11);
+                calendar.set(Calendar.DAY_OF_WEEK, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            } else if (Granularity.YEAR.equals(param.getGranularity())) {
+                calendar.add(Calendar.YEAR, -5);
+                calendar.set(Calendar.MONTH, 0);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            } else {//不设置，默认为月
+                calendar.set(Calendar.MONTH, 0);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            }
+            param.setBeginDateTime(beginDateTime);
         }
-
-        if (Granularity.DAY.equals(granularity)) {
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
-            endDateTime = DateUtil.toString(calendar.getTime());
-        } else if (Granularity.WEEK.equals(granularity)) {
-            calendar.add(Calendar.WEEK_OF_YEAR, -11);
-            calendar.set(Calendar.DAY_OF_WEEK, 1);
-            endDateTime = DateUtil.toString(calendar.getTime());
-        } else if (Granularity.YEAR.equals(granularity)) {
-            calendar.add(Calendar.YEAR, -5);
-            calendar.set(Calendar.MONTH, 0);
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
-            endDateTime = DateUtil.toString(calendar.getTime());
-        } else {//不设置，默认为月
-            calendar.set(Calendar.MONTH, 0);
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
-            endDateTime = DateUtil.toString(calendar.getTime());
-        }
-        return endDateTime;
     }
 
     /**

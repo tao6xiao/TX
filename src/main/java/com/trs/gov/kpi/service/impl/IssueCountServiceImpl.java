@@ -95,11 +95,8 @@ public class IssueCountServiceImpl implements IssueCountService {
     @Override
     public History historyCountSort(IssueCountRequest request) {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
-        if (StringUtil.isEmpty(request.getBeginDateTime()) && StringUtil.isEmpty(request.getEndDateTime())) {
-            String date = DateUtil.toString(new Date());
-            request.setBeginDateTime(DateUtil.getDefaultBeginDate(date, request.getGranularity()));
-            request.setEndDateTime(date);
-        }
+        DateUtil.setDefaultDate(request);
+
         List<HistoryDate> dateList = DateUtil.splitDate(request.getBeginDateTime(), request.getEndDateTime(), request.getGranularity());
 
         List<IssueHistoryCountResponse> historyResponseList = new ArrayList<>();

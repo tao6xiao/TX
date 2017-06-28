@@ -77,11 +77,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
 
     @Override
     public History getIssueHistoryCount(PageDataRequestParam param) {
-        if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
-            String date = DateUtil.toString(new Date());
-            param.setBeginDateTime(DateUtil.getDefaultBeginDate(date, param.getGranularity()));
-            param.setEndDateTime(date);
-        }
+        DateUtil.setDefaultDate(param);
+
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {

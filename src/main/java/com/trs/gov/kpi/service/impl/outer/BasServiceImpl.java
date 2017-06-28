@@ -74,11 +74,7 @@ public class BasServiceImpl implements BasService {
         }
         String url = basServiceUrl + "/api/retrieveWebUV";
 
-        if (StringUtil.isEmpty(basRequest.getBeginDateTime()) && StringUtil.isEmpty(basRequest.getEndDateTime())) {
-            String date = DateUtil.toString(new Date());
-            basRequest.setBeginDateTime(DateUtil.getDefaultBeginDate(date, basRequest.getGranularity()));
-            basRequest.setEndDateTime(date);
-        }
+        DateUtil.setDefaultDate(basRequest);
 
         List<HistoryDate> dateList = DateUtil.splitDate(basRequest.getBeginDateTime(), basRequest.getEndDateTime(), basRequest.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -86,21 +82,14 @@ public class BasServiceImpl implements BasService {
             HistoryDate historyDate = iterator.next();
             //不返回当月的数据，因为当月还未结束
             if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
-                break;
+                return new History(new Date(), list);
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             historyStatistics.setTime(historyDate.getDate());
 
             if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
                 List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
-                int sum = 0;
-                for (HistoryDate date : dates) {
-                    Integer pv = requestBasPV(url, initTime(date.getBeginDate()), initTime(date.getEndDate()), siteIndexPage);
-                    if (pv != null) {
-                        sum += pv;
-                    }
-                }
-                historyStatistics.setValue(sum);
+                historyStatistics.setValue(getVisitsSum(dates, url, siteIndexPage));
                 list.add(historyStatistics);
                 continue;
             }
@@ -112,6 +101,17 @@ public class BasServiceImpl implements BasService {
         }
 
         return new History(new Date(), list);
+    }
+
+    private int getVisitsSum(List<HistoryDate> dates, String url, String siteIndexPage) throws ParseException, RemoteException {
+        int sum = 0;
+        for (HistoryDate date : dates) {
+            Integer pv = requestBasPV(url, initTime(date.getBeginDate()), initTime(date.getEndDate()), siteIndexPage);
+            if (pv != null) {
+                sum += pv;
+            }
+        }
+        return sum;
     }
 
     private boolean isFirstOfMonth(HistoryDate historyDate) throws ParseException {
@@ -184,11 +184,7 @@ public class BasServiceImpl implements BasService {
     @Override
     public History getHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
 
-        if (StringUtil.isEmpty(basRequest.getBeginDateTime()) && StringUtil.isEmpty(basRequest.getEndDateTime())) {
-            String date = DateUtil.toString(new Date());
-            basRequest.setBeginDateTime(DateUtil.getDefaultBeginDate(date, basRequest.getGranularity()));
-            basRequest.setEndDateTime(date);
-        }
+        DateUtil.setDefaultDate(basRequest);
 
         List<HistoryDate> dateList = DateUtil.splitDate(basRequest.getBeginDateTime(), basRequest.getEndDateTime(), basRequest.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -197,7 +193,7 @@ public class BasServiceImpl implements BasService {
             HistoryDate historyDate = iterator.next();
             //不返回当月的数据，因为当月还未结束
             if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
-                break;
+                return new History(new Date(), list);
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             historyStatistics.setTime(historyDate.getDate());
@@ -206,16 +202,8 @@ public class BasServiceImpl implements BasService {
             params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));
 
             if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
-                int sum = 0;
                 List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
-                for (HistoryDate date : dates) {
-                    params.put(DAY, initTime(date.getEndDate()));
-                    SiteSummary siteSummary = requestBasSummary(params);
-                    if (siteSummary != null) {
-                        sum += siteSummary.getAvgDuration30();
-                    }
-                }
-                historyStatistics.setValue(sum);
+                historyStatistics.setValue(getTimeSum(dates, params));
                 list.add(historyStatistics);
                 continue;
             }
@@ -232,6 +220,18 @@ public class BasServiceImpl implements BasService {
             list.add(historyStatistics);
         }
         return new History(new Date(), list);
+    }
+
+    private int getTimeSum(List<HistoryDate> dates, Map<String, String> params) throws ParseException, RemoteException {
+        int sum = 0;
+        for (HistoryDate date : dates) {
+            params.put(DAY, initTime(date.getEndDate()));
+            SiteSummary siteSummary = requestBasSummary(params);
+            if (siteSummary != null) {
+                sum += siteSummary.getAvgDuration30();
+            }
+        }
+        return sum;
     }
 
     /**
