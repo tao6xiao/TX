@@ -310,7 +310,11 @@ public class IssueCountServiceImpl implements IssueCountService {
         for (Map<String, Object> countMap : depIssueCountList) {
             Integer depId = (Integer)countMap.get(IssueTableField.DEPT_ID);
             Long count = (Long)countMap.get(COUNT);
-            result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+            if(depId == null) {
+                result.add(new DeptCount(Constants.DEPT_NULL, count.intValue()));
+            }else {
+                result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+            }
         }
         return result;
     }
@@ -334,6 +338,9 @@ public class IssueCountServiceImpl implements IssueCountService {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_END_ID).setRangeEnd(true);
                 } else if (type == IssueIndicator.WARNING) {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
+                } else if(type == IssueIndicator.UN_SOLVED_ALL){
+                    filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
                 }
                 count = count + issueMapper.count(filter);

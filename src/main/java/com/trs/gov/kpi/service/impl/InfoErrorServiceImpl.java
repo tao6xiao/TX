@@ -94,7 +94,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
     @Override
-    public ApiPageData getIssueList(PageDataRequestParam param) {
+    public ApiPageData getInfoErrorList(PageDataRequestParam param) {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
