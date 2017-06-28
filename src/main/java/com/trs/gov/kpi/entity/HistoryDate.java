@@ -14,11 +14,4 @@ public class HistoryDate {
     private String endDate;
 
     private String date;
-
-    private String week;
-
-    private String month;
-
-    private String year;
-
 }

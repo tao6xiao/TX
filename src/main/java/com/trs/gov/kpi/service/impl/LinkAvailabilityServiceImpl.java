@@ -79,13 +79,11 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Override
     public History getIssueHistoryCount(PageDataRequestParam param) throws ParseException {
-
         if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
             String date = DateUtil.toString(new Date());
             param.setBeginDateTime(DateUtil.getDefaultBeginDate(date, param.getGranularity()));
             param.setEndDateTime(date);
         }
-
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {

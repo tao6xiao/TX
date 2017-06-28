@@ -14,14 +14,17 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.*;
 
 /**
  * Created by he.lang on 2017/6/7.
  */
+@Slf4j
 @Service
 public class IssueCountServiceImpl implements IssueCountService {
     private static final String COUNT = "count";
@@ -88,9 +91,18 @@ public class IssueCountServiceImpl implements IssueCountService {
     @Override
     public History historyCountSort(IssueCountRequest request) {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
-        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
-        request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
-        List<HistoryDate> dateList = DateUtil.splitDateByMonth(request.getBeginDateTime(), request.getEndDateTime());
+//        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
+//        request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
+        if (StringUtil.isEmpty(request.getBeginDateTime()) && StringUtil.isEmpty(request.getEndDateTime())) {
+            String date = DateUtil.toString(new Date());
+            try {
+                request.setBeginDateTime(DateUtil.getDefaultBeginDate(date, request.getGranularity()));
+                request.setEndDateTime(date);
+            } catch (ParseException e) {
+                log.error("解析开始日期失败！", e);
+            }
+        }
+        List<HistoryDate> dateList = DateUtil.splitDate(request.getBeginDateTime(), request.getEndDateTime(), request.getGranularity());
 
         List<IssueHistoryCountResponse> historyResponseList = new ArrayList<>();
 
@@ -137,8 +149,8 @@ public class IssueCountServiceImpl implements IssueCountService {
         request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
         return getDepCountByType(siteIds, request);
     }
-	
-	@Override
+
+    @Override
     public DeptInductionResponse[] deptInductionSort(IssueCountRequest request) {
         Map<Integer, DeptInductionResponse> result = new HashMap<>();
 
@@ -152,7 +164,7 @@ public class IssueCountServiceImpl implements IssueCountService {
 
         DeptInductionResponse[] inductionArray = new DeptInductionResponse[result.values().size()];
         inductionArray = result.values().toArray(inductionArray);
-        for (int i = 0; i < inductionArray.length; i++){
+        for (int i = 0; i < inductionArray.length; i++) {
             buildInductionResponse(inductionArray[i]);
         }
         return inductionArray;
@@ -162,32 +174,32 @@ public class IssueCountServiceImpl implements IssueCountService {
         int countIssue = 0;
         int countWarning = 0;
         int countAll = 0;
-        if(response.getData().size() < 3){
+        if (response.getData().size() < 3) {
             for (Statistics stat : response.getData()) {
-                if(stat.getType() == IssueIndicator.UN_SOLVED_ISSUE.value){
+                if (stat.getType() == IssueIndicator.UN_SOLVED_ISSUE.value) {
                     countIssue++;
-                }else if(stat.getType() == IssueIndicator.WARNING.value){
+                } else if (stat.getType() == IssueIndicator.WARNING.value) {
                     countWarning++;
-                }else if(stat.getType() == IssueIndicator.SOLVED_ALL.value){
+                } else if (stat.getType() == IssueIndicator.SOLVED_ALL.value) {
                     countAll++;
                 }
             }
             Statistics stat2 = null;
-            if(countIssue == 0){
+            if (countIssue == 0) {
                 stat2 = new Statistics();
                 stat2.setType(IssueIndicator.UN_SOLVED_ISSUE.value);
                 stat2.setName(IssueIndicator.UN_SOLVED_ISSUE.getName());
                 stat2.setCount(0);
                 response.addStatistics(stat2);
             }
-            if (countWarning == 0){
+            if (countWarning == 0) {
                 stat2 = new Statistics();
                 stat2.setType(IssueIndicator.WARNING.value);
                 stat2.setName(IssueIndicator.WARNING.getName());
                 stat2.setCount(0);
                 response.addStatistics(stat2);
             }
-            if (countAll == 0){
+            if (countAll == 0) {
                 stat2 = new Statistics();
                 stat2.setType(IssueIndicator.SOLVED_ALL.value);
                 stat2.setName(IssueIndicator.SOLVED_ALL.getName());
@@ -200,7 +212,7 @@ public class IssueCountServiceImpl implements IssueCountService {
 
     private void getInductionResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request, Map<Integer, DeptInductionResponse> result) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        if(request.getBeginDateTime() != null){
+        if (request.getBeginDateTime() != null) {
             filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
         }
         filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
@@ -236,7 +248,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         countResponse.setType(type.value);
         countResponse.setName(type.getName());
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        if(request.getBeginDateTime() != null){
+        if (request.getBeginDateTime() != null) {
             filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
         }
         filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
@@ -250,7 +262,7 @@ public class IssueCountServiceImpl implements IssueCountService {
             DeptCount deptCount;
             if (map.get(IssueTableField.DEPT_ID) == null || "".equals(map.get(IssueTableField.DEPT_ID))) {
                 deptCount = new DeptCount(Constants.DEPT_NULL, ((Long) map.get(COUNT)).intValue());
-            }else {
+            } else {
                 // TODO: 2017/6/19 get dept by deptId from editor center
                 deptCount = new DeptCount(map.get(IssueTableField.DEPT_ID).toString(), ((Long) map.get(COUNT)).intValue());
             }
@@ -282,7 +294,7 @@ public class IssueCountServiceImpl implements IssueCountService {
             filter.addCond(IssueTableField.SITE_ID, Arrays.asList(siteIds));
         }
 
-        if(request.getBeginDateTime() != null){
+        if (request.getBeginDateTime() != null) {
             filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
         }
         filter.addCond(IssueTableField.ISSUE_TIME, request.getEndDateTime()).setRangeEnd(true);
@@ -308,16 +320,17 @@ public class IssueCountServiceImpl implements IssueCountService {
         List<Map<String, Object>> depIssueCountList = issueMapper.getDepIssueCount(filter);
         List<DeptCount> result = new ArrayList<>();
         for (Map<String, Object> countMap : depIssueCountList) {
-            Integer depId = (Integer)countMap.get(IssueTableField.DEPT_ID);
-            Long count = (Long)countMap.get(COUNT);
-            if(depId == null) {
+            Integer depId = (Integer) countMap.get(IssueTableField.DEPT_ID);
+            Long count = (Long) countMap.get(COUNT);
+            if (depId == null) {
                 result.add(new DeptCount(Constants.DEPT_NULL, count.intValue()));
-            }else {
+            } else {
                 result.add(new DeptCount(String.valueOf(depId), count.intValue()));
             }
         }
         return result;
     }
+
     private IssueHistoryCountResponse buildHistoryResponse(IssueIndicator type, List<HistoryDate> dateList, Integer[] siteIds) {
         IssueHistoryCountResponse historyResponse = new IssueHistoryCountResponse();
         historyResponse.setType(type.value);
@@ -339,14 +352,14 @@ public class IssueCountServiceImpl implements IssueCountService {
                 } else if (type == IssueIndicator.WARNING) {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_BEGIN_ID).setRangeBegin(true);
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
-                } else if(type == IssueIndicator.UN_SOLVED_ALL){
+                } else if (type == IssueIndicator.UN_SOLVED_ALL) {
                     filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
                     filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
                 }
                 count = count + issueMapper.count(filter);
             }
             historyStatistics.setValue(count);
-            historyStatistics.setTime(date.getMonth());
+            historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
         historyResponse.setData(list);

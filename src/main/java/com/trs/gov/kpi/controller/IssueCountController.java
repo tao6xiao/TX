@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public class IssueCountController {
      */
     @RequestMapping(value = "/count/history",method = RequestMethod.GET)
     @ResponseBody
-    public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException {
+    public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, ParseException {
         ParamCheckUtil.paramCheck(request);
         return countService.historyCountSort(request);
     }

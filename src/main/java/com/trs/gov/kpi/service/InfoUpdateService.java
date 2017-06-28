@@ -28,7 +28,7 @@ public interface InfoUpdateService {
      * @param param
      * @return
      */
-    History getIssueHistoryCount(PageDataRequestParam param);
+    History getIssueHistoryCount(PageDataRequestParam param) throws ParseException;
 
     /**
      * 获取栏目信息更新不及时问题的统计信息

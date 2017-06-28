@@ -47,7 +47,7 @@ public class InfoUpdateController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
         ParamCheckUtil.paramCheck(param);
         return infoUpdateService.getIssueHistoryCount(param);
     }

@@ -49,27 +49,52 @@ public class DateUtilTest {
 
 
     @Test
-    public void splitDateByMonth() throws Exception {
+    public void splitDate() throws Exception {
 
         //开始时间大于结束时间
-        List<HistoryDate> result = DateUtil.splitDateByMonth("2017-06-01 00:00:00", "2017-05-19 00:00:00");
+        List<HistoryDate> result = DateUtil.splitDate("2017-06-01 00:00:00", "2017-05-19 00:00:00", null);
         assertEquals(0, result.size());
 
-        //开始时间和结束时间都处于临界点
-        result = DateUtil.splitDateByMonth("2017-05-31 00:00:00", "2017-06-01 00:00:00");
-        assertEquals(2, result.size());
-
-        //跨3个月
-        result = DateUtil.splitDateByMonth("2017-04-30 12:05:00", "2017-07-30 08:00:00");
+        //默认粒度
+        result = DateUtil.splitDate("2016-11-30 12:05:00", "2017-02-28 19:05:00", null);
         assertEquals(4, result.size());
 
-        //起止时间在同一天
-        result = DateUtil.splitDateByMonth("2017-04-31 12:05:00", "2017-04-31 19:05:00");
+        //开始时间和结束时间都处于第一个周期
+        result = DateUtil.splitDate("2017-06-06 00:00:00", "2017-06-09 00:00:00", 2);
+        assertEquals(1, result.size());
+        result = DateUtil.splitDate("2017-06-06 00:00:00", "2017-06-09 00:00:00", 3);
+        assertEquals(1, result.size());
+        result = DateUtil.splitDate("2017-06-06 00:00:00", "2017-06-09 00:00:00", 4);
         assertEquals(1, result.size());
 
-        //跨年
-        result = DateUtil.splitDateByMonth("2016-11-30 12:05:00", "2017-02-28 19:05:00");
+        //跨多个周期
+        result = DateUtil.splitDate("2017-06-01 12:05:00", "2017-06-20 08:00:00", 1);
+        assertEquals(20, result.size());
+        result = DateUtil.splitDate("2017-06-01 12:05:00", "2017-07-30 08:00:00", 2);
+        assertEquals(10, result.size());
+        result = DateUtil.splitDate("2017-04-30 12:05:00", "2017-07-30 08:00:00", 3);
         assertEquals(4, result.size());
+        result = DateUtil.splitDate("2015-04-30 12:05:00", "2017-07-30 08:00:00", 4);
+        assertEquals(3, result.size());
+
+        //起止时间在同一天
+        result = DateUtil.splitDate("2017-04-30 12:05:00", "2017-04-30 19:05:00", 1);
+        assertEquals(1, result.size());
+        result = DateUtil.splitDate("2017-04-30 12:05:00", "2017-04-30 19:05:00", 2);
+        assertEquals(1, result.size());
+        result = DateUtil.splitDate("2017-04-30 12:05:00", "2017-04-30 19:05:00", 3);
+        assertEquals(1, result.size());
+        result = DateUtil.splitDate("2017-04-30 12:05:00", "2017-04-30 19:05:00", 4);
+        assertEquals(1, result.size());
+
+        //临界点
+        result = DateUtil.splitDate("2017-06-03 12:05:00", "2017-06-10 19:05:00", 2);
+        assertEquals(2, result.size());
+        result = DateUtil.splitDate("2017-05-30 12:05:00", "2017-06-01 19:05:00", 3);
+        assertEquals(2, result.size());
+        result = DateUtil.splitDate("2016-12-31 12:05:00", "2017-01-01 19:05:00", 4);
+        assertEquals(2, result.size());
+
     }
 
     @Test

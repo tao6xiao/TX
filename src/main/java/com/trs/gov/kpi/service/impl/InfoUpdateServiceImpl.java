@@ -95,14 +95,13 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
-        if (StringUtil.isEmpty(param.getBeginDateTime())) {
-            param.setBeginDateTime(DateUtil.toString(issueMapper.getEarliestIssueTime()));
+    public History getIssueHistoryCount(PageDataRequestParam param) throws ParseException {
+        if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
+            String date = DateUtil.toString(new Date());
+            param.setBeginDateTime(DateUtil.getDefaultBeginDate(date, param.getGranularity()));
+            param.setEndDateTime(date);
         }
-        if (StringUtil.isEmpty(param.getEndDateTime())) {
-            param.setEndDateTime(DateUtil.toString(new Date()));
-        }
-        List<HistoryDate> dateList = DateUtil.splitDateByMonth(param.getBeginDateTime(), param.getEndDateTime());
+        List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
@@ -112,7 +111,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             filter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
 
             historyStatistics.setValue(issueMapper.count(filter));
-            historyStatistics.setTime(date.getMonth());
+            historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
         return new History(new Date(), list);

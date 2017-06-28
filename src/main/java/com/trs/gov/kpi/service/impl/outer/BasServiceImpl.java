@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl.outer;
 
 import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.*;
+import com.trs.gov.kpi.constant.Granularity;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -72,9 +73,16 @@ public class BasServiceImpl implements BasService {
             siteIndexPage = monitorSiteDeal.getIndexUrl();
         }
         String url = basServiceUrl + "/api/retrieveWebUV";
-        setDefaultDate(basRequest);
+        if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//不支持年的
+            basRequest.setGranularity(3);
+        }
+        if (StringUtil.isEmpty(basRequest.getBeginDateTime()) && StringUtil.isEmpty(basRequest.getEndDateTime())) {
+            String date = DateUtil.toString(new Date());
+            basRequest.setBeginDateTime(DateUtil.getDefaultBeginDate(date, basRequest.getGranularity()));
+            basRequest.setEndDateTime(date);
+        }
 
-        List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
+        List<HistoryDate> dateList = DateUtil.splitDate(basRequest.getBeginDateTime(), basRequest.getEndDateTime(), basRequest.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
             HistoryDate historyDate = iterator.next();
@@ -85,7 +93,7 @@ public class BasServiceImpl implements BasService {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             Integer pv = requestBasPV(url, initTime(historyDate.getBeginDate()), initTime(historyDate.getEndDate()), siteIndexPage);
             historyStatistics.setValue(pv);
-            historyStatistics.setTime(historyDate.getMonth());
+            historyStatistics.setTime(historyDate.getDate());
             list.add(historyStatistics);
         }
 
@@ -103,24 +111,6 @@ public class BasServiceImpl implements BasService {
             flag = false;
         }
         return flag;
-    }
-
-    /**
-     * 设置默认起止日期
-     *
-     * @param basRequest
-     * @throws ParseException
-     */
-    private void setDefaultDate(BasRequest basRequest) throws ParseException {
-        if (StringUtil.isEmpty(basRequest.getEndDateTime())) {
-            basRequest.setEndDateTime(DateUtil.toString(new Date()));
-        }
-        if (StringUtil.isEmpty(basRequest.getBeginDateTime())) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(DateUtil.toDayDate(basRequest.getEndDateTime()));
-            calendar.add(Calendar.MONTH, -6);
-            basRequest.setBeginDateTime(DateUtil.toDayString(calendar.getTime()));
-        }
     }
 
     private Integer requestBasPV(String url, String beginDay, String endDay, String siteIndexPage) throws RemoteException {
@@ -180,9 +170,16 @@ public class BasServiceImpl implements BasService {
     @Override
     public History geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
 
-        setDefaultDate(basRequest);
+        if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//不支持年的
+            basRequest.setGranularity(3);
+        }
+        if (StringUtil.isEmpty(basRequest.getBeginDateTime()) && StringUtil.isEmpty(basRequest.getEndDateTime())) {
+            String date = DateUtil.toString(new Date());
+            basRequest.setBeginDateTime(DateUtil.getDefaultBeginDate(date, basRequest.getGranularity()));
+            basRequest.setEndDateTime(date);
+        }
 
-        List<HistoryDate> dateList = DateUtil.splitDateByMonth(basRequest.getBeginDateTime(), basRequest.getEndDateTime());
+        List<HistoryDate> dateList = DateUtil.splitDate(basRequest.getBeginDateTime(), basRequest.getEndDateTime(), basRequest.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
 
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
@@ -196,9 +193,9 @@ public class BasServiceImpl implements BasService {
             params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));
             params.put(DAY, initTime(historyDate.getEndDate()));
             SiteSummary siteSummary = requestBasSummary(params);
-            historyStatistics.setTime(historyDate.getMonth());
+            historyStatistics.setTime(historyDate.getDate());
             if (siteSummary != null) {
-                historyStatistics.setValue(siteSummary.getAvgDuration30());
+                historyStatistics.setValue(getVisitsByGranularity(basRequest.getGranularity(), siteSummary));
             } else {
                 historyStatistics.setValue(0);
             }
@@ -206,6 +203,23 @@ public class BasServiceImpl implements BasService {
             list.add(historyStatistics);
         }
         return new History(new Date(), list);
+    }
+
+    /**
+     * 根据粒度拿到对应的停留时间
+     *
+     * @param granularity
+     * @param siteSummary
+     * @return
+     */
+    private int getVisitsByGranularity(Integer granularity, SiteSummary siteSummary) {
+        if (Granularity.DAY.equals(granularity)) {
+            return siteSummary.getAvgDuration();
+        } else if (Granularity.WEEK.equals(granularity)) {
+            return siteSummary.getAvgDuration7();
+        } else {//不设置，默认为月
+            return siteSummary.getAvgDuration30();
+        }
     }
 
     private SiteSummary requestBasSummary(Map<String, String> params) throws RemoteException {
@@ -247,11 +261,17 @@ public class BasServiceImpl implements BasService {
         return summaryResponse.getRecords().get(0);
     }
 
+    /**
+     * 将绩效考核接受的日期格式转化为网脉接受的日期格式
+     *
+     * @param time
+     * @return
+     * @throws ParseException
+     */
     private String initTime(String time) throws ParseException {
 
         SimpleDateFormat sdfIn = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat sdfOut = new SimpleDateFormat("yyyyMMdd");
-
         Date data = sdfIn.parse(time);
 
         return sdfOut.format(data);
