@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.User;
 
 /**
+ * 采编中心->用户相关接口
  * Created by he.lang on 2017/6/27.
  */
 public interface UserApiService {

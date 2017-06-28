@@ -252,6 +252,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setId(infoUpdate.getId());
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getIssueTime());
+            infoUpdateResponse.setWorkOrderStatus(Status.WorkOrder.valueOf(infoUpdate.getWorkOrderStatus()).getName());
             if (infoUpdate.getSubTypeId() < WARNING_BEGIN_ID) {
                 infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).getName());
             } else {

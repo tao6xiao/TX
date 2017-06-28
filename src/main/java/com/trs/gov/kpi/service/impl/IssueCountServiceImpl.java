@@ -5,12 +5,14 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.InitTime;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -34,6 +36,9 @@ public class IssueCountServiceImpl implements IssueCountService {
 
     @Resource
     InfoErrorService infoErrorService;
+
+    @Resource
+    DeptApiService deptApiService;
 
     @Override
     public List<Statistics> countSort(IssueCountRequest request) {
@@ -91,8 +96,6 @@ public class IssueCountServiceImpl implements IssueCountService {
     @Override
     public History historyCountSort(IssueCountRequest request) {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
-//        request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
-//        request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
         if (StringUtil.isEmpty(request.getBeginDateTime()) && StringUtil.isEmpty(request.getEndDateTime())) {
             String date = DateUtil.toString(new Date());
             try {
@@ -122,7 +125,7 @@ public class IssueCountServiceImpl implements IssueCountService {
     }
 
     @Override
-    public List<DeptCountResponse> deptCountSort(IssueCountRequest request) {
+    public List<DeptCountResponse> deptCountSort(IssueCountRequest request) throws RemoteException {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
         request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
@@ -143,7 +146,7 @@ public class IssueCountServiceImpl implements IssueCountService {
     }
 
     @Override
-    public List<DeptCount> getDeptCountByType(IssueCountByTypeRequest request) {
+    public List<DeptCount> getDeptCountByType(IssueCountByTypeRequest request) throws RemoteException {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
         request.setBeginDateTime(InitTime.initBeginDateTime(request.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         request.setEndDateTime(InitTime.initEndDateTime(request.getEndDateTime()));
@@ -151,7 +154,7 @@ public class IssueCountServiceImpl implements IssueCountService {
     }
 
     @Override
-    public DeptInductionResponse[] deptInductionSort(IssueCountRequest request) {
+    public DeptInductionResponse[] deptInductionSort(IssueCountRequest request) throws RemoteException {
         Map<Integer, DeptInductionResponse> result = new HashMap<>();
 
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
@@ -210,7 +213,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         }
     }
 
-    private void getInductionResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request, Map<Integer, DeptInductionResponse> result) {
+    private void getInductionResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request, Map<Integer, DeptInductionResponse> result) throws RemoteException {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         if (request.getBeginDateTime() != null) {
             filter.addCond(IssueTableField.ISSUE_TIME, request.getBeginDateTime()).setRangeBegin(true);
@@ -228,8 +231,7 @@ public class IssueCountServiceImpl implements IssueCountService {
                 DeptInductionResponse induction = result.get(deptId);
                 if (induction == null) {
                     induction = new DeptInductionResponse();
-                    // TODO: 2017/6/19 get dept by deptId from editor center
-                    induction.setDept(deptId.toString());
+                    induction.setDept(deptApiService.findDeptById("", deptId).getGName() == null ? Constants.DEPT_NULL : deptApiService.findDeptById("", deptId).getGName());
                     result.put(deptId, induction);
                 }
 
@@ -243,7 +245,7 @@ public class IssueCountServiceImpl implements IssueCountService {
 
     }
 
-    private DeptCountResponse getResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request) {
+    private DeptCountResponse getResponse(Integer[] siteIds, IssueIndicator type, IssueCountRequest request) throws RemoteException {
         DeptCountResponse countResponse = new DeptCountResponse();
         countResponse.setType(type.value);
         countResponse.setName(type.getName());
@@ -263,8 +265,8 @@ public class IssueCountServiceImpl implements IssueCountService {
             if (map.get(IssueTableField.DEPT_ID) == null || "".equals(map.get(IssueTableField.DEPT_ID))) {
                 deptCount = new DeptCount(Constants.DEPT_NULL, ((Long) map.get(COUNT)).intValue());
             } else {
-                // TODO: 2017/6/19 get dept by deptId from editor center
-                deptCount = new DeptCount(map.get(IssueTableField.DEPT_ID).toString(), ((Long) map.get(COUNT)).intValue());
+                deptCount = new DeptCount(deptApiService.findDeptById("", (int) map.get(IssueTableField.DEPT_ID)).getGName() == null ? Constants.DEPT_NULL : deptApiService.findDeptById
+                        ("", (int) map.get(IssueTableField.DEPT_ID)).getGName(), ((Long) map.get(COUNT)).intValue());
             }
             deptCountList.add(deptCount);
         }
@@ -287,7 +289,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         }
     }
 
-    private List<DeptCount> getDepCountByType(Integer[] siteIds, IssueCountByTypeRequest request) {
+    private List<DeptCount> getDepCountByType(Integer[] siteIds, IssueCountByTypeRequest request) throws RemoteException {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
 
         if (siteIds != null) {
@@ -325,7 +327,8 @@ public class IssueCountServiceImpl implements IssueCountService {
             if (depId == null) {
                 result.add(new DeptCount(Constants.DEPT_NULL, count.intValue()));
             } else {
-                result.add(new DeptCount(String.valueOf(depId), count.intValue()));
+                result.add(new DeptCount(deptApiService.findDeptById("", depId).getGName() == null ? Constants.DEPT_NULL : deptApiService.findDeptById("", depId).getGName(), count
+                        .intValue()));
             }
         }
         return result;

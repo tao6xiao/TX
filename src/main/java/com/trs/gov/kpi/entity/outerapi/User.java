@@ -8,13 +8,13 @@ import lombok.Data;
 @Data
 public class User {
 
-    private Integer userId;
+    private Integer userId;//用户id
 
-    private String userName;
+    private String userName;//用户名
 
-    private String trueName;
+    private String trueName;//用户真实姓名
 
-    private String mobile;
+    private String mobile;//手机号
 
 //            "USERID"    : 1,                // 用户ID
 //            "USERNAME"  : 1,                // 用户名

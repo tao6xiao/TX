@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.constant;
 
+import lombok.Getter;
+
 /**
  * Created by linwei on 2017/5/25.
  */
@@ -16,6 +18,7 @@ public class Status {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         Delete(int value, String name) {
@@ -35,6 +38,7 @@ public class Status {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         Resolve(int value, String name) {
@@ -53,6 +57,7 @@ public class Status {
 
         public final int value;
 
+        @Getter
         private final String name;
 
         Open(int value, String name) {
@@ -60,5 +65,35 @@ public class Status {
             this.name = name;
         }
 
+    }
+
+    /**
+     * 枚举工单状态
+     * Created by he.lang on 2017/6/28.
+     */
+    public enum WorkOrder {
+        INVALID(-1, "非法状态"),
+        UN_HANDLE(0, "未转工单"),
+        HANDLING(1, "已转工单");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        WorkOrder(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public static WorkOrder valueOf(int value) {
+            if (value < 0) {
+                return INVALID;
+            } else if (value == 0) {
+                return UN_HANDLE;
+            } else {
+                return HANDLING;
+            }
+        }
     }
 }

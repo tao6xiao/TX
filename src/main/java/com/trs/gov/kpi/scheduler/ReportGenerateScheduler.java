@@ -68,7 +68,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private int cellIndex = 0;//excel列的索引
 
     @Override
-    public void run() {
+    public void run() throws RemoteException {
         log.info("ReportGenerateScheduler " + siteId + " start...");
 
         IssueCountRequest request = new IssueCountRequest();
