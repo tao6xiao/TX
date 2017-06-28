@@ -43,9 +43,9 @@ public class UserAnalysisController {
     }
 
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
-    public History geHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public History getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
         check(basRequest);
-        return basService.geHistoryStayTime(basRequest);
+        return basService.getHistoryStayTime(basRequest);
     }
 
     private void check(BasRequest basRequest) throws BizException {

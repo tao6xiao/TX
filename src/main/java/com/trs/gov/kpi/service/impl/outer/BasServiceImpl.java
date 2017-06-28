@@ -73,9 +73,7 @@ public class BasServiceImpl implements BasService {
             siteIndexPage = monitorSiteDeal.getIndexUrl();
         }
         String url = basServiceUrl + "/api/retrieveWebUV";
-        if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//不支持年的
-            basRequest.setGranularity(3);
-        }
+
         if (StringUtil.isEmpty(basRequest.getBeginDateTime()) && StringUtil.isEmpty(basRequest.getEndDateTime())) {
             String date = DateUtil.toString(new Date());
             basRequest.setBeginDateTime(DateUtil.getDefaultBeginDate(date, basRequest.getGranularity()));
@@ -91,9 +89,25 @@ public class BasServiceImpl implements BasService {
                 break;
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
+            historyStatistics.setTime(historyDate.getDate());
+
+            if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
+                List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
+                int sum = 0;
+                for (HistoryDate date : dates) {
+                    Integer pv = requestBasPV(url, initTime(date.getBeginDate()), initTime(date.getEndDate()), siteIndexPage);
+                    if (pv != null) {
+                        sum += pv;
+                    }
+                }
+                historyStatistics.setValue(sum);
+                list.add(historyStatistics);
+                continue;
+            }
+
             Integer pv = requestBasPV(url, initTime(historyDate.getBeginDate()), initTime(historyDate.getEndDate()), siteIndexPage);
             historyStatistics.setValue(pv);
-            historyStatistics.setTime(historyDate.getDate());
+
             list.add(historyStatistics);
         }
 
@@ -168,11 +182,8 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public History geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
+    public History getHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
 
-        if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//不支持年的
-            basRequest.setGranularity(3);
-        }
         if (StringUtil.isEmpty(basRequest.getBeginDateTime()) && StringUtil.isEmpty(basRequest.getEndDateTime())) {
             String date = DateUtil.toString(new Date());
             basRequest.setBeginDateTime(DateUtil.getDefaultBeginDate(date, basRequest.getGranularity()));
@@ -189,11 +200,29 @@ public class BasServiceImpl implements BasService {
                 break;
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
+            historyStatistics.setTime(historyDate.getDate());
+
             Map<String, String> params = new HashMap<>();
             params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));
+
+            if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
+                int sum = 0;
+                List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
+                for (HistoryDate date : dates) {
+                    params.put(DAY, initTime(date.getEndDate()));
+                    SiteSummary siteSummary = requestBasSummary(params);
+                    if (siteSummary != null) {
+                        sum += siteSummary.getAvgDuration30();
+                    }
+                }
+                historyStatistics.setValue(sum);
+                list.add(historyStatistics);
+                continue;
+            }
+
             params.put(DAY, initTime(historyDate.getEndDate()));
             SiteSummary siteSummary = requestBasSummary(params);
-            historyStatistics.setTime(historyDate.getDate());
+
             if (siteSummary != null) {
                 historyStatistics.setValue(getVisitsByGranularity(basRequest.getGranularity(), siteSummary));
             } else {

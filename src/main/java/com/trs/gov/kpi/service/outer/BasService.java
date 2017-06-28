@@ -41,5 +41,5 @@ public interface BasService {
      * @param request
      * @return
      */
-    History geHistoryStayTime(BasRequest request) throws ParseException, RemoteException;
+    History getHistoryStayTime(BasRequest request) throws ParseException, RemoteException;
 }
