@@ -3,7 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.List;
 
 /**
  * Created by ranwei on 2017/6/13.
@@ -32,7 +31,7 @@ public class UserAnalysisController {
     }
 
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public History getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
         check(basRequest);
         return basService.getHistoryVisits(basRequest);
     }
@@ -44,7 +43,7 @@ public class UserAnalysisController {
     }
 
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> geHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public History geHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
         check(basRequest);
         return basService.geHistoryStayTime(basRequest);
     }

@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.outerapi.bas.BasPVResponse;
 import com.trs.gov.kpi.entity.outerapi.bas.SiteSummary;
 import com.trs.gov.kpi.entity.outerapi.bas.SummaryResponse;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.BasService;
@@ -64,7 +65,7 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public List<HistoryStatistics> getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
+    public History getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId());
         String siteIndexPage = "";
         if (monitorSiteDeal != null) {
@@ -88,7 +89,7 @@ public class BasServiceImpl implements BasService {
             list.add(historyStatistics);
         }
 
-        return list;
+        return new History(new Date(), list);
     }
 
     private boolean isFirstOfMonth(HistoryDate historyDate) throws ParseException {
@@ -177,7 +178,7 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public List<HistoryStatistics> geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
+    public History geHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
 
         setDefaultDate(basRequest);
 
@@ -204,7 +205,7 @@ public class BasServiceImpl implements BasService {
 
             list.add(historyStatistics);
         }
-        return list;
+        return new History(new Date(), list);
     }
 
     private SiteSummary requestBasSummary(Map<String, String> params) throws RemoteException {
