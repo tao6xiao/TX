@@ -13,10 +13,14 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
-import com.trs.gov.kpi.utils.*;
+import com.trs.gov.kpi.utils.DBUtil;
+import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -74,12 +78,15 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
+    public History getIssueHistoryCount(PageDataRequestParam param) throws ParseException {
 
-        param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
-        param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
+        if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
+            String date = DateUtil.toString(new Date());
+            param.setBeginDateTime(DateUtil.getDefaultBeginDate(date, param.getGranularity()));
+            param.setEndDateTime(date);
+        }
 
-        List<HistoryDate> dateList = DateUtil.splitDateByMonth(param.getBeginDateTime(), param.getEndDateTime());
+        List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
@@ -88,7 +95,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
             queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
             historyStatistics.setValue(issueMapper.count(queryFilter));
-            historyStatistics.setTime(date.getMonth());
+            historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
 
@@ -138,7 +145,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         for (LinkAvailability link : linkAvailabilitieList) {
             LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
             linkAvailabilityResponse.setId(link.getId());
-            linkAvailabilityResponse.setIssueTypeName(Types.ServiceLinkIssueType.valueOf(link.getIssueTypeId()).getName());
+            linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).getName());
             linkAvailabilityResponse.setInvalidLink(link.getInvalidLink());
             linkAvailabilityResponse.setSnapshot(link.getSnapshot());
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());

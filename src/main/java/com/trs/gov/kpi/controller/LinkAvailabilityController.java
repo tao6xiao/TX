@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -63,7 +64,7 @@ public class LinkAvailabilityController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
 
         ParamCheckUtil.paramCheck(param);
 
