@@ -11,10 +11,10 @@ import org.springframework.messaging.SubscribableChannel;
  */
 public interface Barista {
 
-    @Input
+    @Input(Constants.INPUT_CHANNEL)
     SubscribableChannel logInput();
 
-    @Output
+    @Output(Constants.OUTPUT_CHANNEL)
     MessageChannel logOutPut();
 
     @Input(Constants.INPUT)
