@@ -72,7 +72,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             params.put("GNAME", deptName);
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("queryGroupsByName", userName, params)).execute();
+                    buildRequest("queryAllGroupsByName", userName, params)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取部门集合");
