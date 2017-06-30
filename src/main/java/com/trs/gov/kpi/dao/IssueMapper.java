@@ -181,5 +181,5 @@ public interface IssueMapper {
      * @return
      */
     Date getMaxIssueTime(QueryFilter filter);
-    
+
 }
