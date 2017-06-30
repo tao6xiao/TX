@@ -1,11 +1,17 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.IssueTableField;
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
+import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Document;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
@@ -119,7 +125,20 @@ public class CKMScheduler implements SchedulerTask {
     private void insert(List<Issue> issueList) {
         //插入监测出的信息错误数据
         for (Issue issue : issueList) {
-            issueMapper.insert(DBUtil.toRow(issue));
+
+            PageDataRequestParam param = new PageDataRequestParam();
+            param.setSiteId(siteId);
+            QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
+            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+            queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+            queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+            queryFilter.addCond(IssueTableField.CUSTOMER1, issue.getCustomer1());
+            queryFilter.addCond(IssueTableField.SUBTYPE_ID, issue.getSubTypeId());
+
+            List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
+            if(infoErrors.size() == 0){
+                issueMapper.insert(DBUtil.toRow(issue));
+            }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
     }
