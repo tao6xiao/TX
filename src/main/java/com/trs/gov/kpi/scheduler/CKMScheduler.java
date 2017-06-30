@@ -127,7 +127,7 @@ public class CKMScheduler implements SchedulerTask {
         for (Issue issue : issueList) {
 
             PageDataRequestParam param = new PageDataRequestParam();
-            param.setSiteId(issue.getSiteId());
+            param.setSiteId(siteId);
             QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
             queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
             queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
