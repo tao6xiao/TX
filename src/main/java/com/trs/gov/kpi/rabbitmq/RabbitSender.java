@@ -24,9 +24,17 @@ public class RabbitSender {
     @InboundChannelAdapter(Constants.OUTPUT_CHANNEL)
     public String sendMessage(){
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            String json = "{\n" +
+                    "    \"msgType\":\"editcenter_department_new_doc_byday\",\n" +
+                    "    \"data\":{\n" +
+                    "        \"User\":12,\n" +
+                    "        \"Department\":12,\n" +
+                    "        \"siteId\":11,\n" +
+                    "        \"CRDay\":\"2017-06-03\",\n" +
+                    "    }\n" +
+                    "}";
             log.info("发送");
-            source.logOutPut().send(MessageBuilder.withPayload(sdf.format(new Date())).build());
+            source.logOutPut().send(MessageBuilder.withPayload(json).build());
         }catch (Exception e){
             log.error("发送失败", e);
         }
