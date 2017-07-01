@@ -21,7 +21,7 @@ public class RabbitSender {
     @Autowired
     private Barista source;
 
-    @InboundChannelAdapter(Constants.OUTPUT_CHANNEL)
+//    @InboundChannelAdapter(value = Constants.OUTPUT_CHANNEL, autoStartup = "false")
     public String sendMessage(){
         try {
             String json = "{\n" +
