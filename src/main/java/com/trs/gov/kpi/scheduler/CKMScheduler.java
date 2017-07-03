@@ -122,7 +122,7 @@ public class CKMScheduler implements SchedulerTask {
         return issueList;
     }
 
-    private void insert(List<Issue> issueList) {
+    public void insert(List<Issue> issueList) {
         //插入监测出的信息错误数据
         for (Issue issue : issueList) {
 
@@ -134,6 +134,7 @@ public class CKMScheduler implements SchedulerTask {
             queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
             queryFilter.addCond(IssueTableField.CUSTOMER1, issue.getCustomer1());
             queryFilter.addCond(IssueTableField.SUBTYPE_ID, issue.getSubTypeId());
+            queryFilter.addCond(IssueTableField.DETAIL, issue.getDetail());
 
             List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
             if(infoErrors.size() == 0){
