@@ -23,7 +23,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 下载页面检测
  * Created by wangxuan on 2017/5/10.
  */
 @Slf4j
