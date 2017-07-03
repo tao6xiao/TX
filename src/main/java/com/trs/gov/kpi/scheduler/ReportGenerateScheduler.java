@@ -88,7 +88,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
         String title = "";
         if (site != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            title = site.getSiteDesc() + "报表" + "(" + sdf.format(new Date()) + ")";
+            title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
         }
         report.setTitle(title);
 
