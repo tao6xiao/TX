@@ -1,12 +1,15 @@
 package com.trs.gov.kpi.controller;
 
 
+import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +29,9 @@ public class LinkAvailabilityController extends IssueHandler {
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
 
+    @Resource
+    private AuthorityService authorityService;
+
     /**
      * 查询待解决和已解决问题数量
      *
@@ -33,10 +39,12 @@ public class LinkAvailabilityController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
 
+        if(!authorityService.hasRight(param.getSiteId(),null, Authority.PERFORMANCE_AVAILABILITY_COUNT)){
+            throw new BizException("权限不合法");
+        }
         ParamCheckUtil.paramCheck(param);
-
         return linkAvailabilityService.getIssueCount(param);
     }
 

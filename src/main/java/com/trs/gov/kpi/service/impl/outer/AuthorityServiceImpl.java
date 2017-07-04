@@ -11,6 +11,7 @@ import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import static com.trs.gov.kpi.utils.OuterApiServiceUtil.newServiceRequestBuilder
  * Created by ranwei on 2017/7/4.
  */
 @Slf4j
+@Service
 public class AuthorityServiceImpl implements AuthorityService {
 
     @Value("${service.outer.editcenter.url}")
