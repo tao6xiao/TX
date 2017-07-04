@@ -19,6 +19,7 @@ public class Authority {
     public static final String PERFORMANCE_MONITOR_SEARCH = "performance.monitor.search";//查询
 
     //批量操作
+    public static final String PERFORMANCE_OPERATE = "performance.operate";
     public static final String PERFORMANCE_OPERATE_HANDLE = "performance.operate.handle";//处理
     public static final String PERFORMANCE_OPERATE_IGNORE = "performance.operate.ignore";//忽略
     public static final String PERFORMANCE_OPERATE_DELETE = "performance.operate.delete";//删除
