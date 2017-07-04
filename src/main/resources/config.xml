@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="权限设置" version="1.1">
+
+
+    <extension element-class="com.trs.cms.auth.config.OperationConfig" id="OperationConfigs">
+
+        <!--绩效考核权限（450-600）-->
+        <operation name="performance.monitor.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->综合实时监测-->查询</desc>
+            <index>450</index>
+            <type>performance.monitor</type>
+        </operation>
+
+
+        <operation name="performance.operate.handle">
+            <disp-name>处理</disp-name>
+            <desc>绩效考核-->批量操作-->处理</desc>
+            <index>451</index>
+            <type>performance.operate</type>
+        </operation>
+        <operation name="performance.operate.ignore">
+            <disp-name>忽略</disp-name>
+            <desc>绩效考核-->批量操作-->忽略</desc>
+            <index>452</index>
+            <type>performance.operate</type>
+        </operation>
+        <operation name="performance.operate.delete">
+            <disp-name>删除</disp-name>
+            <desc>绩效考核-->批量操作-->删除</desc>
+            <index>453</index>
+            <type>performance.operate</type>
+        </operation>
+
+
+        <operation name="performance.issue.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->待解决问题-->查询</desc>
+            <index>454</index>
+            <type>performance.issue</type>
+        </operation>
+
+
+        <operation name="performance.warning.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->待解决预警-->查询</desc>
+            <index>455</index>
+            <type>performance.warning</type>
+        </operation>
+
+
+        <operation name="performance.resolved.findhandled">
+            <disp-name>查询已处理</disp-name>
+            <desc>绩效考核-->已解决问题和预警-->查询已处理</desc>
+            <index>456</index>
+            <type>performance.resolved</type>
+        </operation>
+        <operation name="performance.resolved.findignored">
+            <disp-name>查询已忽略</disp-name>
+            <desc>绩效考核-->已解决问题和预警-->查询已忽略</desc>
+            <index>457</index>
+            <type>performance.resolved</type>
+        </operation>
+
+        <operation name="performance.availability.count">
+            <disp-name>统计数查询</disp-name>
+            <desc>绩效考核-->网站可用性-->统计数查询</desc>
+            <index>458</index>
+            <type>performance.availability</type>
+        </operation>
+        <operation name="performance.availability.history">
+            <disp-name>统计数趋势查询</disp-name>
+            <desc>绩效考核-->网站可用性-->统计数趋势查询</desc>
+            <index>459</index>
+            <type>performance.availability</type>
+        </operation>
+        <operation name="performance.availability.home">
+            <disp-name>首页可用性查询</disp-name>
+            <desc>绩效考核-->网站可用性-->首页可用性查询</desc>
+            <index>460</index>
+            <type>performance.availability</type>
+        </operation>
+        <operation name="performance.availability.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->网站可用性-->查询</desc>
+            <index>461</index>
+            <type>performance.availability</type>
+        </operation>
+
+
+        <operation name="performance.infoupdate.count">
+            <disp-name>统计数查询</disp-name>
+            <desc>绩效考核-->信息更新-->统计数查询</desc>
+            <index>462</index>
+            <type>performance.infoupdate</type>
+        </operation>
+        <operation name="performance.infoupdate.history">
+            <disp-name>统计数趋势查询</disp-name>
+            <desc>绩效考核-->信息更新-->统计数趋势查询</desc>
+            <index>463</index>
+            <type>performance.infoupdate</type>
+        </operation>
+        <operation name="performance.infoupdate.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->信息更新-->查询</desc>
+            <index>464</index>
+            <type>performance.infoupdate</type>
+        </operation>
+
+
+        <operation name="performance.service.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->服务实用-->查询</desc>
+            <index>465</index>
+            <type>performance.service</type>
+        </operation>
+
+
+        <operation name="performance.infoerror.count">
+            <disp-name>统计数查询</disp-name>
+            <desc>绩效考核-->信息错误-->统计数查询</desc>
+            <index>467</index>
+            <type>performance.infoerror</type>
+        </operation>
+        <operation name="performance.infoerror.history">
+            <disp-name>统计数趋势查询</disp-name>
+            <desc>绩效考核-->信息错误-->统计数趋势查询</desc>
+            <index>468</index>
+            <type>performance.infoerror</type>
+        </operation>
+        <operation name="performance.infoerror.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->信息错误-->查询</desc>
+            <index>469</index>
+            <type>performance.infoerror</type>
+        </operation>
+
+
+        <operation name="performance.improve.count">
+            <disp-name>统计</disp-name>
+            <desc>绩效考核-->访问优化-->统计</desc>
+            <index>470</index>
+            <type>performance.improve</type>
+        </operation>
+        <operation name="performance.improve.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->访问优化-->查询</desc>
+            <index>471</index>
+            <type>performance.improve</type>
+        </operation>
+        <operation name="performance.improve.handle">
+            <disp-name>批量处理</disp-name>
+            <desc>绩效考核-->访问优化-->批量处理</desc>
+            <index>472</index>
+            <type>performance.improve</type>
+        </operation>
+        <operation name="performance.improve.ignore">
+            <disp-name>批量忽略</disp-name>
+            <desc>绩效考核-->访问优化-->批量忽略</desc>
+            <index>473</index>
+            <type>performance.improve</type>
+        </operation>
+        <operation name="performance.improve.delete">
+            <disp-name>批量删除</disp-name>
+            <desc>绩效考核-->访问优化-->批量删除</desc>
+            <index>474</index>
+            <type>performance.improve</type>
+        </operation>
+
+        <operation name="performance.analysis.views">
+            <disp-name>访问量查询</disp-name>
+            <desc>绩效考核-->用户分析-->访问量查询</desc>
+            <index>475</index>
+            <type>performance.analysis</type>
+        </operation>
+        <operation name="performance.analysis.staytime">
+            <disp-name>停留时间查询</disp-name>
+            <desc>绩效考核-->用户分析-->停留时间查询</desc>
+            <index>476</index>
+            <type>performance.analysis</type>
+        </operation>
+
+        <operation name="performance.statistics.issue">
+            <disp-name>问题查询</disp-name>
+            <desc>绩效考核-->统计分析-->问题查询</desc>
+            <index>477</index>
+            <type>performance.statistics</type>
+        </operation>
+        <operation name="performance.statistics.document">
+            <disp-name>稿件查询</disp-name>
+            <desc>绩效考核-->统计分析-->稿件查询</desc>
+            <index>478</index>
+            <type>performance.statistics</type>
+        </operation>
+
+        <operation name="performance.monitorsetup.findadmin">
+            <disp-name>查询保障人员</disp-name>
+            <desc>绩效考核-->监测设置-->查询保障人员</desc>
+            <index>479</index>
+            <type>performance.monitorsetup</type>
+        </operation>
+        <operation name="performance.monitorsetup.updateadmin">
+            <disp-name>设置保障人员</disp-name>
+            <desc>绩效考核-->监测设置-->设置保障人员</desc>
+            <index>480</index>
+            <type>performance.monitorsetup</type>
+        </operation>
+        <operation name="performance.monitorsetup.search">
+            <disp-name>查询监测参数</disp-name>
+            <desc>绩效考核-->监测设置-->查询监测参数</desc>
+            <index>481</index>
+            <type>performance.monitorsetup</type>
+        </operation>
+        <operation name="performance.monitorsetup.save">
+            <disp-name>保存监测参数</disp-name>
+            <desc>绩效考核-->监测设置-->保存监测参数</desc>
+            <index>482</index>
+            <type>performance.monitorsetup</type>
+        </operation>
+        <operation name="performance.monitorsetup.findfreq">
+            <disp-name>查询频率</disp-name>
+            <desc>绩效考核-->监测设置-->查询频率</desc>
+            <index>483</index>
+            <type>performance.monitorsetup</type>
+        </operation>
+
+        <operation name="performance.indexsetup.findprefreq">
+            <disp-name>查询预设频率</disp-name>
+            <desc>绩效考核-->监测设置-->查询预设频率</desc>
+            <index>484</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.addprefreq">
+            <disp-name>增加预设频率</disp-name>
+            <desc>绩效考核-->监测设置-->增加预设频率</desc>
+            <index>485</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.updateprefreq">
+            <disp-name>更新预设频率</disp-name>
+            <desc>绩效考核-->监测设置-->更新预设频率</desc>
+            <index>486</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.deleteprefreq">
+            <disp-name>删除预设频率</disp-name>
+            <desc>绩效考核-->监测设置-->删除预设频率</desc>
+            <index>487</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.finddemandfreq">
+            <disp-name>查询按需更新频率</disp-name>
+            <desc>绩效考核-->监测设置-->查询按需更新频率</desc>
+            <index>488</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.updatedemandfreq">
+            <disp-name>修改按需更新频率</disp-name>
+            <desc>绩效考核-->监测设置-->修改按需更新频率</desc>
+            <index>489</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.findchnl">
+            <disp-name>查询栏目</disp-name>
+            <desc>绩效考核-->监测设置-->查询栏目</desc>
+            <index>490</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.findmonitorchnl">
+            <disp-name>查询监测栏目</disp-name>
+            <desc>绩效考核-->监测设置-->查询监测栏目</desc>
+            <index>491</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.addmonitorchnl">
+            <disp-name>添加监测栏目</disp-name>
+            <desc>绩效考核-->监测设置-->添加监测栏目</desc>
+            <index>492</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.updatemonitorchnl">
+            <disp-name>修改监测栏目的频率</disp-name>
+            <desc>绩效考核-->监测设置-->修改监测栏目的频率</desc>
+            <index>493</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.delmonitorchnl">
+            <disp-name>删除监测栏目</disp-name>
+            <desc>494-->监测设置-->删除监测栏目</desc>
+            <index>477</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.enabledmonitorchnl">
+            <disp-name>栏目监测是否启用</disp-name>
+            <desc>绩效考核-->监测设置-->栏目监测是否启用</desc>
+            <index>495</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.findtype">
+            <disp-name>查询分类</disp-name>
+            <desc>绩效考核-->监测设置-->查询分类</desc>
+            <index>496</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.findchnlbytype">
+            <disp-name>根据分类查栏目</disp-name>
+            <desc>绩效考核-->监测设置-->根据分类查栏目</desc>
+            <index>497</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.addchnltotype">
+            <disp-name>栏目分配到所属分类</disp-name>
+            <desc>绩效考核-->监测设置-->栏目分配到所属分类</desc>
+            <index>498</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.updatetypeofchnl">
+            <disp-name>修改栏目所属分类</disp-name>
+            <desc>绩效考核-->监测设置-->修改栏目所属分类</desc>
+            <index>499</index>
+            <type>performance.indexsetup</type>
+        </operation>
+        <operation name="performance.indexsetup.delchnlfromtype">
+            <disp-name>从分类中移除栏目</disp-name>
+            <desc>绩效考核-->监测设置-->从分类中移除栏目</desc>
+            <index>500</index>
+            <type>performance.indexsetup</type>
+        </operation>
+
+        <operation name="performance.report.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->报表-->查询</desc>
+            <index>501</index>
+            <type>performance.report</type>
+        </operation>
+        <operation name="performance.report.export">
+            <disp-name>导出</disp-name>
+            <desc>绩效考核-->报表-->导出</desc>
+            <index>502</index>
+            <type>performance.report</type>
+        </operation>
+
+    </extension>
+
+
+</plugin>
