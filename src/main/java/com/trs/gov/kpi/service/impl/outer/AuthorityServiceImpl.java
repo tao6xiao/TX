@@ -45,6 +45,7 @@ public class AuthorityServiceImpl implements AuthorityService {
                 params.put("channelId", String.valueOf(channelId));
             }
             params.put("oprkeys", oprkeys);
+            params.put("currUserName", "kpitest");
 
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(buildRequest(METHOD_NAME, params, SERVICE_NAME)).execute();
