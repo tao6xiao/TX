@@ -220,7 +220,8 @@ public final class Types {
     public enum InfoErrorIssueType {
         INVALID(-1, "未知问题", "未知"),
         TYPOS(IssueType.INFO_ERROR_ISSUE.value * 10 + 1, "错别字", "字词"),
-        SENSITIVE_WORDS(IssueType.INFO_ERROR_ISSUE.value * 10 + 2, "敏感词", "敏感词");
+        SENSITIVE_WORDS(IssueType.INFO_ERROR_ISSUE.value * 10 + 2, "敏感词", "敏感词"),
+        POLITICS(IssueType.INFO_ERROR_ISSUE.value * 10 + 3, "政治", "政治");
 
         public final int value;
 

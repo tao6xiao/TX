@@ -243,4 +243,9 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
+    <delete id="daleteRepeatPageSpace" parameterType="com.trs.gov.kpi.entity.PageSpace">
+        delete from webpage
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
 </mapper>

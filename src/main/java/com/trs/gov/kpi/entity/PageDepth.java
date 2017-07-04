@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 页面深度
+ * 过深页面
  * <p>
  * Created by ranwei on 2017/6/6.
  */
