@@ -1,11 +1,13 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.ReportService;
+import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -37,16 +39,25 @@ public class ReportController {
     @Resource
     private ReportService reportService;
 
+    @Resource
+    private AuthorityService authorityService;
+
 
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
+        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getDay());
         return reportService.selectReportList(param, true);
     }
 
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
-    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException {
+    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
+        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
@@ -62,6 +73,9 @@ public class ReportController {
 
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
+        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
         ParamCheckUtil.checkDayTime(param.getEndDateTime());
@@ -69,7 +83,10 @@ public class ReportController {
     }
 
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
-    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException {
+    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
+        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }

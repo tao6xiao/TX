@@ -1,9 +1,12 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
+import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,10 +19,13 @@ import java.text.ParseException;
  */
 @RestController
 @RequestMapping("/gov/kpi/alert")
-public class IntegratedMonitorWarningController extends IssueHandler{
+public class IntegratedMonitorWarningController extends IssueHandler {
 
     @Resource
     IntegratedMonitorWarningService integratedMonitorWarningService;
+
+    @Resource
+    private AuthorityService authorityService;
 
     /**
      * 查询预警提醒的分页数据（未处理、未忽略、未删除）
@@ -30,7 +36,10 @@ public class IntegratedMonitorWarningController extends IssueHandler{
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
+    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_WARNING_SEARCH)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorWarningService.get(param);
     }

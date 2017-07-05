@@ -8,7 +8,7 @@ public class Authority {
 
     private Authority() {
     }
-
+    public static final String NO_AUTHORITY = "没有权限";
 
     //绩效考核
     public static final String KPIWEB = "kpiweb";
@@ -23,6 +23,7 @@ public class Authority {
     public static final String KPIWEB_OPERATE_HANDLE = "kpiweb.operate.handle";//处理
     public static final String KPIWEB_OPERATE_IGNORE = "kpiweb.operate.ignore";//忽略
     public static final String KPIWEB_OPERATE_DELETE = "kpiweb.operate.delete";//删除
+    public static final String KPIWEB_OPERATE_UPDATEDEPT = "kpiweb.operate.updatedept";//更新所属部门
 
     //待解决问题
     public static final String KPIWEB_ISSUE = "kpiweb.issue";
@@ -34,7 +35,7 @@ public class Authority {
 
     //已解决问题和预警
     public static final String KPIWEB_RESOLVED = "kpiweb.resolved";
-    public static final String KPIWEB_RESOLVED_FINDHANDLED = "kpiweb.resolved.search";//查询
+    public static final String KPIWEB_RESOLVED_SEARCH = "kpiweb.resolved.search";//查询
 
 
     //网站可用性

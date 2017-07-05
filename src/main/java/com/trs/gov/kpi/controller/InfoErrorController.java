@@ -1,11 +1,14 @@
 package com.trs.gov.kpi.controller;
 
 
+import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.service.InfoErrorService;
+import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +29,9 @@ public class InfoErrorController extends IssueHandler {
     @Resource
     private InfoErrorService infoErrorService;
 
+    @Resource
+    private AuthorityService authorityService;
+
     /**
      * 查询待解决和已解决问题数量
      *
@@ -33,7 +39,10 @@ public class InfoErrorController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOERROR_SEARCH)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         ParamCheckUtil.paramCheck(param);
         return infoErrorService.getIssueCount(param);
     }
@@ -45,7 +54,10 @@ public class InfoErrorController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOERROR_SEARCH)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         ParamCheckUtil.paramCheck(param);
         return infoErrorService.getIssueHistoryCount(param);
     }
@@ -58,8 +70,10 @@ public class InfoErrorController extends IssueHandler {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
-
+    public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOERROR_SEARCH)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         ParamCheckUtil.paramCheck(param);
         return infoErrorService.getInfoErrorList(param);
     }
