@@ -170,6 +170,38 @@
 			<version>3.9</version>
 		</dependency>
 
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.ids.agent</groupId>
+			<artifactId>trsids-agent</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/trsids-agent.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.ids.filter</groupId>
+			<artifactId>trsids-filter</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/trsids-filter.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>trs.com.cn</groupId>
+			<artifactId>wcm-core</artifactId>
+			<version>8.0-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/wcm-core-8.0-SNAPSHOT-classes.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
 		<!-- Rabbit stream -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
