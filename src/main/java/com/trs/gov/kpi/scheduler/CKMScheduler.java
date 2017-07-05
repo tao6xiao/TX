@@ -132,6 +132,7 @@ public class CKMScheduler implements SchedulerTask {
             queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
             queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
             queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+            queryFilter.addCond(IssueTableField.DETAIL, issue.getDetail());
             queryFilter.addCond(IssueTableField.CUSTOMER1, issue.getCustomer1());
             queryFilter.addCond(IssueTableField.SUBTYPE_ID, issue.getSubTypeId());
 
