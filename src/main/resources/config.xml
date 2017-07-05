@@ -32,7 +32,7 @@
             <type>kpiweb.operate</type>
         </operation>
         <operation name="kpiweb.operate.delete">
-            <disp-name>删除</disp-name>
+            <disp-name>更新所属部门</disp-name>
             <desc>绩效考核-->批量操作-->更新所属部门</desc>
             <index>454</index>
             <type>kpiweb.operate</type>
