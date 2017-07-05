@@ -8,7 +8,7 @@ public class Authority {
 
     private Authority() {
     }
-    public static final String NO_AUTHORITY = "没有权限";
+    public static final String NO_AUTHORITY = "权限不合法";
 
     //绩效考核
     public static final String KPIWEB = "kpiweb";

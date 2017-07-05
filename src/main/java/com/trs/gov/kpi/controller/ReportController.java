@@ -45,7 +45,7 @@ public class ReportController {
 
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
@@ -55,7 +55,7 @@ public class ReportController {
 
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
     public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (param.getId() == null) {
@@ -73,7 +73,7 @@ public class ReportController {
 
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
@@ -84,7 +84,7 @@ public class ReportController {
 
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
     public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (param.getId() == null) {

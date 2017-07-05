@@ -37,7 +37,7 @@ public class ServiceLinkController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getServiceLinkList(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
-        if (authorityService.hasRight(requestParam.getSiteId(), null, Authority.KPIWEB_SERVICE_SEARCH)) {
+        if (!authorityService.hasRight(requestParam.getSiteId(), null, Authority.KPIWEB_SERVICE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(requestParam);

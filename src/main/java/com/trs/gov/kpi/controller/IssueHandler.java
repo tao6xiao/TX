@@ -31,7 +31,7 @@ public class IssueHandler {
      */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_HANDLE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_HANDLE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         issueService.handIssuesByIds(siteId, Arrays.asList(ids));
@@ -47,7 +47,7 @@ public class IssueHandler {
      */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_IGNORE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_IGNORE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
@@ -63,7 +63,7 @@ public class IssueHandler {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_DELETE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_DELETE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         issueService.delIssueByIds(siteId, Arrays.asList(ids));
@@ -80,7 +80,7 @@ public class IssueHandler {
      */
     @RequestMapping(value = "/updatedept", method = RequestMethod.POST)
     public String updateDeptByIds(int siteId, Integer[] ids, int deptId) throws RemoteException, BizException {
-        if (authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_UPDATEDEPT)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_UPDATEDEPT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);

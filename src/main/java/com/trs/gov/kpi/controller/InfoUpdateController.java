@@ -41,7 +41,7 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -56,7 +56,7 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -72,7 +72,7 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -91,7 +91,7 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -109,7 +109,7 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/month/count", method = RequestMethod.GET)
     @ResponseBody
     public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, RemoteException {
-        if (authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null) {

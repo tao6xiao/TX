@@ -36,7 +36,7 @@ public class IntegratedMonitorIsResolvedController {
     @RequestMapping(value = "/handled", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataIsResolved(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_RESOLVED_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_RESOLVED_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -53,7 +53,7 @@ public class IntegratedMonitorIsResolvedController {
     @RequestMapping(value = "/ignored", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataIsIgnored(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_RESOLVED_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_RESOLVED_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);

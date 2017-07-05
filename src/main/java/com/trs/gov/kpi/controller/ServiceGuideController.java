@@ -33,7 +33,7 @@ public class ServiceGuideController {
 
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
     public SGStatistics getSPCount(PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -42,7 +42,7 @@ public class ServiceGuideController {
 
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public List<SGHistoryStatistics> getSPHistoryCount(PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -51,7 +51,7 @@ public class ServiceGuideController {
 
     @RequestMapping(value = "/guide/issue/unhandled", method = RequestMethod.GET)
     public SGPageDataRes getSGList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
