@@ -41,9 +41,6 @@ public class LinkAvailabilityController extends IssueHandler {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
 
-        if(!authorityService.hasRight(param.getSiteId(),null, Authority.KPIWEB_AVAILABILITY_COUNT)){
-            throw new BizException("权限不合法");
-        }
         ParamCheckUtil.paramCheck(param);
         return linkAvailabilityService.getIssueCount(param);
     }

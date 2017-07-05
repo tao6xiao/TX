@@ -34,21 +34,15 @@ public class Authority {
 
     //已解决问题和预警
     public static final String KPIWEB_RESOLVED = "kpiweb.resolved";
-    public static final String KPIWEB_RESOLVED_FINDHANDLED = "kpiweb.resolved.findhandled";//查询已处理
-    public static final String KPIWEB_RESOLVED_FINDIGNORED = "kpiweb.resolved.findignored";//查询已忽略
+    public static final String KPIWEB_RESOLVED_FINDHANDLED = "kpiweb.resolved.search";//查询
 
 
     //网站可用性
     public static final String KPIWEB_AVAILABILITY = "kpiweb.availability";
-    public static final String KPIWEB_AVAILABILITY_COUNT = "kpiweb.availability.count";//统计数查询
-    public static final String KPIWEB_AVAILABILITY_HISTORYCOUNT = "kpiweb.availability.history";//统计数趋势查询
-    public static final String KPIWEB_AVAILABILITY_HOME = "kpiweb.availability.home";//首页可用性查询
     public static final String KPIWEB_AVAILABILITY_SEARCH = "kpiweb.availability.search";//查询
 
     //信息更新
     public static final String KPIWEB_INFOUPDATE = "kpiweb.infoupdate";
-    public static final String KPIWEB_INFOUPDATE_COUNT = "kpiweb.infoupdate.count";//统计数查询
-    public static final String KPIWEB_INFOUPDATE_HISTORY = "kpiweb.infoupdate.history";//统计数趋势查询
     public static final String KPIWEB_INFOUPDATE_SEARCH = "kpiweb.infoupdate.search";//查询
 
     //服务实用
@@ -57,13 +51,10 @@ public class Authority {
 
     //信息错误
     public static final String KPIWEB_INFOERROR = "kpiweb.infoerror";
-    public static final String KPIWEB_INFOERROR_COUNT = "kpiweb.infoerror.count";//统计数查询
-    public static final String KPIWEB_INFOERROR_HISTORY = "kpiweb.infoerror.history";//统计数趋势查询
     public static final String KPIWEB_INFOERROR_SEARCH = "kpiweb.infoerror.search";//查询
 
     //访问优化
     public static final String KPIWEB_IMPROVE = "kpiweb.improve";
-    public static final String KPIWEB_IMPROVE_COUNT = "kpiweb.improve.count";//统计
     public static final String KPIWEB_IMPROVE_SEARCH = "kpiweb.improve.search";//查询
     public static final String KPIWEB_IMPROVE_HANDLE = "kpiweb.improve.handle";//批量处理
     public static final String KPIWEB_IMPROVE_IGNORE = "kpiweb.improve.ignore";//批量忽略
@@ -81,28 +72,21 @@ public class Authority {
 
     //监测设置
     public static final String KPIWEB_MONITORSETUP = "kpiweb.monitorsetup";
-    public static final String KPIWEB_MONITORSETUP_FINDADMIN = "kpiweb.monitorsetup.findadmin";//查询保障人员
+    public static final String KPIWEB_MONITORSETUP_SEARCH = "kpiweb.monitorsetup.search";//查询
     public static final String KPIWEB_MONITORSETUP_UPDATEADMIN = "kpiweb.monitorsetup.updateadmin";//设置保障人员
-    public static final String KPIWEB_MONITORSETUP_SEARCH = "kpiweb.monitorsetup.search";//查询监测参数
     public static final String KPIWEB_MONITORSETUP_SAVE = "kpiweb.monitorsetup.save";//保存监测参数
-    public static final String KPIWEB_MONITORSETUP_FINDFREQ = "kpiweb.monitorsetup.findfreq";//查询频率
 
     //指标参数设置
     public static final String KPIWEB_INDEXSETUP = "kpiweb.indexsetup";
-    public static final String KPIWEB_INDEXSETUP_FINDPREFREQ = "kpiweb.indexsetup.findprefreq";//查询预设频率
+    public static final String KPIWEB_INDEXSETUP_SEARCH = "kpiweb.indexsetup.search";//查询
     public static final String KPIWEB_INDEXSETUP_ADDPREFREQ = "kpiweb.indexsetup.addprefreq";//增加预设频率
     public static final String KPIWEB_INDEXSETUP_UPDATEPREFREQ = "kpiweb.indexsetup.updateprefreq";//更新预设频率
     public static final String KPIWEB_INDEXSETUP_DELETEPREFREQ = "kpiweb.indexsetup.deleteprefreq";//删除预设频率
-    public static final String KPIWEB_INDEXSETUP_FINDDEMANDFREQ = "kpiweb.indexsetup.finddemandfreq";//查询按需更新频率
     public static final String KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ = "kpiweb.indexsetup.updatedemandfreq";//修改按需更新频率
-    public static final String KPIWEB_INDEXSETUP_FINDCHNL = "kpiweb.indexsetup.findchnl";//查询栏目
-    public static final String KPIWEB_INDEXSETUP_FINDMONITORCHNL = "kpiweb.indexsetup.findmonitorchnl";//查询监测栏目
     public static final String KPIWEB_INDEXSETUP_ADDMONITORCHNL = "kpiweb.indexsetup.addmonitorchnl";//添加监测栏目
     public static final String KPIWEB_INDEXSETUP_UPDATEMONITORCHNL = "kpiweb.indexsetup.updatemonitorchnl";//修改监测栏目的频率
     public static final String KPIWEB_INDEXSETUP_DELMONITORCHNL = "kpiweb.indexsetup.delmonitorchnl";//删除监测栏目
     public static final String KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL = "kpiweb.indexsetup.enabledmonitorchnl";//栏目监测是否启用
-    public static final String KPIWEB_INDEXSETUP_FINDTYPE = "kpiweb.indexsetup.findtype";//查询分类
-    public static final String KPIWEB_INDEXSETUP_FINDCHNLBYTYPE = "kpiweb.indexsetup.findchnlbytype";//根据分类查栏目
     public static final String KPIWEB_INDEXSETUP_ADDCHNLTOTYPE = "kpiweb.indexsetup.addchnltotype";//栏目分配到所属分类
     public static final String KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL = "kpiweb.indexsetup.updatetypeofchnl";//修改栏目所属分类
     public static final String KPIWEB_INDEXSETUP_DELCHNLFROMTYPE = "kpiweb.indexsetup.delchnlfromtype";//从分类中移除栏目
