@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.helper;
 
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
+import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -257,12 +258,85 @@ public class QueryFilterHelperTest {
     }
 
     @Test
-    public void toSetDeptFilter(){
+    public void toSetDeptFilter() throws Exception {
+        MockSiteApiService mockSiteApiService = new MockSiteApiService();
+        MockDeptApiService mockDeptApiService = new MockDeptApiService();
         PageDataRequestParam param = new PageDataRequestParam();
         param.setSiteId(1);
-        param.setSearchField(null);
-        param.setSearchText("zhangsan");
+        QueryFilter filter = QueryFilterHelper.toSetDeptFilter(param, mockSiteApiService, mockDeptApiService);
+        assertEquals(1, filter.getCondFields().size());
     }
+
+    @Test
+    public void toSetDeptFilter_null() throws Exception {
+        MockSiteApiService mockSiteApiService = new MockSiteApiService();
+        MockDeptApiService mockDeptApiService = new MockDeptApiService();
+        PageDataRequestParam param = new PageDataRequestParam();
+        param.setSiteId(1);
+        param.setSearchField("chnlName");
+        param.setSearchText(null);
+        QueryFilter filter = QueryFilterHelper.toSetDeptFilter(param, mockSiteApiService, mockDeptApiService);
+        assertEquals(1, filter.getCondFields().size());
+
+        param = new PageDataRequestParam();
+        param.setSiteId(200);
+        param.setSearchField(null);
+        param.setSearchText("123");
+        filter = QueryFilterHelper.toSetDeptFilter(param, mockSiteApiService, mockDeptApiService);
+        assertEquals(2, filter.getCondFields().size());
+        OrCondDBFields orFields = (OrCondDBFields) filter.getCondFields().get(1).getCondValue();
+        assertEquals(2, orFields.getFields().size());
+    }
+
+    @Test
+    public void toSetDeptFilter_chnlName() throws Exception {
+        MockSiteApiService mockSiteApiService = new MockSiteApiService();
+        MockDeptApiService mockDeptApiService = new MockDeptApiService();
+        PageDataRequestParam param = new PageDataRequestParam();
+        param.setSiteId(201);
+        param.setSearchField("chnlName");
+        param.setSearchText("新闻");
+        QueryFilter filter = QueryFilterHelper.toSetDeptFilter(param, mockSiteApiService, mockDeptApiService);
+        CondDBField condDBField =  filter.getCondFields().get(1);
+        assertEquals("chnlId", condDBField.getFieldName());
+        List list = new ArrayList();
+        list.add(3);
+        assertEquals(list,condDBField.getCondValue());
+    }
+    @Test
+    public void toSetDeptFilter_deptName() throws Exception {
+        MockSiteApiService mockSiteApiService = new MockSiteApiService();
+        MockDeptApiService mockDeptApiService = new MockDeptApiService();
+        PageDataRequestParam param = new PageDataRequestParam();
+        param.setSiteId(202);
+        param.setSearchField("deptName");
+        param.setSearchText("检查");
+        QueryFilter filter = QueryFilterHelper.toSetDeptFilter(param, mockSiteApiService, mockDeptApiService);
+        CondDBField condDBField =  filter.getCondFields().get(1);
+        assertEquals("deptId", condDBField.getFieldName());
+        List list = new ArrayList();
+        list.add(5);
+        assertEquals(list,condDBField.getCondValue());
+    }
+
+    @Test
+    public void toSetDeptFilter_all() throws Exception {
+        MockSiteApiService mockSiteApiService = new MockSiteApiService();
+        MockDeptApiService mockDeptApiService = new MockDeptApiService();
+        PageDataRequestParam param = new PageDataRequestParam();
+        param.setSiteId(203);
+        param.setSearchText("检查1");
+        QueryFilter filter = QueryFilterHelper.toSetDeptFilter(param, mockSiteApiService, mockDeptApiService);
+        OrCondDBFields orFields = (OrCondDBFields) filter.getCondFields().get(1).getCondValue();
+        assertEquals(2, orFields.getFields().size());
+        List list = new ArrayList();
+        list.add(10);
+        assertEquals(list, orFields.getFields().get(0).getCondValue());
+        list = new ArrayList();
+        list.add(11);
+        assertEquals(list, orFields.getFields().get(1).getCondValue());
+    }
+
     private class MockFreqPreset implements FrequencyPresetMapper {
 
         @Setter
@@ -380,6 +454,14 @@ public class QueryFilterHelperTest {
 
         @Override
         public List<Integer> findChnlIds(String userName, int siteId, String chnlName) throws RemoteException {
+            if(siteId == 200){
+                chnlIds.add(1);
+                chnlIds.add(2);
+            }else if("新闻".equals(chnlName)){
+                chnlIds.add(3);
+            }else if("检查1".equals(chnlName)){
+                chnlIds.add(10);
+            }
             return chnlIds;
         }
 
@@ -392,12 +474,18 @@ public class QueryFilterHelperTest {
     private class MockDeptApiService implements DeptApiService {
         @Override
         public Dept findDeptById(String userName, int groupId) throws RemoteException {
-            return null;
+            return new Dept();
         }
 
         @Override
         public List<Integer> queryDeptsByName(String userName, String deptName) throws RemoteException {
-            return null;
+            List<Integer> list = new ArrayList();
+            if("检查".equals(deptName)){
+                list.add(5);
+            }else if("检查1".equals(deptName)){
+                list.add(11);
+            }
+            return list;
         }
     }
 
