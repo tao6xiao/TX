@@ -1,12 +1,17 @@
 package com.trs.gov.kpi.entity.responsedata;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
  */
+@Slf4j
 public class DepDocMultiCounterResponse extends DocMultiCounterResponse{
 
     // 部门
@@ -17,10 +22,18 @@ public class DepDocMultiCounterResponse extends DocMultiCounterResponse{
     @Getter
     private String departmentName;
 
+    @Resource
+    DeptApiService deptApiService;
+
     public void setDepartmentId(Long id) {
         this.departmentId = id;
-        // TODO wait for editcenter
-        this.departmentName = String.valueOf(id);
+        try {
+            if(deptApiService.findDeptById("", Math.toIntExact(id)) != null) {
+                this.departmentName = deptApiService.findDeptById("", Math.toIntExact(id)).getGName();
+            }
+        } catch (RemoteException e) {
+            log.error("",e);
+        }
     }
 
     @Override
