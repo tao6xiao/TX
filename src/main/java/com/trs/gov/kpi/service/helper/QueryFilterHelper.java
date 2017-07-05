@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.helper;
 
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.ReportTableField;
-import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.dao.CondDBField;
@@ -169,7 +166,7 @@ public class QueryFilterHelper {
     private static void addWebPageSearchCond(QueryFilter filter, PageDataRequestParam param, SiteApiService siteApiService) throws RemoteException {
         if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("id")) {
             filter.addCond(WebpageTableField.ID, '%' + param.getSearchText() + "%").setLike(true);
-        } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("chnlName")) {
+        } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase(Constants.CHNL_NAME)) {
 
             List<Integer> chnlIds = siteApiService.findChnlIds("", param.getSiteId(), param.getSearchText());
             if (!chnlIds.isEmpty()) {
@@ -306,7 +303,7 @@ public class QueryFilterHelper {
             filter.addOrConds(orCond);
         } else if (request.getSearchField().equalsIgnoreCase("chnlId")) {
             filter.addCond(FREQ_SETUP_TABLE_FIELD_CHNL_ID, "%" + request.getSearchText() + "%").setLike(true);
-        } else if (request.getSearchField().equalsIgnoreCase("chnlName")) {
+        } else if (request.getSearchField().equalsIgnoreCase(Constants.CHNL_NAME)) {
             List<Integer> chnlIds = siteService.findChnlIds("", request.getSiteId(), request.getSearchText());
             if (!chnlIds.isEmpty()) {
                 filter.addCond(FREQ_SETUP_TABLE_FIELD_CHNL_ID, chnlIds);
@@ -368,6 +365,55 @@ public class QueryFilterHelper {
         calendar.setTime(format.parse(day));
         calendar.add(Calendar.DAY_OF_MONTH, 1);//加一天，解决结束日期当天数据查不到的情况
         return DateUtil.toString(calendar.getTime());
+    }
+
+    public static QueryFilter toSetDeptFilter(PageDataRequestParam param, SiteApiService siteApiService, DeptApiService deptApiService) throws RemoteException {
+        QueryFilter filter = new QueryFilter(Table.DUTY_DEPT);
+        filter.addCond(DutyDeptTableField.SITE_ID, param.getSiteId());
+
+        if (param.getSearchText() == null) {
+            return filter;
+        }
+
+        if (StringUtil.isEmpty(param.getSearchField())) {
+            filter.addOrConds(bulidByDeptParam(param, siteApiService, deptApiService));
+        } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase(Constants.CHNL_NAME)) {
+            List<Integer> chnlIds = siteApiService.findChnlIds("", param.getSiteId(), param.getSearchText());
+            if (chnlIds != null && !chnlIds.isEmpty()) {
+                filter.addCond(DutyDeptTableField.CHNL_ID, chnlIds);
+            }else {
+                // 找不到符合条件的记录，构造一个不成立的条件
+                filter.addCond(DutyDeptTableField.CHNL_ID, -1);
+            }
+        } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("deptName")) {
+            List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
+            if (deptIds != null && !deptIds.isEmpty()) {
+                filter.addCond(DutyDeptTableField.DEPT_ID, deptIds);
+            }else {
+                // 找不到符合条件的记录，构造一个不成立的条件
+                filter.addCond(DutyDeptTableField.DEPT_ID, -1);
+            }
+        }
+        return filter;
+    }
+
+    private static OrCondDBFields bulidByDeptParam(PageDataRequestParam param, SiteApiService siteApiService, DeptApiService deptApiService) throws RemoteException {
+        OrCondDBFields orCondDBFields = new OrCondDBFields();
+        List<Integer> chnlIds = siteApiService.findChnlIds("", param.getSiteId(), param.getSearchText());
+        if (chnlIds != null && !chnlIds.isEmpty()) {
+            orCondDBFields.addCond(DutyDeptTableField.CHNL_ID, chnlIds);
+        }else {
+            // 找不到符合条件的记录，构造一个不成立的条件
+            orCondDBFields.addCond(DutyDeptTableField.CHNL_ID, -1);
+        }
+        List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
+        if (deptIds != null && !deptIds.isEmpty()) {
+            orCondDBFields.addCond(DutyDeptTableField.DEPT_ID, deptIds);
+        }else {
+            // 找不到符合条件的记录，构造一个不成立的条件
+            orCondDBFields.addCond(DutyDeptTableField.DEPT_ID, -1);
+        }
+        return orCondDBFields;
     }
 
 }

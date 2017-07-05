@@ -1,12 +1,17 @@
 package com.trs.gov.kpi.entity.responsedata;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.service.outer.UserApiService;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
  */
+@Slf4j
 public class UserDocMultiCounterResponse extends DocMultiCounterResponse {
 
     @Getter
@@ -15,10 +20,18 @@ public class UserDocMultiCounterResponse extends DocMultiCounterResponse {
     @Getter
     private String userName;
 
-    public void setUserId(Long userId) {
+    @Resource
+    UserApiService userApiService;
+
+    public void setUserId(Long userId){
         this.userId = userId;
-        // TODO wait for editcenter
-        this.userName = "UserId[" + userId + "]";
+        try {
+            if(userApiService.findUserById("", Math.toIntExact(userId)) != null) {
+                this.userName = userApiService.findUserById("", Math.toIntExact(userId)).getUserName();
+            }
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
     }
 
     @Override

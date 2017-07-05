@@ -256,6 +256,13 @@ public class QueryFilterHelperTest {
         assertEquals(3, orFields.getFields().size());
     }
 
+    @Test
+    public void toSetDeptFilter(){
+        PageDataRequestParam param = new PageDataRequestParam();
+        param.setSiteId(1);
+        param.setSearchField(null);
+        param.setSearchText("zhangsan");
+    }
     private class MockFreqPreset implements FrequencyPresetMapper {
 
         @Setter

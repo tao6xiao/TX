@@ -214,6 +214,16 @@ INSERT INTO `performanceindex` VALUES ('1', '11', '80.95', '2017-04-30 11:55:38'
 INSERT INTO `performanceindex` VALUES ('2', '11', '77.45', '2017-03-31 11:55:34');
 INSERT INTO `performanceindex` VALUES ('3', '11', '78.65', '2017-05-31 11:55:30');
 
+-- 设置模块，为栏目与部门关系表
+DROP TABLE IF EXISTS dutydept;
+CREATE TABLE dutydept (
+	chnlId INT NOT NULL COMMENT '栏目编号',
+  siteId INT NOT NULL COMMENT '站点编号',
+	deptId INT NOT NULL COMMENT '部门编号',
+  contain TINYINT(1) NOT NULL COMMENT '是否包含子栏目,0：不包含，1：包含',
+  PRIMARY KEY (chnlId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 

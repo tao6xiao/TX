@@ -17,7 +17,8 @@ public enum Table {
     WEB_PAGE("webpage", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "typeId", "chnlId",
             "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel")),
     FREQ_SETUP("frequencysetup", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "presetFeqId", "chnlId", "setTime", "isOpen")),
-    REPORT("report", Arrays.asList("id", "siteId", "title", "reportTime", "crTime", "type", "path"));
+    REPORT("report", Arrays.asList("id", "siteId", "title", "reportTime", "crTime", "type", "path")),
+    DUTY_DEPT("dutydept", Arrays.asList("chnlId", "siteId", "deptId", "contain"));
 
 
     // 表名

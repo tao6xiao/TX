@@ -23,6 +23,9 @@ public final class Constants {
     // 数据库字段名siteId
     public static final String DB_FIELD_SITE_ID = "siteId";
 
+    //检索字段chnlName
+    public static final String CHNL_NAME = "chnlName";
+
     //用于标识消息传输（接收和发送）的常量
     public static final String INPUT_CHANNEL = "input_channel";
     public static final String OUTPUT_CHANNEL = "output_channel";
