@@ -113,7 +113,7 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequest frequencySetupUpdateRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL)) {
+        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (frequencySetupUpdateRequest.getSiteId() == null || frequencySetupUpdateRequest.getId() == null || frequencySetupUpdateRequest.getPresetFeqId() == null ||
