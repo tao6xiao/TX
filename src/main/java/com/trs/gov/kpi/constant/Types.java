@@ -460,4 +460,72 @@ public final class Types {
 
     }
 
+    /**
+     * 网康-对网站检查的粒度
+     */
+    public enum WkAutoCheckType {
+        INVALID(-1, "未知类型"),
+        CHECK_CLOSE(0, "关闭"),
+        ACCORD_DAT(1, "按天"),
+        ACCORD_MONTH(2, "按月"),
+        ACCORD_YEAR(3, "按年");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        WkAutoCheckType(int value, String name) {
+
+            this.value = value;
+            this.name = name;
+        }
+
+        public static WkAutoCheckType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            WkAutoCheckType[] types = WkAutoCheckType.values();
+            for (WkAutoCheckType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+    }
+
+    /**
+     * 网康-网站检查类型
+     */
+    public enum WkCheckStatus{
+        INVALID(-1, "未知类型"),
+        WAIT_CHECK(0, "等待检查"),
+        CONDUCT_CHECK(2, "正在检查"),
+        DONE_CHECK(3, "检查完成");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        WkCheckStatus(int value, String name) {
+
+            this.value = value;
+            this.name = name;
+        }
+        public static WkCheckStatus valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            WkCheckStatus[] types = WkCheckStatus.values();
+            for (WkCheckStatus type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+    }
+
 }
