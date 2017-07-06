@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.controller;
 
-import com.sun.org.apache.xpath.internal.operations.String;
 import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.entity.DutyDept;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.DutyDeptRequest;
