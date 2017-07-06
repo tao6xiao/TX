@@ -1,17 +1,20 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsResolvedResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -31,8 +34,11 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
     @Resource
     IssueMapper issueMapper;
 
+    @Resource
+    DeptApiService deptApiService;
+
     @Override
-    public ApiPageData getPageDataIsResolvedList(PageDataRequestParam param, Boolean isResolved) {
+    public ApiPageData getPageDataIsResolvedList(PageDataRequestParam param, Boolean isResolved) throws RemoteException {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
@@ -62,12 +68,17 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
         return new ApiPageData(pager, issueIsResolvedResponseDetailList);
     }
 
-    private IssueIsResolvedResponse getIssueIsResolvedResponseDetailByIssue(Issue is) {
+    private IssueIsResolvedResponse getIssueIsResolvedResponseDetailByIssue(Issue is) throws RemoteException {
         IssueIsResolvedResponse issueIsResolvedResponseDetail = new IssueIsResolvedResponse();
         issueIsResolvedResponseDetail.setId(is.getId());
         issueIsResolvedResponseDetail.setIssueTypeName(is.getSubTypeName());
         issueIsResolvedResponseDetail.setDetail(is.getDetail());
         issueIsResolvedResponseDetail.setIssueTime(DateUtil.toString(is.getIssueTime()));
+        if(is.getDeptId() == null){
+            issueIsResolvedResponseDetail.setDeptName(Constants.EMPTY_STRING);
+        }else {
+            issueIsResolvedResponseDetail.setDeptName(deptApiService.findDeptById("", is.getDeptId()).getGName());
+        }
         return issueIsResolvedResponseDetail;
     }
 }

@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.controller;
 
-import com.sun.org.apache.xpath.internal.operations.String;
 import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.entity.DutyDept;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.DutyDeptRequest;
@@ -60,5 +58,24 @@ public class DutyDeptController {
     public ApiPageData get(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return deptService.get(param);
+    }
+
+    /**
+     * 删除对于站点栏目下设置的部门
+     * @param siteId
+     * @param chnlIds
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/dept", method = RequestMethod.DELETE)
+    @ResponseBody
+    public String delete(Integer siteId, Integer[] chnlIds) throws BizException{
+        if(siteId == null || chnlIds == null || chnlIds.length == 0){
+            log.error("Invalid parameter: 参数siteId存在null值或者数组chnlIds为null");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        ParamCheckUtil.integerArrayParamCheck(chnlIds);
+        deptService.delete(siteId, chnlIds);
+        return null;
     }
 }

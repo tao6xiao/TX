@@ -123,7 +123,7 @@ public class ParamCheckUtil {
     public static void integerArrayParamCheck(Integer[] array) throws BizException {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == null) {
-                log.error("Invalid parameter: Integer型数组中存在null值");
+                log.error("Invalid parameter: Integer型数组"+array+"中存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }

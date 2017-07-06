@@ -24,4 +24,6 @@ public class InfoError {
     private String errorDetail;//错误详细信息
 
     private Integer workOrderStatus;//工单状态
+
+    private Integer deptId;//部门编号
 }

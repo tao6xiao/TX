@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
@@ -29,7 +30,7 @@ public class IntegratedMonitorIsResolvedController {
      */
     @RequestMapping(value = "/handled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataIsResolved(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData getPageDataIsResolved(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
 
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
@@ -44,7 +45,7 @@ public class IntegratedMonitorIsResolvedController {
      */
     @RequestMapping(value = "/ignored", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataIsIgnored(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData getPageDataIsIgnored(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
 
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);

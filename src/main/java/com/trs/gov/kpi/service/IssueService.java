@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
@@ -48,7 +49,7 @@ public interface IssueService {
      * @param param
      * @return
      */
-    ApiPageData get(PageDataRequestParam param);
+    ApiPageData get(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 修改工单状态

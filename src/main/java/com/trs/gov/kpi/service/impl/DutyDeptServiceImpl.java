@@ -80,6 +80,13 @@ public class DutyDeptServiceImpl implements DutyDeptService {
         return new ApiPageData(pager, getResponseList(dutyDepts));
     }
 
+    @Override
+    public void delete(int siteId, Integer[] chnlIds) {
+        for (int i = 0; i < chnlIds.length; i++){
+            deptMapper.delete(siteId, chnlIds[i]);
+        }
+    }
+
     private List<DutyDeptResponse> getResponseList(List<DutyDept> dutyDepts) throws RemoteException {
         if (dutyDepts == null || dutyDepts.isEmpty()) {
             return new ArrayList<>();

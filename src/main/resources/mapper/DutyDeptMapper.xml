@@ -42,4 +42,9 @@
         contain = #{contain, jdbcType=TINYINT}
         WHERE chnlId = #{chnlId, jdbcType=INTEGER}
     </update>
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM dutydept
+        WHERE chnlId = #{chnlId, jdbcType=INTEGER}
+        AND siteId = #{siteId, jdbcType=INTEGER}
+    </delete>
 </mapper>

@@ -222,7 +222,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public ApiPageData get(PageDataRequestParam param) {
+    public ApiPageData get(PageDataRequestParam param) throws RemoteException {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
@@ -241,7 +241,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return new ApiPageData(pager, infoUpdateResponseList);
     }
 
-    private List<InfoUpdateResponse> toResponse(List<InfoUpdate> infoUpdateList) {
+    private List<InfoUpdateResponse> toResponse(List<InfoUpdate> infoUpdateList) throws RemoteException {
         List<InfoUpdateResponse> responseList = new ArrayList<>();
         if (infoUpdateList == null) {
             return responseList;
@@ -254,6 +254,11 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getIssueTime());
             infoUpdateResponse.setWorkOrderStatus(Status.WorkOrder.valueOf(infoUpdate.getWorkOrderStatus()).getName());
+            if(infoUpdate.getDeptId() == null){
+                infoUpdateResponse.setDeptName(Constants.EMPTY_STRING);
+            }else {
+                infoUpdateResponse.setDeptName(deptApiService.findDeptById("", infoUpdate.getDeptId()).getGName());
+            }
             if (infoUpdate.getSubTypeId() < WARNING_BEGIN_ID) {
                 infoUpdateResponse.setIssueTypeName(Types.InfoUpdateIssueType.valueOf(infoUpdate.getSubTypeId()).getName());
             } else {

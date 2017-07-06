@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.IssueService;
@@ -30,7 +31,7 @@ public class IntegratedMonitorIssueController extends IssueHandler{
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return issueService.get(param);
     }

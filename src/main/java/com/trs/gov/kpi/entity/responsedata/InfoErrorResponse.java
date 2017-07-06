@@ -22,4 +22,6 @@ public class InfoErrorResponse {
 
     private String workOrderStatus;
 
+    private String deptName;//部门名称
+
 }

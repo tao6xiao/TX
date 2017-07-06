@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 
@@ -25,7 +26,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    ApiPageData getIssueList(PageDataRequestParam param);
+    ApiPageData getIssueList(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 插入链接不可用的问题
@@ -64,7 +65,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    ApiPageData getServiceLinkList(PageDataRequestParam param);
+    ApiPageData getServiceLinkList(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询已解决的问题数量

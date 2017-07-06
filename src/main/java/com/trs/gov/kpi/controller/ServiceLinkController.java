@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
@@ -30,7 +31,7 @@ public class ServiceLinkController extends IssueHandler {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getServiceLinkList(@ModelAttribute PageDataRequestParam requestParam) throws BizException {
+    public ApiPageData getServiceLinkList(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
 
         ParamCheckUtil.paramCheck(requestParam);
         return linkAvailabilityService.getServiceLinkList(requestParam);

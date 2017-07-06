@@ -4,6 +4,7 @@ import com.trs.gov.kpi.entity.DutyDept;
 import com.trs.gov.kpi.entity.dao.DBRow;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -44,4 +45,12 @@ public interface DutyDeptMapper {
      * @return
      */
     int update(DutyDept dutyDept);
+
+    /**
+     * 删除对应站点和栏目下设置的部门
+     *
+     * @param siteId
+     * @param chnlId
+     */
+    int delete(@Param("siteId") int siteId, @Param("chnlId") int chnlId);
 }

@@ -38,4 +38,11 @@ public interface DutyDeptService {
      * @return
      */
     ApiPageData get(PageDataRequestParam param) throws RemoteException;
+
+    /**
+     * 删除对应站点和栏目下设置的部门
+     * @param siteId
+     * @param chnlIds
+     */
+    void delete(int siteId, Integer[] chnlIds);
 }
