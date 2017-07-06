@@ -370,4 +370,26 @@ public class QueryFilterHelper {
         return DateUtil.toString(calendar.getTime());
     }
 
+    /**
+     *  网康查询的filter处理
+     *
+     * @param wkSiteRequest
+     * @return
+     */
+    public static QueryFilter toWkFilter(WkSiteManagementRequest wkSiteRequest){
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+
+        if (wkSiteRequest.getSearchField().equalsIgnoreCase("siteName")){
+            filter.addCond("siteName", "%" + wkSiteRequest.getSearchText() + "%").setLike(true);
+        }
+
+        // sort field
+        if (!StringUtil.isEmpty(wkSiteRequest.getSortFields())) {
+            String[] sortFields = wkSiteRequest.getSortFields().trim().split(";");
+            addSort(filter, sortFields);
+        }
+
+        return filter;
+    }
+
 }

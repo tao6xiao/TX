@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkSiteManagementMapper">
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.SiteManagement">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="siteName" jdbcType="VARCHAR" property="siteName" />
+        <result column="siteIndexUrl" jdbcType="VARCHAR" property="siteIndexUrl" />
+        <result column="autoCheckType" jdbcType="INTEGER" property="autoCheckType" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+        <result column="checkStatus" jdbcType="INTEGER" property="checkStatus" />
+        <result column="isDel" jdbcType="INTEGER" property="isDel" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, siteId, siteName, siteIndexUrl, autoCheckType, checkTime, checkStatus, isDel
+    </sql>
+
+    <select id="selectSiteManagementByStieId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wksitemanagement
+        where siteId = #{siteId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectAllSiteList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wksitemanagement
+        where 1 = 1
+        <include refid="all_conditions_sql"/>
+    </select>
+
+    <select id="selectAllSiteCount" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+        select
+        count(1)
+        from wksitemanagement
+        where 1 = 1
+        <include refid="all_conditions_sql"/>
+    </select>
+
+
+    <update id="updateSiteManagement" parameterType="com.trs.gov.kpi.entity.wangkang.SiteManagement">
+        update wksitemanagement
+        <set>
+            <if test="siteName != null">
+                siteName = #{siteName,jdbcType=VARCHAR},
+            </if>
+            <if test="siteIndexUrl != null">
+                siteIndexUrl = #{siteIndexUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="autoCheckType != null">
+                autoCheckType = #{autoCheckType,jdbcType=INTEGER},
+            </if>
+            <if test="checkTime != null">
+                checkTime = #{checkTime,jdbcType=DATETIME},
+            </if>
+            <if test="checkStatus != null">
+                checkStatus = #{checkStatus,jdbcType=INTEGER},
+            </if>
+        </set>
+        where siteName = #{siteName,jdbcType=VARCHAR}
+    </update>
+
+    <update id="deleteSiteBySiteIds" parameterType="java.util.List">
+        UPDATE wksitemanagement
+        SET isDel = 1
+        WHERE siteId IN
+        <foreach collection="siteIds" item="item" open="(" close=")" separator=",">
+            ${item}
+        </foreach>
+    </update>
+
+    <sql id="all_conditions_sql">
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.where_sql"/>
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.group_sql"/>
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.order_sql"/>
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.page_sql"/>
+    </sql>
+
+
+</mapper>

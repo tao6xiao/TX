@@ -24,6 +24,9 @@ public class PageIssue {
     Integer chnlId;//所在栏目编号
 
     @DBField
+    String chnlName;//所在栏目名称
+
+    @DBField
     String pageLink;//网页链接
 
     @DBField

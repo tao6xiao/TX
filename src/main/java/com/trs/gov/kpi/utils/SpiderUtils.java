@@ -151,9 +151,12 @@ public class SpiderUtils {
                 unavailableUrls.add(request.getUrl().intern());
             } else {
 
+                String[] urlSize = request.getUrl().split("/");
+                String chnlName = urlSize[3];
+
                 if(useTime > THRESHOLD_MAX_REPLY_SPEED){
                     replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
-                            0,
+                            chnlName,
                             request.getUrl().intern(),
                             useTime,
                             Long.valueOf(result.getRawText().getBytes().length),
@@ -161,17 +164,16 @@ public class SpiderUtils {
                 }
 
                 if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
-                    biggerPage.add(new PageSpace(0,
+                    biggerPage.add(new PageSpace(chnlName,
                             request.getUrl().intern(),
                             useTime,
                             Long.valueOf(result.getRawText().getBytes().length),
                             new Date()));
                 }
 
-                String[] urlSize = request.getUrl().split("/");
                 if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
                     biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
-                            0,
+                            chnlName,
                             request.getUrl().intern(),
                             Long.valueOf(request.getUrl().length()),
                             Long.valueOf(result.getRawText().getBytes().length),
@@ -181,7 +183,7 @@ public class SpiderUtils {
                 int deepSize = calcDeep(request.getUrl(), 100, 1);
                 if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
                     pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
-                            0,
+                            chnlName,
                             request.getUrl().intern(),
                             deepSize,
                             Long.valueOf(result.getRawText().getBytes().length),

@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 页面深度
+ * 过深页面
  * <p>
  * Created by ranwei on 2017/6/6.
  */
@@ -24,9 +24,9 @@ public class PageDepth extends PageIssue {
     @DBField("pageSpace")
     private Long space;//页面大小
 
-    public PageDepth(Integer typeId, Integer chnlId, String pageLink, Integer depth, Long space, Date checkTime) {
+    public PageDepth(Integer typeId, String chnlName, String pageLink, Integer depth, Long space, Date checkTime) {
         this.typeId = typeId;
-        this.chnlId = chnlId;
+        this.chnlName = chnlName;
         this.pageLink = pageLink;
         this.depth = depth;
         this.space = space;

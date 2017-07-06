@@ -27,9 +27,9 @@ public class UrlLength extends PageIssue {
     public UrlLength() {
     }
 
-    public UrlLength(Integer typeId, Integer chnlId, String pageLink, Long length, Long space, Date checkTime) {
+    public UrlLength(Integer typeId, String chnlName, String pageLink, Long length, Long space, Date checkTime) {
         this.typeId = typeId;
-        this.chnlId = chnlId;
+        this.chnlName = chnlName;
         this.pageLink = pageLink;
         this.length = length;
         this.space = space;

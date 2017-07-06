@@ -24,9 +24,9 @@ public class ReplySpeed extends PageIssue {
     @DBField("pageSpace")
     private Long space;//页面大小
 
-    public ReplySpeed(Integer typeId, Integer chnlId, String pageLink, Long speed, Long space, Date checkTime) {
+    public ReplySpeed(Integer typeId, String chnlName, String pageLink, Long speed, Long space, Date checkTime) {
         this.typeId = typeId;
-        this.chnlId = chnlId;
+        this.chnlName = chnlName;
         this.pageLink = pageLink;
         this.speed = speed;
         this.space = space;

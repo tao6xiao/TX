@@ -27,8 +27,8 @@ public class PageSpace extends PageIssue {
     public PageSpace() {
     }
 
-    public PageSpace(Integer chnlId, String pageLink, Long speed, Long space, Date checkTime) {
-        this.chnlId = chnlId;
+    public PageSpace(String chnlName, String pageLink, Long speed, Long space, Date checkTime) {
+        this.chnlName = chnlName;
         this.pageLink = pageLink;
         this.speed = speed;
         this.space = space;

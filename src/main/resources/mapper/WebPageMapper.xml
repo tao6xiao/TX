@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.WebPageMapper">
+    <!-- 响应速度：实体/数据关系字段映射 -->
     <resultMap id="ReplySpeedMap" type="com.trs.gov.kpi.entity.ReplySpeed">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="chnlName" jdbcType="VARCHAR" property="chnlName"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="replySpeed" jdbcType="BIGINT" property="speed"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
+    <!-- 过大页面：实体/数据关系字段映射 -->
     <resultMap id="PageSpaceMap" type="com.trs.gov.kpi.entity.PageSpace">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="chnlName" jdbcType="VARCHAR" property="chnlName"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="replySpeed" jdbcType="BIGINT" property="speed"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
+    <!-- 过深页面：实体/数据关系字段映射 -->
     <resultMap id="PageDepthMap" type="com.trs.gov.kpi.entity.PageDepth">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="chnlName" jdbcType="VARCHAR" property="chnlName"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="pageDepth" jdbcType="INTEGER" property="depth"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
+    <!-- 冗余代码：实体/数据关系字段映射 -->
     <resultMap id="RepeatCodeMap" type="com.trs.gov.kpi.entity.RepeatCode">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
@@ -37,9 +44,11 @@
         <result column="checkTime" jdbcType="DATE" property="checkTime"/>
     </resultMap>
 
+    <!-- 过长URL：实体/数据关系字段映射 -->
     <resultMap id="UrlLengthMap" type="com.trs.gov.kpi.entity.UrlLength">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
+        <result column="chnlName" jdbcType="VARCHAR" property="chnlName"/>
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="urlLength" jdbcType="BIGINT" property="length"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
@@ -208,5 +217,35 @@
         SELECT min(checkTime)
         FROM webpage
     </select>
+
+    <update id="updatePageSpace" parameterType="com.trs.gov.kpi.entity.PageSpace">
+        update webpage
+        <set>
+            <if test="chnlId != null">
+                chnlId = #{chnlId,jdbcType=VARCHAR},
+            </if>
+            <if test="chnlName != null">
+                chnlName = #{chnlName,jdbcType=INTEGER},
+            </if>
+            <if test="pageLink != null">
+                pageLink = #{pageLink,jdbcType=VARCHAR},
+            </if>
+            <if test="replySpeed != null">
+                replySpeed = #{replySpeed,jdbcType=INTEGER},
+            </if>
+            <if test="pageSpace != null">
+                pageSpace = #{pageSpace,jdbcType=VARCHAR},
+            </if>
+            <if test="checkTime != null">
+                checkTime = #{checkTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="daleteRepeatPageSpace" parameterType="com.trs.gov.kpi.entity.PageSpace">
+        delete from webpage
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
 
 </mapper>

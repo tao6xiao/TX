@@ -13,6 +13,8 @@ public class WebpageTableField {
     public static final String SITE_ID = "siteId";
     public static final String TYPE_ID = "typeId";
     public static final String CHNL_ID = "chnlId";
+    public static final String CHNL_NAME = "chnlName";
+    public static final String PAGE_SPACE ="pageSpace";
     public static final String PAGE_LINK = "pageLink";
     public static final String REPLY_SPEED = "replySpeed";
     public static final String PAGE_DEPTH = "pageDepth";
