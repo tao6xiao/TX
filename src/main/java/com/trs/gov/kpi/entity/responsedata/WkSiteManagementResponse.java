@@ -1,18 +1,14 @@
-package com.trs.gov.kpi.entity.wangkang;
+package com.trs.gov.kpi.entity.responsedata;
 
 import lombok.Data;
 
 import java.util.Date;
 
 /**
- * 网康---网站管理
- *
- * Created by li.hao on 2017/7/5.
+ * Created by li.hao on 2017/7/6.
  */
 @Data
-public class SiteManagement {
-
-    private Integer id;
+public class WkSiteManagementResponse {
 
     private Integer siteId;//网站编号
 
@@ -25,6 +21,4 @@ public class SiteManagement {
     private Date checkTime;//检查时间
 
     private Integer checkStatus;//检查完成状态
-
-    private Integer isDel;//是否删除
 }

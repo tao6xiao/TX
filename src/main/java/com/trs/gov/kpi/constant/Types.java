@@ -500,7 +500,8 @@ public final class Types {
      */
     public enum WkCheckStatus{
         INVALID(-1, "未知类型"),
-        WAIT_CHECK(0, "等待检查"),
+        NOT_SUMBIT_CHECK(0, "没有提交检查"),
+        WAIT_CHECK(1, "等待检查"),
         CONDUCT_CHECK(2, "正在检查"),
         DONE_CHECK(3, "检查完成");
 
