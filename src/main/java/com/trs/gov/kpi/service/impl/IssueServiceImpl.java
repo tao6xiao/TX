@@ -1,17 +1,20 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueIsNotResolvedResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -31,12 +34,20 @@ public class IssueServiceImpl implements IssueService {
     @Resource
     private IssueMapper issueMapper;
 
-    private IssueIsNotResolvedResponse toNotResolvedResponse(Issue is) {
+    @Resource
+    private DeptApiService deptApiService;
+
+    private IssueIsNotResolvedResponse toNotResolvedResponse(Issue is) throws RemoteException {
         IssueIsNotResolvedResponse issueIsNotResolvedResponse = new IssueIsNotResolvedResponse();
         issueIsNotResolvedResponse.setId(is.getId());
         issueIsNotResolvedResponse.setIssueTypeName(is.getSubTypeName());
         issueIsNotResolvedResponse.setDetail(is.getDetail());
         issueIsNotResolvedResponse.setIssueTime(DateUtil.toString(is.getIssueTime()));
+        if(is.getDeptId() == null){
+            issueIsNotResolvedResponse.setDeptName(Constants.EMPTY_STRING);
+        }else {
+            issueIsNotResolvedResponse.setDeptName(deptApiService.findDeptById("", is.getDeptId()).getGName());
+        }
         return issueIsNotResolvedResponse;
     }
 
@@ -61,7 +72,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public ApiPageData get(PageDataRequestParam param) {
+    public ApiPageData get(PageDataRequestParam param) throws RemoteException {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
@@ -82,7 +93,7 @@ public class IssueServiceImpl implements IssueService {
         return new ApiPageData(pager, responseByIssueList);
     }
 
-    private List<IssueIsNotResolvedResponse> toResponse(List<Issue> issueList) {
+    private List<IssueIsNotResolvedResponse> toResponse(List<Issue> issueList) throws RemoteException {
         List<Issue> fullIssueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueIsNotResolvedResponse> issueIsNotResolvedResponseList = new ArrayList<>();
         for (Issue is : fullIssueList) {

@@ -24,4 +24,6 @@ public class LinkAvailabilityResponse {
 
     private Date checkTime;
 
+    private String deptName;//部门名称
+
 }

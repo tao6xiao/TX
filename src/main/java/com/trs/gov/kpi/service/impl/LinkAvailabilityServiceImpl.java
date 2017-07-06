@@ -1,18 +1,17 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.IssueIndicator;
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -33,6 +32,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Resource
     private IssueMapper issueMapper;
+
+    @Resource
+    private DeptApiService deptApiService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) {
@@ -97,7 +99,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public ApiPageData getIssueList(PageDataRequestParam param) {
+    public ApiPageData getIssueList(PageDataRequestParam param) throws RemoteException {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
@@ -118,7 +120,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public ApiPageData getServiceLinkList(PageDataRequestParam param) {
+    public ApiPageData getServiceLinkList(PageDataRequestParam param) throws RemoteException {
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param, Types.IssueType.SERVICE_LINK_AVAILABLE);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE.value);
@@ -134,7 +136,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         return new ApiPageData(pager, toResponseList(linkAvailabilitieList));
     }
 
-    private List<LinkAvailabilityResponse> toResponseList(List<LinkAvailability> linkAvailabilitieList) {
+    private List<LinkAvailabilityResponse> toResponseList(List<LinkAvailability> linkAvailabilitieList) throws RemoteException {
         List<LinkAvailabilityResponse> list = new ArrayList<>();
         for (LinkAvailability link : linkAvailabilitieList) {
             LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
@@ -143,6 +145,11 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             linkAvailabilityResponse.setInvalidLink(link.getInvalidLink());
             linkAvailabilityResponse.setSnapshot(link.getSnapshot());
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());
+            if(link.getDeptId() == null){
+                linkAvailabilityResponse.setDeptName(Constants.EMPTY_STRING);
+            }else {
+                linkAvailabilityResponse.setDeptName(deptApiService.findDeptById("", link.getDeptId()).getGName());
+            }
             list.add(linkAvailabilityResponse);
         }
         return list;

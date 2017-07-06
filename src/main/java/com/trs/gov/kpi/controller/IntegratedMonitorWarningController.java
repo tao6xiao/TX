@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
@@ -30,7 +31,7 @@ public class IntegratedMonitorWarningController extends IssueHandler{
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException {
+    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return integratedMonitorWarningService.get(param);
     }

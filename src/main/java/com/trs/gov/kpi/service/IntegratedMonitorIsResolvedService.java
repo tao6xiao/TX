@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
@@ -17,6 +18,6 @@ public interface IntegratedMonitorIsResolvedService {
      * @param isResolved
      * @return
      */
-    ApiPageData getPageDataIsResolvedList(PageDataRequestParam param, Boolean isResolved);
+    ApiPageData getPageDataIsResolvedList(PageDataRequestParam param, Boolean isResolved) throws RemoteException;
 
 }

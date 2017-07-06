@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.IssueIndicator;
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
@@ -98,7 +95,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
     @Override
-    public ApiPageData getInfoErrorList(PageDataRequestParam param) {
+    public ApiPageData getInfoErrorList(PageDataRequestParam param) throws RemoteException {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
@@ -122,6 +119,11 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).getName());
             infoErrorResponse.setSnapshot(infoError.getSnapshot());
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
+            if(infoError.getDeptId() == null){
+                infoErrorResponse.setDeptName(Constants.EMPTY_STRING);
+            }else {
+                infoErrorResponse.setDeptName(deptApiService.findDeptById("", infoError.getDeptId()).getGName());
+            }
             if (infoError.getErrorDetail() != null) {
                 infoErrorResponse.setErrorDetail(infoError.getErrorDetail());
                 infoErrorResponse.setWorkOrderStatus(Status.WorkOrder.valueOf(infoError.getWorkOrderStatus()).getName());

@@ -44,6 +44,10 @@ public class InfoUpdate {
     @DBField("customer2")
     private Integer chnlId;
 
+    @DBField
     private Integer workOrderStatus;
+
+    @DBField
+    private Integer deptId;
 
 }

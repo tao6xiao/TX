@@ -26,6 +26,7 @@
     <result column="isDel" jdbcType="BIT" property="isDel" />
     <result column="customer2" property="chnlId"/>
     <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
+    <result column="deptId" jdbcType="INTEGER" property="deptId" />
   </resultMap>
 
   <resultMap id="InfoUpdateOrderMap" type="com.trs.gov.kpi.entity.InfoUpdateOrder">
@@ -50,6 +51,7 @@
     <result column="issueTime" property="checkTime"/>
     <result column="customer1" property="errorDetail"/>
     <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
+    <result column="deptId" jdbcType="INTEGER" property="deptId" />
   </resultMap>
 
   <resultMap id="InfoErrorOrderMap" type="com.trs.gov.kpi.entity.InfoErrorOrder">
@@ -73,6 +75,7 @@
     <result column="detail" property="invalidLink"/>
     <result column="customer1" property="snapshot"/>
     <result column="issueTime" property="checkTime"/>
+    <result column="deptId" jdbcType="INTEGER" property="deptId" />
   </resultMap>
 
   <sql id="Base_Column_List">

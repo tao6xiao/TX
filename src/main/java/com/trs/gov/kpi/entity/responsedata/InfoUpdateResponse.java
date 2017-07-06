@@ -34,4 +34,6 @@ public class InfoUpdateResponse {
 
     private String workOrderStatus;
 
+    private String deptName;//部门名称
+
 }

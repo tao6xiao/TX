@@ -38,7 +38,7 @@ public interface InfoErrorService {
      * @param param
      * @return
      */
-    ApiPageData getInfoErrorList(PageDataRequestParam param);
+    ApiPageData getInfoErrorList(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询信息错误的工单
