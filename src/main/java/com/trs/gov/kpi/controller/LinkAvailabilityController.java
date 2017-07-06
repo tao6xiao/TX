@@ -1,9 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 
-import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.entity.exception.BizException;
-import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.History;
@@ -39,7 +37,7 @@ public class LinkAvailabilityController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
-    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+    public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.paramCheck(param);
         return linkAvailabilityService.getIssueCount(param);
