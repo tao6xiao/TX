@@ -5,7 +5,8 @@ package com.trs.gov.kpi.constant;
  */
 public final class Constants {
 
-    private Constants() {}
+    private Constants() {
+    }
 
     public static final String INVALID_PARAMETER = "参数不合法！";
 
@@ -22,6 +23,9 @@ public final class Constants {
 
     // 数据库字段名siteId
     public static final String DB_FIELD_SITE_ID = "siteId";
+
+    // 数据库字段名siteId
+    public static final String DB_FIELD_CHNL_ID = "chnlId";
 
     //检索字段chnlName
     public static final String CHNL_NAME = "chnlName";
