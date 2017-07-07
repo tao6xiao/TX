@@ -24,7 +24,6 @@ public class IDSActor extends StdHttpSessionBasedActor{
      14
      V5.0 协作应用集成手册
 
-
      * @see StdHttpSessionBasedActor#checkLocalLogin(javax.servlet.http.HttpSession)
      */
     public boolean checkLocalLogin(HttpSession session) throws ActorException {
@@ -41,18 +40,11 @@ public class IDSActor extends StdHttpSessionBasedActor{
      * @see StdHttpSessionBasedActor#loadLoginUser(javax.servlet.http.HttpServletRequest,
      *      com.trs.idm.client.actor.SSOUser)
      */
-    public void loadLoginUser(HttpServletRequest request, SSOUser user) throws ActorException {
+    public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) throws ActorException {
         HttpSession session = request.getSession();
-        session.setAttribute(LOGIN_FLAG, user.getUserName());
-        // 示例： 获得 SSOUser 的所有属性，将其输出到控制台
-        java.util.Set names = user.propertyNames();
-        for (java.util.Iterator iterator = names.iterator(); iterator.hasNext();) {
-            String name = (String) iterator.next();
-            System.out.println("name: " + name);
-            System.out.println("value: " + user.getProperty(name));
-        }
-
-        LOG.info("loadLoginUser, user groups info:" + user.getSSOGroups());
+        session.setAttribute(LOGIN_FLAG, loginUser.getUserName());
+        ContextHelper.initContext(loginUser);
+        LOG.info("loadLoginUser[" + loginUser.getUserName() + "], user groups info:" + loginUser.getSSOGroups());
     }
     /**
      * 完成 Demo 应用自己的退出登录的逻辑.
@@ -99,16 +91,12 @@ public class IDSActor extends StdHttpSessionBasedActor{
 
     @Override
     public String extractUserPwd(HttpServletRequest httpServletRequest) throws ActorException {
-        return "linwei";
+        return null;
     }
 
     @Override
     public String extractUserName(HttpServletRequest httpServletRequest) throws ActorException {
-        return "lin.wei";
+        return null;
     }
 
-    @Override
-    public String extractVerificationCode(HttpServletRequest httpServletRequest) throws ActorException {
-        return "1234";
-    }
 }

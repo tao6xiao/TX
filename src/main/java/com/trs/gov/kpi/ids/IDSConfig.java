@@ -23,7 +23,7 @@ public class IDSConfig {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new GeneralSSOFilter());
         registration.addUrlPatterns("/*");
-        registration.setOrder(Integer.MAX_VALUE-1);
+        registration.setOrder(Integer.MAX_VALUE);
         return registration;
     }
 
