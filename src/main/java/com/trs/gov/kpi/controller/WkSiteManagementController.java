@@ -36,8 +36,8 @@ public class WkSiteManagementController {
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
     public Object addWkSite(@ModelAttribute SiteManagement siteManagement) throws BizException {
-        if (siteManagement.getSiteName() == null || siteManagement.getAutoCheckType() == null || siteManagement.getSiteIndexUrl() == null){
-            log.error("Invalid parameter: 参数siteManagement对象中siteName、autoCheckType、SiteIndexUrl 三个属性中至少有一个存在null值");
+        if (siteManagement.getSiteName() == null || siteManagement.getAutoCheckType() == null || siteManagement.getSiteIndexUrl() == null || siteManagement.getCompanyAddress() == null){
+            log.error("Invalid parameter: 参数siteManagement对象中siteName、autoCheckType、SiteIndexUr、companyAddress 四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
 

@@ -3,6 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -48,6 +49,6 @@ public interface WkSiteManagementMapper {
      *
      * @param siteIds
      */
-    void deleteSiteBySiteIds(List<Integer> siteIds);
+    void deleteSiteBySiteIds(@Param("siteIds") List<Integer> siteIds);
 
 }

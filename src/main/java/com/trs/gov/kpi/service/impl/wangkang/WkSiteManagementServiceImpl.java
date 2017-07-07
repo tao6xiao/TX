@@ -82,9 +82,11 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
             wkSiteManagementResponse.setSiteId(siteManagement.getSiteId());
             wkSiteManagementResponse.setSiteName(siteManagement.getSiteName());
             wkSiteManagementResponse.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
+            wkSiteManagementResponse.setCompanyAddress(siteManagement.getCompanyAddress());
             wkSiteManagementResponse.setAutoCheckType(siteManagement.getAutoCheckType());
-            wkSiteManagementResponse.setCheckTime(siteManagement.getCheckTime());
             wkSiteManagementResponse.setCheckStatus(siteManagement.getCheckStatus());
+
+            wkSiteManagementResponse.setCheckTime(siteManagement.getCheckTime());
 
             wkSiteResponseList.add(wkSiteManagementResponse);
         }
