@@ -45,7 +45,7 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null) {
@@ -65,7 +65,7 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_MONITORSETUP_UPDATEADMIN)) {
+        if (!authorityService.hasRight(monitorSiteDeal.getSiteId(), null, Authority.KPIWEB_MONITORSETUP_UPDATEADMIN)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getGuarderId() == null) {
