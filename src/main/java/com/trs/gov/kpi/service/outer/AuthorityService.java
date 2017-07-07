@@ -8,7 +8,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 public interface AuthorityService {
 
     /**
-     * 权限判断
+     * 根据oprkeys判断权限
      *
      * @param siteId
      * @param channelId

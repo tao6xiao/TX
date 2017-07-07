@@ -42,6 +42,7 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroups", method = RequestMethod.GET)
     @ResponseBody
     public ChnlGroupsResponse[] getChnlGroups() throws RemoteException, BizException {
+        //TODO 
         if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
@@ -62,7 +63,7 @@ public class ChnlGroupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, Integer pageSize, Integer pageIndex) throws BizException,
             RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null || groupId == null) {
@@ -86,7 +87,7 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.POST)
     @ResponseBody
     public Object addChnlGroupChnls(@RequestBody ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE)) {
+        if (!authorityService.hasRight(chnlGroupChnlsAddRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (chnlGroupChnlsAddRequest.getSiteId() == null || chnlGroupChnlsAddRequest.getGroupId() == null || chnlGroupChnlsAddRequest.getChnlIds() == null || chnlGroupChnlsAddRequest
@@ -108,7 +109,7 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.PUT)
     @ResponseBody
     public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL)) {
+        if (!authorityService.hasRight(chnlGroupChnlRequestDetail.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null || chnlGroupChnlRequestDetail
@@ -132,7 +133,7 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteChnlGroupChnl(@RequestParam Integer siteId, @RequestParam Integer id) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null || id == null) {

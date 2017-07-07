@@ -31,7 +31,7 @@
             <index>453</index>
             <type>kpiweb.operate</type>
         </operation>
-        <operation name="kpiweb.operate.delete">
+        <operation name="kpiweb.operate.updatedept">
             <disp-name>更新所属部门</disp-name>
             <desc>绩效考核-->批量操作-->更新所属部门</desc>
             <index>454</index>

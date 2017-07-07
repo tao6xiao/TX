@@ -37,7 +37,7 @@ public class DefaultUpdateFreqController {
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.GET)
     @ResponseBody
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null) {
@@ -62,7 +62,7 @@ public class DefaultUpdateFreqController {
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ)) {
+        if (!authorityService.hasRight(defaultUpdateFreq.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null) {

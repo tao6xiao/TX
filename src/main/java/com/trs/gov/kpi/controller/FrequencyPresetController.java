@@ -49,7 +49,7 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null) {
@@ -74,7 +74,7 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.POST)
     @ResponseBody
     public Object addFrequencyPreset(@ModelAttribute FrequencyPresetRequest request) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_ADDPREFREQ)) {
+        if (!authorityService.hasRight(request.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDPREFREQ)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (request.getSiteId() == null || request.getUpdateFreq() == null || request.getAlertFreq() == null) {
@@ -103,7 +103,7 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object updateFrequencyPresetBySiteIdAndId(@ModelAttribute FrequencyPreset preset) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ)) {
+        if (!authorityService.hasRight(preset.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (preset.getSiteId() == null || preset.getId() == null
@@ -134,7 +134,7 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteFrequencyPreset(@RequestParam("siteId") Integer siteId, @RequestParam("id") Integer id) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null || id == null) {
