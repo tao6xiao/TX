@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.IssueService;
@@ -19,8 +20,6 @@ public class IssueHandler {
     @Resource
     private IssueService issueService;
 
-    @Resource
-    private AuthorityService authorityService;
 
     /**
      * 批量处理
@@ -29,11 +28,8 @@ public class IssueHandler {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/handle", method = RequestMethod.POST)
+    @RequestMapping(value = UrlPath.HANDLE_PATH, method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_HANDLE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         issueService.handIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
@@ -45,11 +41,8 @@ public class IssueHandler {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/ignore", method = RequestMethod.POST)
+    @RequestMapping(value = UrlPath.IGNORE_PATH, method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_IGNORE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
         return null;
     }
@@ -61,11 +54,8 @@ public class IssueHandler {
      * @param ids
      * @return
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    @RequestMapping(value = UrlPath.DELETE_PATH, method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_DELETE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         issueService.delIssueByIds(siteId, Arrays.asList(ids));
         return null;
     }
@@ -78,11 +68,8 @@ public class IssueHandler {
      * @param deptId
      * @return
      */
-    @RequestMapping(value = "/updatedept", method = RequestMethod.POST)
+    @RequestMapping(value = UrlPath.UPDATE_DEPT_PATH, method = RequestMethod.POST)
     public String updateDeptByIds(int siteId, Integer[] ids, int deptId) throws RemoteException, BizException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_OPERATE_UPDATEDEPT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
         return null;
     }

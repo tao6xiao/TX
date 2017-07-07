@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -18,7 +19,7 @@ import java.text.ParseException;
  * Created by he.lang on 2017/5/18.
  */
 @RestController
-@RequestMapping("/gov/kpi/alert")
+@RequestMapping(UrlPath.INTEGRATED_MONITOR_WARNING_PATH)
 public class IntegratedMonitorWarningController extends IssueHandler {
 
     @Resource

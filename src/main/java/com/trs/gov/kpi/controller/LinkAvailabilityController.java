@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -23,7 +24,7 @@ import java.util.List;
  * 链接可用性问题
  */
 @RestController
-@RequestMapping("/gov/kpi/available/issue")
+@RequestMapping(UrlPath.LINK_AVAILABILITY_PATH)
 public class LinkAvailabilityController extends IssueHandler {
 
     @Resource

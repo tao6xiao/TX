@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -19,7 +20,7 @@ import javax.annotation.Resource;
  * 综合实时监测：待解决问题Controller
  */
 @RestController
-@RequestMapping("/gov/kpi/issue")
+@RequestMapping(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH)
 public class IntegratedMonitorIssueController extends IssueHandler {
 
     @Resource
