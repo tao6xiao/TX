@@ -171,74 +171,86 @@
 
         <operation name="kpiweb.indexsetup.search">
             <disp-name>查询</disp-name>
-            <desc>绩效考核-->监测设置-->查询</desc>
+            <desc>绩效考核-->指标参数设置-->查询</desc>
             <index>473</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.addprefreq">
             <disp-name>增加预设频率</disp-name>
-            <desc>绩效考核-->监测设置-->增加预设频率</desc>
+            <desc>绩效考核-->指标参数设置-->增加预设频率</desc>
             <index>474</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updateprefreq">
             <disp-name>更新预设频率</disp-name>
-            <desc>绩效考核-->监测设置-->更新预设频率</desc>
+            <desc>绩效考核-->指标参数设置-->更新预设频率</desc>
             <index>475</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.deleteprefreq">
             <disp-name>删除预设频率</disp-name>
-            <desc>绩效考核-->监测设置-->删除预设频率</desc>
+            <desc>绩效考核-->指标参数设置-->删除预设频率</desc>
             <index>476</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updatedemandfreq">
             <disp-name>修改按需更新频率</disp-name>
-            <desc>绩效考核-->监测设置-->修改按需更新频率</desc>
+            <desc>绩效考核-->指标参数设置-->修改按需更新频率</desc>
             <index>477</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.addmonitorchnl">
             <disp-name>添加监测栏目</disp-name>
-            <desc>绩效考核-->监测设置-->添加监测栏目</desc>
+            <desc>绩效考核-->指标参数设置-->添加监测栏目</desc>
             <index>478</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updatemonitorchnl">
             <disp-name>修改监测栏目的频率</disp-name>
-            <desc>绩效考核-->监测设置-->修改监测栏目的频率</desc>
+            <desc>绩效考核-->指标参数设置-->修改监测栏目的频率</desc>
             <index>479</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.delmonitorchnl">
             <disp-name>删除监测栏目</disp-name>
-            <desc>绩效考核-->监测设置-->删除监测栏目</desc>
+            <desc>绩效考核-->指标参数设置-->删除监测栏目</desc>
             <index>480</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.enabledmonitorchnl">
             <disp-name>栏目监测是否启用</disp-name>
-            <desc>绩效考核-->监测设置-->栏目监测是否启用</desc>
+            <desc>绩效考核-->指标参数设置-->栏目监测是否启用</desc>
             <index>481</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.addchnltotype">
             <disp-name>栏目分配到所属分类</disp-name>
-            <desc>绩效考核-->监测设置-->栏目分配到所属分类</desc>
+            <desc>绩效考核-->指标参数设置-->栏目分配到所属分类</desc>
             <index>482</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updatetypeofchnl">
             <disp-name>修改栏目所属分类</disp-name>
-            <desc>绩效考核-->监测设置-->修改栏目所属分类</desc>
+            <desc>绩效考核-->指标参数设置-->修改栏目所属分类</desc>
             <index>483</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.delchnlfromtype">
             <disp-name>从分类中移除栏目</disp-name>
-            <desc>绩效考核-->监测设置-->从分类中移除栏目</desc>
+            <desc>绩效考核-->指标参数设置-->从分类中移除栏目</desc>
             <index>484</index>
+            <type>kpiweb.indexsetup</type>
+        </operation>
+        <operation name="kpiweb.indexsetup.dutydept">
+            <disp-name>为栏目分配责任部门</disp-name>
+            <desc>绩效考核-->指标参数设置-->为栏目分配责任部门</desc>
+            <index>487</index>
+            <type>kpiweb.indexsetup</type>
+        </operation>
+        <operation name="kpiweb.indexsetup.deldutydept">
+            <disp-name>删除责任部门</disp-name>
+            <desc>绩效考核-->指标参数设置-->删除责任部门</desc>
+            <index>488</index>
             <type>kpiweb.indexsetup</type>
         </operation>
 

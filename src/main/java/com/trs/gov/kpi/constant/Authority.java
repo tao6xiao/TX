@@ -8,6 +8,7 @@ public class Authority {
 
     private Authority() {
     }
+
     public static final String NO_AUTHORITY = "权限不合法";
 
     //绩效考核
@@ -91,6 +92,8 @@ public class Authority {
     public static final String KPIWEB_INDEXSETUP_ADDCHNLTOTYPE = "kpiweb.indexsetup.addchnltotype";//栏目分配到所属分类
     public static final String KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL = "kpiweb.indexsetup.updatetypeofchnl";//修改栏目所属分类
     public static final String KPIWEB_INDEXSETUP_DELCHNLFROMTYPE = "kpiweb.indexsetup.delchnlfromtype";//从分类中移除栏目
+    public static final String KPIWEB_INDEXSETUP_DUTYDEPT = "kpiweb.indexsetup.dutydept";//为栏目分配责任部门
+    public static final String KPIWEB_INDEXSETUP_DELDUTYDEPT = "kpiweb.indexsetup.deldutydept";//删除责任部门
 
     //报表
     public static final String KPIWEB_REPORT = "kpiweb.report";
