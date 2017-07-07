@@ -529,4 +529,38 @@ public final class Types {
         }
     }
 
+    /**
+     * 网康-网站检查类型
+     */
+    public enum WkSiteCheckType{
+        INVALID(-1, "未知类型"),
+        INVALID_LINK(0, "链接可用性"),
+        CONTENT_ERROR (1, "内容检测"),
+        OVER_SPEED(2, "访问速度"),
+        UPDATE_CONTENT(3, "网站更新");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        WkSiteCheckType(int value, String name) {
+
+            this.value = value;
+            this.name = name;
+        }
+        public static WkSiteCheckType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            WkSiteCheckType[] types = WkSiteCheckType.values();
+            for (WkSiteCheckType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+    }
+
 }
