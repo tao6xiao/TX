@@ -33,10 +33,10 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
     @Override
     public List<WkAllSiteScoreResponsed> queryAllSiteScore() {
         List<WkSocre> wkSocreList = wkAllSiteDetailMapper.selectAllSiteScore();
-
         List<WkAllSiteScoreResponsed> wkAllSiteScoreList = new ArrayList<>();
         for (WkSocre wkScore :wkSocreList) {
-        WkAllSiteScoreResponsed wkAllSiteScore = new WkAllSiteScoreResponsed();
+            WkAllSiteScoreResponsed wkAllSiteScore = new WkAllSiteScoreResponsed();
+
             wkAllSiteScore.setSiteId(wkScore.getSiteId());
             wkAllSiteScore.setSiteName(wkSiteManagementService.getSiteNameBySiteId(wkScore.getSiteId()));
             wkAllSiteScore.setTotal(wkScore.getTotal());

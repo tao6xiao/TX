@@ -22,7 +22,7 @@
         <include refid="Base_Column_List" />
         from wkscore
         where 1 = 1
-        GROUP BY checkId
+        AND checkId IN (SELECT MAX(checkId) FROM wkscore GROUP BY siteId)
         ORDER BY total DESC
     </select>
 
