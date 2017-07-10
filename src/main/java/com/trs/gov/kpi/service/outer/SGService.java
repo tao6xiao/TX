@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.outer;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.SGHistoryStatistics;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
@@ -18,7 +19,7 @@ public interface SGService {
      * @param param
      * @return
      */
-    SGPageDataRes getSGList(PageDataRequestParam param);
+    SGPageDataRes getSGList(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询服务实用的统计数量
@@ -26,7 +27,7 @@ public interface SGService {
      * @param param
      * @return
      */
-    SGStatistics getSGCount(PageDataRequestParam param);
+    SGStatistics getSGCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询服务实用统计的历史记录
@@ -34,5 +35,14 @@ public interface SGService {
      * @param param
      * @return
      */
-    List<SGHistoryStatistics> getSGHistoryCount(PageDataRequestParam param);
+    List<SGHistoryStatistics> getSGHistoryCount(PageDataRequestParam param) throws RemoteException;
+
+    /**
+     * 查询所有的服务链接
+     *
+     * @param param
+     * @return
+     * @throws RemoteException
+     */
+    SGPageDataRes getAllService(PageDataRequestParam param) throws RemoteException;
 }

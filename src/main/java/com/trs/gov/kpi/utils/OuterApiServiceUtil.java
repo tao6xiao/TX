@@ -71,6 +71,7 @@ public class OuterApiServiceUtil {
                     .addHeader("Accept", "application/json; charset=utf-8")
                     .build();
         }
+
     }
 
     public static void addUserNameParam(String userName, Map<String, String> params) {
@@ -79,5 +80,22 @@ public class OuterApiServiceUtil {
         } else {
             params.put("CurrUserName", userName);
         }
+    }
+
+    public static Request buildRequest(String serviceUrl, String serviceName, Map<String, String> params) {
+        StringBuilder url = new StringBuilder(serviceUrl + serviceName);
+
+        if (!params.isEmpty()) {
+            url.append("?");
+            for (Iterator<Map.Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
+                Map.Entry<String, String> entry = it.next();
+                url.append(entry.getKey()).append("=").append(entry.getValue());
+                if (it.hasNext()) {
+                    url.append("&");
+                }
+            }
+        }
+
+        return new Request.Builder().url(url.toString()).build();
     }
 }

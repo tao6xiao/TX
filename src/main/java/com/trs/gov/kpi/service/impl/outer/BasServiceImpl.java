@@ -15,6 +15,7 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -252,21 +253,9 @@ public class BasServiceImpl implements BasService {
     }
 
     private SiteSummary requestBasSummary(Map<String, String> params) throws RemoteException {
-        StringBuilder url = new StringBuilder(basServiceUrl + "/api/mpSummary");
-
-        if (!params.isEmpty()) {
-            url.append("?");
-            for (Iterator<Map.Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<String, String> entry = it.next();
-                url.append(entry.getKey()).append("=").append(entry.getValue());
-                if (it.hasNext()) {
-                    url.append("&");
-                }
-            }
-        }
 
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(url.toString()).build();
+        Request request = OuterApiServiceUtil.buildRequest(basServiceUrl, "/api/mpSummary", params);
         SummaryResponse summaryResponse;
         try {
             Response response = client.newCall(request).execute();

@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.SGHistoryStatistics;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
@@ -26,19 +27,19 @@ public class ServiceGuideController {
     private SGService sgService;
 
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
-    public SGStatistics getSPCount(PageDataRequestParam param) throws BizException {
+    public SGStatistics getSPCount(PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return sgService.getSGCount(param);
     }
 
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
-    public List<SGHistoryStatistics> getSPHistoryCount(PageDataRequestParam param) throws BizException {
+    public List<SGHistoryStatistics> getSPHistoryCount(PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return sgService.getSGHistoryCount(param);
     }
 
     @RequestMapping(value = "/guide/issue/unhandled", method = RequestMethod.GET)
-    public SGPageDataRes getSGList(@ModelAttribute PageDataRequestParam param) throws BizException {
+    public SGPageDataRes getSGList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(param);
         return sgService.getSGList(param);
     }
