@@ -41,9 +41,7 @@ public class IssueCountController {
     @RequestMapping(value = "/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         return countService.countSort(request);
     }
@@ -57,9 +55,7 @@ public class IssueCountController {
     @RequestMapping(value = "/count/history", method = RequestMethod.GET)
     @ResponseBody
     public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         return countService.historyCountSort(request);
     }
@@ -73,9 +69,7 @@ public class IssueCountController {
     @RequestMapping(value = "/bydept/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         return countService.deptCountSort(request);
     }
@@ -89,9 +83,7 @@ public class IssueCountController {
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCount> getDeptIssueCountByType(@ModelAttribute IssueCountByTypeRequest request) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         if (request.getTypeId() > 5 || request.getTypeId() < 1) {
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -110,10 +102,25 @@ public class IssueCountController {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     @ResponseBody
     public DeptInductionResponse[] deptInductionSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         return countService.deptInductionSort(request);
+    }
+
+
+    private void checkAuthority(IssueCountRequest request) throws RemoteException, BizException {
+        String roleId = authorityService.getRoleByUser();
+        if (Authority.PLATFORM_ROLE_ID.equals(roleId)) {
+            if (!authorityService.hasRight(null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+        } else if (Authority.SITE_ROLE_ID.equals(roleId)) {
+            String[] siteIds = request.getSiteIds().split(",");
+            for (int i = 0; i < siteIds.length; i++) {
+                if (!authorityService.hasRight(Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+                    throw new BizException(Authority.NO_AUTHORITY);
+                }
+            }
+        }
     }
 }

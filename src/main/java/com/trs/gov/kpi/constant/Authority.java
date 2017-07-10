@@ -11,6 +11,9 @@ public class Authority {
 
     public static final String NO_AUTHORITY = "权限不合法";
 
+    public static final String PLATFORM_ROLE_ID = "0";
+    public static final String SITE_ROLE_ID = "103";
+
     //绩效考核
     public static final String KPIWEB = "kpiweb";
 

@@ -16,4 +16,11 @@ public interface AuthorityService {
      * @return
      */
     boolean hasRight(Integer siteId, Integer channelId, String oprkeys) throws RemoteException;
+
+    /**
+     * 根据当前登录用户查询角色
+     *
+     * @return
+     */
+    String getRoleByUser() throws RemoteException;
 }

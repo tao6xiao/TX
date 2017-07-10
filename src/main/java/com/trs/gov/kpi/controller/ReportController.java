@@ -73,8 +73,15 @@ public class ReportController {
 
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String roleId = authorityService.getRoleByUser();
+        if (Authority.PLATFORM_ROLE_ID.equals(roleId)) {
+            if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+        } else if (Authority.SITE_ROLE_ID.equals(roleId)) {
+            if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
         }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
@@ -84,8 +91,15 @@ public class ReportController {
 
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
     public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String roleId = authorityService.getRoleByUser();
+        if (Authority.PLATFORM_ROLE_ID.equals(roleId)) {
+            if (!authorityService.hasRight(null, null, Authority.KPIWEB_REPORT_EXPORT)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+        } else if (Authority.SITE_ROLE_ID.equals(roleId)) {
+            if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
         }
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
