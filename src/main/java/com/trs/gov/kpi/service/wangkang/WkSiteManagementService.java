@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.requestdata.WkSiteManagementRequest;
+import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 
@@ -30,10 +30,10 @@ public interface WkSiteManagementService {
     /**
      *  查询所有站点（支持分页、排序和模糊查询）
      *
-     * @param wkSiteRequest
+     * @param wkAllSiteDetail
      * @return
      */
-    ApiPageData queryAllSite(WkSiteManagementRequest wkSiteRequest) throws RemoteException;
+    ApiPageData queryAllSite(WkAllSiteDetailRequest wkAllSiteDetail) throws RemoteException;
 
     /**
      * 更新网站信息
@@ -49,5 +49,13 @@ public interface WkSiteManagementService {
      * @param siteIds
      */
     void deleteSiteBySiteIds(List<Integer> siteIds);
+
+    /**
+     * 根据网站编号查询网站名称
+     *
+     * @param siteId
+     * @return
+     */
+    String getSiteNameBySiteId(Integer siteId);
 
 }

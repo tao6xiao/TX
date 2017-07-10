@@ -39,6 +39,13 @@
         <include refid="all_conditions_sql"/>
     </select>
 
+    <select id="selectAllSiteCount" parameterType="java.lang.Integer" resultType="java.lang.String">
+        select
+        siteName
+        from wksitemanagement
+        where siteId = #{siteId,jdbcType=INTEGER}
+    </select>
+
 
     <update id="updateSiteManagement" parameterType="com.trs.gov.kpi.entity.wangkang.SiteManagement">
         update wksitemanagement

@@ -4,6 +4,8 @@ import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * Created by li.hao on 2017/7/7.
  */
@@ -18,10 +20,7 @@ public class WkSocre {
     private Integer siteId;//网站编号
 
     @DBField
-    private String siteName;//网站名称
-
-    @DBField
-    private Data checkTime;//检测时间
+    private Date checkTime;//检测时间
 
     @DBField
     private Integer total;//综合评分

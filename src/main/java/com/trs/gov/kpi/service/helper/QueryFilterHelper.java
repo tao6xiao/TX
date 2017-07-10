@@ -14,9 +14,11 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.*;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ import java.util.List;
  * Created by linwei on 2017/5/22.
  */
 public class QueryFilterHelper {
+
+    @Resource
+    private WkSiteManagementService wkSiteManagementService;
 
     public static final String FREQ_SETUP_TABLE_FIELD_CHNL_ID = "chnlId";
     public static final String FREQ_SETUP_TABLE_FIELD_PRESET_FEQ_ID = "presetFeqId";
@@ -373,19 +378,37 @@ public class QueryFilterHelper {
     /**
      *  网康查询的filter处理
      *
-     * @param wkSiteRequest
+     * @param wkAllSiteDetail
      * @return
      */
-    public static QueryFilter toWkFilter(WkSiteManagementRequest wkSiteRequest){
+    public static QueryFilter toWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
         QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
 
-        if (wkSiteRequest.getSearchField().equalsIgnoreCase("siteName")){
-            filter.addCond("siteName", "%" + wkSiteRequest.getSearchText() + "%").setLike(true);
+        if (wkAllSiteDetail.getSearchField().equalsIgnoreCase("siteName")){
+            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
+        }
+        if (wkAllSiteDetail.getSearchField().equalsIgnoreCase("checkStatus")){
+            switch ("checkStatus"){
+                case("0"):
+                    filter.addCond("checkStatus",Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
+                    break;
+                case("1"):
+                    filter.addCond("checkStatus",Types.WkCheckStatus.WAIT_CHECK.value);
+                    break;
+                case("2"):
+                    filter.addCond("checkStatus",Types.WkCheckStatus.CONDUCT_CHECK.value);
+                    break;
+                case("3"):
+                    filter.addCond("checkStatus",Types.WkCheckStatus.DONE_CHECK.value);
+                    break;
+                default:
+            }
+
         }
 
         // sort field
-        if (!StringUtil.isEmpty(wkSiteRequest.getSortFields())) {
-            String[] sortFields = wkSiteRequest.getSortFields().trim().split(";");
+        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
+            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
             addSort(filter, sortFields);
         }
 

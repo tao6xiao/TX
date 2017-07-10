@@ -6,7 +6,7 @@ import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WkSiteManagementMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.requestdata.WkSiteManagementRequest;
+import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.entity.responsedata.WkSiteManagementResponse;
@@ -47,15 +47,15 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     }
 
     @Override
-    public ApiPageData queryAllSite(WkSiteManagementRequest wkSiteRequest) throws RemoteException {
+    public ApiPageData queryAllSite(WkAllSiteDetailRequest wkAllSiteDetail) throws RemoteException {
 
-        if(!StringUtil.isEmpty(wkSiteRequest.getSearchText())){
-            wkSiteRequest.setSearchText(StringUtil.escape(wkSiteRequest.getSearchText()));
+        if(!StringUtil.isEmpty(wkAllSiteDetail.getSearchText())){
+            wkAllSiteDetail.setSearchText(StringUtil.escape(wkAllSiteDetail.getSearchText()));
         }
-        QueryFilter filter = QueryFilterHelper.toWkFilter(wkSiteRequest);
+        QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int itemCount = wkSiteManagementMapper.selectAllSiteCount(filter);
-        Pager pager = PageInfoDeal.buildResponsePager(wkSiteRequest.getPageIndex(), wkSiteRequest.getPageSize(), itemCount);
+        Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
         List<SiteManagement> siteManagementList = wkSiteManagementMapper.selectAllSiteList(filter);
 
@@ -72,6 +72,11 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     @Override
     public void deleteSiteBySiteIds(List<Integer> siteIds) {
         wkSiteManagementMapper.deleteSiteBySiteIds(siteIds);
+    }
+
+    @Override
+    public String getSiteNameBySiteId(Integer siteId) {
+        return wkSiteManagementMapper.getSiteNameBySiteId(siteId);
     }
 
 

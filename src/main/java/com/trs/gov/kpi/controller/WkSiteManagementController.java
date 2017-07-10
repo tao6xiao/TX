@@ -3,7 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.requestdata.WkSiteManagementRequest;
+import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
@@ -54,17 +54,17 @@ public class WkSiteManagementController {
     /**
      * 分页查询所有站点的数据（附带模糊查询和排序功能）
      *
-     * @param wkSiteRequest
+     * @param wkAllSiteDetail
      * @return
      * @throws BizException
      * @throws RemoteException
      */
     @RequestMapping(value = "/site/list", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData querySiteManagement(WkSiteManagementRequest wkSiteRequest) throws BizException, RemoteException {
+    public ApiPageData querySiteManagement(WkAllSiteDetailRequest wkAllSiteDetail) throws BizException, RemoteException {
 
-        ParamCheckUtil.pagerCheck(wkSiteRequest.getPageIndex(), wkSiteRequest.getPageSize());
-        return wkSiteManagementService.queryAllSite(wkSiteRequest);
+        ParamCheckUtil.pagerCheck(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize());
+        return wkSiteManagementService.queryAllSite(wkAllSiteDetail);
     }
 
     /**

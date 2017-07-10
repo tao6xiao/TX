@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkAllSiteDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkSocre">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+        <result column="total" jdbcType="INTEGER" property="total" />
+        <result column="invalidLink" jdbcType="INTEGER" property="invalidLink" />
+        <result column="contentError" jdbcType="INTEGER" property="contentError" />
+        <result column="overSpeed" jdbcType="INTEGER" property="overSpeed" />
+        <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, siteId, checkId, checkTime, total, invalidLink, contentError, overSpeed, updateContent
+    </sql>
+
+    <select id="selectAllSiteScore"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkscore
+        where 1 = 1
+        GROUP BY checkId
+        ORDER BY total DESC
+    </select>
+
+    <select id="selectAllSiteCount" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+        select
+        count(1)
+        from wkscore
+        where 1 = 1
+    </select>
+
+</mapper>

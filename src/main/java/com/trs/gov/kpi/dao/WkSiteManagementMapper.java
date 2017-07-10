@@ -51,4 +51,12 @@ public interface WkSiteManagementMapper {
      */
     void deleteSiteBySiteIds(@Param("siteIds") List<Integer> siteIds);
 
+    /**
+     * 根据网站编号查询网站名称
+     *
+     * @param siteId
+     * @return
+     */
+    String getSiteNameBySiteId(Integer siteId);
+
 }
