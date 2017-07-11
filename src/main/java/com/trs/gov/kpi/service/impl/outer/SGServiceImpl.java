@@ -29,114 +29,43 @@ public class SGServiceImpl implements SGService {
     @Value("${service.outer.sg.url}")
     private String sgServiceUrl;
 
-    private static final String SITE_ID = "siteId";
 
     @Override
     public SGPageDataRes getSGList(PageDataRequestParam param) throws RemoteException {
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put(SITE_ID, Integer.toString(param.getSiteId()));
-        initParamMap(param, paramMap);
-
+        Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/questionBszn.jsp", paramMap);
-        try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String jsonResult = response.body().string();
-                if (StringUtil.isEmpty(jsonResult)) {
-                    return null;
-                }
-                return JSON.parseObject(jsonResult, SGPageDataRes.class);
-            } else {
-                log.error("failed to getSGList, error: " + response);
-                throw new RemoteException("获取服务指南失败！");
-            }
-        } catch (Exception e) {
-            log.error("getSGList failed ", e);
-            throw new RemoteException("获取服务指南失败！", e);
-        }
+        return (SGPageDataRes) getResult(client, request, "获取服务指南失败！", SGPageDataRes.class);
     }
+
 
     @Override
     public SGStatistics getSGCount(PageDataRequestParam param) throws RemoteException {
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put(SITE_ID, Integer.toString(param.getSiteId()));
-        initParamMap(param, paramMap);
-
+        Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/bsznCount.jsp", paramMap);
-        try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String jsonResult = response.body().string();
-                if (StringUtil.isEmpty(jsonResult)) {
-                    return null;
-                }
-                return JSON.parseObject(jsonResult, SGStatistics.class);
-            } else {
-                log.error("failed to getSGCount, error: " + response);
-                throw new RemoteException("获取服务指南统计失败！");
-            }
-        } catch (Exception e) {
-            log.error("getSGCount failed ", e);
-            throw new RemoteException("获取服务指南统计失败！", e);
-        }
-
+        return (SGStatistics) getResult(client, request, "获取服务指南统计失败！", SGStatistics.class);
     }
 
     @Override
     public List getSGHistoryCount(PageDataRequestParam param) throws RemoteException {
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put(SITE_ID, Integer.toString(param.getSiteId()));
-        initParamMap(param, paramMap);
-
+        Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/bsznCountByGranularity.jsp", paramMap);
-        try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String jsonResult = response.body().string();
-                if (StringUtil.isEmpty(jsonResult)) {
-                    return null;
-                }
-                return JSON.parseObject(jsonResult, List.class);
-            } else {
-                log.error("failed to getSGHistoryCount, error: " + response);
-                throw new RemoteException("获取服务指南历史统计失败！");
-            }
-        } catch (Exception e) {
-            log.error("getSGHistoryCount failed ", e);
-            throw new RemoteException("获取服务指南历史统计失败！", e);
-        }
+        return (List) getResult(client, request, "获取服务指南历史统计失败！", List.class);
     }
 
     @Override
     public SGPageDataRes getAllService(PageDataRequestParam param) throws RemoteException {
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put(SITE_ID, Integer.toString(param.getSiteId()));
-        initParamMap(param, paramMap);
-
+        Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/allBsznUrl.jsp", paramMap);
-        try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String jsonResult = response.body().string();
-                if (StringUtil.isEmpty(jsonResult)) {
-                    return null;
-                }
-                return JSON.parseObject(jsonResult, SGPageDataRes.class);
-            } else {
-                log.error("failed to getAllService, error: " + response);
-                throw new RemoteException("获取服务链接失败！");
-            }
-        } catch (Exception e) {
-            log.error("getAllService failed ", e);
-            throw new RemoteException("获取服务链接失败！", e);
-        }
+        return (SGPageDataRes) getResult(client, request, "获取服务链接失败！", SGPageDataRes.class);
     }
 
-    private void initParamMap(PageDataRequestParam param, Map<String, String> paramMap) {
+    private Map<String, String> initParamMap(PageDataRequestParam param) {
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("siteId", Integer.toString(param.getSiteId()));
         if (param.getPageIndex() != null) {
             paramMap.put("pageIndex", Integer.toString(param.getPageIndex()));
         }
@@ -160,6 +89,26 @@ public class SGServiceImpl implements SGService {
         }
         if (param.getGranularity() != null) {
             paramMap.put("granularity", Integer.toString(param.getGranularity()));
+        }
+        return paramMap;
+    }
+
+    private Object getResult(OkHttpClient client, Request request, String msg, Class clazz) throws RemoteException {
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                String jsonResult = response.body().string();
+                if (StringUtil.isEmpty(jsonResult)) {
+                    return null;
+                }
+                return JSON.parseObject(jsonResult, clazz);
+            } else {
+                log.error("failed to getSGService, error: " + response);
+                throw new RemoteException(msg);
+            }
+        } catch (Exception e) {
+            log.error("getSGService failed ", e);
+            throw new RemoteException(msg, e);
         }
     }
 }
