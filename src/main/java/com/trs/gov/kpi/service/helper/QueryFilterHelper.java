@@ -382,12 +382,12 @@ public class QueryFilterHelper {
      * @return
      */
     public static QueryFilter toWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
-        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
 
-        if (wkAllSiteDetail.getSearchField().equalsIgnoreCase("siteName")){
+        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
             filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
         }
-        if (wkAllSiteDetail.getSearchField().equalsIgnoreCase("checkStatus")){
+        if ("checkStatus".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
             switch (wkAllSiteDetail.getSearchText()){
                 case("0"):
                     filter.addCond("checkStatus",Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);

@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Created by li.hao on 2017/7/11.
@@ -16,7 +17,7 @@ public interface WkRecordMapper {
      * @param typeId
      * @return
      */
-    Integer getWkRecordAvgSpeed(Integer siteId, Integer checkId, Integer typeId);
+    Integer getWkRecordAvgSpeed(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId,@Param("typeId") Integer typeId);
 
     /**
      * 根据网站编号，检查编号，问题类型编号查询网站更新数
@@ -26,6 +27,6 @@ public interface WkRecordMapper {
      * @param typeId
      * @return
      */
-    Integer getWkRecordUpdateContent(Integer siteId, Integer checkId, Integer typeId);
+    Integer getWkRecordUpdateContent(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId,@Param("typeId") Integer typeId);
 
 }

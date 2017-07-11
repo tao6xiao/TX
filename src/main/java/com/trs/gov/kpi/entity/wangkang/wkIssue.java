@@ -47,7 +47,7 @@ public class WkIssue {
     private Integer isResolved;//问题是否处理
 
     @DBField
-    private Date resolvedTime;//处理时间
+    private Date resolveTime;//处理时间
 
     @DBField
     private Integer isDel;//是否删除

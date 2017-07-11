@@ -96,7 +96,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             Integer invalidLinkCount = wkIssueMapper.getWkIssueCount(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.INVALID_LINK.value);
             Integer contentErrorCount = wkIssueMapper.getWkIssueCount(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.CONTENT_ERROR.value);
             Integer overSpeedCount = wkRecordMapper.getWkRecordAvgSpeed(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.OVER_SPEED.value);
-            Integer updateContentCount = wkRecordMapper.getWkRecordAvgSpeed(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.UPDATE_CONTENT.value);
+            Integer updateContentCount = wkRecordMapper.getWkRecordUpdateContent(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.UPDATE_CONTENT.value);
 
             wkIndexLinkIssue.setSiteId(wkIssue.getSiteId());
             wkIndexLinkIssue.setSiteName(siteName);

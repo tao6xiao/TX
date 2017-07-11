@@ -26,7 +26,7 @@
 
     <select id="getWkRecordUpdateContent" resultType="int">
         select
-        avgSpeed
+        updateContent
         from wkrecord
         where siteId = #{siteId,jdbcType=INTEGER}
         AND  checkId = #{checkId,jdbcType=INTEGER}

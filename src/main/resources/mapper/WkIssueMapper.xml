@@ -14,15 +14,15 @@
         <result column="parentUrl" jdbcType="VARCHAR" property="parentUrl" />
         <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
         <result column="isResolved" jdbcType="INTEGER" property="isResolved" />
-        <result column="resolvedTime" jdbcType="TIMESTAMP" property="resolvedTime" />
+        <result column="resolveTime" jdbcType="TIMESTAMP" property="resolveTime" />
         <result column="isDel" jdbcType="TIMESTAMP" property="isDel" />
         <result column="locationUrl" jdbcType="VARCHAR" property="locationUrl" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, checkId, siteId, typeId, subTypeId, chnlName, url, detailInfo, parentUrl, checkTime, isResolved, resolvedTime, isDel, locationUrl
+        id, checkId, siteId, typeId, subTypeId, chnlName, url, detailInfo, parentUrl, checkTime, isResolved, resolveTime, isDel, locationUrl
     </sql>
 
-    <select id="selectAllSiteScore" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+    <select id="selectIssueSiteList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from wkissue t

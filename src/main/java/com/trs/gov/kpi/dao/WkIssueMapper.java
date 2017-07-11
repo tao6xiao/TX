@@ -3,6 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -27,6 +28,6 @@ public interface WkIssueMapper {
      * @param typeId
      * @return
      */
-    Integer getWkIssueCount(Integer siteId, Integer checkId, Integer typeId);
+    Integer getWkIssueCount(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId,@Param("typeId") Integer typeId);
 
 }

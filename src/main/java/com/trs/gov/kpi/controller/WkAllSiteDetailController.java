@@ -45,7 +45,7 @@ public class WkAllSiteDetailController {
      * @param wkAllSiteDetail
      * @return
      */
-    @RequestMapping(value="/available")
+    @RequestMapping(value="/available", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData allWkSiteAvailable(WkAllSiteDetailRequest wkAllSiteDetail) throws BizException {
 
