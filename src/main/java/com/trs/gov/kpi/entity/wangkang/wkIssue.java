@@ -11,10 +11,13 @@ import java.util.Date;
  */
 @Data
 @DBTable("wkissue")
-public class wkIssue {
+public class WkIssue {
 
     @DBField
     private Integer id;
+
+    @DBField
+    private Integer checkId;//检查编号
 
     @DBField
     private Integer siteId;//网站编号
@@ -29,10 +32,13 @@ public class wkIssue {
     private String  chnlName;//栏目名称
 
     @DBField
-    private String detail;//详情
+    private String url;//当前错误的URL
 
     @DBField
     private String detailInfo;//错误的详细信息
+
+    @DBField
+    private String parentUrl;//父页面地址
 
     @DBField
     private Date checkTime;//检测时间
@@ -41,8 +47,11 @@ public class wkIssue {
     private Integer isResolved;//问题是否处理
 
     @DBField
+    private Date resolvedTime;//处理时间
+
+    @DBField
     private Integer isDel;//是否删除
 
     @DBField
-    private String url;//错误定位URL
+    private String locationUrl;//错误定位URL
 }

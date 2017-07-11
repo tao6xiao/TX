@@ -16,7 +16,9 @@ public class WkSiteManagementResponse {
 
     private String siteIndexUrl;//网站URL
 
-    private String companyAddress;//网站所属单位的经纬度地址
+    private String deptAddress;//网站所属单位地址
+
+    private String deptLatLng;//网站所属单位的经纬度地址
 
     private Integer autoCheckType;//自动检测粒度
 

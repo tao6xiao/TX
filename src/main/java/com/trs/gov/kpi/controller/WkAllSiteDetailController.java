@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.WkAllSiteScoreResponsed;
 import com.trs.gov.kpi.service.wangkang.WkAllSiteDetailService;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,7 +47,9 @@ public class WkAllSiteDetailController {
      */
     @RequestMapping(value="/available")
     @ResponseBody
-    public ApiPageData allWkSiteAvailable(WkAllSiteDetailRequest wkAllSiteDetail){
+    public ApiPageData allWkSiteAvailable(WkAllSiteDetailRequest wkAllSiteDetail) throws BizException {
+
+        ParamCheckUtil.pagerCheck(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize());
         return wkAllSiteDetailService.queryAllWkSiteAvailable(wkAllSiteDetail);
     }
 }

@@ -28,7 +28,10 @@ public class SiteManagement {
     private String siteIndexUrl;//网站URL
 
     @DBField
-    private String companyAddress;//单位地址
+    private String deptAddress;//单位地址
+
+    @DBField
+    private String deptLatLng;//单位地址
 
     @DBField
     private Integer autoCheckType;//自动检测粒度

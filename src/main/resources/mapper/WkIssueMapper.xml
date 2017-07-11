@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkIssueMapper">
+
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkIssue">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="typeId" jdbcType="INTEGER" property="typeId" />
+        <result column="subTypeId" jdbcType="INTEGER" property="subTypeId" />
+        <result column="chnlName" jdbcType="VARCHAR" property="chnlName" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="detailInfo" jdbcType="VARCHAR" property="detailInfo" />
+        <result column="parentUrl" jdbcType="VARCHAR" property="parentUrl" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+        <result column="isResolved" jdbcType="INTEGER" property="isResolved" />
+        <result column="resolvedTime" jdbcType="TIMESTAMP" property="resolvedTime" />
+        <result column="isDel" jdbcType="TIMESTAMP" property="isDel" />
+        <result column="locationUrl" jdbcType="VARCHAR" property="locationUrl" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, checkId, siteId, typeId, subTypeId, chnlName, url, detailInfo, parentUrl, checkTime, isResolved, resolvedTime, isDel, locationUrl
+    </sql>
+
+    <select id="selectAllSiteScore" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkissue t
+        where not exists (select 1 from wkissue where siteId = t.siteId and checkId > t.checkId)
+        group by siteId
+    </select>
+
+    <select id="getWkIssueCount" resultType="int">
+        select
+        count(1)
+        from wkissue
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND  checkId = #{checkId,jdbcType=INTEGER}
+        AND typeId = #{typeId,jdbcType=INTEGER}
+    </select>
+
+</mapper>

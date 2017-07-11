@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * 网康——网站管理
@@ -36,16 +37,24 @@ public class WkSiteManagementController {
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
     public Object addWkSite(@ModelAttribute SiteManagement siteManagement) throws BizException {
-        if (siteManagement.getSiteName() == null || siteManagement.getAutoCheckType() == null || siteManagement.getSiteIndexUrl() == null || siteManagement.getCompanyAddress() == null){
-            log.error("Invalid parameter: 参数siteManagement对象中siteName、autoCheckType、SiteIndexUr、companyAddress 四个属性中至少有一个存在null值");
+        if (siteManagement.getSiteName() == null || siteManagement.getAutoCheckType() == null || siteManagement.getSiteIndexUrl() == null || siteManagement.getDeptAddress() == null || siteManagement.getDeptLatLng() == null){
+            log.error("Invalid parameter: 参数siteManagement对象中siteName、autoCheckType、SiteIndexUr、deptAddress、deptLatLng 五个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        String siteName = siteManagement.getSiteName();
+        Integer siteCount = wkSiteManagementService.getSiteCountBySiteName(siteName);
+        if (siteCount != 0){
+            log.error("Invalid parameter: 该网站名已存在！！！");
+            throw new BizException(Constants.SITE_NAME_IS_EXIST);
         }
 
         Integer siteId = siteManagement.getSiteId();
         SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId);
         if(siteManage != null){
+            siteManagement.setCheckTime(new Date());
             wkSiteManagementService.updateSiteManagement(siteManagement);
         }else{
+            siteManagement.setCheckTime(new Date());
             wkSiteManagementService.addWkSite(siteManagement);
         }
         return null;

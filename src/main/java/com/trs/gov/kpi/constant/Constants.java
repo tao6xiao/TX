@@ -31,4 +31,6 @@ public final class Constants {
 
     //用于issue表中的deptId（部门编号）为null或者字符串的空值情况
     public static final String DEPT_NULL = "未归属部门";
+
+    public static final String SITE_NAME_IS_EXIST = "该网站名称已存在！！！";
 }

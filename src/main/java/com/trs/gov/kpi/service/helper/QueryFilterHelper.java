@@ -388,7 +388,7 @@ public class QueryFilterHelper {
             filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
         }
         if (wkAllSiteDetail.getSearchField().equalsIgnoreCase("checkStatus")){
-            switch ("checkStatus"){
+            switch (wkAllSiteDetail.getSearchText()){
                 case("0"):
                     filter.addCond("checkStatus",Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
                     break;

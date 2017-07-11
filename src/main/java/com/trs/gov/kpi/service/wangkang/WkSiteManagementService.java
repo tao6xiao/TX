@@ -28,6 +28,14 @@ public interface WkSiteManagementService {
     SiteManagement getSiteManagementBySiteId(Integer siteId);
 
     /**
+     * 根据名称查询网站数量
+     * 
+     * @param siteName
+     * @return
+     */
+    Integer getSiteCountBySiteName(String siteName);
+
+    /**
      *  查询所有站点（支持分页、排序和模糊查询）
      *
      * @param wkAllSiteDetail

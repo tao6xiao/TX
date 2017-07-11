@@ -6,14 +6,15 @@
         <result column="siteId" jdbcType="INTEGER" property="siteId" />
         <result column="siteName" jdbcType="VARCHAR" property="siteName" />
         <result column="siteIndexUrl" jdbcType="VARCHAR" property="siteIndexUrl" />
-        <result column="companyAddress" jdbcType="VARCHAR" property="companyAddress" />
+        <result column="deptAddress" jdbcType="VARCHAR" property="deptAddress" />
+        <result column="deptLatLng" jdbcType="VARCHAR" property="deptLatLng" />
         <result column="autoCheckType" jdbcType="INTEGER" property="autoCheckType" />
         <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
         <result column="checkStatus" jdbcType="INTEGER" property="checkStatus" />
         <result column="isDel" jdbcType="INTEGER" property="isDel" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, siteId, siteName, siteIndexUrl, companyAddress, autoCheckType, checkTime, checkStatus, isDel
+        id, siteId, siteName, siteIndexUrl, deptLatLng, deptAddress, autoCheckType, checkTime, checkStatus, isDel
     </sql>
 
     <select id="selectSiteManagementByStieId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -46,6 +47,13 @@
         where siteId = #{siteId,jdbcType=INTEGER}
     </select>
 
+    <select id="getSiteCountBySiteName" parameterType="java.lang.String" resultType="int">
+        select
+        count(1)
+        from wksitemanagement
+        where siteName = #{siteName,jdbcType=INTEGER}
+    </select>
+
 
     <update id="updateSiteManagement" parameterType="com.trs.gov.kpi.entity.wangkang.SiteManagement">
         update wksitemanagement
@@ -56,8 +64,11 @@
             <if test="siteIndexUrl != null">
                 siteIndexUrl = #{siteIndexUrl,jdbcType=VARCHAR},
             </if>
-            <if test="companyAddress != null">
-                companyAddress = #{companyAddress,jdbcType=VARCHAR},
+            <if test="deptAddress != null">
+                deptAddress = #{deptAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="deptLatLng != null">
+                deptLatLng = #{deptLatLng,jdbcType=VARCHAR},
             </if>
             <if test="autoCheckType != null">
                 autoCheckType = #{autoCheckType,jdbcType=INTEGER},

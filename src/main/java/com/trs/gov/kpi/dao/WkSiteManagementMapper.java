@@ -22,6 +22,14 @@ public interface WkSiteManagementMapper {
     SiteManagement selectSiteManagementByStieId(Integer siteId);
 
     /**
+     * 根据网站名称查询网站个数
+     *
+     * @param siteName
+     * @return
+     */
+    Integer getSiteCountBySiteName(String siteName);
+
+    /**
      * 查询所有网站数量
      *
      * @return

@@ -34,6 +34,8 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     @Resource
     private WkSiteManagementMapper wkSiteManagementMapper;
 
+
+
     @Override
     public String  addWkSite(SiteManagement siteManagement) {
        commonMapper.insert(DBUtil.toRow(siteManagement));
@@ -41,9 +43,13 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     }
 
     @Override
-    public SiteManagement getSiteManagementBySiteId(Integer siteId) {
-
+    public SiteManagement getSiteManagementBySiteId(Integer siteId ) {
         return wkSiteManagementMapper.selectSiteManagementByStieId(siteId);
+    }
+
+    @Override
+    public Integer getSiteCountBySiteName(String siteName) {
+        return wkSiteManagementMapper.getSiteCountBySiteName(siteName);
     }
 
     @Override
@@ -87,10 +93,10 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
             wkSiteManagementResponse.setSiteId(siteManagement.getSiteId());
             wkSiteManagementResponse.setSiteName(siteManagement.getSiteName());
             wkSiteManagementResponse.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
-            wkSiteManagementResponse.setCompanyAddress(siteManagement.getCompanyAddress());
+            wkSiteManagementResponse.setDeptAddress(siteManagement.getDeptAddress());
+            wkSiteManagementResponse.setDeptLatLng(siteManagement.getDeptLatLng());
             wkSiteManagementResponse.setAutoCheckType(siteManagement.getAutoCheckType());
             wkSiteManagementResponse.setCheckStatus(siteManagement.getCheckStatus());
-
             wkSiteManagementResponse.setCheckTime(siteManagement.getCheckTime());
 
             wkSiteResponseList.add(wkSiteManagementResponse);
