@@ -52,7 +52,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             wkAllSiteDetail.setSearchText(StringUtil.escape(wkAllSiteDetail.getSearchText()));
         }
         QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
-        int itemCount = wkAllSiteDetailMapper.selectAllSiteCount(filter);
+        int itemCount = wkAllSiteDetailMapper.selectAllSiteScoreCount(filter);
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
 

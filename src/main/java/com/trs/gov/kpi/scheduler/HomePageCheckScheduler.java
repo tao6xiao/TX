@@ -4,7 +4,7 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.SpiderUtils;
+import com.trs.gov.kpi.utils.PageSpider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.List;
 public class HomePageCheckScheduler implements SchedulerTask {
 
     @Resource
-    SpiderUtils spider;
+    PageSpider pageSpider;
 
     @Setter
     @Getter
@@ -46,7 +46,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
 
         log.info("HomePageCheckScheduler " + siteId + " start...");
         try {
-            List<String> unavailableUrls = spider.homePageCheck(baseUrl);
+            List<String> unavailableUrls = pageSpider.homePageCheck(baseUrl);
             if (unavailableUrls.contains(baseUrl)) {
                 Issue issue = new Issue();
                 issue.setSiteId(siteId);

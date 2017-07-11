@@ -39,7 +39,7 @@
         <include refid="all_conditions_sql"/>
     </select>
 
-    <select id="selectAllSiteCount" parameterType="java.lang.Integer" resultType="java.lang.String">
+    <select id="getSiteNameBySiteId" parameterType="java.lang.Integer" resultType="java.lang.String">
         select
         siteName
         from wksitemanagement

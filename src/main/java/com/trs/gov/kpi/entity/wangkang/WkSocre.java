@@ -17,6 +17,9 @@ public class WkSocre {
     private Integer id;
 
     @DBField
+    private Integer checkId;
+
+    @DBField
     private Integer siteId;//网站编号
 
     @DBField

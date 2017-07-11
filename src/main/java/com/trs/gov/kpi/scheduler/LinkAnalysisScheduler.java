@@ -10,10 +10,12 @@ import com.trs.gov.kpi.entity.UrlLength;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
+import com.trs.gov.kpi.entity.wangkang.SiteManagement;
+import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
-import com.trs.gov.kpi.utils.SpiderUtils;
+import com.trs.gov.kpi.utils.PageSpider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +41,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     LinkAvailabilityService linkAvailabilityService;
 
     @Resource
-    SpiderUtils spider;
+    PageSpider pageSpider;
 
     @Resource
     WebPageService webPageService;
@@ -59,13 +61,21 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Getter
     private Boolean isTimeNode;
 
+    @Setter
+    @Getter
+    private CommonMQ checkContentMQ;
+
+    @Getter
+    @Setter
+    private SiteManagement site;
+
     @Override
     public void run() {
 
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
 
-            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
+            List<Pair<String, String>> unavailableUrlAndParentUrls = pageSpider.linkCheck(5, baseUrl);
             Date checkTime = new Date();
             for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
                 LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
@@ -77,7 +87,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
             }
             //获取响应速度基本信息，信息入库并去除重复数据和更新数据库信息
-            Set<ReplySpeed> replySpeedSet = spider.getReplySpeeds();
+            Set<ReplySpeed> replySpeedSet = pageSpider.getReplySpeeds();
             for (ReplySpeed replySpeedTo : replySpeedSet) {
 
                 PageDataRequestParam param = new PageDataRequestParam();
@@ -118,7 +128,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             }
 
             //获取过大页面信息；信息入库并去除重复数据和更新数据库信息
-            Set<PageSpace> biggerPageSpace = spider.biggerPageSpace();
+            Set<PageSpace> biggerPageSpace = pageSpider.biggerPageSpace();
             for (PageSpace pageSpaceTo : biggerPageSpace) {
 
                 param = new PageDataRequestParam();
@@ -159,7 +169,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             }
 
             //获取过长URL页面信息；信息入库并去除重复数据和更新数据库信息
-            Set<UrlLength> biggerUerLenght = spider.getBiggerUrlPage();
+            Set<UrlLength> biggerUerLenght = pageSpider.getBiggerUrlPage();
             for (UrlLength urlLenghtTo : biggerUerLenght) {
 
                 param = new PageDataRequestParam();
@@ -200,7 +210,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             }
 
             //获取过深页面信息；信息入库并去除重复数据和更新数据库信息
-            Set<PageDepth> pageDepthSet = spider.getPageDepths();
+            Set<PageDepth> pageDepthSet = pageSpider.getPageDepths();
             for (PageDepth pageDepthTo : pageDepthSet) {
                 param = new PageDataRequestParam();
                 param.setSiteId(siteId);

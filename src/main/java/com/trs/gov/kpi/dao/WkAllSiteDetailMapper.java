@@ -25,6 +25,6 @@ public interface WkAllSiteDetailMapper {
      * @param filter
      * @return
      */
-    Integer selectAllSiteCount(QueryFilter filter);
+    Integer selectAllSiteScoreCount(QueryFilter filter);
 
 }

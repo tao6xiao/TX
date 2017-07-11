@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Component
 @Scope("prototype")
-public class SpiderUtils {
+public class PageSpider {
 
     // 过大页面阀值
     private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
@@ -147,6 +147,11 @@ public class SpiderUtils {
             Date endDate = new Date();
             long useTime = endDate.getTime() - startDate.getTime();
 
+            // TODO 访问时间，入库
+
+
+
+
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
             } else {
@@ -171,6 +176,8 @@ public class SpiderUtils {
                             new Date()));
                 }
 
+                // TODO 发送内容，进行检测
+
                 if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
                     biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
                             chnlName,
@@ -192,6 +199,8 @@ public class SpiderUtils {
             }
             return result;
         }
+
+
 
         @Override
         public void onSuccess(Request request) {

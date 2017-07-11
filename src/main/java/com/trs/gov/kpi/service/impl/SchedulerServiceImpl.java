@@ -8,7 +8,9 @@ import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.job.CheckJob;
+import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
@@ -17,6 +19,7 @@ import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -37,6 +40,9 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @Service
 public class SchedulerServiceImpl implements SchedulerService, ApplicationListener<ContextRefreshedEvent> {
 
+
+    @Autowired
+    private CommonMQ checkContentMQ;
 
     @Resource
     SchedulerTask[] schedulerTasks;
@@ -133,6 +139,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
                 //按时间区间生成报表
                 initTimeIntervalCheckJob(scheduler);
+
+                checkContentMQ.start();
 
             } catch (SchedulerException e) {
                 log.error("", e);
@@ -408,6 +416,45 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
                         (ReportGenerateScheduler.class);
             default:
                 return null;
+        }
+    }
+
+    /**
+     * 注册调度任务
+     *
+     * @param scheduler
+     * @param jobType
+     * @param site
+     * @param builder
+     */
+    private <T extends Trigger> void scheduleSpiderJob(Scheduler scheduler, SiteManagement site, ScheduleBuilder<T> builder) {
+
+        LinkAnalysisScheduler task = applicationContext.getBean(LinkAnalysisScheduler.class);
+        if (task == null) {
+            return;
+        }
+
+        String jobName = "spider" + site.getSiteId() + "job";
+        JobDetail job = newJob(CheckJob.class)
+                .withIdentity(jobName, "spiderjob")
+                .build();
+
+        // 真正的执行任务
+        task.setSite(site);
+        task.setCheckContentMQ(checkContentMQ);
+        job.getJobDataMap().put("task", task);
+
+        // 每天执行一次
+        Trigger trigger = newTrigger()
+                .withIdentity("spider" + site.getSiteId() + "trigger", "spidertrigger")
+                .startNow()
+                .forJob(job.getKey())
+                .withSchedule(builder)
+                .build();
+        try {
+            scheduler.scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            log.error("failed to schedule spider " + site.getSiteId(), e);
         }
     }
 }
