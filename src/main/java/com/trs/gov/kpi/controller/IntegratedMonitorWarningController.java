@@ -38,7 +38,7 @@ public class IntegratedMonitorWarningController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_WARNING_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_WARNING_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_WARNING_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);

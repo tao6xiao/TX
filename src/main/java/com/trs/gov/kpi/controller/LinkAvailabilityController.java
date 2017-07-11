@@ -41,7 +41,7 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -57,7 +57,7 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     public int getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -73,7 +73,7 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -89,7 +89,7 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -105,7 +105,7 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/check/index", method = RequestMethod.GET)
     public IndexPage showIndexAvailability(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);

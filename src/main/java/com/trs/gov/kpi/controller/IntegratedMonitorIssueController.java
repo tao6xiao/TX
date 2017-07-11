@@ -38,7 +38,7 @@ public class IntegratedMonitorIssueController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_ISSUE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_ISSUE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_ISSUE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);

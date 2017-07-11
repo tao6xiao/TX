@@ -45,7 +45,7 @@ public class MonitorFrequencyController {
     @RequestMapping(value = "/checkfreq", method = RequestMethod.GET)
     @ResponseBody
     public List<MonitorFrequencyResponse> queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null) {
@@ -64,7 +64,7 @@ public class MonitorFrequencyController {
     @RequestMapping(value = "/monitorfrequency", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException, RemoteException {
-        if (!authorityService.hasRight(freqSetUp.getSiteId(), null, Authority.KPIWEB_MONITORSETUP_SAVE)) {
+        if (!authorityService.hasRight(freqSetUp.getSiteId(), null, Authority.KPIWEB_MONITORSETUP_SAVE) && !authorityService.hasRight(null, null, Authority.KPIWEB_MONITORSETUP_SAVE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         MonitorFrequencyFreq[] freqs = freqSetUp.getFreqs();

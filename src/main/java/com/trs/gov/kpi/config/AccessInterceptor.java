@@ -60,129 +60,107 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
 
     /**
      * 权限校验
+     *
      * @param request
      * @throws RemoteException
      * @throws BizException
      */
     private void checkAuthority(HttpServletRequest request) throws RemoteException, BizException {
+        Integer siteId = paramCheckAndParse(request);
         if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.HANDLE_PATH) >= 0) {//待解决问题
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_HANDLE)) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_HANDLE) && !authorityService.hasRight(null, null, Authority.KPIWEB_ISSUE_HANDLE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.IGNORE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_IGNORE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.IGNORE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_IGNORE) && !authorityService.hasRight(null, null, Authority.KPIWEB_ISSUE_IGNORE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.DELETE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_DELETE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.DELETE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_DELETE) && !authorityService.hasRight(null, null, Authority.KPIWEB_ISSUE_DELETE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_UPDATEDEPT)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_ISSUE_UPDATEDEPT) && !authorityService.hasRight(null, null, Authority.KPIWEB_ISSUE_UPDATEDEPT)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.HANDLE_PATH) >= 0) {//待解决预警
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_HANDLE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.HANDLE_PATH) >= 0) {//待解决预警
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_HANDLE) && !authorityService.hasRight(null, null, Authority.KPIWEB_WARNING_HANDLE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.IGNORE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_IGNORE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.IGNORE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_IGNORE) && !authorityService.hasRight(null, null, Authority.KPIWEB_WARNING_IGNORE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.DELETE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_DELETE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.DELETE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_DELETE) && !authorityService.hasRight(null, null, Authority.KPIWEB_WARNING_DELETE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_UPDATEDEPT)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_WARNING_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_WARNING_UPDATEDEPT) && !authorityService.hasRight(null, null, Authority.KPIWEB_WARNING_UPDATEDEPT)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.HANDLE_PATH) >= 0) {//链接可用性
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_HANDLE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.HANDLE_PATH) >= 0) {//链接可用性
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_HANDLE) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_HANDLE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.IGNORE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_IGNORE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.IGNORE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_IGNORE) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_IGNORE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.DELETE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_DELETE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.DELETE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_DELETE) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_DELETE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_UPDATEDEPT)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.LINK_AVAILABILITY_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_AVAILABILITY_UPDATEDEPT) && !authorityService.hasRight(null, null, Authority.KPIWEB_AVAILABILITY_UPDATEDEPT)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.HANDLE_PATH) >= 0) {//信息错误
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_HANDLE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.HANDLE_PATH) >= 0) {//信息错误
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_HANDLE) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOERROR_HANDLE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.IGNORE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_IGNORE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.IGNORE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_IGNORE) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOERROR_IGNORE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.DELETE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_DELETE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.DELETE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_DELETE) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOERROR_DELETE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_UPDATEDEPT)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_ERROR_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOERROR_UPDATEDEPT) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOERROR_UPDATEDEPT)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.HANDLE_PATH) >= 0) {//信息更新
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_HANDLE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.HANDLE_PATH) >= 0) {//信息更新
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_HANDLE) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOUPDATE_HANDLE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.IGNORE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_IGNORE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.IGNORE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_IGNORE) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOUPDATE_IGNORE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.DELETE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_DELETE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.DELETE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_DELETE) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOUPDATE_DELETE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_UPDATEDEPT)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.INFO_UPDATE_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INFOUPDATE_UPDATEDEPT) && !authorityService.hasRight(null, null, Authority.KPIWEB_INFOUPDATE_UPDATEDEPT)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.HANDLE_PATH) >= 0) {//服务实用
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_HANDLE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.HANDLE_PATH) >= 0) {//服务实用
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_HANDLE) && !authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_HANDLE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.IGNORE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_IGNORE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.IGNORE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_IGNORE) && !authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_IGNORE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.DELETE_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_DELETE)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.DELETE_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_DELETE) && !authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_DELETE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        }else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
-            Integer siteId = paramCheckAndParse(request);
-            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_UPDATEDEPT)) {
+        } else if (request.getRequestURL().indexOf(UrlPath.SERVICE_LINK_PATH + UrlPath.UPDATE_DEPT_PATH) >= 0) {
+            if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_SERVICE_UPDATEDEPT) && !authorityService.hasRight(null, null, Authority.KPIWEB_SERVICE_UPDATEDEPT)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
         }

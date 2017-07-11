@@ -47,7 +47,7 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@ModelAttribute FrequencySetupSelectRequest selectRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(selectRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+        if (!authorityService.hasRight(selectRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (selectRequest.getSiteId() == null) {
@@ -69,7 +69,8 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.POST)
     @ResponseBody
     public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, ParseException, RemoteException {
-        if (!authorityService.hasRight(frequencySetupSetRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL)) {
+        if (!authorityService.hasRight(frequencySetupSetRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL) && !authorityService.hasRight(null, null, Authority
+                .KPIWEB_INDEXSETUP_ADDMONITORCHNL)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (frequencySetupSetRequest.getSiteId() == null || frequencySetupSetRequest.getPresetFeqId() == null || frequencySetupSetRequest.getChnlIds() == null || frequencySetupSetRequest
@@ -113,7 +114,8 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequest frequencySetupUpdateRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(frequencySetupUpdateRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL)) {
+        if (!authorityService.hasRight(frequencySetupUpdateRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL) && !authorityService.hasRight(null, null, Authority
+                .KPIWEB_INDEXSETUP_UPDATEMONITORCHNL)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (frequencySetupUpdateRequest.getSiteId() == null || frequencySetupUpdateRequest.getId() == null || frequencySetupUpdateRequest.getPresetFeqId() == null ||
@@ -136,7 +138,7 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids) throws BizException, RemoteException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_DELMONITORCHNL)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_DELMONITORCHNL) && !authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_DELMONITORCHNL)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null || ids == null) {
@@ -166,7 +168,8 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq/open", method = RequestMethod.PUT)
     @ResponseBody
     public Object closeOrOpen(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids, @RequestParam("isOpen") Integer isOpen) throws BizException, RemoteException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL) && !authorityService.hasRight(null, null, Authority
+                .KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null || ids == null || isOpen == null) {

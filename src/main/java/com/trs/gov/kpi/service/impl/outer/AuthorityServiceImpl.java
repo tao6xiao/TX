@@ -38,10 +38,10 @@ public class AuthorityServiceImpl implements AuthorityService {
     public boolean hasRight(Integer siteId, Integer channelId, String oprkeys) throws RemoteException {
 
         Map<String, String> params = new HashMap<>();
-        if (StringUtil.isEmpty(String.valueOf(siteId))) {
+        if (siteId != null) {
             params.put("siteId", String.valueOf(siteId));
         }
-        if (StringUtil.isEmpty(String.valueOf(channelId))) {
+        if (channelId != null) {
             params.put("channelId", String.valueOf(channelId));
         }
         params.put("oprkeys", oprkeys);
@@ -76,10 +76,10 @@ public class AuthorityServiceImpl implements AuthorityService {
             if (response.isSuccessful()) {
                 String result = response.body().string();
                 JSONArray jsonArray = JSON.parseObject(result).getJSONObject("DATA").getJSONArray("ROLES");
-                for(Object obj :jsonArray){
-                    JSONObject jsonObj = (JSONObject)obj;
-                    String roleId = (String)jsonObj.get("OBJTYPE");
-                    if(Authority.PLATFORM_ROLE_ID.equals(roleId)){
+                for (Object obj : jsonArray) {
+                    JSONObject jsonObj = (JSONObject) obj;
+                    String roleId = (String) jsonObj.get("OBJTYPE");
+                    if (Authority.PLATFORM_ROLE_ID.equals(roleId)) {
                         return roleId;
                     }
                 }

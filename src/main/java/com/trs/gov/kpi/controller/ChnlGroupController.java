@@ -41,9 +41,8 @@ public class ChnlGroupController {
      */
     @RequestMapping(value = "/chnlgroups", method = RequestMethod.GET)
     @ResponseBody
-    public ChnlGroupsResponse[] getChnlGroups() throws RemoteException, BizException {
-        //TODO 
-        if (!authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+    public ChnlGroupsResponse[] getChnlGroups(@RequestParam("siteId") Integer siteId) throws RemoteException, BizException {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         return chnlGroupService.getChnlGroupsResponseDetailArray();
@@ -61,9 +60,10 @@ public class ChnlGroupController {
      */
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, Integer pageSize, Integer pageIndex) throws BizException,
+    public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, Integer pageSize, Integer pageIndex) throws
+            BizException,
             RemoteException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null || groupId == null) {
@@ -87,11 +87,12 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.POST)
     @ResponseBody
     public Object addChnlGroupChnls(@RequestBody ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(chnlGroupChnlsAddRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE)) {
+        if (!authorityService.hasRight(chnlGroupChnlsAddRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE) && !authorityService.hasRight(null, null, Authority
+                .KPIWEB_INDEXSETUP_ADDCHNLTOTYPE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        if (chnlGroupChnlsAddRequest.getSiteId() == null || chnlGroupChnlsAddRequest.getGroupId() == null || chnlGroupChnlsAddRequest.getChnlIds() == null || chnlGroupChnlsAddRequest
-                .getChnlIds().length == 0) {
+        if (chnlGroupChnlsAddRequest.getSiteId() == null || chnlGroupChnlsAddRequest.getGroupId() == null || chnlGroupChnlsAddRequest.getChnlIds() == null ||
+                chnlGroupChnlsAddRequest.getChnlIds().length == 0) {
             log.error("Invalid parameter:  参数对象chnlGroupChnlsAddRequest中siteId、groupId（分类编号）、chnlIds[]中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
@@ -109,11 +110,13 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.PUT)
     @ResponseBody
     public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException, RemoteException {
-        if (!authorityService.hasRight(chnlGroupChnlRequestDetail.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL)) {
+        if (!authorityService.hasRight(chnlGroupChnlRequestDetail.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL) && !authorityService.hasRight(null, null, Authority
+                .KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null || chnlGroupChnlRequestDetail
-                .getChnlId() == null) {
+        if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null ||
+                chnlGroupChnlRequestDetail
+                        .getChnlId() == null) {
             log.error("Invalid parameter:  参数对象chnlGroupChnlRequestDetails中iteId、groupId（分类编号）、id（当前栏目设置对象编号）、chnlId中（栏目id）至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
@@ -133,7 +136,7 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroup/chnls", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteChnlGroupChnl(@RequestParam Integer siteId, @RequestParam Integer id) throws BizException, RemoteException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE) && !authorityService.hasRight(null, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (siteId == null || id == null) {

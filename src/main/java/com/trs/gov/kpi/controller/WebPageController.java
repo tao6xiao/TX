@@ -31,7 +31,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/speed/count", method = RequestMethod.GET)
     public int selectReplySpeedCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -40,7 +40,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/speed", method = RequestMethod.GET)
     public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -49,7 +49,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/size/count", method = RequestMethod.GET)
     public int selectPageSpaceCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -58,7 +58,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/size", method = RequestMethod.GET)
     public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -67,7 +67,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/depth/count", method = RequestMethod.GET)
     public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -76,7 +76,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/depth", method = RequestMethod.GET)
     public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -85,7 +85,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/code/count", method = RequestMethod.GET)
     public int selectRepeatCodeCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -94,7 +94,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/code", method = RequestMethod.GET)
     public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -103,7 +103,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/length/count", method = RequestMethod.GET)
     public int selectUrlLengthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -112,7 +112,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/length", method = RequestMethod.GET)
     public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -121,7 +121,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handlePageByIds(int siteId, Integer[] ids) throws BizException, RemoteException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_IMPROVE_HANDLE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_IMPROVE_HANDLE) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_HANDLE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.handlePageByIds(siteId, Arrays.asList(ids));
@@ -130,7 +130,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignorePageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_IMPROVE_IGNORE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_IMPROVE_IGNORE) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_IGNORE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.ignorePageByIds(siteId, Arrays.asList(ids));
@@ -139,7 +139,7 @@ public class WebPageController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delPageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_IMPROVE_DELETE)) {
+        if (!authorityService.hasRight(siteId, null, Authority.KPIWEB_IMPROVE_DELETE) && !authorityService.hasRight(null, null, Authority.KPIWEB_IMPROVE_DELETE)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.delPageByIds(siteId, Arrays.asList(ids));

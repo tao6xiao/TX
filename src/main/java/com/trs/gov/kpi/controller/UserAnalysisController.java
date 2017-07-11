@@ -31,7 +31,7 @@ public class UserAnalysisController {
 
     @RequestMapping(value = "/access", method = RequestMethod.GET)
     public Integer getVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
+        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight(null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         check(basRequest);
@@ -40,7 +40,7 @@ public class UserAnalysisController {
 
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
     public History getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
+        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight(null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         check(basRequest);
@@ -49,7 +49,7 @@ public class UserAnalysisController {
 
     @RequestMapping(value = "/stay", method = RequestMethod.GET)
     public Integer getStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
+        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight(null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         check(basRequest);
@@ -58,7 +58,7 @@ public class UserAnalysisController {
 
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
     public History getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
+        if (!authorityService.hasRight(basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight(null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         check(basRequest);

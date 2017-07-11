@@ -39,7 +39,7 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/index/now", method = RequestMethod.GET)
     public Double getPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -54,7 +54,7 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/index/history", method = RequestMethod.GET)
     public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -69,7 +69,7 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/issue/all/count", method = RequestMethod.GET)
     public List<Statistics> getAllIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -84,7 +84,7 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/issue/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
@@ -99,7 +99,7 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/issue/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH)) {
+        if (!authorityService.hasRight(param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
