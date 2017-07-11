@@ -8,6 +8,7 @@
     <result column="subTypeId" jdbcType="INTEGER" property="subTypeId" />
     <result column="detail" jdbcType="VARCHAR" property="detail" />
     <result column="issueTime" jdbcType="TIMESTAMP" property="issueTime" />
+    <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime"/>
     <result column="isResolved" jdbcType="BIT" property="isResolved" />
     <result column="isDel" jdbcType="BIT" property="isDel" />
     <result column="customer1" jdbcType="VARCHAR" property="customer1" />

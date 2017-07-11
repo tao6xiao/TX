@@ -18,10 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -35,7 +34,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 @Slf4j
 @Service
-public class SchedulerServiceImpl implements SchedulerService, ApplicationListener<ContextRefreshedEvent> {
+public class SchedulerServiceImpl implements SchedulerService {
 
 
     @Resource
@@ -103,40 +102,36 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
     }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+    @PostConstruct
+    public void startService() {
+        // 启动完成后，就开始执行
+        try {
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
 
-        if (contextRefreshedEvent.getApplicationContext().getParent() == null) {
+            // 栏目更新检查
+            initInfoUpdateCheckJob(scheduler);
 
-            // 启动完成后，就开始执行
-            try {
-                Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-                scheduler.start();
+            // 首页有效性检查
+            initHomepageCheckJob(scheduler);
 
-                // 栏目更新检查
-                initInfoUpdateCheckJob(scheduler);
+            // 全站链接有效性检查
+            initLinkCheckJob(scheduler);
 
-                // 首页有效性检查
-                initHomepageCheckJob(scheduler);
+            // 文档内容错误检测
+            initContentCheckJob(scheduler);
 
-                // 全站链接有效性检查
-                initLinkCheckJob(scheduler);
+            //计算绩效指数
+            initPerformanceCheckJob(scheduler);
 
-                // 文档内容错误检测
-                initContentCheckJob(scheduler);
+            //按时间节点生成报表
+            initTimeNodeCheckJob(scheduler);
 
-                //计算绩效指数
-                initPerformanceCheckJob(scheduler);
+            //按时间区间生成报表
+            initTimeIntervalCheckJob(scheduler);
 
-                //按时间节点生成报表
-                initTimeNodeCheckJob(scheduler);
-
-                //按时间区间生成报表
-                initTimeIntervalCheckJob(scheduler);
-
-            } catch (SchedulerException e) {
-                log.error("", e);
-            }
+        } catch (SchedulerException e) {
+            log.error("", e);
         }
     }
 
