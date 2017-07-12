@@ -3,7 +3,7 @@ package com.trs.gov.kpi.service.impl.wangkang;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.dao.WkAllSiteDetailMapper;
+import com.trs.gov.kpi.dao.WkSiteDetailMapper;
 import com.trs.gov.kpi.dao.WkIssueMapper;
 import com.trs.gov.kpi.dao.WkRecordMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -33,7 +33,7 @@ import java.util.List;
 public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
 
     @Resource
-    WkAllSiteDetailMapper wkAllSiteDetailMapper;
+    WkSiteDetailMapper wkSiteDetailMapper;
 
     @Resource
     WkSiteManagementService wkSiteManagementService;
@@ -46,7 +46,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
 
     @Override
     public List<WkAllSiteScoreResponsed> queryAllSiteScore() {
-        List<WkSocre> wkSocreList = wkAllSiteDetailMapper.selectAllSiteScore();
+        List<WkSocre> wkSocreList = wkSiteDetailMapper.selectAllSiteScore();
 
         List<WkAllSiteScoreResponsed> wkAllSiteScoreList = new ArrayList<>();
         for (WkSocre wkScore :wkSocreList) {
@@ -77,7 +77,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        int itemCount = wkAllSiteDetailMapper.selectAllSiteScoreCount(filter);
+        int itemCount = wkSiteDetailMapper.selectAllSiteScoreCount(filter);
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
 

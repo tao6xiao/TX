@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkStatsCountMapper">
+
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkStatsCount">
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="typeId" jdbcType="INTEGER" property="typeId" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+        <result column="isResolved" jdbcType="INTEGER" property="isResolved" />
+        <result column="unResolved" jdbcType="INTEGER" property="unResolved" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        siteId, checkId, typeId, checkTime, isResolved, unResolved
+    </sql>
+
+    <sql id="all_conditions_sql">
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.where_sql"/>
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.group_sql"/>
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.order_sql"/>
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.page_sql"/>
+    </sql>
+
+    <select id="getInvalidlinkStatsBySiteId" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkstatscount
+        where siteId = #{siteId,jdbcType=INTEGER}
+        and checkId = (select MAX(checkId) FROM wkscore where siteId = #{siteId,jdbcType=INTEGER})
+        <include refid="all_conditions_sql"/>
+    </select>
+
+    <select id="getInvalidlinkHistoryStatsBySiteId" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkstatscount
+        where siteId = #{siteId,jdbcType=INTEGER}
+        <include refid="all_conditions_sql"/>
+    </select>
+
+
+
+</mapper>

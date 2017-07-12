@@ -1,0 +1,156 @@
+package com.trs.gov.kpi.controller;
+
+import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedAndUpdateContentResponse;
+import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
+import com.trs.gov.kpi.entity.responsedata.WkStatsCountResponse;
+import com.trs.gov.kpi.service.wangkang.WkAvgSpeedUpdateContentService;
+import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * 单个网站信息查询
+ *
+ * Created by li.hao on 2017/7/12.
+ */
+@Slf4j
+@RestController
+@RequestMapping("gov/wangkang/one/site")
+public class WkOneSiteDetailController {
+
+    @Resource
+    WkOneSiteDetailService wkOneSiteDetailService;
+
+    @Resource
+    WkAvgSpeedUpdateContentService wkAvgSpeedUpdateContentService;
+
+    /**
+     * 根据网站编号查询网站总分数 （获取最近一次检查记录）
+     * @param siteId
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/score", method = RequestMethod.GET)
+    @ResponseBody
+    public WkOneSiteScoreResponse getOneSiteScoreBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getOneSiteScoreBySiteId(siteId);
+    }
+
+    /**
+     * 根据网站编号查询历史评分记录
+     * @param siteId
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/scorelist", method = RequestMethod.GET)
+    @ResponseBody
+    public List<WkOneSiteScoreResponse> getOneSiteScoreListById(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getOneSiteScoreListBySiteId(siteId);
+    }
+
+    /**
+     * 链接可用性---根据网站编号查询已解决和未解决问题总数
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "invalidlink/count/bytype", method = RequestMethod.GET)
+    @ResponseBody
+    public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getInvalidlinkStatsBySiteId(siteId);
+    }
+
+    /**
+     * 链接可用性---根据网站编号已解决和未解决问题总数历史记录
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "invalidlink/counttrend/bytype", method = RequestMethod.GET)
+    @ResponseBody
+    public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getInvalidlinkHistoryStatsBySiteId(siteId);
+    }
+
+//    public ApiPageData getInvalidLinkUnhandledBySiteId(PageDataRequestParam param) throws BizException {
+//        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+//        return null;
+//    }
+
+    /**
+     * 内容检测---根据网站编号查询已解决和未解决问题总数
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "contenterror/count/bytype", method = RequestMethod.GET)
+    @ResponseBody
+    public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getContentErorStatsBySiteId(siteId);
+    }
+
+    /**
+     * 内容检测---根据网站编号已解决和未解决问题总数历史记录
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "contenterror/counttrend/bytype", method = RequestMethod.GET)
+    @ResponseBody
+    public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数siteId存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getContentErorHistoryStatsBySiteId(siteId);
+    }
+
+    /**
+     * 访问速度---查询网站平均访问速度历史记录
+     * @return
+     */
+    @RequestMapping(value = "speed/counttrend/bytype/avg", method = RequestMethod.GET)
+    @ResponseBody
+    public List<WkAvgSpeedAndUpdateContentResponse> getAvgSpeedHistory(){
+        return wkAvgSpeedUpdateContentService.getAvgSpeedHistory();
+    }
+
+    /**
+     * 网站更新---查询网站每次更新数量的历史记录
+     * @return
+     */
+    @RequestMapping(value = "update/counttrend/bytype/history", method = RequestMethod.GET)
+    @ResponseBody
+    public List<WkAvgSpeedAndUpdateContentResponse> getUpdateContentHistory(){
+        return wkAvgSpeedUpdateContentService.getUpdateContentHistory();
+    }
+
+}

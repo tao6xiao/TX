@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkAvgSpeedUpdateContentMapper">
+
+    <resultMap id="WkAvgSpeedMap" type="com.trs.gov.kpi.entity.wangkang.WkAvgSpeed">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+        <result column="avgSpeed" jdbcType="INTEGER" property="overSpeed" />
+    </resultMap>
+
+    <sql id="Wk_Avg_Speed_List">
+        id, siteId, checkId, checkTime, avgSpeed
+    </sql>
+
+    <resultMap id="WkUpdateContent" type="com.trs.gov.kpi.entity.wangkang.WkUpdateContent">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+        <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
+    </resultMap>
+
+    <sql id="Wk_Update_Content_List">
+        id, siteId, checkId, checkTime, updateContent
+    </sql>
+
+    <select id="getAvgSpeedHistory" resultMap="WkAvgSpeedMap">
+        select
+        <include refid="Wk_Avg_Speed_List" />
+        from wkavgspeed
+        where 1 = 1
+    </select>
+
+    <select id="getUpdateContentHistory" resultMap="WkUpdateContent">
+        select
+        <include refid="Wk_Update_Content_List" />
+        from wkupdatecontent
+        where 1 = 1
+    </select>
+
+</mapper>

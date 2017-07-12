@@ -10,7 +10,7 @@ import java.util.List;
  * Created by li.hao on 2017/7/10.
  */
 @Mapper
-public interface WkAllSiteDetailMapper {
+public interface WkSiteDetailMapper {
 
     /**
      * 查询所有网站总分
