@@ -101,7 +101,7 @@ public class SGServiceImpl implements SGService {
             if (response.isSuccessful()) {
                 String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
-                    return null;
+                    throw new RemoteException(msg);
                 }
                 ApiResult result = JSON.parseObject(jsonResult, ApiResult.class);
                 return JSON.parseObject(result.getData(), clazz);
