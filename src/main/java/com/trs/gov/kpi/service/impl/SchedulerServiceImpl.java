@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.EnumCheckJobType;
-import com.trs.gov.kpi.constant.FreqUnit;
-import com.trs.gov.kpi.constant.FrequencyType;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
@@ -118,7 +115,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             // 全站链接有效性检查
             initLinkCheckJob(scheduler);
 
-            // 文档内容错误检测
+             //文档内容错误检测
             initContentCheckJob(scheduler);
 
             //计算绩效指数
@@ -129,6 +126,9 @@ public class SchedulerServiceImpl implements SchedulerService {
 
             //按时间区间生成报表
             initTimeIntervalCheckJob(scheduler);
+
+            //服务链接可用性监测
+            initServiceLinkCheckJob(scheduler);
 
         } catch (SchedulerException e) {
             log.error("", e);
@@ -238,6 +238,23 @@ public class SchedulerServiceImpl implements SchedulerService {
         for (MonitorSite site : allMonitorSites) {
             // 每天凌晨0点执行一次
             scheduleJob(scheduler, EnumCheckJobType.TIMENODE_REPORT_GENERATE, site, "0 0 0 * * ?");
+        }
+    }
+
+    /**
+     * 服务链接监测
+     *
+     * @param scheduler
+     */
+    private void initServiceLinkCheckJob(Scheduler scheduler) {
+        // 查询数据库里面的所有站点
+        final List<MonitorSite> allMonitorSites = monitorSiteService.getAllMonitorSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        for (MonitorSite site : allMonitorSites) {
+            scheduleJob(scheduler, EnumCheckJobType.SERVICE_LINK, site, DateUtil.SECOND_ONE_DAY);
         }
     }
 
@@ -401,6 +418,9 @@ public class SchedulerServiceImpl implements SchedulerService {
             case TIMEINTERVAL_REPORT_GENERATE:
                 return applicationContext.getBean
                         (ReportGenerateScheduler.class);
+            case SERVICE_LINK:
+                return applicationContext.getBean
+                        (ServiceLinkScheduler.class);
             default:
                 return null;
         }

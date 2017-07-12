@@ -11,7 +11,8 @@ public enum EnumCheckJobType {
     CHECK_INFO_UPDATE(4),
     CALCULATE_PERFORMANCE(5),
     TIMENODE_REPORT_GENERATE(6),
-    TIMEINTERVAL_REPORT_GENERATE(7);
+    TIMEINTERVAL_REPORT_GENERATE(7),
+    SERVICE_LINK(8);
 
     public final int value;
 
