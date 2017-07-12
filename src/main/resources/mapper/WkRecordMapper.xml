@@ -28,7 +28,6 @@
         from wkavgspeed
         where siteId = #{siteId,jdbcType=INTEGER}
         AND  checkId = #{checkId,jdbcType=INTEGER}
-        AND typeId = #{typeId,jdbcType=INTEGER}
     </select>
 
     <select id="getWkRecordUpdateContent" resultType="int">
@@ -37,7 +36,6 @@
         from wkupdatecontent
         where siteId = #{siteId,jdbcType=INTEGER}
         AND  checkId = #{checkId,jdbcType=INTEGER}
-        AND typeId = #{typeId,jdbcType=INTEGER}
     </select>
 
     <insert id="insert" parameterType="com.trs.gov.kpi.entity.dao.DBRow">
