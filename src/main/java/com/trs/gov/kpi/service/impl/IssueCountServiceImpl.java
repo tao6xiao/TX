@@ -84,6 +84,8 @@ public class IssueCountServiceImpl implements IssueCountService {
             filter.addCond(IssueTableField.SITE_ID, siteIds[i]);
             filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
+            filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
+            filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
             int count = issueMapper.count(filter);
             resolvedCount = resolvedCount + count;
         }
@@ -278,6 +280,8 @@ public class IssueCountServiceImpl implements IssueCountService {
             }
         } else if (type == IssueIndicator.SOLVED_ALL) {
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
+            filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
+            filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
         }
     }
 
