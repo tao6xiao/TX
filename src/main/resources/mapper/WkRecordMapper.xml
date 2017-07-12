@@ -2,15 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.WkRecordMapper">
 
-    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkRecord">
+    <resultMap id="WkAvgSpeedMap" type="com.trs.gov.kpi.entity.wangkang.WkAvgSpeed">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="checkId" jdbcType="INTEGER" property="checkId" />
         <result column="siteId" jdbcType="INTEGER" property="siteId" />
-        <result column="typeId" jdbcType="INTEGER" property="typeId" />
         <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
         <result column="avgSpeed" jdbcType="INTEGER" property="avgSpeed" />
+    </resultMap>
+
+    <resultMap id="WkUpdateContent" type="com.trs.gov.kpi.entity.wangkang.WkUpdateContent">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
         <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
     </resultMap>
+
     <sql id="Base_Column_List">
         id, checkId, siteId, typeId, checkTime, avgSpeed, updateContent
     </sql>
@@ -18,7 +25,7 @@
     <select id="getWkRecordAvgSpeed" resultType="int">
         select
           avgSpeed
-        from wkrecord
+        from wkavgspeed
         where siteId = #{siteId,jdbcType=INTEGER}
         AND  checkId = #{checkId,jdbcType=INTEGER}
         AND typeId = #{typeId,jdbcType=INTEGER}
@@ -27,7 +34,7 @@
     <select id="getWkRecordUpdateContent" resultType="int">
         select
         updateContent
-        from wkrecord
+        from wkupdatecontent
         where siteId = #{siteId,jdbcType=INTEGER}
         AND  checkId = #{checkId,jdbcType=INTEGER}
         AND typeId = #{typeId,jdbcType=INTEGER}

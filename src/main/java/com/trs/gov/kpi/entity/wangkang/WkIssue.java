@@ -7,6 +7,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 网站错误信息
+ *
  * Created by li.hao on 2017/7/7.
  */
 @Data
