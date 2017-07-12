@@ -5,7 +5,10 @@ import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.msgqueue.CommonMQ;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Scope("prototype")
 public class PageSpider {
+
+    @Setter
+    private CommonMQ checkContentMQ;
+
+    @Setter
+    private CommonMQ accessSpeedMQ;
 
     // 过大页面阀值
     private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
@@ -151,7 +160,6 @@ public class PageSpider {
 
 
 
-
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
             } else {
@@ -223,7 +231,7 @@ public class PageSpider {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized List<Pair<String, String>> linkCheck(int threadNum, String baseUrl) {
+    public synchronized List<Pair<String, String>> fetchAllPages(int threadNum, String baseUrl) {
 
 
         log.info("linkCheck started!");
@@ -237,13 +245,9 @@ public class PageSpider {
         Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();
         List<Pair<String, String>> unavailableUrlAndParentUrls = new LinkedList<>();
         for (String unavailableUrl : unavailableUrls) {
-
             Set<String> parentUrls = pageParentMap.get(unavailableUrl);
-
             if (CollectionUtils.isNotEmpty(parentUrls)) {
-
                 for (String parentUrl : parentUrls) {
-
                     unavailableUrlAndParentUrls.add(new ImmutablePair<String, String>(parentUrl, unavailableUrl));
                 }
             }

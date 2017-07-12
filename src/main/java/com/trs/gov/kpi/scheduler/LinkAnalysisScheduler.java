@@ -65,6 +65,10 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Getter
     private CommonMQ checkContentMQ;
 
+    @Setter
+    @Getter
+    private CommonMQ accessSpeedMQ;
+
     @Getter
     @Setter
     private SiteManagement site;
@@ -75,7 +79,10 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
 
-            List<Pair<String, String>> unavailableUrlAndParentUrls = pageSpider.linkCheck(5, baseUrl);
+            pageSpider.setAccessSpeedMQ(accessSpeedMQ);
+            pageSpider.setCheckContentMQ(checkContentMQ);
+
+            List<Pair<String, String>> unavailableUrlAndParentUrls = pageSpider.fetchAllPages(5, baseUrl);
             Date checkTime = new Date();
             for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
                 LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();

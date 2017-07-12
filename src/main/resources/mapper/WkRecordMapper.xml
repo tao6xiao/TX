@@ -33,4 +33,15 @@
         AND typeId = #{typeId,jdbcType=INTEGER}
     </select>
 
+    <insert id="insert" parameterType="com.trs.gov.kpi.entity.dao.DBRow">
+        insert into wkrecord
+        <foreach collection="fields" item="fieldName" open="(" separator="," close=")">
+            ${fieldName}
+        </foreach>
+        values
+        <foreach collection="values" item="value" open="(" separator="," close=")">
+            #{value}
+        </foreach>
+    </insert>
+
 </mapper>

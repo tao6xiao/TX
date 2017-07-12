@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.dao;
 
+import com.trs.gov.kpi.entity.dao.DBRow;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,5 +29,12 @@ public interface WkRecordMapper {
      * @return
      */
     Integer getWkRecordUpdateContent(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId,@Param("typeId") Integer typeId);
+
+    /**
+     * 插入数据
+     * @param row
+     * @return
+     */
+    int insert(DBRow row);
 
 }
