@@ -15,20 +15,18 @@ public interface WkRecordMapper {
      *
      * @param siteId
      * @param checkId
-     * @param typeId
      * @return
      */
-    Integer getWkRecordAvgSpeed(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId,@Param("typeId") Integer typeId);
+    Integer getWkRecordAvgSpeed(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId);
 
     /**
      * 根据网站编号，检查编号，问题类型编号查询网站更新数
      *
      * @param siteId
      * @param checkId
-     * @param typeId
      * @return
      */
-    Integer getWkRecordUpdateContent(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId,@Param("typeId") Integer typeId);
+    Integer getWkRecordUpdateContent(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId);
 
     /**
      * 插入数据
