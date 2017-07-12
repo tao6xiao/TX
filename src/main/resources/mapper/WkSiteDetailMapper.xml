@@ -13,6 +13,7 @@
         <result column="overSpeed" jdbcType="INTEGER" property="overSpeed" />
         <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
     </resultMap>
+
     <sql id="Base_Column_List">
         id, siteId, checkId, checkTime, total, invalidLink, contentError, overSpeed, updateContent
     </sql>
@@ -30,6 +31,21 @@
         count(1)
         from wkscore
         where 1 = 1
+    </select>
+
+    <select id="getOneSiteScoreBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkscore
+        where siteId = #{siteId,jdbcType=INTEGER}
+        and checkId = (select MAX(checkId) FROM wkscore where siteId = #{siteId,jdbcType=INTEGER})
+    </select>
+
+    <select id="getOneSiteScoreBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkscore
+        where siteId = #{siteId,jdbcType=INTEGER}
     </select>
 
 </mapper>

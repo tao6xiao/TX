@@ -20,14 +20,14 @@
     <select id="selectSiteManagementByStieId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
-        from wksitemanagement
+        from wksite
         where siteId = #{siteId,jdbcType=INTEGER}
     </select>
 
     <select id="selectAllSiteList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
-        from wksitemanagement
+        from wksite
         where 1 = 1
         <include refid="all_conditions_sql"/>
     </select>
@@ -35,7 +35,7 @@
     <select id="selectAllSiteCount" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
         select
         count(1)
-        from wksitemanagement
+        from wksite
         where 1 = 1
         <include refid="all_conditions_sql"/>
     </select>
@@ -43,20 +43,20 @@
     <select id="getSiteNameBySiteId" parameterType="java.lang.Integer" resultType="java.lang.String">
         select
         siteName
-        from wksitemanagement
+        from wksite
         where siteId = #{siteId,jdbcType=INTEGER}
     </select>
 
     <select id="getSiteCountBySiteName" parameterType="java.lang.String" resultType="int">
         select
         count(1)
-        from wksitemanagement
+        from wksite
         where siteName = #{siteName,jdbcType=INTEGER}
     </select>
 
 
     <update id="updateSiteManagement" parameterType="com.trs.gov.kpi.entity.wangkang.SiteManagement">
-        update wksitemanagement
+        update wksite
         <set>
             <if test="siteName != null">
                 siteName = #{siteName,jdbcType=VARCHAR},
@@ -84,7 +84,7 @@
     </update>
 
     <update id="deleteSiteBySiteIds" parameterType="java.util.List">
-        UPDATE wksitemanagement
+        UPDATE wksite
         SET isDel = 1
         WHERE siteId IN
         <foreach collection="siteIds" item="item" open="(" close=")" separator=",">

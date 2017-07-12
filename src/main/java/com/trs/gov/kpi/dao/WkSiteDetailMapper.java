@@ -27,4 +27,22 @@ public interface WkAllSiteDetailMapper {
      */
     Integer selectAllSiteScoreCount(QueryFilter filter);
 
+    /**
+     * 根据网站编号查询网站总分数 （获取最近一次检查记录）
+     *
+     * @param siteId
+     * @return
+     */
+    WkSocre getOneSiteScoreBySiteId(Integer siteId);
+
+    /**
+     * 根据网站编号查询历史评分记录
+     *
+     * @param siteId
+     * @return
+     */
+    List<WkSocre> getOneSiteScoreListBySiteId(Integer siteId);
+
+
+
 }
