@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
+<Configuration status="INFO">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
             <PatternLayout>
@@ -7,8 +7,8 @@
             </PatternLayout>
         </Console>
         <!-- 按日期每天生成log文件 -->
-        <RollingFile name="RollingFile" fileName="/opt/TRS/TRSWCMV7/wcmlogs/kpi/info.log"
-                     filePattern="/opt/TRS/TRSWCMV7/wcmlogs/kpi/info-%d{yyyy-MM-dd}.log">
+        <RollingFile name="RollingFile" fileName="/opt/TRS/TRSWCMV7/wcmlogs/wk/info.log"
+                     filePattern="/opt/TRS/TRSWCMV7/wcmlogs/wk/info-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="%d %p %C{1.} [%t]: %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
@@ -21,6 +21,30 @@
         </RollingFile>
     </Appenders>
     <Loggers>
+        <logger name="log4j.logger.noModule" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="log4j.logger.org.mybatis.jpetstore" level="trace" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="log4j.logger.org.mybatis" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="log4j.logger.java.sql" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="log4j.logger.java.sql.Connection" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="log4j.logger.java.sql.Statement" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="log4j.logger.java.sql.PreparedStatement" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
+        <logger name="log4j.logger.java.sql.ResultSet" level="debug" additivity="false">
+            <appender-ref ref="Console"/>
+        </logger>
         <!-- 输出info级别信息 -->
         <Root level="INFO">
             <AppenderRef ref="Console" />
