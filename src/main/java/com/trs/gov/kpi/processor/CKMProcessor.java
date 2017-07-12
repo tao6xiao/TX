@@ -1,4 +1,4 @@
-package com.trs.gov.kpi.checker;
+package com.trs.gov.kpi.processor;
 
 import com.trs.gov.kpi.entity.msg.CheckContentMsg;
 import com.trs.gov.kpi.msgqueue.MQListener;
@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
  * Created by li.hao on 2017/7/11.
  */
 @Component
-public class CKMChecker implements MQListener {
+public class CKMProcessor implements MQListener {
 
     @Resource
     ApplicationContext appContext;
@@ -24,7 +24,7 @@ public class CKMChecker implements MQListener {
     public void onMessage(Object msg) {
 
         // 监听待检测的内容消息
-        CKMCheckWorker worker = appContext.getBean(CKMCheckWorker.class);
+        CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);
         worker.setContent((CheckContentMsg)msg);
 
         // 把检测内容分配给检测线程

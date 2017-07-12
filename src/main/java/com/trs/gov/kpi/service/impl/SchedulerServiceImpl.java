@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.EnumCheckJobType;
-import com.trs.gov.kpi.constant.FreqUnit;
-import com.trs.gov.kpi.constant.FrequencyType;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
@@ -14,6 +11,7 @@ import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
+import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +19,9 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -38,23 +35,19 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 @Slf4j
 @Service
-public class SchedulerServiceImpl implements SchedulerService, ApplicationListener<ContextRefreshedEvent> {
-
-
-    @Autowired
-    private CommonMQ checkContentMQ;
+public class SchedulerServiceImpl implements SchedulerService {
 
     @Resource
-    SchedulerTask[] schedulerTasks;
+    private WkSiteManagementService wkSiteManagementService;
 
     @Resource
-    MonitorSiteService monitorSiteService;
+    private MonitorSiteService monitorSiteService;
 
     @Resource
-    MonitorFrequencyMapper monitorFrequencyMapper;
+    private MonitorFrequencyMapper monitorFrequencyMapper;
 
     @Resource
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
 
     @Override
@@ -109,42 +102,39 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
     }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+    @PostConstruct
+    public void startService() {
 
-        if (contextRefreshedEvent.getApplicationContext().getParent() == null) {
+        // 启动完成后，就开始执行
+        try {
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
 
-            // 启动完成后，就开始执行
-            try {
-                Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-                scheduler.start();
+//            // 栏目更新检查
+//            initInfoUpdateCheckJob(scheduler);
+//
+//            // 首页有效性检查
+//            initHomepageCheckJob(scheduler);
+//
+//            // 全站链接有效性检查
+//            initLinkCheckJob(scheduler);
+//
+//            // 文档内容错误检测
+//            initContentCheckJob(scheduler);
+//
+//            //计算绩效指数
+//            initPerformanceCheckJob(scheduler);
+//
+//            //按时间节点生成报表
+//            initTimeNodeCheckJob(scheduler);
+//
+//            //按时间区间生成报表
+//            initTimeIntervalCheckJob(scheduler);
 
-                // 栏目更新检查
-                initInfoUpdateCheckJob(scheduler);
+            initCheckJob(scheduler);
 
-                // 首页有效性检查
-                initHomepageCheckJob(scheduler);
-
-                // 全站链接有效性检查
-                initLinkCheckJob(scheduler);
-
-                // 文档内容错误检测
-                initContentCheckJob(scheduler);
-
-                //计算绩效指数
-                initPerformanceCheckJob(scheduler);
-
-                //按时间节点生成报表
-                initTimeNodeCheckJob(scheduler);
-
-                //按时间区间生成报表
-                initTimeIntervalCheckJob(scheduler);
-
-                checkContentMQ.start();
-
-            } catch (SchedulerException e) {
-                log.error("", e);
-            }
+        } catch (SchedulerException e) {
+            log.error("", e);
         }
     }
 
@@ -166,6 +156,39 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
             scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, DateUtil.SECOND_ONE_DAY);
         }
     }
+
+    /**
+     * 启动栏目更新检查任务
+     *
+     * @param scheduler
+     */
+    private void initCheckJob(Scheduler scheduler) {
+
+        // 查询数据库里面的所有站点
+        final List<SiteManagement> allMonitorSites = wkSiteManagementService.getAllSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        // 每一个站点一个job
+        for (SiteManagement site : allMonitorSites) {
+            Types.WkAutoCheckType checkType = Types.WkAutoCheckType.valueOf(site.getAutoCheckType());
+            scheduleJob(scheduler, checkType, site);
+        }
+    }
+
+
+    /**
+     *
+     * @param scheduler
+     * @param checkType
+     * @param site
+     */
+    private void scheduleJob(Scheduler scheduler, Types.WkAutoCheckType checkType, SiteManagement site) {
+//        scheduleJob(scheduler, jobType, site, cronSchedule(cronExpress));
+    }
+
+
 
     /**
      * 首页有效性检测
@@ -441,7 +464,6 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
 
         // 真正的执行任务
         task.setSite(site);
-        task.setCheckContentMQ(checkContentMQ);
         job.getJobDataMap().put("task", task);
 
         // 每天执行一次

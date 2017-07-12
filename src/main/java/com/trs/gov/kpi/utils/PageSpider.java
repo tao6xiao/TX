@@ -6,6 +6,10 @@ import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
+import com.trs.gov.kpi.processor.AccessSpeedProcessor;
+import com.trs.gov.kpi.processor.CKMProcessor;
+import com.trs.gov.kpi.processor.InvalidLinkProcessor;
+import com.trs.gov.kpi.processor.UpdateContentProcessor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +18,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.*;
@@ -35,11 +40,35 @@ import java.util.concurrent.ConcurrentHashMap;
 @Scope("prototype")
 public class PageSpider {
 
-    @Setter
+    // 内容监测
+    @Autowired
     private CommonMQ checkContentMQ;
 
-    @Setter
+    // 访问速度
+    @Autowired
     private CommonMQ accessSpeedMQ;
+
+    // 链接可用性
+    @Autowired
+    private CommonMQ invalidLinkMQ;
+
+    // 网页更新
+    @Autowired
+    private CommonMQ updateContentMQ;
+
+
+    @Autowired
+    private CKMProcessor ckmProcessor;
+
+    @Autowired
+    private AccessSpeedProcessor accessSpeedProcessor;
+
+    @Autowired
+    private InvalidLinkProcessor invalidLinkProcessor;
+
+    @Autowired
+    private UpdateContentProcessor updateContentProcessor;
+
 
     // 过大页面阀值
     private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
@@ -153,14 +182,14 @@ public class PageSpider {
             isUrlAvailable.set(false);
             Date startDate = new Date();
             Page result = super.download(request, task);
+            final ResultItems resultItems = result.getResultItems();
             Date endDate = new Date();
             long useTime = endDate.getTime() - startDate.getTime();
 
             // TODO 访问时间，入库
 
-
-
             if (!isUrlAvailable.get()) {
+
                 unavailableUrls.add(request.getUrl().intern());
             } else {
 
@@ -222,6 +251,18 @@ public class PageSpider {
         this.baseUrl = baseUrl;
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
+
+        // 内容监测
+        checkContentMQ.registerListener(ckmProcessor);
+
+        // 访问速度
+        accessSpeedMQ.registerListener(accessSpeedProcessor);
+
+        // 链接可用性
+        invalidLinkMQ.registerListener(invalidLinkProcessor);
+
+        // 网页更新
+        updateContentMQ.registerListener(updateContentProcessor);
     }
 
     /**

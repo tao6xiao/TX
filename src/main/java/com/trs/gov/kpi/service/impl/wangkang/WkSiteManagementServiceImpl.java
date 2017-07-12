@@ -5,6 +5,7 @@ import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WkSiteManagementMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -85,6 +86,10 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
         return wkSiteManagementMapper.getSiteNameBySiteId(siteId);
     }
 
+    @Override
+    public List<SiteManagement> getAllSites() {
+        return wkSiteManagementMapper.selectAllSiteList(new QueryFilter(Table.WK_SITEMANAGEMENT));
+    }
 
     private List<WkSiteManagementResponse> getWkSiteResponseBysiteManagementList(List<SiteManagement> siteManagementList){
         List<WkSiteManagementResponse> wkSiteResponseList = new ArrayList<>();

@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.msgqueue;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Created by li.hao on 2017/7/11.
  */
 @Component
+@Scope("prototype")
 public class CommonMQ extends Thread {
 
     private ConcurrentSkipListSet<MQListener> listeners = new ConcurrentSkipListSet<>();

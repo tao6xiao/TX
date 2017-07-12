@@ -1,4 +1,4 @@
-package com.trs.gov.kpi.checker;
+package com.trs.gov.kpi.processor;
 
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
@@ -32,7 +32,7 @@ import java.util.List;
 @Slf4j
 @Component
 @Scope("prototype")
-public class CKMCheckWorker implements Runnable {
+public class CKMProcessWorker implements Runnable {
 
     @Resource
     private ContentCheckApiService contentCheckApiService;

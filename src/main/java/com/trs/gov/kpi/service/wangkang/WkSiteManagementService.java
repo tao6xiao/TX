@@ -66,4 +66,9 @@ public interface WkSiteManagementService {
      */
     String getSiteNameBySiteId(Integer siteId);
 
+    /**
+     * 获取所有的站点
+     * @return
+     */
+    List<SiteManagement> getAllSites();
 }

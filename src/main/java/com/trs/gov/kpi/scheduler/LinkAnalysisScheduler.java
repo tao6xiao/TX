@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -61,14 +62,6 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Getter
     private Boolean isTimeNode;
 
-    @Setter
-    @Getter
-    private CommonMQ checkContentMQ;
-
-    @Setter
-    @Getter
-    private CommonMQ accessSpeedMQ;
-
     @Getter
     @Setter
     private SiteManagement site;
@@ -78,9 +71,6 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
-
-            pageSpider.setAccessSpeedMQ(accessSpeedMQ);
-            pageSpider.setCheckContentMQ(checkContentMQ);
 
             List<Pair<String, String>> unavailableUrlAndParentUrls = pageSpider.fetchAllPages(5, baseUrl);
             Date checkTime = new Date();
