@@ -38,6 +38,9 @@ public class Issue {
     private Date issueTime;//监测时间
 
     @DBField
+    private Date checkTime;//检查时间
+
+    @DBField
     private Integer isResolved = 0;//处理状态
 
     @DBField
@@ -159,5 +162,13 @@ public class Issue {
 
     public void setDeptId(Integer deptId) {
         this.deptId = deptId;
+    }
+
+    public Date getCheckTime() {
+        return checkTime;
+    }
+
+    public void setCheckTime(Date checkTime) {
+        this.checkTime = checkTime;
     }
 }
