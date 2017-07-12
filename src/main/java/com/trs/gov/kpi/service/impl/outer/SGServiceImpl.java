@@ -5,6 +5,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -56,8 +57,9 @@ public class SGServiceImpl implements SGService {
     }
 
     @Override
-    public SGPageDataRes getAllService(PageDataRequestParam param) throws RemoteException {
-        Map<String, String> paramMap = initParamMap(param);
+    public SGPageDataRes getAllService(Integer siteId) throws RemoteException {
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("siteId", Integer.toString(siteId));
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/allBsznUrl.jsp", paramMap);
         return (SGPageDataRes) getResult(client, request, "获取服务链接失败！", SGPageDataRes.class);
@@ -101,7 +103,8 @@ public class SGServiceImpl implements SGService {
                 if (StringUtil.isEmpty(jsonResult)) {
                     return null;
                 }
-                return JSON.parseObject(jsonResult, clazz);
+                ApiResult result = JSON.parseObject(jsonResult, ApiResult.class);
+                return JSON.parseObject(result.getData(), clazz);
             } else {
                 log.error("failed to getSGService, error: " + response);
                 throw new RemoteException(msg);

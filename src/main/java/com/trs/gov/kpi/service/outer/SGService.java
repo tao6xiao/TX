@@ -38,11 +38,11 @@ public interface SGService {
     List<SGHistoryStatistics> getSGHistoryCount(PageDataRequestParam param) throws RemoteException;
 
     /**
-     * 查询所有的服务链接
+     * 查询当前站点所有的服务链接
      *
-     * @param param
+     * @param siteId
      * @return
      * @throws RemoteException
      */
-    SGPageDataRes getAllService(PageDataRequestParam param) throws RemoteException;
+    SGPageDataRes getAllService(Integer siteId) throws RemoteException;
 }
