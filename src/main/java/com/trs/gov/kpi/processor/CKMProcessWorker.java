@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.processor;
 
+import com.alibaba.fastjson.JSONObject;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
@@ -18,13 +19,13 @@ import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by li.hao on 2017/7/11.
@@ -45,47 +46,53 @@ public class CKMProcessWorker implements Runnable {
 
     @Override
     public void run() {
+        buildList();
     }
 
-    private List<Issue> buildList(Document document, List<String> checkTypeList) {
+    private List<Issue> buildList() {
         List<Issue> issueList = new ArrayList<>();
+        List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
+
+        String cleanText = Jsoup.clean(content.getContent(), Whitelist.none());
+        cleanText = cleanText.replaceAll("&nbsp", " ");
 
         ContentCheckResult result = null;
         try {
-            result = contentCheckApiService.check(content.getContent(), CollectionUtil.join(checkTypeList, ";"));
+            result = contentCheckApiService.check(cleanText, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
-            log.error("failed to check document " + document.getChannelId() + "->" + document.getMetaDataId(), e);
+            log.error("failed to check content of url [" + content.getUrl() + "]", e);
             return issueList;
         }
 
         if (!result.isOk()) {
-            log.error("return error: " + result.getMessage() + ", document: " + document.getChannelId() + "->" + document.getMetaDataId());
+            log.error("return error: " + result.getMessage() + ", url [" + content.getUrl() + "]");
             return issueList;
         }
 
         if (result.getResult() != null) {
-            issueList = toIssueList(document, checkTypeList, result);
+            issueList = toIssueList(checkTypeList, result);
         }
         return issueList;
     }
 
-    private List<Issue> toIssueList(Document document, List<String> checkTypeList, ContentCheckResult result) {
+    private List<Issue> toIssueList(List<String> checkTypeList, ContentCheckResult result) {
         List<Issue> issueList = new ArrayList<>();
         for (String checkType : checkTypeList) {
             Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
             String errorContent = result.getResultOfType(subIssueType);
             if (StringUtil.isEmpty(errorContent)) {
                 continue;
+            } else {
+                final Set<Map.Entry<String, Object>> entries = JSONObject.parseObject(errorContent).entrySet();
+                for (Map.Entry<String, Object> entry : entries) {
+                    String errorInfo = entry.getKey();
+                    final String[] infos = errorInfo.split(":");
+                    String word = infos[0];
+                    String correct = infos[1];
+                    
+
+                }
             }
-            Issue issue = new Issue();
-            issue.setSiteId(document.getSiteId());
-            issue.setCustomer2(Integer.toString(document.getChannelId()));
-            issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
-            issue.setSubTypeId(subIssueType.value);
-            issue.setDetail(document.getDocPubUrl());
-            issue.setIssueTime(new Date());
-            issue.setCustomer1(errorContent);
-            issueList.add(issue);
         }
         return issueList;
     }

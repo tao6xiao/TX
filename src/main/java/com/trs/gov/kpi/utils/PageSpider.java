@@ -188,50 +188,49 @@ public class PageSpider {
                     accessSpeedMsg.setCheckId(checkId);
                     accessSpeedMsg.setContent(result.getRawText());
                     count++;
-                    log.info("===========count = " + count);
                     commonMQ.publishMsg(accessSpeedMsg);
                 }
-
-                String[] urlSize = request.getUrl().split("/");
-                String chnlName = urlSize[3];
-
-                if(useTime > THRESHOLD_MAX_REPLY_SPEED){
-                    replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
-                            chnlName,
-                            request.getUrl().intern(),
-                            useTime,
-                            Long.valueOf(result.getRawText().getBytes().length),
-                            new Date()));
-                }
-
-                if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
-                    biggerPage.add(new PageSpace(chnlName,
-                            request.getUrl().intern(),
-                            useTime,
-                            Long.valueOf(result.getRawText().getBytes().length),
-                            new Date()));
-                }
-
-                // TODO 发送内容，进行检测
-
-                if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
-                    biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
-                            chnlName,
-                            request.getUrl().intern(),
-                            Long.valueOf(request.getUrl().length()),
-                            Long.valueOf(result.getRawText().getBytes().length),
-                            new Date()));
-                }
-
-                int deepSize = calcDeep(request.getUrl(), 100, 1);
-                if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
-                    pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
-                            chnlName,
-                            request.getUrl().intern(),
-                            deepSize,
-                            Long.valueOf(result.getRawText().getBytes().length),
-                            new Date()));
-                }
+//
+//                String[] urlSize = request.getUrl().split("/");
+//                String chnlName = urlSize[3];
+//
+//                if(useTime > THRESHOLD_MAX_REPLY_SPEED){
+//                    replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
+//                            chnlName,
+//                            request.getUrl().intern(),
+//                            useTime,
+//                            Long.valueOf(result.getRawText().getBytes().length),
+//                            new Date()));
+//                }
+//
+//                if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
+//                    biggerPage.add(new PageSpace(chnlName,
+//                            request.getUrl().intern(),
+//                            useTime,
+//                            Long.valueOf(result.getRawText().getBytes().length),
+//                            new Date()));
+//                }
+//
+//                // TODO 发送内容，进行检测
+//
+//                if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
+//                    biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
+//                            chnlName,
+//                            request.getUrl().intern(),
+//                            Long.valueOf(request.getUrl().length()),
+//                            Long.valueOf(result.getRawText().getBytes().length),
+//                            new Date()));
+//                }
+//
+//                int deepSize = calcDeep(request.getUrl(), 100, 1);
+//                if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
+//                    pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
+//                            chnlName,
+//                            request.getUrl().intern(),
+//                            deepSize,
+//                            Long.valueOf(result.getRawText().getBytes().length),
+//                            new Date()));
+//                }
             }
             return result;
         }
