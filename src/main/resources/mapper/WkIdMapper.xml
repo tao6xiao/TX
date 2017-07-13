@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkIdMapper">
+
+    <update id="incId" parameterType="com.trs.gov.kpi.entity.wangkang.WkId">
+        update wkid set id = id + 1 WHERE type = #{type}
+        <selectKey keyProperty="id" resultType="int" order="AFTER">
+            select id from wkid WHERE type = #{type}
+        </selectKey>
+    </update>
+
+</mapper>

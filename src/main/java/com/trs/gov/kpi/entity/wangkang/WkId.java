@@ -1,22 +1,28 @@
 package com.trs.gov.kpi.entity.wangkang;
 
-import com.trs.gov.kpi.annotation.DBField;
-import com.trs.gov.kpi.annotation.DBTable;
 import lombok.Data;
 
 /**
- * 生成检测编号
- *
- * Created by li.hao on 2017/7/12.
+ * Created by linwei on 2017/7/13.
  */
+
 @Data
-@DBTable("wkid")
 public class WkId {
 
-    @DBField
-    private Integer checkId;//检测编号
+    // 编号
+    private int id;
 
-    @DBField
-    private Integer siteId;//网站编号
+    // 类型
+    private String type;
 
+    /**
+     * 创建一个新的监测id
+     *
+     * @return
+     */
+    public static WkId createCheckId() {
+        final WkId wkId = new WkId();
+        wkId.setType("checkId");
+        return wkId;
+    }
 }

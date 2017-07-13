@@ -108,6 +108,8 @@ public class PageSpider {
 
     private String baseUrl;
 
+    private int checkId;
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
@@ -216,8 +218,7 @@ public class PageSpider {
                     }
                     accessSpeedMsg.setSpeed(useTime);
                     accessSpeedMsg.setUrl(request.getUrl());
-                    // TODO 获取checkId
-                    accessSpeedMsg.setCheckId(0);
+                    accessSpeedMsg.setCheckId(checkId);
                     accessSpeedMQ.publishMsg(accessSpeedMsg);
                 }
 
@@ -273,7 +274,6 @@ public class PageSpider {
             isUrlAvailable.set(true);
         }
     };
-
 
     private synchronized void init(String baseUrl) {
         this.baseUrl = baseUrl;
@@ -429,6 +429,10 @@ public class PageSpider {
 
     public void setSite(SiteManagement site) {
         this.siteManagement = site;
+    }
+
+    public void setCheckId(int checkId) {
+        this.checkId = checkId;
     }
 
     @Data

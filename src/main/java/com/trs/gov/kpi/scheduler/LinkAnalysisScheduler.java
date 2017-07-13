@@ -15,6 +15,7 @@ import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.wangkang.WkIdService;
 import com.trs.gov.kpi.utils.PageSpider;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,10 @@ import java.util.Set;
 @Scope("prototype")
 public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
-    LinkAvailabilityService linkAvailabilityService;
+    private LinkAvailabilityService linkAvailabilityService;
+
+    @Resource
+    private WkIdService wkIdService;
 
     @Resource
     PageSpider pageSpider;
@@ -66,13 +70,17 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Setter
     private SiteManagement site;
 
+    private int checkId;
+
     @Override
     public void run() {
 
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
-
+            checkId = wkIdService.getNewCheckId();
             pageSpider.setSite(site);
+            pageSpider.setCheckId(checkId);
+
             List<Pair<String, String>> unavailableUrlAndParentUrls = pageSpider.fetchAllPages(5, site.getSiteIndexUrl());
 //            Date checkTime = new Date();
 //            for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
