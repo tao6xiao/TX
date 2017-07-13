@@ -12,7 +12,7 @@ import java.util.Date;
  * Created by li.hao on 2017/7/5.
  */
 @Data
-@DBTable("wksitemanagement")
+@DBTable("wksite")
 public class SiteManagement {
 
     @DBField
