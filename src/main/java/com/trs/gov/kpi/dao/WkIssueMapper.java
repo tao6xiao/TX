@@ -32,10 +32,11 @@ public interface WkIssueMapper {
 
     /**
      * 链接可用性/内容检测---链接可用性查询未处理的链接的可用性总数
-     * @param filter
+     * @param typeId
+     * @param siteId
      * @return
      */
-    Integer getLinkAndContentUnhandledCount(QueryFilter filter);
+    Integer getLinkAndContentUnhandledCount(@Param("typeId") Integer typeId, @Param("siteId") Integer siteId, @Param("isResolved") Integer isResolved);
 
     /**
      * 链接可用性/内容检测---查询未处理的链接的可用性基本信息

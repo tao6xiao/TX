@@ -56,7 +56,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         List<WkSocre> wkSocreList = wkSiteDetailMapper.getOneSiteScoreListBySiteId(siteId);
         List<WkOneSiteScoreResponse> wkOneSiteScoreList = new ArrayList<>();
 
-        if(wkSocreList.size() != 0){
+        if(!wkSocreList.isEmpty()){
             for (WkSocre wkScore:wkSocreList) {
             WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
                 wkOneSiteScore.setCheckTime(wkScore.getCheckTime());
@@ -75,13 +75,9 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     /*---链接可用性---*/
     @Override
     public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId) {
+        Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
 
-        PageDataRequestParam param = new PageDataRequestParam();
-        param.setSiteId(siteId);
-        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
-
-        WkStatsCount wkStatsCount = wkStatsCountMapper.getInvalidlinkStatsBySiteId(queryFilter);
+        WkStatsCount wkStatsCount = wkStatsCountMapper.getlinkAndContentStatsBySiteId(siteId,typeId);
         WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
         if(wkStatsCount != null){
             wkStatsCountResponse.setUnhandleIssue(wkStatsCount.getUnResolved());
@@ -92,15 +88,12 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     @Override
     public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId) {
-        PageDataRequestParam param = new PageDataRequestParam();
-        param.setSiteId(siteId);
-        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
+        Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
 
-        List<WkStatsCount> wkStatsCountList = wkStatsCountMapper.getInvalidlinkHistoryStatsBySiteId(queryFilter);
+        List<WkStatsCount> wkStatsCountList = wkStatsCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
         List<WkStatsCountResponse> wkStatsCountResponseList = new ArrayList<>();
 
-        if(wkStatsCountList.size() != 0){
+        if(!wkStatsCountList.isEmpty()){
             for (WkStatsCount wkStatsCount: wkStatsCountList) {
                 WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
                 wkStatsCountResponse.setHandleIssue(wkStatsCount.getIsResolved());
@@ -119,11 +112,15 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
         }
 
+        Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
+        Integer siteId = param.getSiteId();
+        Integer isResolved = Status.Resolve.UN_RESOLVED.value;
+        int itemCount = wkIssueMapper.getLinkAndContentUnhandledCount(typeId, siteId, isResolved);
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
+
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        int itemCount = wkIssueMapper.getLinkAndContentUnhandledCount(queryFilter);
-        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
         queryFilter.setPager(pager);
 
         List<WkIssue> wkIssueList = wkIssueMapper.getLinkAndContentUnhandledList(queryFilter);
@@ -155,12 +152,9 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     /*---内容检测---*/
     @Override
     public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId) {
-        PageDataRequestParam param = new PageDataRequestParam();
-        param.setSiteId(siteId);
-        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Types.WkSiteCheckType.CONTENT_ERROR.value);
+        Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
 
-        WkStatsCount wkStatsCount = wkStatsCountMapper.getInvalidlinkStatsBySiteId(queryFilter);
+        WkStatsCount wkStatsCount = wkStatsCountMapper.getlinkAndContentStatsBySiteId(siteId, typeId);
         WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
         if(wkStatsCount != null){
             wkStatsCountResponse.setUnhandleIssue(wkStatsCount.getUnResolved());
@@ -171,15 +165,12 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     @Override
     public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId) {
-        PageDataRequestParam param = new PageDataRequestParam();
-        param.setSiteId(siteId);
-        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.TYPE_ID, Types.WkSiteCheckType.CONTENT_ERROR.value);
+        Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
 
-        List<WkStatsCount> wkStatsCountList = wkStatsCountMapper.getInvalidlinkHistoryStatsBySiteId(queryFilter);
+        List<WkStatsCount> wkStatsCountList = wkStatsCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
         List<WkStatsCountResponse> wkStatsCountResponseList = new ArrayList<>();
 
-        if(wkStatsCountList.size() != 0 ){
+        if(!wkStatsCountList.isEmpty()){
             for (WkStatsCount wkStatsCount: wkStatsCountList) {
                 WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
                 wkStatsCountResponse.setHandleIssue(wkStatsCount.getIsResolved());
@@ -198,11 +189,15 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
         }
 
+        Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
+        Integer siteId = param.getSiteId();
+        Integer isResolved = Status.Resolve.UN_RESOLVED.value;
+        int itemCount = wkIssueMapper.getLinkAndContentUnhandledCount(typeId, siteId, isResolved);
+        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
+
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.WkSiteCheckType.CONTENT_ERROR.value);
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        int itemCount = wkIssueMapper.getLinkAndContentUnhandledCount(queryFilter);
-        Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
         queryFilter.setPager(pager);
 
         List<WkIssue> wkIssueList = wkIssueMapper.getLinkAndContentUnhandledList(queryFilter);

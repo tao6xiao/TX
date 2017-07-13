@@ -103,6 +103,7 @@ public class WkOneSiteDetailController {
      * @return
      * @throws BizException
      */
+    @RequestMapping(value = "invalidlink/unhandled", method = RequestMethod.GET)
     public ApiPageData getInvalidLinkUnhandledBySiteId(PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
@@ -148,6 +149,7 @@ public class WkOneSiteDetailController {
      * @return
      * @throws BizException
      */
+    @RequestMapping(value = "contenterror/unhandled", method = RequestMethod.GET)
     public ApiPageData getContentErrorUnhandledBySiteId(PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());

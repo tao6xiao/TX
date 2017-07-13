@@ -15,28 +15,21 @@
         siteId, checkId, typeId, checkTime, isResolved, unResolved
     </sql>
 
-    <sql id="all_conditions_sql">
-        <include refid="com.trs.gov.kpi.dao.IssueMapper.where_sql"/>
-        <include refid="com.trs.gov.kpi.dao.IssueMapper.group_sql"/>
-        <include refid="com.trs.gov.kpi.dao.IssueMapper.order_sql"/>
-        <include refid="com.trs.gov.kpi.dao.IssueMapper.page_sql"/>
-    </sql>
-
-    <select id="getInvalidlinkStatsBySiteId" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+    <select id="getlinkAndContentStatsBySiteId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from wkstatscount
         where siteId = #{siteId,jdbcType=INTEGER}
         and checkId = (select MAX(checkId) FROM wkscore where siteId = #{siteId,jdbcType=INTEGER})
-        <include refid="all_conditions_sql"/>
+        and typeId = #{typeId,jdbcType=INTEGER}
     </select>
 
-    <select id="getInvalidlinkHistoryStatsBySiteId" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+    <select id="getlinkAndContentHistoryStatsBySiteId" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from wkstatscount
         where siteId = #{siteId,jdbcType=INTEGER}
-        <include refid="all_conditions_sql"/>
+        and typeId = #{typeId,jdbcType=INTEGER}
     </select>
 
 
