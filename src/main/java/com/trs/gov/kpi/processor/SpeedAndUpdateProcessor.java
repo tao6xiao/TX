@@ -3,8 +3,10 @@ package com.trs.gov.kpi.processor;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
+import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
 import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
 import com.trs.gov.kpi.msgqueue.MQListener;
+import com.trs.gov.kpi.service.wangkang.WkAvgSpeedUpdateContentService;
 import com.trs.gov.kpi.service.wangkang.WkEveryLinkService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
     @Resource
     WkEveryLinkService wkEveryLinkService;
 
+    @Resource
+    WkAvgSpeedUpdateContentService wkAvgSpeedUpdateContentService;
+
     private final String name = "SpeedAndUpdateProcessor";
 
     @Override
@@ -34,7 +39,18 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
             // 检查结束
-//            wkEveryLinkService.selectOnceCheckAvgSpeed()
+            CheckEndMsg checkEndMsg = new CheckEndMsg();
+            Integer siteId = checkEndMsg.getSiteId();
+            Integer checkId = checkEndMsg.getCheckId();
+            Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(siteId, checkId);
+
+            WkAvgSpeed wkAvgSpeed = new WkAvgSpeed();
+            wkAvgSpeed.setCheckId(checkEndMsg.getCheckId());
+            wkAvgSpeed .setSiteId(checkEndMsg.getSiteId());
+            wkAvgSpeed.setAvgSpeed(avgSpeed);
+            wkAvgSpeed.setCheckTime(new Date());
+
+            wkAvgSpeedUpdateContentService.insertOnceCheckWkAvgSpeed(wkAvgSpeed);
 
         } else {
             PageInfoMsg speedMsg = (PageInfoMsg)msg;

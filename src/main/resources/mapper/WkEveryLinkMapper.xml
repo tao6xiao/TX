@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkEveryLinkMapper">
+
+    <resultMap id="WkAvgSpeedMap" type="com.trs.gov.kpi.entity.wangkang.WkEveryLink">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="url" jdbcType="INTEGER" property="url" />
+        <result column="md5" jdbcType="INTEGER" property="md5" />
+        <result column="accessSpeed" jdbcType="INTEGER" property="accessSpeed" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, checkId, siteId, url, md5, accessSpeed, checkTime
+    </sql>
+
+    <select id="selectOnceCheckAvgSpeed" resultType="int">
+        select
+        AVG (accessSpeed)
+        from wkeverylink
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND checkId = #{checkId,jdbcType=INTEGER}
+    </select>
+
+</mapper>
