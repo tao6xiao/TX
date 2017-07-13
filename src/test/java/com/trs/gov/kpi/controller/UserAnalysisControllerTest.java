@@ -12,8 +12,8 @@ import java.util.Date;
 /**
  * Created by li.hao on 2017/6/20.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@SpringBootTest
 public class UserAnalysisControllerTest {
 
     @Resource
@@ -25,7 +25,7 @@ public class UserAnalysisControllerTest {
         BasRequest basRequest = new BasRequest();
         basRequest.setSiteId(2);
         basRequest.setDateTime(new Date());
-        userAnalysisController.getVisits(basRequest);
+//        userAnalysisController.getVisits(basRequest);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class UserAnalysisControllerTest {
         BasRequest basRequest = new BasRequest();
         basRequest.setSiteId(2);
         basRequest.setDateTime(new Date());
-        userAnalysisController.getHistoryVisits(basRequest);
+//        userAnalysisController.getHistoryVisits(basRequest);
     }
 
     @Test
@@ -43,7 +43,7 @@ public class UserAnalysisControllerTest {
         BasRequest basRequest = new BasRequest();
         basRequest.setSiteId(2);
         basRequest.setDateTime(new Date());
-        userAnalysisController.getStayTime(basRequest);
+//        userAnalysisController.getStayTime(basRequest);
     }
 
     @Test
