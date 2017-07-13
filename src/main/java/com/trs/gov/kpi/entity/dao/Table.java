@@ -18,7 +18,7 @@ public enum Table {
             "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel")),
     FREQ_SETUP("frequencysetup", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "presetFeqId", "chnlId", "setTime", "isOpen")),
     REPORT("report", Arrays.asList("id", "siteId", "title", "reportTime", "crTime", "type", "path")),
-    WK_SITEMANAGEMENT("wksite", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "siteName",
+    WK_SITEMANAGEMENT("wksite", Arrays.asList(Constants.DB_FIELD_SITE_ID, "siteName",
             "siteIndexUrl", "deptAddress", "deptLatLng", "autoCheckType", "checkTime", "checkStatus", "isDel")),
     WK_ISSUE("wkissue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID,"checkId","typeId",
             "subTypeId","chnlName","url","detailInfo","parentUrl","checkTime","isResolved","resolvedTime","isDel","locationUrl"));

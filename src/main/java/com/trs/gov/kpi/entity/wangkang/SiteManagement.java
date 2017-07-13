@@ -16,9 +16,6 @@ import java.util.Date;
 public class SiteManagement {
 
     @DBField
-    private Integer id;
-
-    @DBField
     private Integer siteId;//网站编号
 
     @DBField

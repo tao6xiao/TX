@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.WkSiteManagementMapper">
     <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.SiteManagement">
-        <id column="id" jdbcType="INTEGER" property="id" />
         <result column="siteId" jdbcType="INTEGER" property="siteId" />
         <result column="siteName" jdbcType="VARCHAR" property="siteName" />
         <result column="siteIndexUrl" jdbcType="VARCHAR" property="siteIndexUrl" />
@@ -14,7 +13,7 @@
         <result column="isDel" jdbcType="INTEGER" property="isDel" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, siteId, siteName, siteIndexUrl, deptLatLng, deptAddress, autoCheckType, checkTime, checkStatus, isDel
+        siteId, siteName, siteIndexUrl, deptLatLng, deptAddress, autoCheckType, checkTime, checkStatus, isDel
     </sql>
 
     <select id="selectSiteManagementByStieId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
