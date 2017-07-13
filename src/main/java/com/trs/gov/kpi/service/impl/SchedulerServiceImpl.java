@@ -7,7 +7,6 @@ import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.job.CheckJob;
-import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
@@ -17,7 +16,6 @@ import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -185,9 +183,24 @@ public class SchedulerServiceImpl implements SchedulerService {
      * @param site
      */
     private void scheduleJob(Scheduler scheduler, Types.WkAutoCheckType checkType, SiteManagement site) {
-//        scheduleJob(scheduler, jobType, site, cronSchedule(cronExpress));
-    }
 
+        switch (checkType) {
+            case ACCORD_DAT:
+                // 每天凌晨0点执行
+                scheduleSpiderJob(scheduler, site, cronSchedule("0 0 0 * * ?"));
+                break;
+            case ACCORD_WEEK:
+                // 每周1凌晨0点执行
+                scheduleSpiderJob(scheduler, site, cronSchedule("0 0 0 ? * 2"));
+                break;
+            case ACCORD_MONTH:
+                // 每月1日凌晨0点执行
+                scheduleSpiderJob(scheduler, site, cronSchedule("0 0 0 1 * ?"));
+                break;
+            default:
+                break;
+        }
+    }
 
 
     /**
@@ -446,7 +459,6 @@ public class SchedulerServiceImpl implements SchedulerService {
      * 注册调度任务
      *
      * @param scheduler
-     * @param jobType
      * @param site
      * @param builder
      */

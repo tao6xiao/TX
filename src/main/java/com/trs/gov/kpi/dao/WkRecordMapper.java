@@ -28,11 +28,4 @@ public interface WkRecordMapper {
      */
     Integer getWkRecordUpdateContent(@Param("siteId") Integer siteId,@Param("checkId") Integer checkId);
 
-    /**
-     * 插入数据
-     * @param row
-     * @return
-     */
-    int insert(DBRow row);
-
 }

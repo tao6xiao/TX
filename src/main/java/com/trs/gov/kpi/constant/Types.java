@@ -467,8 +467,8 @@ public final class Types {
         INVALID(-1, "未知类型"),
         CHECK_CLOSE(0, "关闭"),
         ACCORD_DAT(1, "按天"),
-        ACCORD_MONTH(2, "按月"),
-        ACCORD_YEAR(3, "按年");
+        ACCORD_WEEK(2, "按周"),
+        ACCORD_MONTH(3, "按月");
 
         public final int value;
 
