@@ -7,6 +7,10 @@ import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.job.CheckJob;
+import com.trs.gov.kpi.msgqueue.CommonMQ;
+import com.trs.gov.kpi.processor.CKMProcessor;
+import com.trs.gov.kpi.processor.InvalidLinkProcessor;
+import com.trs.gov.kpi.processor.SpeedAndUpdateProcessor;
 import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
@@ -16,6 +20,7 @@ import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +54,21 @@ public class SchedulerServiceImpl implements SchedulerService {
     @Resource
     private ApplicationContext applicationContext;
 
+    // 内容监测
+    @Autowired
+    private CommonMQ commonMQ;
+
+    @Autowired
+    private CKMProcessor ckmProcessor;
+
+    @Autowired
+    private SpeedAndUpdateProcessor speedAndUpdateProcessor;
+
+    @Autowired
+    private InvalidLinkProcessor invalidLinkProcessor;
+
     private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
+
 
     @Override
     public void addCheckJob(int siteId, EnumCheckJobType checkType) throws BizException {
@@ -114,6 +133,18 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         // 启动完成后，就开始执行
         try {
+            commonMQ.start();
+
+            // 内容监测
+            commonMQ.registerListener(ckmProcessor);
+
+            // 访问速度
+            commonMQ.registerListener(speedAndUpdateProcessor);
+
+            // 链接可用性
+            commonMQ.registerListener(invalidLinkProcessor);
+
+
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
 

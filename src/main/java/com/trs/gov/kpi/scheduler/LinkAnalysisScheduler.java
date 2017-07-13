@@ -1,20 +1,10 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.dao.WebPageMapper;
-import com.trs.gov.kpi.entity.PageDepth;
-import com.trs.gov.kpi.entity.PageSpace;
-import com.trs.gov.kpi.entity.ReplySpeed;
-import com.trs.gov.kpi.entity.UrlLength;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
-import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
-import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.wangkang.WkIdService;
 import com.trs.gov.kpi.utils.PageSpider;
 import lombok.Getter;
@@ -22,14 +12,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -260,6 +247,16 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         } finally {
             log.info("LinkAnalysisScheduler " + siteId + " end...");
         }
+    }
+
+    @Override
+    public Boolean getIsTimeNode() {
+        return null;
+    }
+
+    @Override
+    public void setIsTimeNode(Boolean isTimeNode) {
+
     }
 
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};

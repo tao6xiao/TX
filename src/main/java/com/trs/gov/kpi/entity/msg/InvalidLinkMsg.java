@@ -6,7 +6,9 @@ import lombok.Data;
  * Created by linwei on 2017/7/12.
  */
 @Data
-public class InvalidLinkMsg {
+public class InvalidLinkMsg implements IMQMsg {
+
+    public static final String MSG_TYPE = "InvalidLinkMsg";
 
     // 站点id
     private int siteId;
@@ -22,4 +24,9 @@ public class InvalidLinkMsg {
 
     // 内容
     private String parentContent;
+
+    @Override
+    public String getType() {
+        return MSG_TYPE;
+    }
 }

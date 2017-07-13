@@ -6,7 +6,9 @@ import lombok.Data;
  * Created by linwei on 2017/7/12.
  */
 @Data
-public class AccessSpeedMsg {
+public class PageInfoMsg implements IMQMsg {
+
+    public static final String MSG_TYPE = "PageInfoMsg";
 
     // 站点id
     private int siteId;
@@ -20,6 +22,14 @@ public class AccessSpeedMsg {
     // parent url
     private String parentUrl;
 
-    // 内容
+    // 访问速度
     private long speed;
+
+    // 内容
+    private String content;
+
+    @Override
+    public String getType() {
+        return MSG_TYPE;
+    }
 }

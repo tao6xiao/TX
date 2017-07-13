@@ -9,6 +9,9 @@
         <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
         <result column="avgSpeed" jdbcType="INTEGER" property="avgSpeed" />
     </resultMap>
+    <sql id="Wk_Avg_Speed_List">
+        id, checkId, siteId, checkTime, updateContent
+    </sql>
 
     <resultMap id="WkUpdateContent" type="com.trs.gov.kpi.entity.wangkang.WkUpdateContent">
         <id column="id" jdbcType="INTEGER" property="id" />
@@ -17,9 +20,8 @@
         <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
         <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
     </resultMap>
-
-    <sql id="Base_Column_List">
-        id, checkId, siteId, typeId, checkTime, avgSpeed, updateContent
+    <sql id="Wk_Update_Content_List">
+        id, checkId, siteId, checkTime, updateContent
     </sql>
 
     <select id="getWkRecordAvgSpeed" resultType="int">

@@ -1,28 +1,26 @@
 package com.trs.gov.kpi.msgqueue;
 
-import com.trs.gov.kpi.entity.outerapi.Site;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import com.trs.gov.kpi.entity.msg.IMQMsg;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by li.hao on 2017/7/11.
  */
 @Component
-@Scope("prototype")
+@Slf4j
 public class CommonMQ extends Thread {
 
     private Set<MQListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
-    private ConcurrentLinkedQueue<Object> msgQueue = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<IMQMsg> msgQueue = new ConcurrentLinkedQueue<>();
 
     private Object msgWaiter = new Object();
 
-    public void publishMsg(Object msg) {
+    public void publishMsg(IMQMsg msg) {
         msgQueue.add(msg);
         synchronized (msgWaiter) {
             msgWaiter.notifyAll();
@@ -36,26 +34,42 @@ public class CommonMQ extends Thread {
     @Override
     public void run() {
         super.run();
-
-        synchronized (msgWaiter) {
+        while (true) {
             try {
-                msgWaiter.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+                List<IMQMsg> msgList = new ArrayList<>();
+                if (!msgQueue.isEmpty()) {
+                    synchronized (msgQueue) {
+                        while (!msgQueue.isEmpty()) {
+                            msgList.add(msgQueue.poll());
+                        }
+                        msgQueue.clear();
+                    }
+                } else {
+                    synchronized (msgWaiter) {
+                        if (msgQueue.isEmpty()) {
+                            try {
+                                msgWaiter.wait();
+                            } catch (InterruptedException e) {
+                                log.error("", e);
+                            }
+                        } else {
+                            while (!msgQueue.isEmpty()) {
+                                msgList.add(msgQueue.poll());
+                            }
+                            msgQueue.clear();
+                        }
+                    }
+                }
 
-        List<Object> msgList = new ArrayList<>();
-        synchronized (msgQueue) {
-            while (!msgQueue.isEmpty()) {
-                msgList.add(msgQueue.peek());
-            }
-            msgQueue.clear();
-        }
-
-        for (Object msg : msgList) {
-            for (MQListener listener : listeners) {
-                listener.onMessage(msg);
+                for (IMQMsg msg : msgList) {
+                    for (MQListener listener : listeners) {
+                        if (msg.getType().equals(listener.getType())) {
+                            listener.onMessage(msg);
+                        }
+                    }
+                }
+            } catch (Throwable e) {
+                log.error("", e);
             }
         }
     }

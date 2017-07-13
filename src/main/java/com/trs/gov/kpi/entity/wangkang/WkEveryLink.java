@@ -31,7 +31,7 @@ public class WkEveryLink {
     private String md5;//文档的MD5编码
 
     @DBField
-    private Integer accessSpeed;//访问熟读
+    private long accessSpeed;//访问熟读
 
     @DBField
     private Date checkTime;//数据入库时间

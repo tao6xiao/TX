@@ -7,7 +7,7 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.msg.CheckContentMsg;
+import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -41,7 +41,7 @@ public class CKMProcessWorker implements Runnable {
     private IssueMapper issueMapper;
 
     @Setter
-    private CheckContentMsg content;
+    private PageInfoMsg content;
 
     @Override
     public void run() {

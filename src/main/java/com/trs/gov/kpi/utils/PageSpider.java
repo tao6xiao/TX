@@ -6,16 +6,10 @@ import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
-import com.trs.gov.kpi.entity.msg.AccessSpeedMsg;
+import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
-import com.trs.gov.kpi.processor.AccessSpeedProcessor;
-import com.trs.gov.kpi.processor.CKMProcessor;
-import com.trs.gov.kpi.processor.InvalidLinkProcessor;
-import com.trs.gov.kpi.processor.UpdateContentProcessor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,38 +37,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Scope("prototype")
 public class PageSpider {
 
-    // 内容监测
     @Autowired
-    private CommonMQ checkContentMQ;
-
-    // 访问速度
-    @Autowired
-    private CommonMQ accessSpeedMQ;
-
-    // 链接可用性
-    @Autowired
-    private CommonMQ invalidLinkMQ;
-
-    // 网页更新
-    @Autowired
-    private CommonMQ updateContentMQ;
-
-
-    @Autowired
-    private CKMProcessor ckmProcessor;
-
-    @Autowired
-    private AccessSpeedProcessor accessSpeedProcessor;
-
-    @Autowired
-    private InvalidLinkProcessor invalidLinkProcessor;
-
-    @Autowired
-    private UpdateContentProcessor updateContentProcessor;
-
+    private CommonMQ commonMQ;
 
     private SiteManagement siteManagement;
-
 
     // 过大页面阀值
     private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
@@ -109,6 +75,8 @@ public class PageSpider {
     private String baseUrl;
 
     private int checkId;
+
+    private int count = 0;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -207,10 +175,9 @@ public class PageSpider {
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
             } else {
-
                 final EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
                 if (urlType == EnumUrlType.HTML) {
-                    AccessSpeedMsg accessSpeedMsg = new AccessSpeedMsg();
+                    PageInfoMsg accessSpeedMsg = new PageInfoMsg();
                     accessSpeedMsg.setSiteId(siteManagement.getSiteId());
                     final Object parentUrl = request.getExtra("parentUrl");
                     if (parentUrl != null) {
@@ -219,7 +186,10 @@ public class PageSpider {
                     accessSpeedMsg.setSpeed(useTime);
                     accessSpeedMsg.setUrl(request.getUrl());
                     accessSpeedMsg.setCheckId(checkId);
-                    accessSpeedMQ.publishMsg(accessSpeedMsg);
+                    accessSpeedMsg.setContent(result.getRawText());
+                    count++;
+                    log.info("===========count = " + count);
+                    commonMQ.publishMsg(accessSpeedMsg);
                 }
 
                 String[] urlSize = request.getUrl().split("/");
@@ -279,18 +249,6 @@ public class PageSpider {
         this.baseUrl = baseUrl;
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
-
-        // 内容监测
-        checkContentMQ.registerListener(ckmProcessor);
-
-        // 访问速度
-        accessSpeedMQ.registerListener(accessSpeedProcessor);
-
-        // 链接可用性
-        invalidLinkMQ.registerListener(invalidLinkProcessor);
-
-        // 网页更新
-        updateContentMQ.registerListener(updateContentProcessor);
     }
 
     /**
