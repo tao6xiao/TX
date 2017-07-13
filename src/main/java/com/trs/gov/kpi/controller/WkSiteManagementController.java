@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
+import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,9 @@ public class WkSiteManagementController {
 
     @Resource
     private WkSiteManagementService wkSiteManagementService;
+
+    @Resource
+    private SchedulerService schedulerService;
 
     /**
      * 获取参数插入或者修改网站信息
@@ -85,6 +89,18 @@ public class WkSiteManagementController {
     @RequestMapping(value = "/site/delete", method = RequestMethod.DELETE)
     public String deleteSiteBySiteIds(Integer[] siteIds){
         wkSiteManagementService.deleteSiteBySiteIds(Arrays.asList(siteIds));
+        return null;
+    }
+
+    /**
+     * 重新检查
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "/site/check", method = RequestMethod.PUT)
+    public String deleteSiteBySiteIds(Integer siteId){
+        schedulerService.doCheckJobOnce(siteId);
         return null;
     }
 

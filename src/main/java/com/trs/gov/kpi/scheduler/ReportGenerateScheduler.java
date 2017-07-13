@@ -68,7 +68,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private int cellIndex = 0;//excel列的索引
 
     @Override
-    public void run() throws RemoteException {
+    public void run() {
         log.info("ReportGenerateScheduler " + siteId + " start...");
 
         IssueCountRequest request = new IssueCountRequest();
@@ -153,20 +153,24 @@ public class ReportGenerateScheduler implements SchedulerTask {
         //按状态再按部门统计问题的数量
         addTitle(sheet, style, "各状态各部门的问题统计");
         changeIndex();
-        List<DeptCountResponse> deptCountResponseList = countService.deptCountSort(request);
-        for (DeptCountResponse deptCountResponse : deptCountResponseList) {
-            sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(deptCountResponse.getName());
-            CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex, cellIndex + 1);
-            sheet.addMergedRegion(region);
-            changeIndex();
-            row = sheet.createRow(rowIndex);
-            for (DeptCount deptCount : deptCountResponse.getCount()) {
-                row.createCell(cellIndex).setCellValue(deptCount.getDept());
-                row.createCell(cellIndex + 1).setCellValue(deptCount.getValue());
-                row.createCell(cellIndex + 2).setCellValue("");
-                cellIndex += 3;
+        try {
+            List<DeptCountResponse> deptCountResponseList = countService.deptCountSort(request);
+            for (DeptCountResponse deptCountResponse : deptCountResponseList) {
+                sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(deptCountResponse.getName());
+                CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex, cellIndex + 1);
+                sheet.addMergedRegion(region);
+                changeIndex();
+                row = sheet.createRow(rowIndex);
+                for (DeptCount deptCount : deptCountResponse.getCount()) {
+                    row.createCell(cellIndex).setCellValue(deptCount.getDept());
+                    row.createCell(cellIndex + 1).setCellValue(deptCount.getValue());
+                    row.createCell(cellIndex + 2).setCellValue("");
+                    cellIndex += 3;
+                }
+                changeIndex();
             }
-            changeIndex();
+        } catch (RemoteException e) {
+            log.error("", e);
         }
         sheet.createRow(rowIndex);
         changeIndex();
@@ -174,27 +178,32 @@ public class ReportGenerateScheduler implements SchedulerTask {
         //按部门再按状态统计问题的数量
         addTitle(sheet, style, "各部门各状态的问题统计");
         changeIndex();
-        DeptInductionResponse[] induction = countService.deptInductionSort(request);
-        row = sheet.createRow(rowIndex);
-        row.createCell(cellIndex).setCellValue("部门");
-        row.createCell(cellIndex + 1).setCellValue("待解决问题/待解决预警/已解决问题和预警");
-        CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex + 1, cellIndex + 5);
-        sheet.addMergedRegion(region);
-        changeIndex();
-        row = sheet.createRow(rowIndex);
-        for (int i = 0; i < induction.length; i++) {
-            row.createCell(cellIndex).setCellValue(induction[i].getDept());
-            String unhandleIssue = getStringCount(induction[i].getData(), IssueIndicator.UN_SOLVED_ISSUE);
-            String unhandleWarning = getStringCount(induction[i].getData(), IssueIndicator.WARNING);
-            String handled = getStringCount(induction[i].getData(), IssueIndicator.SOLVED_ALL);
-            row.createCell(cellIndex + 1).setCellValue(String.format("%s/%s/%s", unhandleIssue, unhandleWarning, handled));
-            row.createCell(cellIndex + 2).setCellValue("");
-            cellIndex += 3;
-            //满6个就换行
-            if (i % 5 == 0) {
-                changeIndex();
-                row = sheet.createRow(rowIndex);
+        try {
+
+            DeptInductionResponse[] induction = countService.deptInductionSort(request);
+            row = sheet.createRow(rowIndex);
+            row.createCell(cellIndex).setCellValue("部门");
+            row.createCell(cellIndex + 1).setCellValue("待解决问题/待解决预警/已解决问题和预警");
+            CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex + 1, cellIndex + 5);
+            sheet.addMergedRegion(region);
+            changeIndex();
+            row = sheet.createRow(rowIndex);
+            for (int i = 0; i < induction.length; i++) {
+                row.createCell(cellIndex).setCellValue(induction[i].getDept());
+                String unhandleIssue = getStringCount(induction[i].getData(), IssueIndicator.UN_SOLVED_ISSUE);
+                String unhandleWarning = getStringCount(induction[i].getData(), IssueIndicator.WARNING);
+                String handled = getStringCount(induction[i].getData(), IssueIndicator.SOLVED_ALL);
+                row.createCell(cellIndex + 1).setCellValue(String.format("%s/%s/%s", unhandleIssue, unhandleWarning, handled));
+                row.createCell(cellIndex + 2).setCellValue("");
+                cellIndex += 3;
+                //满6个就换行
+                if (i % 5 == 0) {
+                    changeIndex();
+                    row = sheet.createRow(rowIndex);
+                }
             }
+        } catch (RemoteException e) {
+            log.error("", e);
         }
         changeIndex();
         sheet.createRow(rowIndex);
@@ -206,31 +215,44 @@ public class ReportGenerateScheduler implements SchedulerTask {
         IssueCountByTypeRequest typeRequest = new IssueCountByTypeRequest();
         typeRequest.setSiteIds(Integer.toString(siteId));
         //网站可用性
-        typeRequest.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        List<DeptCount> deptCountList = countService.getDeptCountByType(typeRequest);
-        sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(Types.IssueType.LINK_AVAILABLE_ISSUE.getName());
-        changeIndex();
-        row = sheet.createRow(rowIndex);
-        int index = 0;
-        writeDeptCount(deptCountList, sheet, row, index);
-        changeIndex();
+        try {
+            typeRequest.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+            List<DeptCount> deptCountList = countService.getDeptCountByType(typeRequest);
+            sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(Types.IssueType.LINK_AVAILABLE_ISSUE.getName());
+            changeIndex();
+            row = sheet.createRow(rowIndex);
+            int index = 0;
+            writeDeptCount(deptCountList, sheet, row, index);
+            changeIndex();
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
         //信息更新
-        typeRequest.setTypeId(Types.IssueType.INFO_UPDATE_ISSUE.value);
-        deptCountList = countService.getDeptCountByType(typeRequest);
-        sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(Types.IssueType.INFO_UPDATE_ISSUE.getName());
-        changeIndex();
-        row = sheet.createRow(rowIndex);
-        index = 0;
-        writeDeptCount(deptCountList, sheet, row, index);
+        try {
+            typeRequest.setTypeId(Types.IssueType.INFO_UPDATE_ISSUE.value);
+            List<DeptCount> deptCountList = countService.getDeptCountByType(typeRequest);
+            sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(Types.IssueType.INFO_UPDATE_ISSUE.getName());
+            changeIndex();
+            row = sheet.createRow(rowIndex);
+            int index = 0;
+            writeDeptCount(deptCountList, sheet, row, index);
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
+
         changeIndex();
         //信息错误
-        typeRequest.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
-        deptCountList = countService.getDeptCountByType(typeRequest);
-        sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(Types.IssueType.INFO_ERROR_ISSUE.getName());
-        changeIndex();
-        row = sheet.createRow(rowIndex);
-        index = 0;
-        writeDeptCount(deptCountList, sheet, row, index);
+        try {
+            typeRequest.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
+            List<DeptCount> deptCountList = countService.getDeptCountByType(typeRequest);
+            sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(Types.IssueType.INFO_ERROR_ISSUE.getName());
+            changeIndex();
+            row = sheet.createRow(rowIndex);
+            int index = 0;
+            writeDeptCount(deptCountList, sheet, row, index);
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
         changeIndex();
 
         //创建目录

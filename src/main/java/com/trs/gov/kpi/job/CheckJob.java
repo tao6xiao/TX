@@ -17,10 +17,6 @@ public class CheckJob implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         SchedulerTask task = (SchedulerTask) jobExecutionContext.getMergedJobDataMap().get("task");
-        try {
-            task.run();
-        } catch (RemoteException e) {
-            log.error("调用外部接口失败", e);
-        }
+        task.run();
     }
 }

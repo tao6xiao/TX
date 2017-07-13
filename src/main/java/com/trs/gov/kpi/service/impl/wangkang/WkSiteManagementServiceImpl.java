@@ -35,8 +35,6 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     @Resource
     private WkSiteManagementMapper wkSiteManagementMapper;
 
-
-
     @Override
     public String  addWkSite(SiteManagement siteManagement) {
        commonMapper.insert(DBUtil.toRow(siteManagement));

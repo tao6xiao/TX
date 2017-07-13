@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -47,6 +49,7 @@ public class SchedulerServiceImpl implements SchedulerService {
     @Resource
     private ApplicationContext applicationContext;
 
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
     @Override
     public void addCheckJob(int siteId, EnumCheckJobType checkType) throws BizException {
@@ -98,6 +101,12 @@ public class SchedulerServiceImpl implements SchedulerService {
         } catch (SchedulerException e) {
             log.error("", e);
         }
+    }
+
+    @Override
+    public void doCheckJobOnce(int siteId) {
+        final SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId);
+        doCheckJobNow(site);
     }
 
     @PostConstruct
@@ -490,5 +499,21 @@ public class SchedulerServiceImpl implements SchedulerService {
         } catch (SchedulerException e) {
             log.error("failed to schedule spider " + site.getSiteId(), e);
         }
+    }
+
+    /**
+     * 立即执行任务
+     *
+     * @param site
+     */
+    private void doCheckJobNow(SiteManagement site) {
+
+        LinkAnalysisScheduler task = applicationContext.getBean(LinkAnalysisScheduler.class);
+        if (task == null) {
+            return;
+        }
+
+        task.setSite(site);
+        fixedThreadPool.execute(task);
     }
 }

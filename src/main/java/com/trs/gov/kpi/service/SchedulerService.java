@@ -22,4 +22,11 @@ public interface SchedulerService {
      */
     void removeCheckJob(int siteId, EnumCheckJobType checkType);
 
+
+    /**
+     * 执行一次的任务
+     * @param siteId
+     */
+    void doCheckJobOnce(int siteId);
+
 }
