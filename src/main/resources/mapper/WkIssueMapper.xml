@@ -28,6 +28,7 @@
         from wkissue t
         where not exists (select 1 from wkissue where siteId = t.siteId and checkId > t.checkId)
         group by siteId
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
     </select>
 
     <select id="getWkIssueCount" resultType="int">
@@ -37,6 +38,24 @@
         where siteId = #{siteId,jdbcType=INTEGER}
         AND  checkId = #{checkId,jdbcType=INTEGER}
         AND typeId = #{typeId,jdbcType=INTEGER}
+    </select>
+
+    <select id="getLinkAndContentUnhandledCount" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+        select
+        count(1)
+        from wkissue t
+        where not exists (select 1 from wkissue where checkId > t.checkId)
+        and siteId = #{siteId,jdbcType=INTEGER}
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="getLinkAndContentUnhandledList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+        select
+        <include refid="Base_Column_List" />
+        from wkissue t
+        where not exists (select 1 from wkissue where checkId > t.checkId)
+        and siteId = #{siteId,jdbcType=INTEGER}
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
     </select>
 
 </mapper>

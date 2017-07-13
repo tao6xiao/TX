@@ -2,16 +2,16 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedAndUpdateContentResponse;
 import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.responsedata.WkStatsCountResponse;
 import com.trs.gov.kpi.service.wangkang.WkAvgSpeedUpdateContentService;
 import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -40,9 +40,9 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "/score", method = RequestMethod.GET)
     @ResponseBody
-    public WkOneSiteScoreResponse getOneSiteScoreBySiteId(Integer siteId) throws BizException {
-        if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId存在null值");
+    public WkOneSiteScoreResponse getOneSiteScoreBySiteId(@RequestParam("siteId") Integer siteId) throws BizException {
+        if(siteId == null){
+            log.error("Invalid parameter:  参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkOneSiteDetailService.getOneSiteScoreBySiteId(siteId);
@@ -58,7 +58,7 @@ public class WkOneSiteDetailController {
     @ResponseBody
     public List<WkOneSiteScoreResponse> getOneSiteScoreListById(Integer siteId) throws BizException {
         if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId存在null值");
+            log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkOneSiteDetailService.getOneSiteScoreListBySiteId(siteId);
@@ -74,7 +74,7 @@ public class WkOneSiteDetailController {
     @ResponseBody
     public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId) throws BizException {
         if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId存在null值");
+            log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkOneSiteDetailService.getInvalidlinkStatsBySiteId(siteId);
@@ -90,16 +90,24 @@ public class WkOneSiteDetailController {
     @ResponseBody
     public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId) throws BizException {
         if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId存在null值");
+            log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkOneSiteDetailService.getInvalidlinkHistoryStatsBySiteId(siteId);
     }
 
-//    public ApiPageData getInvalidLinkUnhandledBySiteId(PageDataRequestParam param) throws BizException {
-//        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
-//        return null;
-//    }
+    /**
+     * 链接可用性---查询未处理的链接的可用性
+     *
+     * @param param
+     * @return
+     * @throws BizException
+     */
+    public ApiPageData getInvalidLinkUnhandledBySiteId(PageDataRequestParam param) throws BizException {
+
+        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+        return wkOneSiteDetailService.getInvalidLinkUnhandledList(param);
+    }
 
     /**
      * 内容检测---根据网站编号查询已解决和未解决问题总数
@@ -111,7 +119,7 @@ public class WkOneSiteDetailController {
     @ResponseBody
     public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId) throws BizException {
         if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId存在null值");
+            log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkOneSiteDetailService.getContentErorStatsBySiteId(siteId);
@@ -127,10 +135,23 @@ public class WkOneSiteDetailController {
     @ResponseBody
     public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId) throws BizException {
         if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId存在null值");
+            log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkOneSiteDetailService.getContentErorHistoryStatsBySiteId(siteId);
+    }
+
+    /**
+     * 内容检测---查询未处理的链接的可用性
+     *
+     * @param param
+     * @return
+     * @throws BizException
+     */
+    public ApiPageData getContentErrorUnhandledBySiteId(PageDataRequestParam param) throws BizException {
+
+        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+        return wkOneSiteDetailService.getContentErrorUnhandledList(param);
     }
 
     /**
