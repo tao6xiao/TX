@@ -33,4 +33,6 @@ public final class Constants {
     public static final String DEPT_NULL = "未归属部门";
 
     public static final String SITE_NAME_IS_EXIST = "该网站名称已存在！！！";
+
+    public static final String SITE_ID_IS_NULL = "Invalid parameter: 参数siteId存在null值";
 }

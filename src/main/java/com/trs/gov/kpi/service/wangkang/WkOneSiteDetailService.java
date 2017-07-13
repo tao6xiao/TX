@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.service.wangkang;
 
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.responsedata.WkStatsCountResponse;
 
@@ -26,6 +28,10 @@ public interface WkOneSiteDetailService {
      */
     List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId);
 
+
+    /*-----------------------------------------------------------------------*/
+
+
     /**
      * 链接可用性---根据网站编号查询已解决和未解决问题总数
      *
@@ -43,6 +49,18 @@ public interface WkOneSiteDetailService {
     List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId);
 
     /**
+     * 链接可用性---查询未处理的链接的可用性
+     *
+     * @param param
+     * @return
+     */
+    ApiPageData getInvalidLinkUnhandledList(PageDataRequestParam param);
+
+
+    /*----------------------------------------------------------------------------*/
+
+
+    /**
      * 内容检测---根据网站编号查询已解决和未解决问题总数
      *
      * @param siteId
@@ -57,4 +75,12 @@ public interface WkOneSiteDetailService {
      * @return
      */
     List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId);
+
+    /**
+     * 内容检测---查询未处理的链接的可用性
+     *
+     * @param param
+     * @return
+     */
+    ApiPageData getContentErrorUnhandledList(PageDataRequestParam param);
 }

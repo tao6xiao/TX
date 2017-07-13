@@ -1,8 +1,11 @@
 package com.trs.gov.kpi.entity.responsedata;
 
+import lombok.Data;
+
 /**
  * Created by li.hao on 2017/7/12.
  */
+@Data
 public class WkIssueResponse {
 
     private Integer id;

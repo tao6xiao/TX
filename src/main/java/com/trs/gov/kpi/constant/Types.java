@@ -534,10 +534,10 @@ public final class Types {
      */
     public enum WkSiteCheckType{
         INVALID(-1, "未知类型"),
-        INVALID_LINK(0, "链接可用性"),
-        CONTENT_ERROR (1, "内容检测"),
-        OVER_SPEED(2, "访问速度"),
-        UPDATE_CONTENT(3, "网站更新");
+        INVALID_LINK(151, "链接可用性"),
+        CONTENT_ERROR (152, "内容检测"),
+        OVER_SPEED(153, "访问速度"),
+        UPDATE_CONTENT(154, "网站更新");
 
         public final int value;
 
@@ -555,6 +555,70 @@ public final class Types {
             }
             WkSiteCheckType[] types = WkSiteCheckType.values();
             for (WkSiteCheckType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+    }
+
+    /**
+     * 网康-网站检查类型
+     */
+    public enum WkLinkIssueType{
+        INVALID(-1, "未知类型"),
+        LINK_DISCONNECT(WkSiteCheckType.INVALID_LINK.value  * 10 + 1 , "网页断链"),
+        IMAGE_DISCONNECT (WkSiteCheckType.INVALID_LINK.value * 10 + 2, "图片断链"),
+        VIDEO_DISCONNECT(WkSiteCheckType.INVALID_LINK.value * 10 + 3, "视频断链"),
+        ENCLOSURE_DISCONNECT(WkSiteCheckType.INVALID_LINK.value * 10 + 4, "附件断链");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        WkLinkIssueType(int value, String name) {
+
+            this.value = value;
+            this.name = name;
+        }
+        public static WkLinkIssueType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            WkLinkIssueType[] types = WkLinkIssueType.values();
+            for (WkLinkIssueType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+    }
+
+    public enum WkErrorInfoIssueType {
+        INVALID(-1, "未知问题"),
+        TYPOS(WkSiteCheckType.CONTENT_ERROR.value * 10 + 1, "错别字"),
+        SENSITIVE_WORDS(WkSiteCheckType.CONTENT_ERROR.value * 10 + 2, "敏感词"),
+        POLITICS(WkSiteCheckType.CONTENT_ERROR.value * 10 + 3, "政治");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        WkErrorInfoIssueType(int type, String name) {
+            this.value = type;
+            this.name = name;
+        }
+
+        public static WkErrorInfoIssueType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            WkErrorInfoIssueType[] types = WkErrorInfoIssueType.values();
+            for (WkErrorInfoIssueType type : types) {
                 if (type.value == value) {
                     return type;
                 }

@@ -93,8 +93,9 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
 
     private List<WkSiteManagementResponse> getWkSiteResponseBysiteManagementList(List<SiteManagement> siteManagementList){
         List<WkSiteManagementResponse> wkSiteResponseList = new ArrayList<>();
-        WkSiteManagementResponse wkSiteManagementResponse = new WkSiteManagementResponse();
+
         for (SiteManagement siteManagement: siteManagementList ) {
+            WkSiteManagementResponse wkSiteManagementResponse = new WkSiteManagementResponse();
             wkSiteManagementResponse.setSiteId(siteManagement.getSiteId());
             wkSiteManagementResponse.setSiteName(siteManagement.getSiteName());
             wkSiteManagementResponse.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
