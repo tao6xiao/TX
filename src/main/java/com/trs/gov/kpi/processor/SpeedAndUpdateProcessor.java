@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.processor;
 
+import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
@@ -30,15 +31,22 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
     @Override
     public void onMessage(IMQMsg msg) {
-        PageInfoMsg speedMsg = (PageInfoMsg)msg;
-        WkEveryLink wkEveryLink = new WkEveryLink();
-        wkEveryLink.setCheckId(speedMsg.getCheckId());
-        wkEveryLink.setCheckTime(new Date());
-        wkEveryLink.setSiteId(speedMsg.getSiteId());
-        wkEveryLink.setUrl(speedMsg.getUrl());
-        wkEveryLink.setAccessSpeed(speedMsg.getSpeed());
-        wkEveryLink.setMd5(DigestUtils.md5Hex(speedMsg.getContent()));
-        wkEveryLinkService.insertWkEveryLinkAccessSpeed(wkEveryLink);
+
+        if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
+            // 检查结束
+
+
+        } else {
+            PageInfoMsg speedMsg = (PageInfoMsg)msg;
+            WkEveryLink wkEveryLink = new WkEveryLink();
+            wkEveryLink.setCheckId(speedMsg.getCheckId());
+            wkEveryLink.setCheckTime(new Date());
+            wkEveryLink.setSiteId(speedMsg.getSiteId());
+            wkEveryLink.setUrl(speedMsg.getUrl());
+            wkEveryLink.setAccessSpeed(speedMsg.getSpeed());
+            wkEveryLink.setMd5(DigestUtils.md5Hex(speedMsg.getContent()));
+            wkEveryLinkService.insertWkEveryLinkAccessSpeed(wkEveryLink);
+        }
     }
 
     @Override

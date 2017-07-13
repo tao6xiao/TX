@@ -2,7 +2,9 @@ package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.WebPageMapper;
+import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
+import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.wangkang.WkIdService;
@@ -26,6 +28,9 @@ import java.util.List;
 @Component
 @Scope("prototype")
 public class LinkAnalysisScheduler implements SchedulerTask {
+    @Resource
+    private CommonMQ commonMQ;
+
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
 
@@ -69,6 +74,12 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             pageSpider.setCheckId(checkId);
 
             List<Pair<String, String>> unavailableUrlAndParentUrls = pageSpider.fetchAllPages(5, site.getSiteIndexUrl());
+
+            CheckEndMsg endMsg = new CheckEndMsg();
+            endMsg.setCheckId(checkId);
+            endMsg.setSiteId(siteId);
+            commonMQ.publishMsg(endMsg);
+
 //            Date checkTime = new Date();
 //            for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
 //                LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
