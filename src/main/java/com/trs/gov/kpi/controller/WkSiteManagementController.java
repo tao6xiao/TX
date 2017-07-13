@@ -65,6 +65,31 @@ public class WkSiteManagementController {
     }
 
     /**
+     * 修改网站信息
+     *
+     * @param siteManagement
+     * @return
+     * @throws BizException
+     */
+    @RequestMapping(value = "/site", method = RequestMethod.PUT)
+    @ResponseBody
+    public Object modifyWkSite(@ModelAttribute SiteManagement siteManagement) throws BizException {
+        if (siteManagement.getSiteId() == null || siteManagement.getSiteName() == null || siteManagement.getAutoCheckType() == null || siteManagement.getSiteIndexUrl() == null || siteManagement.getDeptAddress() == null || siteManagement.getDeptLatLng() == null){
+            log.error("Invalid parameter: 参数siteManagement对象中siteId, siteName、autoCheckType、SiteIndexUr、deptAddress、deptLatLng 五个属性中至少有一个存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        Integer siteId = siteManagement.getSiteId();
+        SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId);
+        if(siteManage != null){
+            siteManagement.setCheckTime(new Date());
+            wkSiteManagementService.updateSiteManagement(siteManagement);
+        }else{
+            throw new BizException("网站"+siteManagement.getSiteName()+"已不存在！");
+        }
+        return null;
+    }
+
+    /**
      * 分页查询所有站点的数据（附带模糊查询和排序功能）
      *
      * @param wkAllSiteDetail
