@@ -1,11 +1,17 @@
 package com.trs.gov.kpi.config;
 
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by wangxuan on 2017/5/11.
@@ -16,8 +22,16 @@ public class WebConfigure extends WebMvcConfigurerAdapter {
 
     @Bean
     public HttpMessageConverters customConverters() {
-
-        return new HttpMessageConverters(new FastJsonHttpMessageConverter());
+        FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
+        FastJsonConfig config = converter.getFastJsonConfig();
+        Feature[] features = config.getFeatures();
+        List<Feature> featuresList = Arrays.asList(features);
+        // 禁用循环引用
+        List<Feature> lists = new ArrayList<>();
+        lists.addAll(featuresList);
+        lists.add(Feature.DisableCircularReferenceDetect);
+        config.setFeatures(lists.toArray(new Feature[0]));
+        return new HttpMessageConverters(converter);
     }
 
     @Override
