@@ -1,10 +1,13 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.EnumUrlType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.msg.AccessSpeedMsg;
+import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.processor.AccessSpeedProcessor;
 import com.trs.gov.kpi.processor.CKMProcessor;
@@ -68,6 +71,9 @@ public class PageSpider {
 
     @Autowired
     private UpdateContentProcessor updateContentProcessor;
+
+
+    private SiteManagement siteManagement;
 
 
     // 过大页面阀值
@@ -162,7 +168,17 @@ public class PageSpider {
                     }
                 }
             }
-            page.addTargetRequests(targetUrls);
+
+//            page.addTargetRequests(targetUrls);
+
+            for (String targetUrl: targetUrls) {
+                if(!StringUtils.isBlank(targetUrl) && !targetUrl.equals("#") && !targetUrl.startsWith("javascript:")) {
+                    targetUrl = UrlUtils.canonicalizeUrl(targetUrl, page.getUrl().toString());
+                    final Request request = new Request(targetUrl);
+                    request.putExtra("parentUrl", page.getUrl());
+                    page.addTargetRequest(request);
+                }
+            }
         }
 
         @Override
@@ -182,16 +198,28 @@ public class PageSpider {
             isUrlAvailable.set(false);
             Date startDate = new Date();
             Page result = super.download(request, task);
-            final ResultItems resultItems = result.getResultItems();
             Date endDate = new Date();
             long useTime = endDate.getTime() - startDate.getTime();
 
             // TODO 访问时间，入库
-
             if (!isUrlAvailable.get()) {
-
                 unavailableUrls.add(request.getUrl().intern());
             } else {
+
+                final EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
+                if (urlType == EnumUrlType.HTML) {
+                    AccessSpeedMsg accessSpeedMsg = new AccessSpeedMsg();
+                    accessSpeedMsg.setSiteId(siteManagement.getSiteId());
+                    final Object parentUrl = request.getExtra("parentUrl");
+                    if (parentUrl != null) {
+                        accessSpeedMsg.setParentUrl(parentUrl.toString());
+                    }
+                    accessSpeedMsg.setSpeed(useTime);
+                    accessSpeedMsg.setUrl(request.getUrl());
+                    // TODO 获取checkId
+                    accessSpeedMsg.setCheckId(0);
+                    accessSpeedMQ.publishMsg(accessSpeedMsg);
+                }
 
                 String[] urlSize = request.getUrl().split("/");
                 String chnlName = urlSize[3];
@@ -274,7 +302,6 @@ public class PageSpider {
      */
     public synchronized List<Pair<String, String>> fetchAllPages(int threadNum, String baseUrl) {
 
-
         log.info("linkCheck started!");
         init(baseUrl);
         if (StringUtils.isBlank(baseUrl)) {
@@ -284,6 +311,7 @@ public class PageSpider {
         }
 
         Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();
+
         List<Pair<String, String>> unavailableUrlAndParentUrls = new LinkedList<>();
         for (String unavailableUrl : unavailableUrls) {
             Set<String> parentUrls = pageParentMap.get(unavailableUrl);
@@ -397,6 +425,10 @@ public class PageSpider {
      */
     public Set<PageDepth> getPageDepths() {
         return this.pageDepths;
+    }
+
+    public void setSite(SiteManagement site) {
+        this.siteManagement = site;
     }
 
     @Data

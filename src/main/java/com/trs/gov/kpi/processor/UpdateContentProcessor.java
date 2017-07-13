@@ -13,4 +13,5 @@ public class UpdateContentProcessor implements MQListener {
     public void onMessage(Object msg) {
 
     }
+
 }

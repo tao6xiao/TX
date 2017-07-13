@@ -1,8 +1,11 @@
 package com.trs.gov.kpi.entity.msg;
 
+import lombok.Data;
+
 /**
  * Created by linwei on 2017/7/12.
  */
+@Data
 public class AccessSpeedMsg {
 
     // 站点id
