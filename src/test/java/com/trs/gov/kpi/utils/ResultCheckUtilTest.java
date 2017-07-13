@@ -84,6 +84,11 @@ public class ResultCheckUtilTest {
         public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
             return null;
         }
+
+        @Override
+        public Channel findChannelByUrl(String userName, String url) throws RemoteException {
+            return null;
+        }
     }
 
 }

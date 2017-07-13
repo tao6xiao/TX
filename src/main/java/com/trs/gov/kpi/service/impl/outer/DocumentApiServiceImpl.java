@@ -126,6 +126,31 @@ public class DocumentApiServiceImpl implements DocumentApiService {
         return documentList;
     }
 
+    @Override
+    public Document findDocumentByUrl(String userName, String url) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("URL", url);
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(
+                    buildRequest("findDocumentByUrl", userName, params)).execute();
+
+            if (response.isSuccessful()) {
+                ApiResult result = getValidResult(response, "通过url获取文档");
+                if (result.getData() != null && !result.getData().trim().isEmpty()) {
+                    return JSON.parseObject(result.getData(), Document.class);
+                }
+                return null;
+            } else {
+                log.error("failed to findDocumentByUrl, error: " + response);
+                throw new RemoteException("通过url获取文档失败！");
+            }
+        } catch (IOException e) {
+            log.error("failed to findDocumentByUrl, error", e);
+            throw new RemoteException("通过url获取文档失败！", e);
+        }
+    }
+
     private ApiResult getValidResult(Response response, String errMsg) throws RemoteException,
             IOException {
         ApiResult result = OuterApiUtil.toResultObj(response.body().string());

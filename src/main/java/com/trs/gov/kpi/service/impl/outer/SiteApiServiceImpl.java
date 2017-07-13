@@ -218,6 +218,31 @@ public class SiteApiServiceImpl implements SiteApiService {
         return new ArrayList<>();
     }
 
+    @Override
+    public Channel findChannelByUrl(String userName, String url) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("URL", url);
+
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(buildRequest("findChannelByUrl", userName, params, SERVICE_NAME_SITE)).execute();
+
+            if (response.isSuccessful()) {
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目");
+                if (StringUtil.isEmpty(result.getData())) {
+                    return null;
+                }
+                return JSON.parseObject(result.getData(), Channel.class);
+            } else {
+                log.error("failed to findChannelByUrl, error: " + response);
+                throw new RemoteException("通过url获取栏目！");
+            }
+        } catch (IOException e) {
+            log.error("failed findChannelByUrl", e);
+            throw new RemoteException("通过url获取栏目！", e);
+        }
+    }
+
     private Request buildRequest(String methodName, String userName, Map<String, String> params, String serviceName) {
         OuterApiServiceUtil.addUserNameParam(userName, params);
         return newServiceRequestBuilder()

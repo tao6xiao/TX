@@ -44,6 +44,21 @@ public class SiteApiServiceImplTest {
 
     }
 
+    @Test
+    public void findChannelByUrl_null_String() throws RemoteException {
+        MockSiteApiService service = new MockSiteApiService();
+        Channel channel = service.findChannelByUrl("", "");
+        assertEquals(null, channel);
+    }
+
+    @Test
+    public void findChannelByUrl() throws RemoteException{
+        MockSiteApiService service = new MockSiteApiService();
+        Channel channel = service.findChannelByUrl("", "www.test.com");
+        assertEquals(1, channel.getChannelId());
+        assertEquals("test", channel.getChnlName());
+    }
+
     private class MockSiteApiService implements SiteApiService {
 
         private Channel chnl = new Channel();
@@ -93,6 +108,17 @@ public class SiteApiServiceImplTest {
 
         @Override
         public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
+            return null;
+        }
+
+        @Override
+        public Channel findChannelByUrl(String userName, String url) throws RemoteException {
+            if("www.test.com".equals(url)){
+                Channel channel = new Channel();
+                channel.setChannelId(1);
+                channel.setChnlName("test");
+                return channel;
+            }
             return null;
         }
     }
