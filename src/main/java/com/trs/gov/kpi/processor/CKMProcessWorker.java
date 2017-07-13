@@ -45,6 +45,7 @@ public class CKMProcessWorker implements Runnable {
 
     @Override
     public void run() {
+
     }
 
     private List<Issue> buildList(Document document, List<String> checkTypeList) {

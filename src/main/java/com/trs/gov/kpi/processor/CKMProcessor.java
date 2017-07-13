@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.processor;
 
+import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.msgqueue.MQListener;
@@ -32,12 +33,16 @@ public class CKMProcessor implements MQListener {
     @Override
     public void onMessage(IMQMsg msg) {
 
-        // 监听待检测的内容消息
-        CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);
-        worker.setContent((PageInfoMsg)msg);
+        if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
 
-        // 把检测内容分配给检测线程
-        fixedThreadPool.execute(worker);
+        } else {
+            // 监听待检测的内容消息
+            CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);
+            worker.setContent((PageInfoMsg)msg);
+
+            // 把检测内容分配给检测线程
+            fixedThreadPool.execute(worker);
+        }
     }
 
     @Override
