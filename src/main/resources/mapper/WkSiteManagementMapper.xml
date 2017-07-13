@@ -74,7 +74,7 @@
                 autoCheckType = #{autoCheckType,jdbcType=INTEGER},
             </if>
             <if test="checkTime != null">
-                checkTime = #{checkTime,jdbcType=DATETIME},
+                checkTime = #{checkTime,jdbcType=TIMESTAMP},
             </if>
             <if test="checkStatus != null">
                 checkStatus = #{checkStatus,jdbcType=INTEGER},
