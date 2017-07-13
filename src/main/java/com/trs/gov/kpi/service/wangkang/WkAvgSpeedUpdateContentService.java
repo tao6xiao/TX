@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedAndUpdateContentResponse;
+import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
+import com.trs.gov.kpi.entity.wangkang.WkUpdateContent;
 
 import java.util.List;
 
@@ -22,5 +24,19 @@ public interface WkAvgSpeedUpdateContentService {
      * @return
      */
     List<WkAvgSpeedAndUpdateContentResponse> getUpdateContentHistory();
+
+    /**
+     * 添加一次检测的平均访问速度
+     *
+     * @param wkAvgSpeed
+     */
+    void insertOnceCheckWkAvgSpeed(WkAvgSpeed wkAvgSpeed);
+
+    /**
+     * 添加一次检测的网站更新数
+     *
+     * @param wkUpdateContent
+     */
+    void insertOnceCheckWkUpdateContent(WkUpdateContent wkUpdateContent);
 
 }

@@ -1,10 +1,12 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WkAvgSpeedUpdateContentMapper;
 import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedAndUpdateContentResponse;
 import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
 import com.trs.gov.kpi.entity.wangkang.WkUpdateContent;
 import com.trs.gov.kpi.service.wangkang.WkAvgSpeedUpdateContentService;
+import com.trs.gov.kpi.utils.DBUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,6 +22,10 @@ public class WkAvgSpeedUpdateContentServiceImpl implements WkAvgSpeedUpdateConte
     @Resource
     WkAvgSpeedUpdateContentMapper wkAvgSpeedUpdateContentMapper;
 
+    @Resource
+    CommonMapper commonMapper;
+
+    /*---平均访问速度---*/
     @Override
     public List<WkAvgSpeedAndUpdateContentResponse> getAvgSpeedHistory() {
         List<WkAvgSpeed> wkAvgSpeedList = wkAvgSpeedUpdateContentMapper.getAvgSpeedHistory();
@@ -38,6 +44,13 @@ public class WkAvgSpeedUpdateContentServiceImpl implements WkAvgSpeedUpdateConte
     }
 
     @Override
+    public void insertOnceCheckWkAvgSpeed(WkAvgSpeed wkAvgSpeed) {
+
+        commonMapper.insert(DBUtil.toRow(wkAvgSpeed));
+    }
+
+    /*---网站更新数---*/
+    @Override
     public List<WkAvgSpeedAndUpdateContentResponse> getUpdateContentHistory() {
         List<WkUpdateContent> wkUpdateContentList = wkAvgSpeedUpdateContentMapper.getUpdateContentHistory();
         List<WkAvgSpeedAndUpdateContentResponse> wkAvgSpeedAndUpdateContentList = new ArrayList<>();
@@ -52,5 +65,11 @@ public class WkAvgSpeedUpdateContentServiceImpl implements WkAvgSpeedUpdateConte
             }
         }
         return wkAvgSpeedAndUpdateContentList;
+    }
+
+    @Override
+    public void insertOnceCheckWkUpdateContent(WkUpdateContent wkUpdateContent) {
+
+        commonMapper.insert(DBUtil.toRow(wkUpdateContent));
     }
 }

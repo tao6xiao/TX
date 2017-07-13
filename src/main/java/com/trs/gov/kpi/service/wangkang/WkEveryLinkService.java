@@ -14,4 +14,22 @@ public interface WkEveryLinkService {
      */
     void insertWkEveryLinkAccessSpeed(WkEveryLink wkEveryLink);
 
+    /**
+     * 查询一次检测的平均速度
+     *
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    Integer selectOnceCheckAvgSpeed(Integer siteId, Integer checkId);
+
+    /**
+     * 查询一次检测的网站更新数
+     *
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    Integer selectOnceCheckUpdateContent(Integer siteId, Integer checkId);
+
 }
