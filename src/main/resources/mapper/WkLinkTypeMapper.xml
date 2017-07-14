@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkLinkTypeMapper">
+
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkLinkType">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="allLink" jdbcType="INTEGER" property="allLink" />
+        <result column="webLink" jdbcType="INTEGER" property="webLink" />
+        <result column="imageLink" jdbcType="INTEGER" property="imageLink" />
+        <result column="videoLink" jdbcType="INTEGER" property="videoLink" />
+        <result column="enclosuLink" jdbcType="INTEGER" property="enclosuLink" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, checkId, siteId, allLink, webLink, imageLink, videoLink, enclosuLink, checkTime
+    </sql>
+
+    <select id="getOneSiteLinkTypeBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT
+          <include refid="Base_Column_List"/>
+        FROM wklinktype
+        WHERE siteId = #{siteId,jdbcType=INTEGER}
+    </select>
+
+</mapper>

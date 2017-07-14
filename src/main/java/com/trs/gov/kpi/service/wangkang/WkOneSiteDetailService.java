@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.WkLinkTypeResponse;
 import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.responsedata.WkStatsCountResponse;
 
@@ -11,6 +12,15 @@ import java.util.List;
  * Created by li.hao on 2017/7/12.
  */
 public interface WkOneSiteDetailService {
+
+
+    /**
+     * 根据网站编号查询网站链接总数和类型
+     *
+     * @param siteId
+     * @return
+     */
+    WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId);
 
     /**
      * 根据网站编号查询网站总分数 （获取最近一次检查记录）

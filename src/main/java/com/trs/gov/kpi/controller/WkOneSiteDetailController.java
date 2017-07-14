@@ -3,10 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedAndUpdateContentResponse;
-import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
-import com.trs.gov.kpi.entity.responsedata.WkStatsCountResponse;
+import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.wangkang.WkAvgSpeedUpdateContentService;
 import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
@@ -33,7 +30,23 @@ public class WkOneSiteDetailController {
     WkAvgSpeedUpdateContentService wkAvgSpeedUpdateContentService;
 
     /**
-     * 根据网站编号查询网站总分数 （获取最近一次检查记录）
+     * 根据网站编号查询网站链接总数和类型
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "/link/count", method = RequestMethod.GET)
+    @ResponseBody
+    public WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error(Constants.SITE_ID_IS_NULL);
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getOneSiteLinkTypeBySiteId(siteId);
+    }
+
+    /**
+     * 根据网站编号查询网站综合分数 （获取最近一次检查记录）
      * @param siteId
      * @return
      * @throws BizException
@@ -41,8 +54,8 @@ public class WkOneSiteDetailController {
     @RequestMapping(value = "/score", method = RequestMethod.GET)
     @ResponseBody
     public WkOneSiteScoreResponse getOneSiteScoreBySiteId(@RequestParam("siteId") Integer siteId) throws BizException {
-        if(siteId == null){
-            log.error("Invalid parameter:  参数siteId存在null值");
+        if (siteId == null) {
+            log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkOneSiteDetailService.getOneSiteScoreBySiteId(siteId);

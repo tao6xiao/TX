@@ -4,12 +4,14 @@ import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.WkIssueMapper;
+import com.trs.gov.kpi.dao.WkLinkTypeMapper;
 import com.trs.gov.kpi.dao.WkSiteDetailMapper;
 import com.trs.gov.kpi.dao.WkStatsCountMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
+import com.trs.gov.kpi.entity.wangkang.WkLinkType;
 import com.trs.gov.kpi.entity.wangkang.WkSocre;
 import com.trs.gov.kpi.entity.wangkang.WkStatsCount;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
@@ -36,6 +38,23 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     @Resource
     WkIssueMapper wkIssueMapper;
+
+    @Resource
+    WkLinkTypeMapper wkLinkTypeMapper;
+
+    @Override
+    public WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId) {
+        WkLinkType wkLinkType = wkLinkTypeMapper.getOneSiteLinkTypeBySiteId(siteId);
+        WkLinkTypeResponse wkLinkTypeResponse = new WkLinkTypeResponse();
+        if (wkLinkType != null){
+            wkLinkTypeResponse.setAllLink(wkLinkType.getAllLink());
+            wkLinkTypeResponse.setWebLink(wkLinkType.getWebLink());
+            wkLinkTypeResponse.setImageLink(wkLinkType.getImageLink());
+            wkLinkTypeResponse.setVideoLink(wkLinkType.getVideoLink());
+            wkLinkTypeResponse.setEnclosuLink(wkLinkType.getEnclosuLink());
+        }
+        return wkLinkTypeResponse;
+    }
 
     @Override
     public WkOneSiteScoreResponse getOneSiteScoreBySiteId(Integer siteId) {
