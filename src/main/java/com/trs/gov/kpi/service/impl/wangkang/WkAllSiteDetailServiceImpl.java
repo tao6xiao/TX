@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.WkSiteDetailMapper;
 import com.trs.gov.kpi.dao.WkIssueMapper;
 import com.trs.gov.kpi.dao.WkRecordMapper;
+import com.trs.gov.kpi.dao.WkSiteManagementMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -44,6 +45,9 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
     @Resource
     WkRecordMapper wkRecordMapper;
 
+    @Resource
+    WkSiteManagementMapper wkSiteManagementMapper;
+
     @Override
     public List<WkAllSiteScoreResponsed> queryAllSiteScore() {
         List<WkSocre> wkSocreList = wkSiteDetailMapper.selectAllSiteScore();
@@ -75,13 +79,14 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         }
 
         QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
-        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        int itemCount = wkSiteDetailMapper.selectAllSiteScoreCount(filter);
+        int itemCount = wkSiteManagementMapper.selectAllSiteCount(filter);
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
 
-        List<WkIssue> wkIssueList = wkIssueMapper.selectIssueSiteList(filter);
+        Integer isResolved = Status.Resolve.UN_RESOLVED.value;
+        Integer isDel = Status.Delete.UN_DELETE.value;
+        List<WkIssue> wkIssueList = wkIssueMapper.selectIssueSiteList(isResolved, isDel);
 
         return new ApiPageData(pager, getWkIndexLinkIssueResponseByIssue(wkIssueList));
     }

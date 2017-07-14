@@ -109,6 +109,8 @@ public class WkOneSiteDetailController {
         return wkOneSiteDetailService.getInvalidlinkHistoryStatsBySiteId(siteId);
     }
 
+//    public  checkSiteIndexpageStatus
+
     /**
      * 链接可用性---查询未处理的链接的可用性
      *

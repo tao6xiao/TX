@@ -71,4 +71,5 @@ public interface WkSiteManagementService {
      * @return
      */
     List<SiteManagement> getAllSites();
+
 }

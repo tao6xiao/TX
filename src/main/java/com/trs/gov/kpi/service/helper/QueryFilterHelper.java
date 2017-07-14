@@ -382,7 +382,7 @@ public class QueryFilterHelper {
      * @return
      */
     public static QueryFilter toWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
-        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
 
         if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
             filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
@@ -415,18 +415,18 @@ public class QueryFilterHelper {
         return filter;
     }
 
-    /**
-     *  网康模糊查询的filter处理
-     *
-     * @param wkAllSiteDetail
-     * @return
-     */
-    public static QueryFilter toVagueWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
-        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
-
-        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
-            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
-        }
+//    /**
+//     *  网康模糊查询的filter处理
+//     *
+//     * @param wkAllSiteDetail
+//     * @return
+//     */
+//    public static QueryFilter toVagueWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
+//        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+//
+//        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
+//            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
+//        }
 //        if ("checkStatus".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
 //            switch (wkAllSiteDetail.getSearchText()){
 //                case("0"):
@@ -444,14 +444,14 @@ public class QueryFilterHelper {
 //                default:
 //            }
 //        }
-
-        // sort field
-        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
-            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
-            addSort(filter, sortFields);
-        }
-
-        return filter;
-    }
+//
+//        // sort field
+//        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
+//            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
+//            addSort(filter, sortFields);
+//        }
+//
+//        return filter;
+//    }
 
 }
