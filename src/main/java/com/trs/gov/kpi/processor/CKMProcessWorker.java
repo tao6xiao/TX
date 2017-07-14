@@ -42,7 +42,7 @@ import java.util.*;
 @Scope("prototype")
 public class CKMProcessWorker implements Runnable {
 
-    private static final String LINE_SP = System.getProperty("line.separator");
+    public static final String LINE_SP = System.getProperty("line.separator");
 
     @Value("${wk.location.dir}")
     private String locationDir;
@@ -61,7 +61,7 @@ public class CKMProcessWorker implements Runnable {
 
     @Override
     public void run() {
-        buildList();
+//        buildList();
     }
 
     private List<Issue> buildList() {
@@ -114,7 +114,7 @@ public class CKMProcessWorker implements Runnable {
                     }
 
                     try {
-                        final String relativeDir = getRelativeDir(content.getUrl(), index, 1);
+                        final String relativeDir = getRelativeDir(content.getSiteId(), content.getCheckId(), content.getUrl(), index, 1);
                         String absoluteDir = locationDir + File.separator + relativeDir;
                         createDir(absoluteDir);
 
@@ -133,7 +133,7 @@ public class CKMProcessWorker implements Runnable {
                         createSrcPosHtml(absoluteDir, srcLocContent);
 
                         // 创建头部导航页面
-                        createContHtml(absoluteDir);
+                        createContHtml(absoluteDir, content.getUrl(), content.getParentUrl());
 
                         // 创建首页
                         createIndexHtml(absoluteDir);
@@ -142,7 +142,7 @@ public class CKMProcessWorker implements Runnable {
                         issue.setCheckId(content.getCheckId());
                         issue.setCheckTime(new Date());
                         issue.setLocationUrl("gov/wangkang/loc/" +  relativeDir.replace(File.separator, "/") + "/" + "index.html");
-                        issue.setChnlName(getChnlName());
+                        issue.setChnlName(getChnlName(content.getUrl()));
                         issue.setDetailInfo(errorInfo);
                         if (StringUtil.isEmpty(content.getParentUrl())) {
                             issue.setParentUrl(content.getUrl());
@@ -226,25 +226,25 @@ public class CKMProcessWorker implements Runnable {
         return result;
     }
 
-    private void createFile(String fullFilePath, String content) throws IOException {
+    public static void createFile(String fullFilePath, String content) throws IOException {
         File file = new File(fullFilePath);
         FileUtils.writeStringToFile(file, content, "UTF-8");
     }
 
-    private String getRelativeDir(String url, int index, int type) {
+    public static String getRelativeDir(Integer siteId, Integer checkId, String url, int index, int type) {
         // siteId / checkId / md5(url) / type / index / index.html
-        return content.getSiteId() + File.separator
-                + content.getCheckId() + File.separator
+        return siteId + File.separator
+                + checkId + File.separator
                 + DigestUtils.md5Hex(url) + File.separator
                 + type + File.separator
                 + index;
     }
 
-    private void createDir(String dir) throws IOException {
+    public static void createDir(String dir) throws IOException {
         FileUtils.forceMkdir(new File(dir));
     }
 
-    private void createIndexHtml(String dir) throws IOException {
+    public static void createIndexHtml(String dir) throws IOException {
         String htmlText =  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
                 "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                 "\t<head>\n" +
@@ -261,15 +261,15 @@ public class CKMProcessWorker implements Runnable {
         createFile(dir+File.separator +"index.html", htmlText);
     }
 
-    private void createPagePosHtml(String dir, String htmlText) throws IOException {
+    public static void createPagePosHtml(String dir, String htmlText) throws IOException {
         createFile(dir+File.separator +"pos.html", htmlText);
     }
 
-    private void createSrcPosHtml(String dir, String htmlText) throws IOException {
+    public static void createSrcPosHtml(String dir, String htmlText) throws IOException {
         createFile(dir+File.separator +"src.html", htmlText);
     }
 
-    private void createContHtml(String dir) throws IOException {
+    public static void createContHtml(String dir, String orignalUrl, String parentUrl) throws IOException {
         String htmlText = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
                 "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                 "\t<head>\n" +
@@ -282,8 +282,8 @@ public class CKMProcessWorker implements Runnable {
                 "\t\t\t<div class=\"top_positiontop\">\n" +
                 "\t\t\t\t<h1><a href =\"pos.html\" target =\"showframe\">页面定位</a></h1>\n" +
                 "\t\t\t\t<h1><a href =\"src.html\" target =\"showframe\">源码定位</a></h1>\n" +
-                "\t\t\t\t<h1><a href =\"" + content.getUrl() + "\" target =\"showframe\">原始页面</a></h1>\n" +
-                "\t\t\t\t<h1><a href =\"" + content.getParentUrl() + "\" target =\"showframe\">父页面</a></h1>\n" +
+                "\t\t\t\t<h1><a href =\"" + orignalUrl + "\" target =\"showframe\">原始页面</a></h1>\n" +
+                "\t\t\t\t<h1><a href =\"" + parentUrl + "\" target =\"showframe\">父页面</a></h1>\n" +
                 "\t\t\t\t<h1><a href=\"javascript:window.top.close();\">关闭</a></h1>\n" +
                 "\t\t\t</div>\n" +
                 "\t\t</div>\n" +
@@ -392,21 +392,21 @@ public class CKMProcessWorker implements Runnable {
         log.info("buildCheckContent insert error count: " + issueList.size());
     }
 
-    public String getChnlName() {
-        int index = content.getUrl().indexOf("//");
+    public static String getChnlName(String url) {
+        int index = url.indexOf("//");
         if (index == -1) {
             return "";
         }
-        index = content.getUrl().indexOf("/", index + "//".length());
+        index = url.indexOf("/", index + "//".length());
         if (index == -1) {
             return "";
         }
 
-        int endIndex = content.getUrl().indexOf("/", index + "/".length());
+        int endIndex = url.indexOf("/", index + "/".length());
         if (endIndex == -1) {
             return "";
         } else {
-            return content.getUrl().substring(index+"/".length(), endIndex);
+            return url.substring(index+"/".length(), endIndex);
         }
     }
 }

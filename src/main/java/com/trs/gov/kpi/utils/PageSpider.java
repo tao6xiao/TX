@@ -81,6 +81,8 @@ public class PageSpider {
 
     private int count = 0;
 
+    private String homepageHost;
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
@@ -88,29 +90,23 @@ public class PageSpider {
 
             //去掉外站链接
             List<String> targetUrls = page.getHtml().links().all();
-            Iterator<String> targetUrlIter = targetUrls.iterator();
+
+            // 当页面已经完全跳转到外部去了，就不再处理了。
             String baseHost = UrlUtils.getHost(page.getUrl().get());
-            while (targetUrlIter.hasNext()) {
-
-                String targetHost = UrlUtils.getHost(targetUrlIter.next());
-                if (!StringUtils.equals(baseHost, targetHost)) {
-
-                    targetUrlIter.remove();
-                }
+            if (!StringUtils.equals(baseHost, homepageHost)) {
+                return;
             }
 
             //相对/绝对路径的处理问题
             List<String> imgUrls = page.getHtml().$("img", "src").all();
             for (String imgUrl : imgUrls) {
-
                 targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
             }
-            targetUrls.addAll(page.getHtml().$("img", "src").all());
+//            targetUrls.addAll(page.getHtml().$("img", "src").all());
+            targetUrls = fixUrl(targetUrls);
 
             for (String targetUrl : targetUrls) {
-
                 if (!pageParentMap.containsKey(targetUrl)) {
-
                     synchronized (pageParentMap) {
 
                         if (!pageParentMap.containsKey(targetUrl)) {
@@ -159,6 +155,17 @@ public class PageSpider {
 
             return site;
         }
+
+        private List<String> fixUrl(List<String> urls) {
+            List<String> result = new ArrayList<>();
+            for (String url : urls) {
+                if (url.endsWith("#")) {
+                    url = url.substring(0, url.length() -1);
+                }
+                result.add(url);
+            }
+            return result;
+        }
     };
 
     private Downloader recordUnavailableUrlDownloader = new HttpClientDownloader() {
@@ -173,7 +180,6 @@ public class PageSpider {
             Page result = super.download(request, task);
             Date endDate = new Date();
             long useTime = endDate.getTime() - startDate.getTime();
-
 
             Object parentUrl = request.getExtra("parentUrl");
             if (parentUrl == null) {
@@ -198,58 +204,19 @@ public class PageSpider {
                     pageContent.put(request.getUrl().intern(), result.getRawText());
                 }
                 final EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
-                if (urlType == EnumUrlType.HTML) {
-                    PageInfoMsg accessSpeedMsg = new PageInfoMsg();
-                    accessSpeedMsg.setSiteId(siteManagement.getSiteId());
-                    accessSpeedMsg.setParentUrl(parentUrl.toString());
-                    accessSpeedMsg.setSpeed(useTime);
-                    accessSpeedMsg.setUrl(request.getUrl());
-                    accessSpeedMsg.setCheckId(checkId);
-                    accessSpeedMsg.setContent(result.getRawText());
+                String baseHost = UrlUtils.getHost(request.getUrl());
+                // 只处理本域名下的网页
+                if (urlType == EnumUrlType.HTML && StringUtils.equals(baseHost, homepageHost)) {
+                    PageInfoMsg pageInfoMsg = new PageInfoMsg();
+                    pageInfoMsg.setSiteId(siteManagement.getSiteId());
+                    pageInfoMsg.setParentUrl(parentUrl.toString());
+                    pageInfoMsg.setSpeed(useTime);
+                    pageInfoMsg.setUrl(request.getUrl());
+                    pageInfoMsg.setCheckId(checkId);
+                    pageInfoMsg.setContent(result.getRawText());
                     count++;
-                    commonMQ.publishMsg(accessSpeedMsg);
+                    commonMQ.publishMsg(pageInfoMsg);
                 }
-//
-//                String[] urlSize = request.getUrl().split("/");
-//                String chnlName = urlSize[3];
-//
-//                if(useTime > THRESHOLD_MAX_REPLY_SPEED){
-//                    replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
-//                            chnlName,
-//                            request.getUrl().intern(),
-//                            useTime,
-//                            Long.valueOf(result.getRawText().getBytes().length),
-//                            new Date()));
-//                }
-//
-//                if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
-//                    biggerPage.add(new PageSpace(chnlName,
-//                            request.getUrl().intern(),
-//                            useTime,
-//                            Long.valueOf(result.getRawText().getBytes().length),
-//                            new Date()));
-//                }
-//
-//                // TODO 发送内容，进行检测
-//
-//                if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
-//                    biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
-//                            chnlName,
-//                            request.getUrl().intern(),
-//                            Long.valueOf(request.getUrl().length()),
-//                            Long.valueOf(result.getRawText().getBytes().length),
-//                            new Date()));
-//                }
-//
-//                int deepSize = calcDeep(request.getUrl(), 100, 1);
-//                if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
-//                    pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
-//                            chnlName,
-//                            request.getUrl().intern(),
-//                            deepSize,
-//                            Long.valueOf(result.getRawText().getBytes().length),
-//                            new Date()));
-//                }
             }
             return result;
         }
@@ -267,6 +234,7 @@ public class PageSpider {
         this.baseUrl = baseUrl;
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
+        homepageHost = UrlUtils.getHost(baseUrl);
     }
 
     /**
