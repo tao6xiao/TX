@@ -8,6 +8,7 @@ import com.trs.gov.kpi.utils.DBUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * Created by li.hao on 2017/7/13.
@@ -38,5 +39,17 @@ public class WkEveryLinkServiceImpl implements WkEveryLinkService {
 
         return wkEveryLinkMapper.selectOnceCheckUpdateContent(siteId, checkId);
 
+    }
+
+    @Override
+    public List<WkEveryLink> getLastTimeWkEveryLinkList(Integer siteId, Integer checkId) {
+
+        return wkEveryLinkMapper.getLastTimeWkEveryLinkList(siteId, checkId);
+    }
+
+    @Override
+    public List<WkEveryLink> getThisTimeWkEveryLinkList(Integer siteId, Integer checkId) {
+
+        return wkEveryLinkMapper.getThisTimeWkEveryLinkList(siteId, checkId);
     }
 }

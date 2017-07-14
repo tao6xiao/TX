@@ -2,6 +2,8 @@ package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
 
+import java.util.List;
+
 /**
  * Created by li.hao on 2017/7/13.
  */
@@ -31,5 +33,23 @@ public interface WkEveryLinkService {
      * @return
      */
     Integer selectOnceCheckUpdateContent(Integer siteId, Integer checkId);
+
+    /**
+     * 获取上一次检测所有文档信息
+     *
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    List<WkEveryLink> getLastTimeWkEveryLinkList(Integer siteId, Integer checkId);
+
+    /**
+     * 获取当前检测所有文档信息
+     *
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    List<WkEveryLink> getThisTimeWkEveryLinkList(Integer siteId, Integer checkId);
 
 }

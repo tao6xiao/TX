@@ -1,7 +1,10 @@
 package com.trs.gov.kpi.dao;
 
+import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * Created by li.hao on 2017/7/13.
@@ -26,4 +29,22 @@ public interface WkEveryLinkMapper {
      * @return
      */
     Integer selectOnceCheckUpdateContent(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
+
+    /**
+     * 获取上一次检测所有文档信息
+     *
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    List<WkEveryLink> getLastTimeWkEveryLinkList(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
+
+    /**
+     * 获取当前检测所有文档信息
+     *
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    List<WkEveryLink> getThisTimeWkEveryLinkList(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
 }

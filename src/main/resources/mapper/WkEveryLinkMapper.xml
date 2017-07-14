@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.WkEveryLinkMapper">
 
-    <resultMap id="WkAvgSpeedMap" type="com.trs.gov.kpi.entity.wangkang.WkEveryLink">
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkEveryLink">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="checkId" jdbcType="INTEGER" property="checkId" />
         <result column="siteId" jdbcType="INTEGER" property="siteId" />
@@ -23,5 +23,22 @@
         where siteId = #{siteId,jdbcType=INTEGER}
         AND checkId = #{checkId,jdbcType=INTEGER}
     </select>
+
+    <select id="getLastTimeWkEveryLinkList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkeverylink
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND checkId = #{checkId,jdbcType=INTEGER}
+    </select>
+
+    <select id="getThisTimeWkEveryLinkList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkeverylink
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND checkId = #{checkId,jdbcType=INTEGER}
+    </select>
+
 
 </mapper>
