@@ -53,7 +53,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
             parameters.add(new BasicNameValuePair("type", type));
             HttpEntity entity1 = new UrlEncodedFormEntity(parameters, "utf-8");
             httpPost.setEntity(entity1);
-            byte[] base = new Base64().encode("test:test".getBytes());
+            byte[] base = new Base64().encode("admin:trsadmin".getBytes());
             String authorization = "Basic " + new String(base);
             httpPost.setHeader("Authorization", authorization);
             HttpResponse response = httpClient.execute(httpPost);
