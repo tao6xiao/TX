@@ -42,8 +42,7 @@ public class IDSActor extends StdHttpSessionBasedActor{
      */
     public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) throws ActorException {
         HttpSession session = request.getSession();
-        session.setAttribute(LOGIN_FLAG, loginUser.getUserName());
-        ContextHelper.initContext(loginUser);
+        session.setAttribute(LOGIN_FLAG, loginUser);
         LOG.info("loadLoginUser[" + loginUser.getUserName() + "], user groups info:" + loginUser.getSSOGroups());
     }
     /**

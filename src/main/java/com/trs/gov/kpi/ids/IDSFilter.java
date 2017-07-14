@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 @Component
 @WebFilter(filterName = "IDSFilter", urlPatterns = "/*")
-@Order(Integer.MAX_VALUE-1)
+@Order(Integer.MAX_VALUE-2)
 public class IDSFilter implements Filter{
 
     @Override
