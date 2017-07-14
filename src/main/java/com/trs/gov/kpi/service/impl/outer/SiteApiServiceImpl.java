@@ -112,16 +112,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(buildRequest("findChannelById", userName, params, SERVICE_NAME_SITE)).execute();
 
-            if (response.isSuccessful()) {
-                ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目");
-                if (StringUtil.isEmpty(result.getData())) {
-                    return null;
-                }
-                return JSON.parseObject(result.getData(), Channel.class);
-            } else {
-                log.error("failed to getChannelById, error: " + response);
-                throw new RemoteException("获取栏目失败！");
-            }
+            return responseManager("findChannelById", response);
         } catch (IOException e) {
             log.error("failed getChannelById", e);
             throw new RemoteException("获取栏目失败！", e);
@@ -135,7 +126,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             params.put(SITE_ID, String.valueOf(siteId));
             params.put("ChannelId", String.valueOf(channelId));
             OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(buildRequest("getSiteOrChannelPubUrl", userName, params,SERVICE_NAME_SITE)).execute();
+            Response response = client.newCall(buildRequest("getSiteOrChannelPubUrl", userName, params, SERVICE_NAME_SITE)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目发布地址");
@@ -227,19 +218,23 @@ public class SiteApiServiceImpl implements SiteApiService {
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(buildRequest("findChannelByUrl", userName, params, SERVICE_NAME_SITE)).execute();
 
-            if (response.isSuccessful()) {
-                ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目");
-                if (StringUtil.isEmpty(result.getData())) {
-                    return null;
-                }
-                return JSON.parseObject(result.getData(), Channel.class);
-            } else {
-                log.error("failed to findChannelByUrl, error: " + response);
-                throw new RemoteException("通过url获取栏目！");
-            }
+            return responseManager("findChannelByUrl", response);
         } catch (IOException e) {
             log.error("failed findChannelByUrl", e);
             throw new RemoteException("通过url获取栏目！", e);
+        }
+    }
+
+    private Channel responseManager(String method, Response response) throws IOException, RemoteException {
+        if (response.isSuccessful()) {
+            ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目");
+            if (StringUtil.isEmpty(result.getData())) {
+                return null;
+            }
+            return JSON.parseObject(result.getData(), Channel.class);
+        } else {
+            log.error("failed to " + method + ", error: " + response);
+            throw new RemoteException("通过url获取栏目！");
         }
     }
 
