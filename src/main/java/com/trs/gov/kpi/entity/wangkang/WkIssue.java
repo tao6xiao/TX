@@ -46,13 +46,13 @@ public class WkIssue {
     private Date checkTime;//检测时间
 
     @DBField
-    private Integer isResolved;//问题是否处理
+    private Integer isResolved = 0;//问题是否处理
 
     @DBField
     private Date resolveTime;//处理时间
 
     @DBField
-    private Integer isDel;//是否删除
+    private Integer isDel = 0;//是否删除
 
     @DBField
     private String locationUrl;//错误定位URL

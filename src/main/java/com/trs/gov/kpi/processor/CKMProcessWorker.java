@@ -4,14 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
-import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.wangkang.WkIssue;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
@@ -19,12 +20,18 @@ import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -37,11 +44,17 @@ public class CKMProcessWorker implements Runnable {
 
     private static final String LINE_SP = System.getProperty("line.separator");
 
+    @Value("${wk.location.dir}")
+    private String locationDir;
+
     @Resource
     private ContentCheckApiService contentCheckApiService;
 
     @Resource
     private IssueMapper issueMapper;
+
+    @Resource
+    private CommonMapper commonMapper;
 
     @Setter
     private PageInfoMsg content;
@@ -86,30 +99,79 @@ public class CKMProcessWorker implements Runnable {
                 continue;
             } else {
                 final Set<Map.Entry<String, Object>> entries = JSONObject.parseObject(errorContent).entrySet();
+                int index = 0;
                 for (Map.Entry<String, Object> entry : entries) {
+                    index++;
                     String errorInfo = entry.getKey();
-                    final String[] infos = errorInfo.split(":");
-                    String word = infos[0];
-                    String correct = infos[1];
+                    final String[] infos = errorInfo.split("：");
+                    if (infos == null || infos.length > 2 || infos.length < 1) {
+                        continue;
+                    }
+                    String errorWord = infos[0];
+                    String correctWord = "";
+                    if (infos.length >= 2) {
+                        correctWord = infos[1];
+                    }
 
+                    try {
+                        final String relativeDir = getRelativeDir(content.getUrl(), index, 1);
+                        String absoluteDir = locationDir + File.separator + relativeDir;
+                        createDir(absoluteDir);
 
+                        // 网页定位
+                        String pageLocContent = generatePageLocHtmlText(subIssueType, errorWord, correctWord);
+                        if (pageLocContent == null) {
+                            continue;
+                        }
+                        createPagePosHtml(absoluteDir, pageLocContent);
 
+                        // 源码定位
+                        String srcLocContent = generateSourceLocHtmlText(subIssueType, errorWord, correctWord);
+                        if (srcLocContent == null) {
+                            continue;
+                        }
+                        createSrcPosHtml(absoluteDir, srcLocContent);
 
+                        // 创建头部导航页面
+                        createContHtml(absoluteDir);
 
+                        // 创建首页
+                        createIndexHtml(absoluteDir);
+
+                        WkIssue issue = new WkIssue();
+                        issue.setCheckId(content.getCheckId());
+                        issue.setCheckTime(new Date());
+                        issue.setLocationUrl("gov/wangkang/loc/" +  relativeDir.replace(File.separator, "/") + "/" + "index.html");
+                        issue.setChnlName(getChnlName());
+                        issue.setDetailInfo(errorInfo);
+                        if (StringUtil.isEmpty(content.getParentUrl())) {
+                            issue.setParentUrl(content.getUrl());
+                        } else {
+                            issue.setParentUrl(content.getParentUrl());
+                        }
+                        issue.setUrl(content.getUrl());
+                        issue.setSiteId(content.getSiteId());
+                        issue.setTypeId(Types.WkSiteCheckType.CONTENT_ERROR.value);
+                        issue.setSubTypeId(subIssueType.value);
+
+                        commonMapper.insert(DBUtil.toRow(issue));
+                    } catch (IOException e) {
+                        log.error("error content: " + errorContent);
+                        log.error("failed to generate file of " + content.getUrl() + ", siteid[" + content.getSiteId() + "] , checkid[" + content.getCheckId() + "]", e);
+                    }
                 }
             }
         }
         return issueList;
     }
 
-    private String generateLocationPage(Types.InfoErrorIssueType type, String errorWord, String correct) {
+    private String generatePageLocHtmlText(Types.InfoErrorIssueType type, String errorWord, String correct) {
 
-        String result = "";
         StringBuffer sb = new StringBuffer();
         // 给网站增加base标签
         sb.append("<base href=\"" + content.getUrl() + "\" />");
         sb.append(LINE_SP);
-        sb.append(content.getContent());
+        sb.append(content.getContent().intern());
         // 在源码中增加定位用的脚本定义
         sb.append(LINE_SP);
         sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
@@ -120,55 +182,193 @@ public class CKMProcessWorker implements Runnable {
         sb.append(LINE_SP);
         sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
         // 解析源码，找到断链标签，加上标记信息。
-        result = sb.toString();
+        String result = sb.toString();
 
         int index = result.indexOf(errorWord, 0);
-        while (index != -1) {
+
+        if (index == -1) {
+            return null;
+        } else {
             String errorinfo = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
             index = result.indexOf(errorWord, index + errorinfo.length());
         }
 
-        result += "<div id=\"qtip-0\" class=\"qtip qtip-default  qtip-focus qtip-pos-br\" tracking=\"false\" role=\"alert\" aria-live=\"polite\" aria-atomic=\"false\" aria-describedby=\"qtip-0-content\" aria-hidden=\"false\" data-qtip-id=\"0\" style=\"z-index: 15001; top: 2705px; left: 430.453px; display: block;\">\n" +
-                "\t<div class=\"qtip-tip\" style=\"background-color: transparent !important; border: 0px !important; width: 8px; height: 8px; line-height: 8px; right: -1px; bottom: -8px;\">\n" +
-                "\t\t<canvas width=\"8\" height=\"8\" style=\"background-color: transparent !important; border: 0px !important; width: 8px; height: 8px;\"></canvas>\n" +
-                "\t</div>\n" +
-                "\t<div class=\"qtip-titlebar\">\n" +
-                "\t\t<div id=\"qtip-0-title\" class=\"qtip-title\" aria-atomic=\"true\">定位</div>\n" +
-                "\t\t<a class=\"qtip-close qtip-icon\" title=\"close\" aria-label=\"close\" role=\"button\">\n" +
-                "\t\t\t<span class=\"ui-icon ui-icon-close\">×</span>\n" +
-                "\t\t</a>\n" +
-                "\t</div>\n" +
-                "\t<div class=\"qtip-content\" id=\"qtip-0-content\" aria-atomic=\"true\">" + getDisplayErrorWord(type, errorWord, correct) + "</div>\n" +
-                "</div>";
+        while (index != -1) {
+            String errorinfo = "<font msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
+            result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
+            index = result.indexOf(errorWord, index + errorinfo.length());
+        }
 
         return result;
     }
 
     private String getDisplayErrorWord(Types.InfoErrorIssueType type, String errorWord, String correctWord) {
-        String result = "疑似使用错误的关键字：" + errorWord;
+        String result = "";
+        switch (type) {
+            case TYPOS:
+                result = "疑似错别字：" + errorWord;
+                break;
+            case POLITICS:
+                result = "疑似使用错误的政治术语：" + errorWord;
+                break;
+            case SENSITIVE_WORDS:
+                result = "疑似使用错误的敏感词：" + errorWord;
+                break;
+            default:
+                result = "疑似其他内容错误：" + errorWord;
+                break;
+        }
+
         if (!StringUtil.isEmpty(correctWord)) {
-            result += "，应为：" + errorWord;
+            result += "，应为：" + correctWord;
         }
         return result;
     }
 
-    private void createFile(String fullFilePath, String content) {
-//        String fileName = "C://11.txt";
-//        File file = new File(fileName);
-//        String fileContent = "";
-//        try {
-//            fileContent = org.apache.commons.io.FileUtils.readFileToString(file, "GBK");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        fileContent +="Helloworld";
-//        try {
-//            org.apache.commons.io.FileUtils.writeStringToFile(file, fileContent, "GBK");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+    private void createFile(String fullFilePath, String content) throws IOException {
+        File file = new File(fullFilePath);
+        FileUtils.writeStringToFile(file, content, "UTF-8");
     }
+
+    private String getRelativeDir(String url, int index, int type) {
+        // siteId / checkId / md5(url) / type / index / index.html
+        return content.getSiteId() + File.separator
+                + content.getCheckId() + File.separator
+                + DigestUtils.md5Hex(url) + File.separator
+                + type + File.separator
+                + index;
+    }
+
+    private void createDir(String dir) throws IOException {
+        FileUtils.forceMkdir(new File(dir));
+    }
+
+    private void createIndexHtml(String dir) throws IOException {
+        String htmlText =  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
+                "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                "\t<head>\n" +
+                "\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" +
+                "\t\t<title>TRS网站健康检查系统-定位</title>\n" +
+                "\t</head>\n" +
+                "\t<frameset rows=\"40,*\" frameborder=\"no\">\n" +
+                "\t\t<frame src=\"cont.html\">\n" +
+                "\t\t<frame src=\"pos.html\" name=\"showframe\">\n" +
+                "\t</frameset>\n" +
+                "\t<noframes><body>\n" +
+                "\t</body></noframes>\n" +
+                "</html>";
+        createFile(dir+File.separator +"index.html", htmlText);
+    }
+
+    private void createPagePosHtml(String dir, String htmlText) throws IOException {
+        createFile(dir+File.separator +"pos.html", htmlText);
+    }
+
+    private void createSrcPosHtml(String dir, String htmlText) throws IOException {
+        createFile(dir+File.separator +"src.html", htmlText);
+    }
+
+    private void createContHtml(String dir) throws IOException {
+        String htmlText = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
+                "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                "\t<head>\n" +
+                "\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" +
+                "\t\t<title>TRS网站健康检查系统-定位</title>\n" +
+                "\t\t<link href=\"../../../../../style/css.css\" rel=\"stylesheet\" type=\"text/css\">\n" +
+                "\t</head>\n" +
+                "\t<body>\n" +
+                "\t\t<div class=\"jkd_positiontop\">\n" +
+                "\t\t\t<div class=\"top_positiontop\">\n" +
+                "\t\t\t\t<h1><a href =\"pos.html\" target =\"showframe\">页面定位</a></h1>\n" +
+                "\t\t\t\t<h1><a href =\"src.html\" target =\"showframe\">源码定位</a></h1>\n" +
+                "\t\t\t\t<h1><a href =\"" + content.getUrl() + "\" target =\"showframe\">原始页面</a></h1>\n" +
+                "\t\t\t\t<h1><a href =\"" + content.getParentUrl() + "\" target =\"showframe\">父页面</a></h1>\n" +
+                "\t\t\t\t<h1><a href=\"javascript:window.top.close();\">关闭</a></h1>\n" +
+                "\t\t\t</div>\n" +
+                "\t\t</div>\n" +
+                "\t</body>\n" +
+                "</html>";
+        createFile(dir + File.separator +"cont.html", htmlText);
+    }
+
+    private String generateSourceLocHtmlText(Types.InfoErrorIssueType type, String errorWord, String correct) {
+
+        // 将html标签转义
+        String sourceEscape = StringEscapeUtils.escapeHtml4(content.getContent());
+        StringBuffer sb = new StringBuffer();
+        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+        sb.append(LINE_SP);
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        sb.append(LINE_SP);
+        sb.append("	<head>");
+        sb.append(LINE_SP);
+        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
+        sb.append(LINE_SP);
+        sb.append("		<title>源码定位</title>");
+        sb.append(LINE_SP);
+        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">");
+        sb.append(LINE_SP);
+        sb.append("	</head>");
+        sb.append(LINE_SP);
+        sb.append("	<body> ");
+        sb.append(LINE_SP);
+        sb.append("		<div class=\"sh_code\">");
+        sb.append(LINE_SP);
+        sb.append("			<ol start=\"1\">");
+        sb.append(LINE_SP);
+        sourceEscape = sourceEscape.replaceAll("\r", "");
+        sourceEscape = sourceEscape.replaceAll("\n", LINE_SP);
+        sourceEscape = sourceEscape.replaceAll(" ", "&nbsp;");
+        sourceEscape = sourceEscape.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+        String[] sourceArr = sourceEscape.split(LINE_SP);
+        for (int i = 0; i < sourceArr.length; i++) {
+            String line = sourceArr[i];
+            if (i % 2 == 0) {
+                sb.append("				<li>" + line + "</li>");
+            } else {
+                sb.append("				<li class=\"alt\">" + line + "</li>");
+            }
+            sb.append(LINE_SP);
+        }
+        sb.append("			</ol>");
+        sb.append(LINE_SP);
+        sb.append("		</div>");
+        sb.append(LINE_SP);
+        sb.append("	</body>");
+        sb.append(LINE_SP);
+        sb.append("</html>");
+        sb.append(LINE_SP);
+
+        // 在源码中增加定位用的脚本定义
+        sb.append(LINE_SP);
+        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
+        sb.append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
+        sb.append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
+        sb.append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+
+        String result = sb.toString();
+        int index = result.indexOf(errorWord, 0);
+        if (index == -1) {
+            return null;
+        } else {
+            String errorinfo = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
+            result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
+            index = result.indexOf(errorWord, index + errorinfo.length());
+        }
+
+        while (index != -1) {
+            String errorinfo = "<font msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
+            result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
+            index = result.indexOf(errorWord, index + errorinfo.length());
+        }
+
+        return result;
+    }
+
 
     public void insert(List<Issue> issueList) {
         //插入监测出的信息错误数据
@@ -190,5 +390,23 @@ public class CKMProcessWorker implements Runnable {
             }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
+    }
+
+    public String getChnlName() {
+        int index = content.getUrl().indexOf("//");
+        if (index == -1) {
+            return "";
+        }
+        index = content.getUrl().indexOf("/", index + "//".length());
+        if (index == -1) {
+            return "";
+        }
+
+        int endIndex = content.getUrl().indexOf("/", index + "/".length());
+        if (endIndex == -1) {
+            return "";
+        } else {
+            return content.getUrl().substring(index+"/".length(), endIndex);
+        }
     }
 }

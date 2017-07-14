@@ -18,14 +18,17 @@ import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.io.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +44,9 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @Slf4j
 @Service
 public class SchedulerServiceImpl implements SchedulerService {
+
+    @Value("${wk.location.dir}")
+    private String locDir;
 
     @Resource
     private WkSiteManagementService wkSiteManagementService;
@@ -133,6 +139,8 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         // 启动完成后，就开始执行
         try {
+            distStyleFile();
+
             commonMQ.start();
 
             // 内容监测
@@ -546,5 +554,33 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         task.setSite(site);
         fixedThreadPool.execute(task);
+    }
+
+    // 分发样式文件
+    private void distStyleFile() {
+        final InputStream resourceAsStream = getClass().getResourceAsStream("/style/css.css");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + System.getProperty("line.separator"));
+            }
+        } catch (IOException e) {
+            log.error("", e);
+        } finally {
+            try {
+                resourceAsStream.close();
+            } catch (IOException e) {
+                log.error("", e);
+            }
+        }
+
+        try {
+            FileUtils.forceMkdir(new File(locDir + File.separator + "style"));
+            FileUtils.writeStringToFile(new File(locDir + File.separator + "style" + File.separator + "css.css"), sb.toString());
+        } catch (IOException e) {
+            log.error("", e);
+        }
     }
 }
