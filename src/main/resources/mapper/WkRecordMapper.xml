@@ -13,7 +13,7 @@
         id, checkId, siteId, checkTime, updateContent
     </sql>
 
-    <resultMap id="WkUpdateContent" type="com.trs.gov.kpi.entity.wangkang.WkUpdateContent">
+    <resultMap id="WkUpdateContent" type="com.trs.gov.kpi.entity.wangkang.WkAllStats">
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="checkId" jdbcType="INTEGER" property="checkId" />
         <result column="siteId" jdbcType="INTEGER" property="siteId" />

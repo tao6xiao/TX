@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
-import com.trs.gov.kpi.entity.wangkang.WkUpdateContent;
+import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -24,5 +24,5 @@ public interface WkAvgSpeedUpdateContentMapper {
      *
      * @return
      */
-    List<WkUpdateContent> getUpdateContentHistory();
+    List<WkAllStats> getUpdateContentHistory();
 }

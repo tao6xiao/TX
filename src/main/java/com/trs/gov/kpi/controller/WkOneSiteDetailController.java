@@ -4,7 +4,7 @@ import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
-import com.trs.gov.kpi.service.wangkang.WkAvgSpeedUpdateContentService;
+import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class WkOneSiteDetailController {
     WkOneSiteDetailService wkOneSiteDetailService;
 
     @Resource
-    WkAvgSpeedUpdateContentService wkAvgSpeedUpdateContentService;
+    WkAllStatsService wkAllStatsService;
 
     /**
      * 根据网站编号查询网站链接总数和类型
@@ -191,7 +191,7 @@ public class WkOneSiteDetailController {
     @RequestMapping(value = "speed/counttrend/bytype/avg", method = RequestMethod.GET)
     @ResponseBody
     public List<WkAvgSpeedAndUpdateContentResponse> getAvgSpeedHistory(){
-        return wkAvgSpeedUpdateContentService.getAvgSpeedHistory();
+        return wkAllStatsService.getAvgSpeedHistory();
     }
 
     /**
@@ -201,7 +201,7 @@ public class WkOneSiteDetailController {
     @RequestMapping(value = "update/counttrend/bytype/history", method = RequestMethod.GET)
     @ResponseBody
     public List<WkAvgSpeedAndUpdateContentResponse> getUpdateContentHistory(){
-        return wkAvgSpeedUpdateContentService.getUpdateContentHistory();
+        return wkAllStatsService.getUpdateContentHistory();
     }
 
 }

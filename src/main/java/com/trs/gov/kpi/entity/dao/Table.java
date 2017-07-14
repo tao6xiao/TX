@@ -21,7 +21,8 @@ public enum Table {
     WK_SITEMANAGEMENT("wksite", Arrays.asList(Constants.DB_FIELD_SITE_ID, "siteName",
             "siteIndexUrl", "deptAddress", "deptLatLng", "autoCheckType", "checkTime", "checkStatus", "isDel")),
     WK_ISSUE("wkissue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID,"checkId","typeId",
-            "subTypeId","chnlName","url","detailInfo","parentUrl","checkTime","isResolved","resolvedTime","isDel","locationUrl"));
+            "subTypeId","chnlName","url","detailInfo","parentUrl","checkTime","isResolved","resolvedTime","isDel","locationUrl")),
+    WK_ALL_STATS("wkallstats", Arrays.asList(Constants.DB_FIELD_SITE_ID, "checkId", "updateContent", "avgSpeed", "errorInfo", "invalidLink"));
 
 
     // 表名

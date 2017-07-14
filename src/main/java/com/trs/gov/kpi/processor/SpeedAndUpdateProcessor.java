@@ -3,11 +3,10 @@ package com.trs.gov.kpi.processor;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
-import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
 import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
-import com.trs.gov.kpi.entity.wangkang.WkUpdateContent;
+import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.msgqueue.MQListener;
-import com.trs.gov.kpi.service.wangkang.WkAvgSpeedUpdateContentService;
+import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkEveryLinkService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
@@ -27,7 +26,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
     WkEveryLinkService wkEveryLinkService;
 
     @Resource
-    WkAvgSpeedUpdateContentService wkAvgSpeedUpdateContentService;
+    WkAllStatsService wkAllStatsService;
 
     private final String name = "SpeedAndUpdateProcessor";
 
@@ -44,14 +43,6 @@ public class SpeedAndUpdateProcessor implements MQListener {
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
             Integer siteId = checkEndMsg.getSiteId();
             Integer checkId = checkEndMsg.getCheckId();
-
-            Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(siteId, checkId);
-            WkAvgSpeed wkAvgSpeed = new WkAvgSpeed();
-            wkAvgSpeed.setCheckId(checkEndMsg.getCheckId());
-            wkAvgSpeed .setSiteId(checkEndMsg.getSiteId());
-            wkAvgSpeed.setAvgSpeed(avgSpeed);
-            wkAvgSpeed.setCheckTime(new Date());
-            wkAvgSpeedUpdateContentService.insertOnceCheckWkAvgSpeed(wkAvgSpeed);
 
             int count = 0;
             boolean checkUpdate;
@@ -70,12 +61,14 @@ public class SpeedAndUpdateProcessor implements MQListener {
                     count ++;
                 }
             }
-            WkUpdateContent wkUpdateContent = new WkUpdateContent();
-            wkUpdateContent.setSiteId(checkEndMsg.getSiteId());
-            wkUpdateContent.setCheckId(checkEndMsg.getCheckId());
-            wkUpdateContent.setCheckTime(new Date());
-            wkUpdateContent.setUpdateContent(count);
-            wkAvgSpeedUpdateContentService.insertOnceCheckWkUpdateContent(wkUpdateContent);
+
+            Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(siteId, checkId);
+            WkAllStats wkAllStats = new WkAllStats();
+            wkAllStats.setSiteId(checkEndMsg.getSiteId());
+            wkAllStats.setCheckId(checkEndMsg.getCheckId());
+            wkAllStats.setUpdateContent(count);
+            wkAllStats.setAvgSpeed(avgSpeed);
+            wkAllStatsService.insertOrUpdateUpdateContentAndSpeed(wkAllStats);
 
         } else {
             PageInfoMsg speedMsg = (PageInfoMsg)msg;

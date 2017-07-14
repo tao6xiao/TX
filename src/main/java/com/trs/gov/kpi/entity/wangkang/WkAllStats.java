@@ -12,11 +12,8 @@ import java.util.Date;
  * Created by li.hao on 2017/7/12.
  */
 @Data
-@DBTable("wkupdatecontent")
-public class WkUpdateContent {
-
-    @DBField
-    private Integer id;
+@DBTable("wkallstats")
+public class WkAllStats {
 
     @DBField
     private Integer checkId;//检测编号
@@ -25,9 +22,15 @@ public class WkUpdateContent {
     private Integer siteId;//网站编号
 
     @DBField
-    private Date checkTime;//信息入库时间
+    private Integer updateContent;//网站更新数
 
     @DBField
-    private Integer updateContent;//网站更新数
+    private Integer avgSpeed;// 平均访问速度
+
+    @DBField
+    private Integer errorInfo;// 错别字，敏感词等个数
+
+    @DBField
+    private Integer invalidLink;// 失效链接个数
 
 }
