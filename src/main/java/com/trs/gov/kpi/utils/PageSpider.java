@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.msg.InvalidLinkMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
@@ -54,6 +55,9 @@ public class PageSpider {
     private static final int THRESHOLD_MAX_REPLY_SPEED = 10 * 1000;
 
     private Map<String, Set<String>> pageParentMap = new ConcurrentHashMap<>();
+
+    // 页面内容
+    private Map<String, String> pageContent = new ConcurrentHashMap<>();
 
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
 
@@ -170,18 +174,34 @@ public class PageSpider {
             Date endDate = new Date();
             long useTime = endDate.getTime() - startDate.getTime();
 
+
+            Object parentUrl = request.getExtra("parentUrl");
+            if (parentUrl == null) {
+                parentUrl = "";
+            }
+
             // TODO 访问时间，入库
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
+
+                InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
+                invalidLinkMsg.setCheckId(checkId);
+                synchronized (pageContent) {
+                    invalidLinkMsg.setParentContent(pageContent.get(parentUrl.toString()));
+                }
+                invalidLinkMsg.setParentUrl(parentUrl.toString());
+                invalidLinkMsg.setSiteId(siteManagement.getSiteId());
+                invalidLinkMsg.setUrl(request.getUrl().intern());
+                commonMQ.publishMsg(invalidLinkMsg);
             } else {
+                synchronized (pageContent) {
+                    pageContent.put(request.getUrl().intern(), result.getRawText());
+                }
                 final EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
                 if (urlType == EnumUrlType.HTML) {
                     PageInfoMsg accessSpeedMsg = new PageInfoMsg();
                     accessSpeedMsg.setSiteId(siteManagement.getSiteId());
-                    final Object parentUrl = request.getExtra("parentUrl");
-                    if (parentUrl != null) {
-                        accessSpeedMsg.setParentUrl(parentUrl.toString());
-                    }
+                    accessSpeedMsg.setParentUrl(parentUrl.toString());
                     accessSpeedMsg.setSpeed(useTime);
                     accessSpeedMsg.setUrl(request.getUrl());
                     accessSpeedMsg.setCheckId(checkId);
