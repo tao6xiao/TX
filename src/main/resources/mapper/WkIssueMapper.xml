@@ -22,13 +22,14 @@
         id, checkId, siteId, typeId, subTypeId, chnlName, url, detailInfo, parentUrl, checkTime, isResolved, resolveTime, isDel, locationUrl
     </sql>
 
-    <select id="selectIssueSiteList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+    <select id="selectIssueSiteList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from wkissue t
         where not exists (select 1 from wkissue where siteId = t.siteId and checkId > t.checkId)
+        and isResolved = #{isResolved,jdbcType=INTEGER}
+        and isDel = #{isDel,jdbcType=INTEGER}
         group by siteId
-        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
     </select>
 
     <select id="getWkIssueCount" resultType="int">

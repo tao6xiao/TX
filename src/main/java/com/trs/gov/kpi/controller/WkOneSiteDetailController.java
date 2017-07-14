@@ -110,6 +110,21 @@ public class WkOneSiteDetailController {
     }
 
     /**
+     * 根据网站编号查询首页链接的可用性
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "/indexpage/status")
+    public WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error(Constants.SITE_ID_IS_NULL);
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkOneSiteDetailService.getSiteIndexpageStatusBySiteId(siteId);
+    }
+
+    /**
      * 链接可用性---查询未处理的链接的可用性
      *
      * @param param

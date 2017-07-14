@@ -3,17 +3,11 @@ package com.trs.gov.kpi.service.impl.wangkang;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.dao.WkIssueMapper;
-import com.trs.gov.kpi.dao.WkLinkTypeMapper;
-import com.trs.gov.kpi.dao.WkSiteDetailMapper;
-import com.trs.gov.kpi.dao.WkStatsCountMapper;
+import com.trs.gov.kpi.dao.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
-import com.trs.gov.kpi.entity.wangkang.WkIssue;
-import com.trs.gov.kpi.entity.wangkang.WkLinkType;
-import com.trs.gov.kpi.entity.wangkang.WkSocre;
-import com.trs.gov.kpi.entity.wangkang.WkStatsCount;
+import com.trs.gov.kpi.entity.wangkang.*;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -41,6 +35,9 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     @Resource
     WkLinkTypeMapper wkLinkTypeMapper;
+
+    @Resource
+    WkSiteManagementMapper wkSiteManagementMapper;
 
     @Override
     public WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId) {
@@ -123,6 +120,18 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             }
         }
         return wkStatsCountResponseList;
+    }
+
+    @Override
+    public WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId) {
+        Integer isDel = Status.Delete.UN_DELETE.value;
+        SiteManagement siteManagement = wkSiteManagementMapper.getSiteIndexpageStatusBySiteId(siteId, isDel);
+        WkLinkIndexPageStatus wkLinkIndexPageStatus = new WkLinkIndexPageStatus();
+        if(siteManagement != null){
+            wkLinkIndexPageStatus.setCheckTime(siteManagement.getCheckTime());
+            wkLinkIndexPageStatus.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
+        }
+        return wkLinkIndexPageStatus;
     }
 
     @Override

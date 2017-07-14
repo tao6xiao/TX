@@ -1,10 +1,7 @@
 package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.WkLinkTypeResponse;
-import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
-import com.trs.gov.kpi.entity.responsedata.WkStatsCountResponse;
+import com.trs.gov.kpi.entity.responsedata.*;
 
 import java.util.List;
 
@@ -57,6 +54,14 @@ public interface WkOneSiteDetailService {
      * @return
      */
     List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId);
+
+    /**
+     * 根据网站编号查询首页链接的可用性
+     *
+     * @param siteId
+     * @return
+     */
+    WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId);
 
     /**
      * 链接可用性---查询未处理的链接的可用性

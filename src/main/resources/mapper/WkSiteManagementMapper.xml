@@ -53,6 +53,14 @@
         where siteName = #{siteName,jdbcType=INTEGER}
     </select>
 
+    <select id="getSiteIndexpageStatusBySiteId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wksite
+        where siteId = #{siteId,jdbcType=INTEGER}
+        and isDel = #{isDel,jdbcType=INTEGER}
+    </select>
+
 
     <update id="updateSiteManagement" parameterType="com.trs.gov.kpi.entity.wangkang.SiteManagement">
         update wksite

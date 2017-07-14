@@ -14,11 +14,12 @@ import java.util.List;
 public interface WkIssueMapper {
 
     /**
-     * 查询所有错误网站
-     * @param filter
+     * 查询所有有错误网站
+     * @param isResolved
+     * @param isDel
      * @return
      */
-    List<WkIssue> selectIssueSiteList(QueryFilter filter);
+    List<WkIssue> selectIssueSiteList(@Param("isResolved") Integer isResolved, @Param("isDel") Integer isDel);
 
     /**
      * 根据网站编号，检查编号，问题类型编号查询可用链接数/错误信息数

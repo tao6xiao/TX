@@ -382,7 +382,7 @@ public class QueryFilterHelper {
      * @return
      */
     public static QueryFilter toWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
-        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
 
         if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
             filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
@@ -414,5 +414,44 @@ public class QueryFilterHelper {
 
         return filter;
     }
+
+//    /**
+//     *  网康模糊查询的filter处理
+//     *
+//     * @param wkAllSiteDetail
+//     * @return
+//     */
+//    public static QueryFilter toVagueWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
+//        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+//
+//        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
+//            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
+//        }
+//        if ("checkStatus".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
+//            switch (wkAllSiteDetail.getSearchText()){
+//                case("0"):
+//                    filter.addCond("checkStatus",Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
+//                    break;
+//                case("1"):
+//                    filter.addCond("checkStatus",Types.WkCheckStatus.WAIT_CHECK.value);
+//                    break;
+//                case("2"):
+//                    filter.addCond("checkStatus",Types.WkCheckStatus.CONDUCT_CHECK.value);
+//                    break;
+//                case("3"):
+//                    filter.addCond("checkStatus",Types.WkCheckStatus.DONE_CHECK.value);
+//                    break;
+//                default:
+//            }
+//        }
+//
+//        // sort field
+//        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
+//            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
+//            addSort(filter, sortFields);
+//        }
+//
+//        return filter;
+//    }
 
 }

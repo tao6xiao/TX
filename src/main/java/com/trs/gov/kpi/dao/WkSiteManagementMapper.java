@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,14 +45,6 @@ public interface WkSiteManagementMapper {
     List<SiteManagement> selectAllSiteList(QueryFilter filter);
 
     /**
-     * 根据网站编号查询网站
-     *
-     * @param siteId
-     * @return
-     */
-    SiteManagement getSiteBySiteId(Integer siteId);
-
-    /**
      * 更新网站信息
      *
      * @param siteManagement
@@ -75,5 +66,13 @@ public interface WkSiteManagementMapper {
      * @return
      */
     String getSiteNameBySiteId(Integer siteId);
+
+    /**
+     * 根据网站编号查询的网站首页可用性
+     *
+     * @param siteId
+     * @return
+     */
+    SiteManagement getSiteIndexpageStatusBySiteId(@Param("siteId") Integer siteId,@Param("isDel") Integer isDel);
 
 }
