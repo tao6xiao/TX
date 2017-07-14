@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.msgqueue;
 
+import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -64,6 +65,8 @@ public class CommonMQ extends Thread {
                 for (IMQMsg msg : msgList) {
                     for (MQListener listener : listeners) {
                         if (msg.getType().equals(listener.getType())) {
+                            listener.onMessage(msg);
+                        } else if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
                             listener.onMessage(msg);
                         }
                     }

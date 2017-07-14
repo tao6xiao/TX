@@ -39,7 +39,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
             // 检查结束
-            CheckEndMsg checkEndMsg = new CheckEndMsg();
+            CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
             Integer siteId = checkEndMsg.getSiteId();
             Integer checkId = checkEndMsg.getCheckId();
             Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(siteId, checkId);

@@ -77,7 +77,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
             CheckEndMsg endMsg = new CheckEndMsg();
             endMsg.setCheckId(checkId);
-            endMsg.setSiteId(siteId);
+            endMsg.setSiteId(site.getSiteId());
             commonMQ.publishMsg(endMsg);
 
 //            Date checkTime = new Date();
