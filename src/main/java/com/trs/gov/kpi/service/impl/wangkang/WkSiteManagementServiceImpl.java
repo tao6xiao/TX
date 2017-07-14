@@ -57,7 +57,7 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
         if(!StringUtil.isEmpty(wkAllSiteDetail.getSearchText())){
             wkAllSiteDetail.setSearchText(StringUtil.escape(wkAllSiteDetail.getSearchText()));
         }
-        QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
+        QueryFilter filter = QueryFilterHelper.toVagueWkFilter(wkAllSiteDetail);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int itemCount = wkSiteManagementMapper.selectAllSiteCount(filter);
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
