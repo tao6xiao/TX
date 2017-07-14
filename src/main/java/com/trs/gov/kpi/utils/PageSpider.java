@@ -138,8 +138,6 @@ public class PageSpider {
                 }
             }
 
-//            page.addTargetRequests(targetUrls);
-
             for (String targetUrl: targetUrls) {
                 if(!StringUtils.isBlank(targetUrl) && !targetUrl.equals("#") && !targetUrl.startsWith("javascript:")) {
                     targetUrl = UrlUtils.canonicalizeUrl(targetUrl, page.getUrl().toString());
@@ -198,6 +196,7 @@ public class PageSpider {
                 invalidLinkMsg.setParentUrl(parentUrl.toString());
                 invalidLinkMsg.setSiteId(siteManagement.getSiteId());
                 invalidLinkMsg.setUrl(request.getUrl().intern());
+                invalidLinkMsg.setErrorCode(Integer.valueOf(request.getExtra("statusCode").toString()));
                 commonMQ.publishMsg(invalidLinkMsg);
             } else {
                 synchronized (pageContent) {

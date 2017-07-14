@@ -51,6 +51,9 @@ public class InvalidLinkProcessor implements MQListener {
 
         if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
 
+
+
+
         } else {
             InvalidLinkMsg invalidLinkMsg = (InvalidLinkMsg)msg;
 
@@ -109,6 +112,7 @@ public class InvalidLinkProcessor implements MQListener {
                 issue.setCheckId(invalidLinkMsg.getCheckId());
                 issue.setParentUrl(invalidLinkMsg.getParentUrl());
                 issue.setChnlName(CKMProcessWorker.getChnlName(invalidLinkMsg.getParentUrl()));
+                issue.setDetailInfo(String.valueOf(invalidLinkMsg.getErrorCode()));
                 commonMapper.insert(DBUtil.toRow(issue));
             } catch (IOException e) {
                 Log.error("", e);
@@ -153,8 +157,6 @@ public class InvalidLinkProcessor implements MQListener {
         Elements links = parseDoc.select("[href]");
         Elements media = parseDoc.select("[src]");
 
-        int errcode = 404;
-
         // 处理a标签
         for (int i = 0; i < links.size(); i++) {
             Element link = links.get(i);
@@ -165,7 +167,7 @@ public class InvalidLinkProcessor implements MQListener {
             }
             if (absHref.equals(msg.getUrl())) {
                 link.attr("trserrid", "anchor");
-                String msgStr = "状态：" + errcode + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
+                String msgStr = "状态：" + msg.getErrorCode() + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
                 link.attr("msg", msgStr);
                 link.attr("msgtitle", "定位");
                 link.attr("style", "border:2px red solid;color:red;");
@@ -181,7 +183,7 @@ public class InvalidLinkProcessor implements MQListener {
             }
             if (absHref.equals(msg.getUrl())) {
                 link.attr("trserrid", "anchor");
-                String msgStr = "状态：" + errcode + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
+                String msgStr = "状态：" + msg.getErrorCode() + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
                 link.attr("msg", msgStr);
                 link.attr("msgtitle", "定位");
                 link.attr("style", "border:2px red solid;color:red;");

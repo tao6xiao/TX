@@ -35,6 +35,8 @@ public class CKMProcessor implements MQListener {
 
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
 
+
+
         } else {
             // 监听待检测的内容消息
             CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);

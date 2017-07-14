@@ -25,6 +25,9 @@ public class InvalidLinkMsg implements IMQMsg {
     // 内容
     private String parentContent;
 
+    // 错误码
+    private int errorCode = 404;
+
     @Override
     public String getType() {
         return MSG_TYPE;
