@@ -22,4 +22,14 @@ public class WkEveryLinkServiceImpl implements WkEveryLinkService {
 
         commonMapper.insert(DBUtil.toRow(wkEveryLink));
     }
+
+    @Override
+    public Integer selectOnceCheckAvgSpeed(Integer siteId, Integer checkId) {
+        return null;
+    }
+
+    @Override
+    public Integer selectOnceCheckUpdateContent(Integer siteId, Integer checkId) {
+        return null;
+    }
 }
