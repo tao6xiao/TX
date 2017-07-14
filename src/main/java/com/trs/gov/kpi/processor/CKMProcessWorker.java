@@ -35,6 +35,8 @@ import java.util.*;
 @Scope("prototype")
 public class CKMProcessWorker implements Runnable {
 
+    private static final String LINE_SP = System.getProperty("line.separator");
+
     @Resource
     private ContentCheckApiService contentCheckApiService;
 
@@ -89,12 +91,83 @@ public class CKMProcessWorker implements Runnable {
                     final String[] infos = errorInfo.split(":");
                     String word = infos[0];
                     String correct = infos[1];
-                    
+
+
+
+
 
                 }
             }
         }
         return issueList;
+    }
+
+    private String generateLocationPage(Types.InfoErrorIssueType type, String errorWord, String correct) {
+
+        String result = "";
+        StringBuffer sb = new StringBuffer();
+        // 给网站增加base标签
+        sb.append("<base href=\"" + content.getUrl() + "\" />");
+        sb.append(LINE_SP);
+        sb.append(content.getContent());
+        // 在源码中增加定位用的脚本定义
+        sb.append(LINE_SP);
+        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
+        sb.append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
+        sb.append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
+        sb.append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+        // 解析源码，找到断链标签，加上标记信息。
+        result = sb.toString();
+
+        int index = result.indexOf(errorWord, 0);
+        while (index != -1) {
+            String errorinfo = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
+            result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
+            index = result.indexOf(errorWord, index + errorinfo.length());
+        }
+
+        result += "<div id=\"qtip-0\" class=\"qtip qtip-default  qtip-focus qtip-pos-br\" tracking=\"false\" role=\"alert\" aria-live=\"polite\" aria-atomic=\"false\" aria-describedby=\"qtip-0-content\" aria-hidden=\"false\" data-qtip-id=\"0\" style=\"z-index: 15001; top: 2705px; left: 430.453px; display: block;\">\n" +
+                "\t<div class=\"qtip-tip\" style=\"background-color: transparent !important; border: 0px !important; width: 8px; height: 8px; line-height: 8px; right: -1px; bottom: -8px;\">\n" +
+                "\t\t<canvas width=\"8\" height=\"8\" style=\"background-color: transparent !important; border: 0px !important; width: 8px; height: 8px;\"></canvas>\n" +
+                "\t</div>\n" +
+                "\t<div class=\"qtip-titlebar\">\n" +
+                "\t\t<div id=\"qtip-0-title\" class=\"qtip-title\" aria-atomic=\"true\">定位</div>\n" +
+                "\t\t<a class=\"qtip-close qtip-icon\" title=\"close\" aria-label=\"close\" role=\"button\">\n" +
+                "\t\t\t<span class=\"ui-icon ui-icon-close\">×</span>\n" +
+                "\t\t</a>\n" +
+                "\t</div>\n" +
+                "\t<div class=\"qtip-content\" id=\"qtip-0-content\" aria-atomic=\"true\">" + getDisplayErrorWord(type, errorWord, correct) + "</div>\n" +
+                "</div>";
+
+        return result;
+    }
+
+    private String getDisplayErrorWord(Types.InfoErrorIssueType type, String errorWord, String correctWord) {
+        String result = "疑似使用错误的关键字：" + errorWord;
+        if (!StringUtil.isEmpty(correctWord)) {
+            result += "，应为：" + errorWord;
+        }
+        return result;
+    }
+
+    private void createFile(String fullFilePath, String content) {
+//        String fileName = "C://11.txt";
+//        File file = new File(fileName);
+//        String fileContent = "";
+//        try {
+//            fileContent = org.apache.commons.io.FileUtils.readFileToString(file, "GBK");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        fileContent +="Helloworld";
+//        try {
+//            org.apache.commons.io.FileUtils.writeStringToFile(file, fileContent, "GBK");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void insert(List<Issue> issueList) {

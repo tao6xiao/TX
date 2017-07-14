@@ -37,5 +37,6 @@ public class WkEveryLinkServiceImpl implements WkEveryLinkService {
     public Integer selectOnceCheckUpdateContent(Integer siteId, Integer checkId) {
 
         return wkEveryLinkMapper.selectOnceCheckUpdateContent(siteId, checkId);
+
     }
 }
