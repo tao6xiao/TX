@@ -1,12 +1,10 @@
 package com.trs.gov.kpi.service.outer;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.sp.SGHistoryStatistics;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-
-import java.util.List;
+import com.trs.gov.kpi.entity.responsedata.History;
 
 /**
  * Created by ranwei on 2017/6/12.
@@ -35,7 +33,7 @@ public interface SGService {
      * @param param
      * @return
      */
-    List<SGHistoryStatistics> getSGHistoryCount(PageDataRequestParam param) throws RemoteException;
+    History getSGHistoryCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询当前站点所有的服务链接

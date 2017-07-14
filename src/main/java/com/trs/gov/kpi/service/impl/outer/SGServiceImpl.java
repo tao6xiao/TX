@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +51,12 @@ public class SGServiceImpl implements SGService {
     }
 
     @Override
-    public List getSGHistoryCount(PageDataRequestParam param) throws RemoteException {
+    public History getSGHistoryCount(PageDataRequestParam param) throws RemoteException {
         Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/bsznCountByGranularity.jsp", paramMap);
-        return (List) getResult(client, request, "获取服务指南历史统计失败！", List.class);
+        List list = (List) getResult(client, request, "获取服务指南历史统计失败！", List.class);
+        return new History(new Date(), list);
     }
 
     @Override
