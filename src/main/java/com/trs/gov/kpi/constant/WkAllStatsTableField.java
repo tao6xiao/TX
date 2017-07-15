@@ -1,7 +1,5 @@
 package com.trs.gov.kpi.constant;
 
-import com.trs.gov.kpi.scheduler.SchedulerTask;
-
 /**
  * Created by linwei on 2017/7/14.
  */

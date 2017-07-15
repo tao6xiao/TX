@@ -12,9 +12,11 @@ import com.trs.gov.kpi.entity.msg.InvalidLinkMsg;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
 import com.trs.gov.kpi.entity.wangkang.WkIssueCount;
+import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.msgqueue.MQListener;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkIssueService;
+import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import com.trs.gov.kpi.utils.WebPageUtil;
@@ -53,6 +55,9 @@ public class InvalidLinkProcessor implements MQListener {
     @Resource
     private WkAllStatsService wkAllStatsService;
 
+    @Resource
+    private WkScoreService wkScoreService;
+
     @Override
     public String getType() {
         return InvalidLinkMsg.MSG_TYPE;
@@ -71,6 +76,10 @@ public class InvalidLinkProcessor implements MQListener {
 
             // 比较并记录入库
             compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+
+            final int invalidLinkCount = wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId() ,invalidLinkCount);
+
         } else {
             InvalidLinkMsg invalidLinkMsg = (InvalidLinkMsg)msg;
 
@@ -341,5 +350,22 @@ public class InvalidLinkProcessor implements MQListener {
             issueCount.setTypeId(Types.WkSiteCheckType.INVALID_LINK.value);
             commonMapper.insert(DBUtil.toRow(issueCount));
         }
+    }
+
+    private void calcScoreAndInsert(Integer siteId, Integer checkId, int invalidLinkCount) {
+
+        int invalidLinkScore = 100 - invalidLinkCount;
+
+        if (invalidLinkScore < 0) {
+            invalidLinkScore = 0;
+        }
+
+        WkScore score = new WkScore();
+        score.setSiteId(siteId);
+        score.setCheckId(checkId);
+        score.setCheckTime(new Date());
+        score.setInvalidLink(invalidLinkScore);
+
+        wkScoreService.insertOrUpdateInvalidLink(score);
     }
 }

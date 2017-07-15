@@ -15,7 +15,7 @@ import com.trs.gov.kpi.entity.responsedata.WkAllSiteScoreResponsed;
 import com.trs.gov.kpi.entity.responsedata.WkIndexLinkIssueResponse;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
-import com.trs.gov.kpi.entity.wangkang.WkSocre;
+import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.wangkang.WkAllSiteDetailService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
@@ -50,10 +50,10 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
 
     @Override
     public List<WkAllSiteScoreResponsed> queryAllSiteScore() {
-        List<WkSocre> wkSocreList = wkSiteDetailMapper.selectAllSiteScore();
+        List<WkScore> wkScoreList = wkSiteDetailMapper.selectAllSiteScore();
 
         List<WkAllSiteScoreResponsed> wkAllSiteScoreList = new ArrayList<>();
-        for (WkSocre wkScore :wkSocreList) {
+        for (WkScore wkScore : wkScoreList) {
             WkAllSiteScoreResponsed wkAllSiteScore = new WkAllSiteScoreResponsed();
             SiteManagement siteManagement = wkSiteManagementService.getSiteManagementBySiteId(wkScore.getSiteId());
 

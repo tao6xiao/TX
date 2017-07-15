@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @Data
 @DBTable("wkscore")
-public class WkSocre {
+public class WkScore {
 
     @DBField
     private Integer id;

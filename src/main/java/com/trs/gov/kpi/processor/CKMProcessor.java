@@ -8,9 +8,11 @@ import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
 import com.trs.gov.kpi.entity.wangkang.WkIssueCount;
+import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.msgqueue.MQListener;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkIssueService;
+import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.utils.DBUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +42,10 @@ public class CKMProcessor implements MQListener {
 
     @Resource
     private CommonMapper commonMapper;
+
+    @Resource
+    private WkScoreService wkScoreService;
+
 
     @Resource
     private WkAllStatsService wkAllStatsService;
@@ -88,6 +94,9 @@ public class CKMProcessor implements MQListener {
 
             // 比较并记录入库
             compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+
+            final int errorWordsCount = wkIssueService.getErrorWordsCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), errorWordsCount);
 
         } else {
             // 监听待检测的内容消息
@@ -152,6 +161,23 @@ public class CKMProcessor implements MQListener {
             issueCount.setTypeId(Types.WkSiteCheckType.CONTENT_ERROR.value);
             commonMapper.insert(DBUtil.toRow(issueCount));
         }
+    }
+
+    private void calcScoreAndInsert(Integer siteId, Integer checkId, int errorCount) {
+
+        int errorCountScore = 100 - errorCount;
+
+        if (errorCountScore < 0) {
+            errorCountScore = 0;
+        }
+
+        WkScore score = new WkScore();
+        score.setSiteId(siteId);
+        score.setCheckId(checkId);
+        score.setCheckTime(new Date());
+        score.setContentError(errorCountScore);
+
+        wkScoreService.insertOrUpdateErrorWords(score);
     }
 
     @Override

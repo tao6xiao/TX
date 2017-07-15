@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.wangkang.WkSocre;
+import com.trs.gov.kpi.entity.wangkang.WkScore;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public interface WkSiteDetailMapper {
      *
      * @return
      */
-    List<WkSocre> selectAllSiteScore();
+    List<WkScore> selectAllSiteScore();
 
     /**
      * 查询可用首页的总数
@@ -33,7 +33,7 @@ public interface WkSiteDetailMapper {
      * @param siteId
      * @return
      */
-    WkSocre getOneSiteScoreBySiteId(Integer siteId);
+    WkScore getOneSiteScoreBySiteId(Integer siteId);
 
     /**
      * 根据网站编号查询历史评分记录
@@ -41,7 +41,7 @@ public interface WkSiteDetailMapper {
      * @param siteId
      * @return
      */
-    List<WkSocre> getOneSiteScoreListBySiteId(Integer siteId);
+    List<WkScore> getOneSiteScoreListBySiteId(Integer siteId);
 
 
 

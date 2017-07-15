@@ -62,7 +62,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     @Override
     public WkOneSiteScoreResponse getOneSiteScoreBySiteId(Integer siteId) {
-        WkSocre wkScore = wkSiteDetailMapper.getOneSiteScoreBySiteId(siteId);
+        WkScore wkScore = wkSiteDetailMapper.getOneSiteScoreBySiteId(siteId);
         WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
         if(wkScore != null){
             wkOneSiteScore.setTotal(wkScore.getTotal());
@@ -76,11 +76,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     @Override
     public List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId) {
-        List<WkSocre> wkSocreList = wkSiteDetailMapper.getOneSiteScoreListBySiteId(siteId);
+        List<WkScore> wkScoreList = wkSiteDetailMapper.getOneSiteScoreListBySiteId(siteId);
         List<WkOneSiteScoreResponse> wkOneSiteScoreList = new ArrayList<>();
 
-        if(!wkSocreList.isEmpty()){
-            for (WkSocre wkScore:wkSocreList) {
+        if(!wkScoreList.isEmpty()){
+            for (WkScore wkScore: wkScoreList) {
             WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
                 wkOneSiteScore.setCheckTime(wkScore.getCheckTime());
                 wkOneSiteScore.setTotal(wkScore.getTotal());

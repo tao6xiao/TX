@@ -5,9 +5,11 @@ import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
 import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
+import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.msgqueue.MQListener;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkEveryLinkService;
+import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +29,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
     @Resource
     private WkAllStatsService wkAllStatsService;
+
+    @Resource
+    private WkScoreService wkScoreService;
 
     private final String name = "SpeedAndUpdateProcessor";
 
@@ -49,7 +54,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
             wkAllStats.setUpdateContent(count);
             wkAllStats.setAvgSpeed(avgSpeed);
             wkAllStatsService.insertOrUpdateUpdateContentAndSpeed(wkAllStats);
-
+            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), avgSpeed, count);
         } else {
             PageInfoMsg speedMsg = (PageInfoMsg)msg;
             WkEveryLink wkEveryLink = new WkEveryLink();
@@ -88,6 +93,24 @@ public class SpeedAndUpdateProcessor implements MQListener {
         }
 
         return count;
+    }
+
+    private void calcScoreAndInsert(Integer siteId, Integer checkId, long avgSpeed, int updateCount) {
+
+        int updateCountScore = updateCount >= 10 ? 100 : updateCount * 100 / 10;
+        long avgSpeedScore = avgSpeed <= 1000 ? 100 : 100 - (avgSpeed - 1000) / 1000;
+        if (avgSpeedScore < 0) {
+            avgSpeedScore = 0;
+        }
+
+        WkScore score = new WkScore();
+        score.setSiteId(siteId);
+        score.setCheckId(checkId);
+        score.setCheckTime(new Date());
+        score.setOverSpeed((int)avgSpeedScore);
+        score.setUpdateContent(updateCountScore);
+
+        wkScoreService.insertOrUpdateUpdateContentAndSpeed(score);
     }
 
     @Override
