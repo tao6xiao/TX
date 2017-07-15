@@ -7,10 +7,13 @@ import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.PageCKMSpiderUtil;
@@ -56,8 +59,11 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     PageCKMSpiderUtil spider;
 
+    @Resource
+    SiteApiService siteApiService;
+
     @Override
-    public void run() {
+    public void run() throws RemoteException {
         log.info("CKMScheduler " + siteId + " start...");
         List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
         Set<PageCKMSpiderUtil.CKMPage> ckmPages = spider.fetchPages(5, baseUrl);
@@ -67,7 +73,7 @@ public class CKMScheduler implements SchedulerTask {
         log.info("CKMScheduler " + siteId + " end...");
     }
 
-    private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList) {
+    private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList) throws RemoteException {
         List<Issue> issueList = new ArrayList<>();
 
         String checkContent = page.getContent();
@@ -94,7 +100,7 @@ public class CKMScheduler implements SchedulerTask {
         return issueList;
     }
 
-    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) {
+    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) throws RemoteException {
         List<Issue> issueList = new ArrayList<>();
         for (String checkType : checkTypeList) {
             Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
@@ -104,8 +110,10 @@ public class CKMScheduler implements SchedulerTask {
             }
             Issue issue = new Issue();
             issue.setSiteId(siteId);
-            // TODO: 2017/7/11 get chnlId by url
-            issue.setCustomer2(page.getUrl());
+            Channel channel = siteApiService.findChannelByUrl("", page.getUrl());
+            if(channel != null){
+                issue.setCustomer2(String.valueOf(channel.getChannelId()));
+            }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
             issue.setDetail(page.getUrl());
@@ -131,6 +139,9 @@ public class CKMScheduler implements SchedulerTask {
             queryFilter.addCond(IssueTableField.DETAIL, issue.getDetail());
             queryFilter.addCond(IssueTableField.CUSTOMER1, issue.getCustomer1());
             queryFilter.addCond(IssueTableField.SUBTYPE_ID, issue.getSubTypeId());
+            if(issue.getCustomer2() != null) {
+                queryFilter.addCond(IssueTableField.CUSTOMER2, issue.getCustomer2());
+            }
 
             List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
             if(infoErrors.isEmpty()){
