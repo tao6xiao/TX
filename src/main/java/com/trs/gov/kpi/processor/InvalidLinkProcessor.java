@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.entity.dao.DBRow;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.msg.CalcScoreMsg;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.InvalidLinkMsg;
@@ -13,6 +14,7 @@ import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
 import com.trs.gov.kpi.entity.wangkang.WkIssueCount;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
+import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.msgqueue.MQListener;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkIssueService;
@@ -58,6 +60,9 @@ public class InvalidLinkProcessor implements MQListener {
     @Resource
     private WkScoreService wkScoreService;
 
+    @Resource
+    private CommonMQ commonMQ;
+
     @Override
     public String getType() {
         return InvalidLinkMsg.MSG_TYPE;
@@ -79,6 +84,12 @@ public class InvalidLinkProcessor implements MQListener {
 
             final int invalidLinkCount = wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
             calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId() ,invalidLinkCount);
+
+            CalcScoreMsg calcSpeedScoreMsg = new CalcScoreMsg();
+            calcSpeedScoreMsg.setCheckId(checkEndMsg.getCheckId());
+            calcSpeedScoreMsg.setSiteId(checkEndMsg.getSiteId());
+            calcSpeedScoreMsg.setScoreType("invalidLink");
+            commonMQ.publishMsg(calcSpeedScoreMsg);
 
         } else {
             InvalidLinkMsg invalidLinkMsg = (InvalidLinkMsg)msg;

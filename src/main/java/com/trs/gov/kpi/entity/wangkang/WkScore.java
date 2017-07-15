@@ -15,7 +15,7 @@ import java.util.Date;
 @DBTable("wkscore")
 public class WkScore {
 
-    @DBField
+    @DBField(autoInc = true)
     private Integer id;
 
     @DBField
@@ -28,17 +28,17 @@ public class WkScore {
     private Date checkTime;//检测时间
 
     @DBField
-    private Integer total;//综合评分
+    private Integer total = 0;//综合评分
 
     @DBField
-    private Integer invalidLink;//链接可用性分数
+    private Integer invalidLink = 0;//链接可用性分数
 
     @DBField
-    private Integer contentError;//内容检测分数
+    private Integer contentError = 0;//内容检测分数
 
     @DBField
-    private Integer overSpeed;//访问速度分数
+    private Integer overSpeed = 0;//访问速度分数
 
     @DBField
-    private Integer updateContent;//网站更新分数
+    private Integer updateContent = 0;//网站更新分数
 }

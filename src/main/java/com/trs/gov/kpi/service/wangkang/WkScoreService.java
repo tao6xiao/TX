@@ -13,4 +13,5 @@ public interface WkScoreService {
 
     void insertOrUpdateInvalidLink(WkScore score);
 
+    void calcTotalScore(Integer siteId, Integer checkId);
 }

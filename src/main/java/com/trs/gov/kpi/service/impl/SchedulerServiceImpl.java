@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.job.CheckJob;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.processor.CKMProcessor;
+import com.trs.gov.kpi.processor.CalcScoreProcessor;
 import com.trs.gov.kpi.processor.InvalidLinkProcessor;
 import com.trs.gov.kpi.processor.SpeedAndUpdateProcessor;
 import com.trs.gov.kpi.scheduler.*;
@@ -72,6 +73,9 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Autowired
     private InvalidLinkProcessor invalidLinkProcessor;
+
+    @Autowired
+    private CalcScoreProcessor calcScoreProcessor;
 
     private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
@@ -151,6 +155,9 @@ public class SchedulerServiceImpl implements SchedulerService {
 
             // 链接可用性
             commonMQ.registerListener(invalidLinkProcessor);
+
+            // 算分处理
+            commonMQ.registerListener(calcScoreProcessor);
 
 
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
