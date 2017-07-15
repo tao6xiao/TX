@@ -14,6 +14,7 @@ import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.wangkang.WkIdService;
+import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.PageSpider;
 import lombok.Getter;
@@ -47,6 +48,9 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
     @Resource
     private WkIdService wkIdService;
+
+    @Resource
+    private WkSiteManagementService wkSiteManagementService;
 
     @Resource
     PageSpider pageSpider;
@@ -84,6 +88,8 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
             insertCheckTime();
 
+            wkSiteManagementService.changeSiteStatus(site.getSiteId(), Types.WkCheckStatus.CONDUCT_CHECK);
+
             pageSpider.setSite(site);
             pageSpider.setCheckId(checkId);
 
@@ -94,23 +100,11 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             endMsg.setSiteId(site.getSiteId());
             commonMQ.publishMsg(endMsg);
 
-            updateCheckEndTime();
-
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
         } finally {
             log.info("LinkAnalysisScheduler " + siteId + " end...");
         }
-    }
-
-    private void updateCheckEndTime() {
-        DBUpdater updater = new DBUpdater(Table.WK_CHECK_TIME.getTableName());
-        updater.addField("endTime", new Date());
-        updater.addField("checkStatus", WkCheckTime.CHECK_END);
-        QueryFilter filter = new QueryFilter(Table.WK_CHECK_TIME);
-        filter.addCond(Constants.DB_FIELD_CHECK_ID, checkId);
-        filter.addCond(Constants.DB_FIELD_SITE_ID, site.getSiteId());
-        commonMapper.update(updater, filter);
     }
 
     private void insertCheckTime() {

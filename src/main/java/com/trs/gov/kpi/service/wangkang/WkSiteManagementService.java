@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.wangkang;
 
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -71,5 +72,11 @@ public interface WkSiteManagementService {
      * @return
      */
     List<SiteManagement> getAllSites();
+
+    /**
+     * 改变状态
+     * @param status
+     */
+    void changeSiteStatus(Integer siteId, Types.WkCheckStatus status);
 
 }

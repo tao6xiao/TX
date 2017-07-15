@@ -1,6 +1,11 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.dao.CommonMapper;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
@@ -30,6 +35,9 @@ public class WkSiteManagementController {
 
     @Resource
     private SchedulerService schedulerService;
+
+    @Resource
+    private CommonMapper commonMapper;
 
     /**
      * 获取参数插入或者修改网站信息
@@ -83,6 +91,11 @@ public class WkSiteManagementController {
         if(siteManage != null){
             siteManagement.setCheckTime(new Date());
             wkSiteManagementService.updateSiteManagement(siteManagement);
+
+            if (siteManage.getAutoCheckType() != Types.WkAutoCheckType.CHECK_CLOSE.value) {
+                change2WaitCheckStatus(siteId);
+            }
+
         }else{
             throw new BizException("网站"+siteManagement.getSiteName()+"已不存在！");
         }
@@ -126,7 +139,19 @@ public class WkSiteManagementController {
     @RequestMapping(value = "/site/check", method = RequestMethod.PUT)
     public String deleteSiteBySiteIds(Integer siteId){
         schedulerService.doCheckJobOnce(siteId);
+        change2WaitCheckStatus(siteId);
         return null;
+    }
+
+    private void change2WaitCheckStatus(Integer siteId) {
+        // 修改状态
+        DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
+        updater.addField("checkStatus", Types.WkCheckStatus.WAIT_CHECK.value);
+
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+        filter.addCond("checkStatus", Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
+        commonMapper.update(updater, filter);
     }
 
 }

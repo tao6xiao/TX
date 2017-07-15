@@ -1,9 +1,12 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WkSiteManagementMapper;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -87,6 +90,16 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     @Override
     public List<SiteManagement> getAllSites() {
         return wkSiteManagementMapper.selectAllSiteList(new QueryFilter(Table.WK_SITEMANAGEMENT));
+    }
+
+    @Override
+    public void changeSiteStatus(Integer siteId, Types.WkCheckStatus status) {
+        DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
+        updater.addField("checkStatus", status.value);
+
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+        commonMapper.update(updater, filter);
     }
 
     private List<WkSiteManagementResponse> getWkSiteResponseBysiteManagementList(List<SiteManagement> siteManagementList){

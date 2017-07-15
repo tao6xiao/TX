@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.WkAllStatsTableField;
 import com.trs.gov.kpi.constant.WkScoreTableField;
 import com.trs.gov.kpi.dao.CommonMapper;
@@ -7,6 +8,7 @@ import com.trs.gov.kpi.dao.WkScoreMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.utils.DBUtil;
