@@ -5,11 +5,13 @@ import com.trs.gov.kpi.constant.EnumUrlType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.entity.dao.DBRow;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.InvalidLinkMsg;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
+import com.trs.gov.kpi.entity.wangkang.WkIssueCount;
 import com.trs.gov.kpi.msgqueue.MQListener;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkIssueService;
@@ -28,6 +30,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -65,6 +68,9 @@ public class InvalidLinkProcessor implements MQListener {
             wkAllStats.setCheckId(checkEndMsg.getCheckId());
             wkAllStats.setInvalidLink(wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
             wkAllStatsService.insertOrUpdateInvalidLink(wkAllStats);
+
+            // 比较并记录入库
+            compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
         } else {
             InvalidLinkMsg invalidLinkMsg = (InvalidLinkMsg)msg;
 
@@ -288,5 +294,52 @@ public class InvalidLinkProcessor implements MQListener {
         }
 
         return result;
+    }
+
+
+    private void compareLastCheckAndInsert(Integer siteId, Integer checkId) {
+
+        Integer lastCheckid= wkAllStatsService.getLastCheckId(siteId, checkId);
+        if (lastCheckid == null) {
+            // 第一次检查
+            final int invalidLinkCount = wkIssueService.getInvalidLinkCount(siteId, checkId);
+            WkIssueCount issueCount = new WkIssueCount();
+            issueCount.setCheckId(checkId);
+            issueCount.setCheckTime(new Date());
+            issueCount.setIsResolved(0);
+            issueCount.setUnResolved(invalidLinkCount);
+            issueCount.setSiteId(siteId);
+            issueCount.setTypeId(Types.WkSiteCheckType.INVALID_LINK.value);
+            commonMapper.insert(DBUtil.toRow(issueCount));
+        } else {
+            final List<WkIssue> curInvalidLinkList = wkIssueService.getInvalidLinkList(siteId, checkId);
+            final List<WkIssue> lastInvalidLinkList = wkIssueService.getInvalidLinkList(siteId, lastCheckid);
+
+            int resolvedCount = 0;
+            boolean isResolved;
+            for (WkIssue lastLink : lastInvalidLinkList) {
+                isResolved = true;
+                for (int index = 0; index < curInvalidLinkList.size(); index++) {
+                    if (lastLink.getUrl().equals(curInvalidLinkList.get(index).getUrl())
+                            && lastLink.getParentUrl().equals(curInvalidLinkList.get(index).getParentUrl())) {
+                        isResolved = false;
+                        break;
+                    }
+                }
+                if (isResolved) {
+                    resolvedCount++;
+                }
+            }
+
+            final int invalidLinkCount = wkIssueService.getInvalidLinkCount(siteId, checkId);
+            WkIssueCount issueCount = new WkIssueCount();
+            issueCount.setCheckId(checkId);
+            issueCount.setCheckTime(new Date());
+            issueCount.setIsResolved(resolvedCount);
+            issueCount.setUnResolved(invalidLinkCount);
+            issueCount.setSiteId(siteId);
+            issueCount.setTypeId(Types.WkSiteCheckType.INVALID_LINK.value);
+            commonMapper.insert(DBUtil.toRow(issueCount));
+        }
     }
 }

@@ -1,13 +1,20 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
+import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.wangkang.WkIdService;
+import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.PageSpider;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +25,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,6 +38,9 @@ import java.util.List;
 public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     private CommonMQ commonMQ;
+
+    @Resource
+    private CommonMapper commonMapper;
 
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
@@ -67,9 +78,12 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info("LinkAnalysisScheduler " + siteId + " start...");
+        log.info("LinkAnalysisScheduler " + site.getSiteId() + " start...");
         try {
             checkId = wkIdService.getNewCheckId();
+
+            insertCheckTime();
+
             pageSpider.setSite(site);
             pageSpider.setCheckId(checkId);
 
@@ -80,11 +94,32 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             endMsg.setSiteId(site.getSiteId());
             commonMQ.publishMsg(endMsg);
 
+            updateCheckEndTime();
+
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
         } finally {
             log.info("LinkAnalysisScheduler " + siteId + " end...");
         }
+    }
+
+    private void updateCheckEndTime() {
+        DBUpdater updater = new DBUpdater(Table.WK_CHECK_TIME.getTableName());
+        updater.addField("endTime", new Date());
+        updater.addField("checkStatus", WkCheckTime.CHECK_END);
+        QueryFilter filter = new QueryFilter(Table.WK_CHECK_TIME);
+        filter.addCond(Constants.DB_FIELD_CHECK_ID, checkId);
+        filter.addCond(Constants.DB_FIELD_SITE_ID, site.getSiteId());
+        commonMapper.update(updater, filter);
+    }
+
+    private void insertCheckTime() {
+        WkCheckTime wkCheckTime = new WkCheckTime();
+        wkCheckTime.setBeginTime(new Date());
+        wkCheckTime.setSiteId(site.getSiteId());
+        wkCheckTime.setCheckId(checkId);
+        wkCheckTime.setEndTime(new Date());
+        commonMapper.insert(DBUtil.toRow(wkCheckTime));
     }
 
     @Override

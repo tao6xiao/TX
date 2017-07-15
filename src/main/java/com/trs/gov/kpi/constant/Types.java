@@ -213,32 +213,32 @@ public final class Types {
         }
     }
 
-
     /**
      * 信息错误的子类型
      */
     public enum InfoErrorIssueType {
         INVALID(-1, "未知问题", "未知"),
-        TYPOS(IssueType.INFO_ERROR_ISSUE.value * 10 + 1, "错别字", "字词"),
-        SENSITIVE_WORDS(IssueType.INFO_ERROR_ISSUE.value * 10 + 2, "敏感词", "敏感词"),
-        POLITICS(IssueType.INFO_ERROR_ISSUE.value * 10 + 3, "政治", "政治");
+        TYPOS(IssueType.INFO_ERROR_ISSUE.value * 10 + 1, "疑似错别字", "字词"),
+        SENSITIVE_WORDS(IssueType.INFO_ERROR_ISSUE.value * 10 + 2, "疑似敏感词", "敏感词"),
+        POLITICS(IssueType.INFO_ERROR_ISSUE.value * 10 + 3, "疑似政治术语出错", "政治"),
+        OTHERS(IssueType.INFO_ERROR_ISSUE.value * 10 + 4, "疑似其他内容出错", "others");
 
         public final int value;
 
         @Getter
-        private final String name;
+        private final String displayName;
 
         public final String checkType;
 
-        InfoErrorIssueType(int type, String name, String checkType) {
+        InfoErrorIssueType(int type, String displayName, String checkType) {
             this.value = type;
-            this.name = name;
+            this.displayName = displayName;
             this.checkType = checkType;
         }
 
         public static InfoErrorIssueType valueOfName(String name) {
             for (InfoErrorIssueType type : InfoErrorIssueType.values()) {
-                if (name.equals(type.name)) {
+                if (name.equals(type.displayName)) {
                     return type;
                 }
             }
@@ -271,7 +271,7 @@ public final class Types {
             InfoErrorIssueType[] types = InfoErrorIssueType.values();
             List<String> checkTypeList = new ArrayList<>();
             for (InfoErrorIssueType type : types) {
-                if (type != INVALID) {
+                if (type != INVALID && type != OTHERS) {
                     checkTypeList.add(type.checkType);
                 }
             }
@@ -291,7 +291,7 @@ public final class Types {
             List<Integer> result = new ArrayList<>();
             InfoErrorIssueType[] types = InfoErrorIssueType.values();
             for (InfoErrorIssueType type : types) {
-                if (type != INVALID && type.name.contains(name)) {
+                if (type != INVALID && type.displayName.contains(name)) {
                     result.add(type.value);
                 }
             }
@@ -413,7 +413,7 @@ public final class Types {
             case INFO_UPDATE_ISSUE:
                 return InfoUpdateIssueType.valueOf(subType).name;
             case INFO_ERROR_ISSUE:
-                return InfoErrorIssueType.valueOf(subType).name;
+                return InfoErrorIssueType.valueOf(subType).getDisplayName();
             case INFO_UPDATE_WARNING:
                 return InfoUpdateWarningType.valueOf(subType).name;
             case RESPOND_WARNING:
@@ -594,6 +594,27 @@ public final class Types {
                 }
             }
             return INVALID;
+        }
+
+        /**
+         * 查找名字包含指定字符串的type，支持模糊查找
+         *
+         * @param name
+         * @return
+         */
+        public static List<Integer> findByName(String name) {
+            if (name == null || name.isEmpty()) {
+                return new ArrayList<>();
+            }
+            List<Integer> result = new ArrayList<>();
+            WkLinkIssueType[] types = WkLinkIssueType.values();
+            for (WkLinkIssueType type : types) {
+                if (type != INVALID && type.name.contains(name)) {
+                    result.add(type.value);
+                }
+            }
+
+            return result;
         }
     }
 

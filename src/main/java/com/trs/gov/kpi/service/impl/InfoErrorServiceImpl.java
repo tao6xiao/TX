@@ -119,7 +119,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         for (InfoError infoError : infoErrorList) {
             InfoErrorResponse infoErrorResponse = new InfoErrorResponse();
             infoErrorResponse.setId(infoError.getId());
-            infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).getName());
+            infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).getDisplayName());
             infoErrorResponse.setSnapshot(infoError.getSnapshot());
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
             if (infoError.getErrorDetail() != null) {
@@ -175,7 +175,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorOrderRes.setChnlName(ResultCheckUtil.getChannelName(infoErrorOrder.getChnlId(), siteApiService));
             infoErrorOrderRes.setSiteName(ResultCheckUtil.getSiteName(infoErrorOrder.getSiteId(), siteApiService));
             infoErrorOrderRes.setParentTypeName(Types.IssueType.valueOf(infoErrorOrder.getTypeId()).getName());
-            infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getName());
+            infoErrorOrderRes.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoErrorOrder.getSubTypeId()).getDisplayName());
             infoErrorOrderRes.setDepartment(ResultCheckUtil.getDeptName(infoErrorOrder.getDeptId(), deptApiService));
             infoErrorOrderRes.setUrl(infoErrorOrder.getDetail());
             infoErrorOrderRes.setCheckTime(infoErrorOrder.getIssueTime());

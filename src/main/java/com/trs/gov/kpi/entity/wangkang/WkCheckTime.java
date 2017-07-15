@@ -15,6 +15,10 @@ import java.util.Date;
 @DBTable("wkchecktime")
 public class WkCheckTime {
 
+    public static final int CHECKING = 0;
+
+    public static final int CHECK_END = 1;
+
     @DBField
     private Integer checkId;//检查编号
 
@@ -26,5 +30,8 @@ public class WkCheckTime {
 
     @DBField
     private Date endTime;//检测结束时间
+
+    @DBField
+    private int checkStatus = CHECKING; // 检查状态
 
 }

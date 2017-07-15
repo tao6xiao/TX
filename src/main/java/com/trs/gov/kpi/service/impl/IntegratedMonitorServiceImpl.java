@@ -181,7 +181,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics typosStatistics = new Statistics();
         typosStatistics.setCount(typosCount);
         typosStatistics.setType(Types.InfoErrorIssueType.TYPOS.value);
-        typosStatistics.setName(Types.InfoErrorIssueType.TYPOS.getName());
+        typosStatistics.setName(Types.InfoErrorIssueType.TYPOS.getDisplayName());
 
         //查询敏感词数量
         queryFilter = QueryFilterHelper.toFilter(param);
@@ -192,7 +192,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         Statistics sensitiveWordsStatistics = new Statistics();
         sensitiveWordsStatistics.setCount(sensitiveWordsCount);
         sensitiveWordsStatistics.setType(Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
-        sensitiveWordsStatistics.setName(Types.InfoErrorIssueType.SENSITIVE_WORDS.getName());
+        sensitiveWordsStatistics.setName(Types.InfoErrorIssueType.SENSITIVE_WORDS.getDisplayName());
 
         list.add(typosStatistics);
         list.add(sensitiveWordsStatistics);

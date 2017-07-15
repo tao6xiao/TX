@@ -9,4 +9,21 @@
         <include refid="com.trs.gov.kpi.dao.CommonMapper.all_conditions_sql"/>
     </select>
 
+    <select id="getLastCheckId" resultType="int">
+        select
+        max(checkid) as checkid
+        from wkchecktime
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND checkId <![CDATA[<]]> #{checkId,jdbcType=INTEGER}
+        AND checkStatus = 1
+    </select>
+
+    <select id="getMaxCheckId" resultType="int">
+        select
+        max(checkid) as checkid
+        from wkchecktime
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND checkStatus = 1
+    </select>
+
 </mapper>

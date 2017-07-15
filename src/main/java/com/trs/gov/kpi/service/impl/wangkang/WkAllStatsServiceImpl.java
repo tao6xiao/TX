@@ -128,9 +128,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
 
     @Override
     public Integer getLastCheckId(Integer siteId, Integer curCheckId) {
-
-        return wkAllStatsMapper.getLastCheckId(siteId, curCheckId);
-
+        return wkCheckTimeMapper.getLastCheckId(siteId, curCheckId);
     }
 
     private QueryFilter getFilter(WkAllStats wkAllStats) {

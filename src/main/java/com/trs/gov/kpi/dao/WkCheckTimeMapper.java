@@ -17,4 +17,18 @@ public interface WkCheckTimeMapper {
 
     List<WkCheckTime> select(@Param("filter") QueryFilter filter);
 
+    /**
+     * 获取站点上一次检查的编号
+     * @param siteId
+     * @return
+     */
+    Integer getLastCheckId(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
+
+    /**
+     * 获取站点上一次检查的编号
+     * @param siteId
+     * @return
+     */
+    Integer getMaxCheckId(@Param("siteId") Integer siteId);
+
 }

@@ -35,10 +35,4 @@ public interface WkAllStatsMapper {
      */
     List<WkAllStats> select(@Param("filter") QueryFilter filter);
 
-    /**
-     * 获取站点上一次检查的编号
-     * @param siteId
-     * @return
-     */
-    Integer getLastCheckId(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
 }

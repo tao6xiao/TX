@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.helper;
 
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.ReportTableField;
-import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.dao.CondDBField;
@@ -19,6 +16,7 @@ import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -453,5 +451,131 @@ public class QueryFilterHelper {
 //
 //        return filter;
 //    }
+
+    /**
+     * 把参数转换为查询 wkissue 的 filter
+     *
+     * @param param
+     * @return
+     */
+    public static QueryFilter toWkIssueFilter(PageDataRequestParam param, Types.WkSiteCheckType checkType ) {
+        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
+
+        if (param.getSearchText() != null) {
+            if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("chnlName")) {
+                filter.addCond(WkIssueTableField.CHNL_NAME, '%' + param.getSearchText() + "%").setLike(true);
+            } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("issueType")) {
+                if (checkType == Types.WkSiteCheckType.INVALID_LINK) {
+                    CondDBField field = buildWkInvalidLinkTypeCond(param.getSearchText());
+                    initInvalidLinkSubTypeId(field, filter);
+                } else if (checkType == Types.WkSiteCheckType.CONTENT_ERROR) {
+                    CondDBField field = buildWkErrorWordsTypeCond(param.getSearchText());
+                    initWkErrorWordsSubTypeId(field, filter);
+                }
+            } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("errorInfo")) {
+                filter.addCond(WkIssueTableField.URL, '%' + param.getSearchText() + "%").setLike(true);
+            } else if (param.getSearchField() == null) {
+                CondDBField chnlNameField = new CondDBField(WkIssueTableField.CHNL_NAME, '%' + param.getSearchText() + "%");
+                chnlNameField.setLike(true);
+
+                CondDBField errorInfoField = new CondDBField(WkIssueTableField.URL, '%' + param.getSearchText() + "%");
+                errorInfoField.setLike(true);
+
+                CondDBField subTypeField  = null;
+                if (checkType == Types.WkSiteCheckType.INVALID_LINK) {
+                    subTypeField = buildWkInvalidLinkTypeCond(param.getSearchText());
+                } else if (checkType == Types.WkSiteCheckType.CONTENT_ERROR) {
+                    subTypeField = buildWkErrorWordsTypeCond(param.getSearchText());
+                }
+
+                addOrField(filter, chnlNameField, errorInfoField, subTypeField);
+            }
+        }
+
+        // sort field
+        if (!StringUtil.isEmpty(param.getSortFields())) {
+            String[] sortFields = param.getSortFields().trim().split(";");
+            addWkIssueSort(filter, sortFields);
+        }
+
+        return filter;
+    }
+
+    private static CondDBField buildWkInvalidLinkTypeCond(String typeName) {
+        final List<Integer> typeIds = Types.WkLinkIssueType.findByName(typeName);
+        if (typeIds.isEmpty()) {
+            return null;
+        } else {
+            return new CondDBField(WkIssueTableField.SUBTYPE_ID, typeIds);
+        }
+    }
+
+    private static void initInvalidLinkSubTypeId(CondDBField field, QueryFilter filter) {
+        if (field != null) {
+            filter.addCond(field);
+        } else {
+            filter.addCond(new CondDBField(WkIssueTableField.SUBTYPE_ID, Types.WkLinkIssueType.INVALID.value));
+        }
+    }
+
+    private static CondDBField buildWkErrorWordsTypeCond(String typeName) {
+        final List<Integer> typeIds = Types.InfoErrorIssueType.findByName(typeName);
+        if (typeIds.isEmpty()) {
+            return null;
+        } else {
+            return new CondDBField(WkIssueTableField.SUBTYPE_ID, typeIds);
+        }
+    }
+
+    private static void initWkErrorWordsSubTypeId(CondDBField field, QueryFilter filter) {
+        if (field != null) {
+            filter.addCond(field);
+        } else {
+            filter.addCond(new CondDBField(WkIssueTableField.SUBTYPE_ID, Types.InfoErrorIssueType.INVALID.value));
+        }
+    }
+
+    private static void addOrField(QueryFilter filter, CondDBField... fields) {
+        OrCondDBFields orFields = new OrCondDBFields();
+        int validFieldCount = 0;
+        for (CondDBField field : fields) {
+            if (field != null) {
+                validFieldCount++;
+                orFields.addCond(field);
+            }
+        }
+
+        if (validFieldCount > 0) {
+            filter.addOrConds(orFields);
+        }
+    }
+
+    private static void addWkIssueSort(QueryFilter filter, String[] sortFields) {
+        for (String sortField : sortFields) {
+            String[] nameAndDirection = sortField.split(",");
+            if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
+
+                String sortFieldName = "";
+                if (nameAndDirection[0].equals("issueId")) {
+                    sortFieldName =  WkIssueTableField.ID;
+                } else if (nameAndDirection[0].equals("chnlName")) {
+                    sortFieldName = WkIssueTableField.CHNL_NAME;
+                } else if (nameAndDirection[0].equals("issueType")) {
+                    sortFieldName = WkIssueTableField.SUBTYPE_ID;
+                } else if (nameAndDirection[0].equals("errorInfo")) {
+                    sortFieldName = WkIssueTableField.URL;
+                } else {
+                    continue;
+                }
+
+                if (nameAndDirection[1].trim().equalsIgnoreCase("asc")) {
+                    filter.addSortField(sortFieldName, true);
+                } else if (nameAndDirection[1].trim().equalsIgnoreCase("desc")) {
+                    filter.addSortField(sortFieldName, false);
+                }
+            }
+        }
+    }
 
 }
