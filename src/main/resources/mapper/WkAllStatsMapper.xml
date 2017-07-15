@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkAllStatsMapper">
+
+    <select id="select" resultType="com.trs.gov.kpi.entity.wangkang.WkAllStats">
+        SELECT
+        *
+        FROM ${filter.table.tableName} WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.CommonMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="getLastCheckId" resultType="int">
+        select
+        max(checkid) as checkid
+        from wkallstats
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND checkId <![CDATA[<]]> #{checkId,jdbcType=INTEGER}
+    </select>
+
+</mapper>

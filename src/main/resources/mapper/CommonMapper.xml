@@ -56,7 +56,7 @@
         <if test="filter.sortFields != null">
             ORDER BY
             <foreach collection="filter.sortFields" item="sortField" separator=",">
-                <foreach collection="fieldNames" item="fieldName">
+                <foreach collection="filter.fieldNames" item="fieldName">
                     <if test='sortField.fieldName == fieldName'>
                         ${fieldName}
                         <if test="sortField.isAsc">

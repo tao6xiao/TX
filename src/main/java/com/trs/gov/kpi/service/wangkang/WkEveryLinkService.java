@@ -45,13 +45,6 @@ public interface WkEveryLinkService {
 
 
     /**
-     * 获取某个站点上一次的检查编号
-     * @param siteId
-     * @return
-     */
-    Integer getLastCheckId(Integer siteId, Integer curCheckId);
-
-    /**
      * 获取一次检查的数量
      * @param siteId
      * @param checkId

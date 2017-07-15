@@ -23,10 +23,10 @@ import java.util.Objects;
 public class SpeedAndUpdateProcessor implements MQListener {
 
     @Resource
-    WkEveryLinkService wkEveryLinkService;
+    private WkEveryLinkService wkEveryLinkService;
 
     @Resource
-    WkAllStatsService wkAllStatsService;
+    private WkAllStatsService wkAllStatsService;
 
     private final String name = "SpeedAndUpdateProcessor";
 
@@ -66,7 +66,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
     private Integer getUpdateCount(Integer siteId, Integer checkId) {
         int count = 0;
         boolean checkUpdate;
-        Integer lastTimeCheckId = wkEveryLinkService.getLastCheckId(siteId, checkId);
+        Integer lastTimeCheckId = wkAllStatsService.getLastCheckId(siteId, checkId);
         if (lastTimeCheckId == null) {
             // 第一次检查
             count = wkEveryLinkService.count(siteId, checkId);

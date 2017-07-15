@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkCheckTimeMapper">
+
+    <select id="select" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="com.trs.gov.kpi.entity.wangkang.WkCheckTime">
+        SELECT
+        *
+        FROM ${filter.table.tableName} WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.CommonMapper.all_conditions_sql"/>
+    </select>
+
+</mapper>

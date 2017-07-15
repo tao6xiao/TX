@@ -32,12 +32,4 @@
         AND checkId = #{checkId,jdbcType=INTEGER}
     </select>
 
-    <select id="getLastCheckId" resultType="int">
-        select
-        max(checkid) as checkid
-        from wkeverylink
-        where siteId = #{siteId,jdbcType=INTEGER}
-        AND checkId <![CDATA[<]]> #{checkId,jdbcType=INTEGER}
-    </select>
-
 </mapper>

@@ -51,11 +51,6 @@ public class WkEveryLinkServiceImpl implements WkEveryLinkService {
     }
 
     @Override
-    public Integer getLastCheckId(Integer siteId, Integer curCheckId) {
-        return wkEveryLinkMapper.getLastCheckId(siteId, curCheckId);
-    }
-
-    @Override
     public Integer count(Integer siteId, Integer checkId) {
         QueryFilter filter = new QueryFilter(Table.WK_EVERY_LINK);
         filter.addCond(Constants.DB_FIELD_CHECK_ID, checkId);

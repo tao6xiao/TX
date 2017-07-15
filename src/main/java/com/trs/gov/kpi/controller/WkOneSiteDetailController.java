@@ -188,20 +188,28 @@ public class WkOneSiteDetailController {
      * 访问速度---查询网站平均访问速度历史记录
      * @return
      */
-    @RequestMapping(value = "speed/counttrend/bytype/avg", method = RequestMethod.GET)
+    @RequestMapping(value = "speed/counttrend", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkAvgSpeedAndUpdateContentResponse> getAvgSpeedHistory(){
-        return wkAllStatsService.getAvgSpeedHistory();
+    public List<WkAvgSpeedResponse> getAvgSpeedHistory(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error(Constants.SITE_ID_IS_NULL);
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkAllStatsService.getAvgSpeedHistory(siteId);
     }
 
     /**
      * 网站更新---查询网站每次更新数量的历史记录
      * @return
      */
-    @RequestMapping(value = "update/counttrend/bytype/history", method = RequestMethod.GET)
+    @RequestMapping(value = "update/counttrend", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkAvgSpeedAndUpdateContentResponse> getUpdateContentHistory(){
-        return wkAllStatsService.getUpdateContentHistory();
+    public List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error(Constants.SITE_ID_IS_NULL);
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        return wkAllStatsService.getUpdateContentHistory(siteId);
     }
 
 }

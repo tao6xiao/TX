@@ -1,14 +1,17 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.WkAllStatsTableField;
 import com.trs.gov.kpi.dao.CommonMapper;
-import com.trs.gov.kpi.dao.WkAvgSpeedUpdateContentMapper;
+import com.trs.gov.kpi.dao.WkAllStatsMapper;
+import com.trs.gov.kpi.dao.WkCheckTimeMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
-import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedAndUpdateContentResponse;
-import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
+import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedResponse;
+import com.trs.gov.kpi.entity.responsedata.WkUpdateContentResponse;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
+import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.utils.DBUtil;
 import org.springframework.stereotype.Service;
@@ -24,43 +27,66 @@ import java.util.List;
 public class WkAllStatsServiceImpl implements WkAllStatsService {
 
     @Resource
-    WkAvgSpeedUpdateContentMapper wkAvgSpeedUpdateContentMapper;
+    WkAllStatsMapper wkAllStatsMapper;
 
     @Resource
     CommonMapper commonMapper;
 
+    @Resource
+    private WkCheckTimeMapper wkCheckTimeMapper;
+
     /*---平均访问速度---*/
     @Override
-    public List<WkAvgSpeedAndUpdateContentResponse> getAvgSpeedHistory() {
-        List<WkAvgSpeed> wkAvgSpeedList = wkAvgSpeedUpdateContentMapper.getAvgSpeedHistory();
-        List<WkAvgSpeedAndUpdateContentResponse> wkAvgSpeedAndUpdateContentList = new ArrayList<>();
+    public List<WkAvgSpeedResponse> getAvgSpeedHistory(Integer siteId) {
 
-        if(wkAvgSpeedList.size() != 0){
-            for (WkAvgSpeed wkAvgSpeed: wkAvgSpeedList) {
-                WkAvgSpeedAndUpdateContentResponse WkAvgSpeedAndUpdateContent = new WkAvgSpeedAndUpdateContentResponse();
-                WkAvgSpeedAndUpdateContent.setCheckTime(wkAvgSpeed.getCheckTime());
-                WkAvgSpeedAndUpdateContent.setAvgSpeed(wkAvgSpeed.getAvgSpeed());
+        QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
+        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+        filter.addSortField("checkId");
+        final List<WkAllStats> wkAllStats = wkAllStatsMapper.select(filter);
 
-                wkAvgSpeedAndUpdateContentList.add(WkAvgSpeedAndUpdateContent);
+        List<WkAvgSpeedResponse> wkAvgSpeedRespList = new ArrayList<>();
+        if(!wkAllStats.isEmpty()){
+            for (WkAllStats wkAllstats: wkAllStats) {
+                WkAvgSpeedResponse WkAvgSpeedAndUpdateContent = new WkAvgSpeedResponse();
+
+                final List<WkCheckTime> checkTimes = getWkCheckTime(siteId, wkAllstats.getCheckId());
+
+                WkAvgSpeedAndUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
+                WkAvgSpeedAndUpdateContent.setAvgSpeed(wkAllstats.getAvgSpeed());
+                wkAvgSpeedRespList.add(WkAvgSpeedAndUpdateContent);
             }
         }
-        return wkAvgSpeedAndUpdateContentList;
+        return wkAvgSpeedRespList;
+    }
+
+    private List<WkCheckTime> getWkCheckTime(Integer siteId, Integer checkId) {
+        QueryFilter queryFilter  = new QueryFilter(Table.WK_CHECK_TIME);
+        queryFilter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+        queryFilter.addCond(Constants.DB_FIELD_CHECK_ID, checkId);
+        return wkCheckTimeMapper.select(queryFilter);
     }
 
     /*---网站更新数---*/
     @Override
-    public List<WkAvgSpeedAndUpdateContentResponse> getUpdateContentHistory() {
-        List<WkAllStats> wkAllStatsList = wkAvgSpeedUpdateContentMapper.getUpdateContentHistory();
-        List<WkAvgSpeedAndUpdateContentResponse> wkAvgSpeedAndUpdateContentList = new ArrayList<>();
+    public List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId) {
+        QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
+        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+        filter.addSortField("checkId");
+        final List<WkAllStats> wkAllStats = wkAllStatsMapper.select(filter);
 
-        if(wkAllStatsList.size() != 0){
-            for (WkAllStats wkAllStats : wkAllStatsList) {
-                WkAvgSpeedAndUpdateContentResponse WkAvgSpeedAndUpdateContent = new WkAvgSpeedAndUpdateContentResponse();
-                WkAvgSpeedAndUpdateContent.setUpdateContent(wkAllStats.getUpdateContent());
-                wkAvgSpeedAndUpdateContentList.add(WkAvgSpeedAndUpdateContent);
+        List<WkUpdateContentResponse> wkUpdateContentList = new ArrayList<>();
+
+        if(!wkAllStats.isEmpty()){
+            for (WkAllStats wkAllstats: wkAllStats) {
+                WkUpdateContentResponse WkUpdateContent = new WkUpdateContentResponse();
+                final List<WkCheckTime> checkTimes = getWkCheckTime(siteId, wkAllstats.getCheckId());
+                WkUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
+                WkUpdateContent.setUpdateContent(wkAllstats.getUpdateContent());
+                wkUpdateContentList.add(WkUpdateContent);
             }
         }
-        return wkAvgSpeedAndUpdateContentList;
+
+        return wkUpdateContentList;
     }
 
     @Override
@@ -98,6 +124,13 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
         } else {
             commonMapper.insert(DBUtil.toRow(wkAllStats));
         }
+    }
+
+    @Override
+    public Integer getLastCheckId(Integer siteId, Integer curCheckId) {
+
+        return wkAllStatsMapper.getLastCheckId(siteId, curCheckId);
+
     }
 
     private QueryFilter getFilter(WkAllStats wkAllStats) {

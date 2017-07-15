@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.service.wangkang;
 
-import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedAndUpdateContentResponse;
-import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
+import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedResponse;
+import com.trs.gov.kpi.entity.responsedata.WkUpdateContentResponse;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 
 import java.util.List;
@@ -16,14 +16,14 @@ public interface WkAllStatsService {
      *
      * @return
      */
-    List<WkAvgSpeedAndUpdateContentResponse> getAvgSpeedHistory();
+    List<WkAvgSpeedResponse> getAvgSpeedHistory(Integer siteId);
 
     /**
      * 网站更新---查询网站每次更新数量的历史记录
      *
      * @return
      */
-    List<WkAvgSpeedAndUpdateContentResponse> getUpdateContentHistory();
+    List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId);
 
     /**
      * 添加一次检测的网站更新数
@@ -45,5 +45,12 @@ public interface WkAllStatsService {
      * @param wkAllStats
      */
     void insertOrUpdateErrorWords(WkAllStats wkAllStats);
+
+    /**
+     * 获取某个站点上一次的检查编号
+     * @param siteId
+     * @return
+     */
+    Integer getLastCheckId(Integer siteId, Integer curCheckId);
 
 }
