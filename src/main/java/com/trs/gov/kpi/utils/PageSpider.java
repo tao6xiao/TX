@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.EnumUrlType;
+import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
@@ -72,6 +74,9 @@ public class PageSpider {
 
     //过深页面
     private Set<PageDepth> pageDepths = Collections.synchronizedSet(new HashSet<PageDepth>());
+
+    //链接数
+    private Map<Types.WkLinkIssueType, Integer> linkCountMap =  new ConcurrentHashMap<>();
 
     private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
 
@@ -184,6 +189,19 @@ public class PageSpider {
                 parentUrl = "";
             }
 
+            final EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
+
+            // 链接类型计数
+            Types.WkLinkIssueType linkType = WebPageUtil.toWkLinkType(urlType);
+            synchronized (linkCountMap) {
+                Integer count = linkCountMap.get(linkType);
+                if (count == null) {
+                    linkCountMap.put(linkType, 1);
+                } else {
+                    linkCountMap.put(linkType, count+1);
+                }
+            }
+
             // TODO 访问时间，入库
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
@@ -202,7 +220,7 @@ public class PageSpider {
                 synchronized (pageContent) {
                     pageContent.put(request.getUrl().intern(), result.getRawText());
                 }
-                final EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
+
                 String baseHost = UrlUtils.getHost(request.getUrl());
                 // 只处理本域名下的网页
                 if (urlType == EnumUrlType.HTML && StringUtils.equals(baseHost, homepageHost)) {
@@ -369,6 +387,16 @@ public class PageSpider {
     public Set<PageDepth> getPageDepths() {
         return this.pageDepths;
     }
+
+
+    /**
+     * 获取统计计数
+     * @return
+     */
+    public Map<Types.WkLinkIssueType, Integer> getLinkCountMap() {
+        return this.linkCountMap;
+    }
+
 
     public void setSite(SiteManagement site) {
         this.siteManagement = site;

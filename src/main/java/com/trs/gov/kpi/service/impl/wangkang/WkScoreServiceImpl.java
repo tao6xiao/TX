@@ -8,6 +8,7 @@ import com.trs.gov.kpi.dao.WkScoreMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
@@ -15,6 +16,7 @@ import com.trs.gov.kpi.utils.DBUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -88,8 +90,33 @@ public class WkScoreServiceImpl implements WkScoreService {
 
     private QueryFilter getFilter(WkScore score) {
         QueryFilter filter = new QueryFilter(Table.WK_SCORE);
-        filter.addCond(WkAllStatsTableField.CHECK_ID, score.getCheckId());
-        filter.addCond(WkAllStatsTableField.SITE_ID, score.getSiteId());
+        filter.addCond(WkScoreTableField.CHECK_ID, score.getCheckId());
+        filter.addCond(WkScoreTableField.SITE_ID, score.getSiteId());
         return filter;
+    }
+
+    @Override
+    public List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId) {
+        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addSortField(WkScoreTableField.CHECK_ID);
+
+        List<WkScore> wkScoreList = wkScoreMapper.select(filter);
+        List<WkOneSiteScoreResponse> wkOneSiteScoreList = new ArrayList<>();
+
+        if(!wkScoreList.isEmpty()){
+            for (WkScore wkScore: wkScoreList) {
+                WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
+                wkOneSiteScore.setCheckTime(wkScore.getCheckTime());
+                wkOneSiteScore.setTotal(wkScore.getTotal());
+                wkOneSiteScore.setContentError(wkScore.getContentError());
+                wkOneSiteScore.setInvalidLink(wkScore.getInvalidLink());
+                wkOneSiteScore.setOverSpeed(wkScore.getOverSpeed());
+                wkOneSiteScore.setUpdateContent(wkScore.getUpdateContent());
+
+                wkOneSiteScoreList.add(wkOneSiteScore);
+            }
+        }
+        return wkOneSiteScoreList;
     }
 }

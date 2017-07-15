@@ -95,24 +95,7 @@ public class InvalidLinkProcessor implements MQListener {
             InvalidLinkMsg invalidLinkMsg = (InvalidLinkMsg)msg;
 
             final EnumUrlType urlType = WebPageUtil.getUrlType(invalidLinkMsg.getUrl());
-            Types.WkLinkIssueType issueType;
-            switch (urlType) {
-                case HTML:
-                    issueType = Types.WkLinkIssueType.LINK_DISCONNECT;
-                    break;
-                case FILE:
-                    issueType = Types.WkLinkIssueType.ENCLOSURE_DISCONNECT;
-                    break;
-                case VIDEO:
-                    issueType = Types.WkLinkIssueType.VIDEO_DISCONNECT;
-                    break;
-                case IMAGE:
-                    issueType = Types.WkLinkIssueType.IMAGE_DISCONNECT;
-                    break;
-                default:
-                    issueType = Types.WkLinkIssueType.INVALID;
-                    break;
-            }
+            Types.WkLinkIssueType issueType = WebPageUtil.toWkLinkType(urlType);
 
             try {
                 WkIssue issue = new WkIssue();

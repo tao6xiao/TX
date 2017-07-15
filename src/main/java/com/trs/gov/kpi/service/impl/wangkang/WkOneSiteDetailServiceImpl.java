@@ -73,27 +73,27 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         }
         return wkOneSiteScore;
     }
-
-    @Override
-    public List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId) {
-        List<WkScore> wkScoreList = wkSiteDetailMapper.getOneSiteScoreListBySiteId(siteId);
-        List<WkOneSiteScoreResponse> wkOneSiteScoreList = new ArrayList<>();
-
-        if(!wkScoreList.isEmpty()){
-            for (WkScore wkScore: wkScoreList) {
-            WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
-                wkOneSiteScore.setCheckTime(wkScore.getCheckTime());
-                wkOneSiteScore.setTotal(wkScore.getTotal());
-                wkOneSiteScore.setContentError(wkScore.getContentError());
-                wkOneSiteScore.setInvalidLink(wkScore.getInvalidLink());
-                wkOneSiteScore.setOverSpeed(wkScore.getOverSpeed());
-                wkOneSiteScore.setUpdateContent(wkScore.getUpdateContent());
-
-                wkOneSiteScoreList.add(wkOneSiteScore);
-            }
-        }
-        return wkOneSiteScoreList;
-    }
+//
+//    @Override
+//    public List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId) {
+//        List<WkScore> wkScoreList = wkSiteDetailMapper.getOneSiteScoreListBySiteId(siteId);
+//        List<WkOneSiteScoreResponse> wkOneSiteScoreList = new ArrayList<>();
+//
+//        if(!wkScoreList.isEmpty()){
+//            for (WkScore wkScore: wkScoreList) {
+//            WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
+//                wkOneSiteScore.setCheckTime(wkScore.getCheckTime());
+//                wkOneSiteScore.setTotal(wkScore.getTotal());
+//                wkOneSiteScore.setContentError(wkScore.getContentError());
+//                wkOneSiteScore.setInvalidLink(wkScore.getInvalidLink());
+//                wkOneSiteScore.setOverSpeed(wkScore.getOverSpeed());
+//                wkOneSiteScore.setUpdateContent(wkScore.getUpdateContent());
+//
+//                wkOneSiteScoreList.add(wkOneSiteScore);
+//            }
+//        }
+//        return wkOneSiteScoreList;
+//    }
 
     /*---链接可用性---*/
     @Override

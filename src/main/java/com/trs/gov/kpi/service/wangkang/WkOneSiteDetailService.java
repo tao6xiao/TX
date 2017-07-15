@@ -27,13 +27,13 @@ public interface WkOneSiteDetailService {
      */
     WkOneSiteScoreResponse getOneSiteScoreBySiteId(Integer siteId);
 
-    /**
-     * 根据网站编号查询历史评分记录
-     *
-     * @param siteId
-     * @return
-     */
-    List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId);
+//    /**
+//     * 根据网站编号查询历史评分记录
+//     *
+//     * @param siteId
+//     * @return
+//     */
+//    List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId);
 
 
     /*-----------------------------------------------------------------------*/

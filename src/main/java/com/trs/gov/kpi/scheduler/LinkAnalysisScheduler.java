@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
+import com.trs.gov.kpi.entity.wangkang.WkLinkType;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -93,12 +95,25 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             pageSpider.setSite(site);
             pageSpider.setCheckId(checkId);
 
-            List<Pair<String, String>> unavailableUrlAndParentUrls = pageSpider.fetchAllPages(5, site.getSiteIndexUrl());
+            pageSpider.fetchAllPages(5, site.getSiteIndexUrl());
 
             CheckEndMsg endMsg = new CheckEndMsg();
             endMsg.setCheckId(checkId);
             endMsg.setSiteId(site.getSiteId());
             commonMQ.publishMsg(endMsg);
+
+            final Map<Types.WkLinkIssueType, Integer> linkCountMap = pageSpider.getLinkCountMap();
+            WkLinkType wkLinkType = new WkLinkType();
+            wkLinkType.setSiteId(site.getSiteId());
+            wkLinkType.setCheckId(checkId);
+            wkLinkType.setCheckTime(new Date());
+            wkLinkType.setEnclosuLink(linkCountMap.get(Types.WkLinkIssueType.ENCLOSURE_DISCONNECT));
+            wkLinkType.setImageLink(linkCountMap.get(Types.WkLinkIssueType.IMAGE_DISCONNECT));
+            wkLinkType.setVideoLink(linkCountMap.get(Types.WkLinkIssueType.VIDEO_DISCONNECT));
+            wkLinkType.setWebLink(linkCountMap.get(Types.WkLinkIssueType.LINK_DISCONNECT));
+            wkLinkType.calcTotal();
+
+            commonMapper.insert(DBUtil.toRow(wkLinkType));
 
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);

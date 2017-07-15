@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
+import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +25,13 @@ import java.util.List;
 public class WkOneSiteDetailController {
 
     @Resource
-    WkOneSiteDetailService wkOneSiteDetailService;
+    private WkScoreService wkScoreService;
 
     @Resource
-    WkAllStatsService wkAllStatsService;
+    private WkOneSiteDetailService wkOneSiteDetailService;
+
+    @Resource
+    private WkAllStatsService wkAllStatsService;
 
     /**
      * 根据网站编号查询网站链接总数和类型
@@ -74,7 +78,8 @@ public class WkOneSiteDetailController {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkOneSiteDetailService.getOneSiteScoreListBySiteId(siteId);
+
+        return wkScoreService.getListBySiteId(siteId);
     }
 
     /**

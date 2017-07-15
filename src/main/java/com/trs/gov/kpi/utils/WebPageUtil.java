@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.EnumUrlType;
+import com.trs.gov.kpi.constant.Types;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -73,6 +74,32 @@ public class WebPageUtil {
         }
 
         return EnumUrlType.HTML;
+    }
+
+
+    public static Types.WkLinkIssueType toWkLinkType(EnumUrlType urlType) {
+
+        Types.WkLinkIssueType issueType;
+
+        switch (urlType) {
+            case HTML:
+                issueType = Types.WkLinkIssueType.LINK_DISCONNECT;
+                break;
+            case FILE:
+                issueType = Types.WkLinkIssueType.ENCLOSURE_DISCONNECT;
+                break;
+            case VIDEO:
+                issueType = Types.WkLinkIssueType.VIDEO_DISCONNECT;
+                break;
+            case IMAGE:
+                issueType = Types.WkLinkIssueType.IMAGE_DISCONNECT;
+                break;
+            default:
+                issueType = Types.WkLinkIssueType.LINK_DISCONNECT;
+                break;
+        }
+        return issueType;
+
     }
 
 }
