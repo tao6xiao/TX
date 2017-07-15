@@ -48,6 +48,8 @@ public class CalcScoreProcessor implements MQListener {
             } else {
                 scoreMsgCountMap.put(key, count);
             }
+        } else {
+            scoreMsgCountMap.put(key, 1);
         }
     }
 }

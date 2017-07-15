@@ -47,7 +47,7 @@ public class WkScoreServiceImpl implements WkScoreService {
         final QueryFilter filter = getFilter(score);
         if (commonMapper.count(filter) > 0) {
             DBUpdater updater = new DBUpdater(Table.WK_SCORE.getTableName());
-            updater.addField(WkScoreTableField.CONTENT_ERROR, score.getOverSpeed());
+            updater.addField(WkScoreTableField.CONTENT_ERROR, score.getContentError());
             updater.addField(WkScoreTableField.CHECK_TIME, score.getCheckTime());
             commonMapper.update(updater, filter);
         } else {
@@ -60,7 +60,7 @@ public class WkScoreServiceImpl implements WkScoreService {
         final QueryFilter filter = getFilter(score);
         if (commonMapper.count(filter) > 0) {
             DBUpdater updater = new DBUpdater(Table.WK_SCORE.getTableName());
-            updater.addField(WkScoreTableField.INVALID_LINK, score.getOverSpeed());
+            updater.addField(WkScoreTableField.INVALID_LINK, score.getInvalidLink());
             updater.addField(WkScoreTableField.CHECK_TIME, score.getCheckTime());
             commonMapper.update(updater, filter);
         } else {
