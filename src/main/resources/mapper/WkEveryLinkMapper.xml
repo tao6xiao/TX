@@ -24,7 +24,7 @@
         AND checkId = #{checkId,jdbcType=INTEGER}
     </select>
 
-    <select id="getLastTimeWkEveryLinkList" resultMap="BaseResultMap">
+    <select id="getList" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from wkeverylink
@@ -32,13 +32,12 @@
         AND checkId = #{checkId,jdbcType=INTEGER}
     </select>
 
-    <select id="getThisTimeWkEveryLinkList" resultMap="BaseResultMap">
+    <select id="getLastCheckId" resultType="int">
         select
-        <include refid="Base_Column_List" />
+        max(checkid) as checkid
         from wkeverylink
         where siteId = #{siteId,jdbcType=INTEGER}
-        AND checkId = #{checkId,jdbcType=INTEGER}
+        AND checkId <![CDATA[<]]> #{checkId,jdbcType=INTEGER}
     </select>
-
 
 </mapper>

@@ -10,8 +10,8 @@ import java.util.Date;
  * Created by li.hao on 2017/7/12.
  */
 @Data
-@DBTable("wkstatscount")
-public class WkStatsCount {
+@DBTable("wkissuecount")
+public class WkIssueCount {
 
     @DBField
     private Integer siteId;//网站编号

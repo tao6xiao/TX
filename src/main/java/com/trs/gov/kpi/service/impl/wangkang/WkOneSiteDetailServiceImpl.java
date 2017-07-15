@@ -28,7 +28,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     WkSiteDetailMapper wkSiteDetailMapper;
 
     @Resource
-    WkStatsCountMapper wkStatsCountMapper;
+    WkIssueCountMapper wkIssueCountMapper;
 
     @Resource
     WkIssueMapper wkIssueMapper;
@@ -93,11 +93,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId) {
         Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
 
-        WkStatsCount wkStatsCount = wkStatsCountMapper.getlinkAndContentStatsBySiteId(siteId,typeId);
+        WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId,typeId);
         WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
-        if(wkStatsCount != null){
-            wkStatsCountResponse.setUnhandleIssue(wkStatsCount.getUnResolved());
-            wkStatsCountResponse.setHandleIssue(wkStatsCount.getIsResolved());
+        if(wkIssueCount != null){
+            wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
+            wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
         }
         return wkStatsCountResponse;
     }
@@ -106,15 +106,15 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId) {
         Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
 
-        List<WkStatsCount> wkStatsCountList = wkStatsCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
+        List<WkIssueCount> wkIssueCountList = wkIssueCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
         List<WkStatsCountResponse> wkStatsCountResponseList = new ArrayList<>();
 
-        if(!wkStatsCountList.isEmpty()){
-            for (WkStatsCount wkStatsCount: wkStatsCountList) {
+        if(!wkIssueCountList.isEmpty()){
+            for (WkIssueCount wkIssueCount : wkIssueCountList) {
                 WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
-                wkStatsCountResponse.setHandleIssue(wkStatsCount.getIsResolved());
-                wkStatsCountResponse.setUnhandleIssue(wkStatsCount.getUnResolved());
-                wkStatsCountResponse.setCheckTime(wkStatsCount.getCheckTime());
+                wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
+                wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
+                wkStatsCountResponse.setCheckTime(wkIssueCount.getCheckTime());
 
                 wkStatsCountResponseList.add(wkStatsCountResponse);
             }
@@ -182,11 +182,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId) {
         Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
 
-        WkStatsCount wkStatsCount = wkStatsCountMapper.getlinkAndContentStatsBySiteId(siteId, typeId);
+        WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId, typeId);
         WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
-        if(wkStatsCount != null){
-            wkStatsCountResponse.setUnhandleIssue(wkStatsCount.getUnResolved());
-            wkStatsCountResponse.setHandleIssue(wkStatsCount.getIsResolved());
+        if(wkIssueCount != null){
+            wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
+            wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
         }
         return wkStatsCountResponse;
     }
@@ -195,15 +195,15 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId) {
         Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
 
-        List<WkStatsCount> wkStatsCountList = wkStatsCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
+        List<WkIssueCount> wkIssueCountList = wkIssueCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
         List<WkStatsCountResponse> wkStatsCountResponseList = new ArrayList<>();
 
-        if(!wkStatsCountList.isEmpty()){
-            for (WkStatsCount wkStatsCount: wkStatsCountList) {
+        if(!wkIssueCountList.isEmpty()){
+            for (WkIssueCount wkIssueCount : wkIssueCountList) {
                 WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
-                wkStatsCountResponse.setHandleIssue(wkStatsCount.getIsResolved());
-                wkStatsCountResponse.setUnhandleIssue(wkStatsCount.getUnResolved());
-                wkStatsCountResponse.setCheckTime(wkStatsCount.getCheckTime());
+                wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
+                wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
+                wkStatsCountResponse.setCheckTime(wkIssueCount.getCheckTime());
 
                 wkStatsCountResponseList.add(wkStatsCountResponse);
             }

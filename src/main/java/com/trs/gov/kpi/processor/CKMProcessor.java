@@ -3,7 +3,10 @@ package com.trs.gov.kpi.processor;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
+import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.msgqueue.MQListener;
+import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
+import com.trs.gov.kpi.service.wangkang.WkIssueService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +24,12 @@ public class CKMProcessor implements MQListener {
     @Resource
     ApplicationContext appContext;
 
+    @Resource
+    private WkIssueService wkIssueService;
+
+    @Resource
+    private WkAllStatsService wkAllStatsService;
+
     private final String name = "CKMProcessor";
 
     private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
@@ -34,9 +43,12 @@ public class CKMProcessor implements MQListener {
     public void onMessage(IMQMsg msg) {
 
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
-
-
-
+            CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
+            WkAllStats wkAllStats = new WkAllStats();
+            wkAllStats.setSiteId(checkEndMsg.getSiteId());
+            wkAllStats.setCheckId(checkEndMsg.getCheckId());
+            wkAllStats.setErrorInfo(wkIssueService.getErrorWordsCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
+            wkAllStatsService.insertOrUpdateErrorWords(wkAllStats);
         } else {
             // 监听待检测的内容消息
             CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);

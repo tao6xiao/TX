@@ -35,21 +35,27 @@ public interface WkEveryLinkService {
     Integer selectOnceCheckUpdateContent(Integer siteId, Integer checkId);
 
     /**
-     * 获取上一次检测所有文档信息
-     *
-     * @param siteId
-     * @param checkId
-     * @return
-     */
-    List<WkEveryLink> getLastTimeWkEveryLinkList(Integer siteId, Integer checkId);
-
-    /**
      * 获取当前检测所有文档信息
      *
      * @param siteId
      * @param checkId
      * @return
      */
-    List<WkEveryLink> getThisTimeWkEveryLinkList(Integer siteId, Integer checkId);
+    List<WkEveryLink> getList(Integer siteId, Integer checkId);
 
+
+    /**
+     * 获取某个站点上一次的检查编号
+     * @param siteId
+     * @return
+     */
+    Integer getLastCheckId(Integer siteId, Integer curCheckId);
+
+    /**
+     * 获取一次检查的数量
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    Integer count(Integer siteId, Integer checkId);
 }

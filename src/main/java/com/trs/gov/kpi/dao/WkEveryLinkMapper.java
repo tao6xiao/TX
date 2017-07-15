@@ -31,20 +31,18 @@ public interface WkEveryLinkMapper {
     Integer selectOnceCheckUpdateContent(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
 
     /**
-     * 获取上一次检测所有文档信息
-     *
-     * @param siteId
-     * @param checkId
-     * @return
-     */
-    List<WkEveryLink> getLastTimeWkEveryLinkList(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
-
-    /**
      * 获取当前检测所有文档信息
      *
      * @param siteId
      * @param checkId
      * @return
      */
-    List<WkEveryLink> getThisTimeWkEveryLinkList(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
+    List<WkEveryLink> getList(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
+
+    /**
+     * 获取站点上一次检查的编号
+     * @param siteId
+     * @return
+     */
+    Integer getLastCheckId(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
 }

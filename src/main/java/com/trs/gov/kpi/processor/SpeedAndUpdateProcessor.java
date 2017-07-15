@@ -41,28 +41,8 @@ public class SpeedAndUpdateProcessor implements MQListener {
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
             // 检查结束
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
-            Integer siteId = checkEndMsg.getSiteId();
-            Integer checkId = checkEndMsg.getCheckId();
-
-            int count = 0;
-            boolean checkUpdate;
-            int lastTimeCheckId = checkId - 1;
-            List<WkEveryLink> wkEveryLinkLastTimeList = wkEveryLinkService.getLastTimeWkEveryLinkList(siteId, lastTimeCheckId);
-            List<WkEveryLink> wkEveryLinkThisTimeList = wkEveryLinkService.getThisTimeWkEveryLinkList(siteId, checkId);
-            for (WkEveryLink wkThisTime : wkEveryLinkThisTimeList){
-                checkUpdate = true;
-                for (WkEveryLink wkLastTime:wkEveryLinkLastTimeList) {
-                    if(wkThisTime.getMd5().equals(wkLastTime.getMd5())){
-                        checkUpdate = false;
-                        break;
-                    }
-                }
-                if(checkUpdate){
-                    count ++;
-                }
-            }
-
-            Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(siteId, checkId);
+            Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+            Integer count = getUpdateCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
             WkAllStats wkAllStats = new WkAllStats();
             wkAllStats.setSiteId(checkEndMsg.getSiteId());
             wkAllStats.setCheckId(checkEndMsg.getCheckId());
@@ -81,6 +61,33 @@ public class SpeedAndUpdateProcessor implements MQListener {
             wkEveryLink.setMd5(DigestUtils.md5Hex(speedMsg.getContent()));
             wkEveryLinkService.insertWkEveryLinkAccessSpeed(wkEveryLink);
         }
+    }
+
+    private Integer getUpdateCount(Integer siteId, Integer checkId) {
+        int count = 0;
+        boolean checkUpdate;
+        Integer lastTimeCheckId = wkEveryLinkService.getLastCheckId(siteId, checkId);
+        if (lastTimeCheckId == null) {
+            // 第一次检查
+            count = wkEveryLinkService.count(siteId, checkId);
+        } else {
+            List<WkEveryLink> lastTimeList = wkEveryLinkService.getList(siteId, lastTimeCheckId);
+            List<WkEveryLink> thisTimeList = wkEveryLinkService.getList(siteId, checkId);
+            for (WkEveryLink wkThisTime : thisTimeList){
+                checkUpdate = true;
+                for (WkEveryLink wkLastTime:lastTimeList) {
+                    if(wkThisTime.getMd5().equals(wkLastTime.getMd5())){
+                        checkUpdate = false;
+                        break;
+                    }
+                }
+                if(checkUpdate){
+                    count ++;
+                }
+            }
+        }
+
+        return count;
     }
 
     @Override
