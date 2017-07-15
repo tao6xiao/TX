@@ -274,16 +274,14 @@ public class InvalidLinkProcessor implements MQListener {
         if (index == -1) {
             return null;
         } else {
-            int errcode = 404;
-            String msgStr = "状态：" + errcode + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
+            String msgStr = "状态：" + msg.getErrorCode() + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
             String errorinfo = "<font trserrid=\"anchor\" msg=\"" + msgStr + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + msg.getUrl() + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + msg.getUrl().length());
             index = result.indexOf(msg.getUrl(), index + errorinfo.length());
         }
 
         while (index != -1) {
-            int errcode = 404;
-            String msgStr = "状态：" + errcode + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
+            String msgStr = "状态：" + msg.getErrorCode() + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
             String errorinfo = "<font msg=\"" + msgStr + "\" style=\"border:2px red solid;color:red;\">" + msg.getUrl() + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + msg.getUrl().length());
             index = result.indexOf(msg.getUrl(), index + errorinfo.length());
