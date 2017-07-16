@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.wangkang;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 
@@ -98,4 +99,13 @@ public interface WkOneSiteDetailService {
      * @return
      */
     ApiPageData getContentErrorUnhandledList(PageDataRequestParam param);
+
+
+    /**
+     * 生成报告
+     * @param siteId
+     * @return
+     */
+    String generateReport(Integer siteId) throws BizException;
+
 }

@@ -7,11 +7,18 @@ import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -215,6 +222,44 @@ public class WkOneSiteDetailController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         return wkAllStatsService.getUpdateContentHistory(siteId);
+    }
+
+    /**
+     * 网站更新---查询网站每次更新数量的历史记录
+     * @return
+     */
+    @RequestMapping(value = "report/export", method = RequestMethod.GET)
+    @ResponseBody
+    public String exportReport(Integer siteId, HttpServletResponse response) throws BizException {
+        if (siteId == null) {
+            log.error(Constants.SITE_ID_IS_NULL);
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        String fileName = wkOneSiteDetailService.generateReport(siteId);
+        download(response, siteId, fileName);
+        return null;
+    }
+
+    private void download(HttpServletResponse response, Integer siteId, String reportFileName) throws BizException {
+        File file = new File(reportFileName);
+        if (file.exists()) {
+            response.setContentType("application/force-download");// 设置强制下载不打开
+            response.addHeader("Content-Disposition",
+                    "attachment;fileName=" + "report_"+siteId+"_" + DateUtil.toString(new Date()) + ".xlsx");// 设置文件名
+            byte[] buffer = new byte[1024];
+            try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
+                OutputStream os = response.getOutputStream();
+                int i;
+                while ((i = bis.read(buffer)) != -1) {
+                    os.write(buffer, 0, i);
+                }
+                log.info(reportFileName + " download success!");
+
+            } catch (Exception e) {
+                log.error(reportFileName + " download fail!", e);
+                throw new BizException("下载导出报表文件失败！");
+            }
+        }
     }
 
 }
