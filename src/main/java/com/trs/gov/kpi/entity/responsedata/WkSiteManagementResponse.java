@@ -25,4 +25,6 @@ public class WkSiteManagementResponse {
     private Date checkTime;//检查时间
 
     private Integer checkStatus;//检查完成状态
+
+    private Integer total = 0; // 总分
 }

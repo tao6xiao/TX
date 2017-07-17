@@ -118,4 +118,20 @@ public class WkScoreServiceImpl implements WkScoreService {
         }
         return wkOneSiteScoreList;
     }
+
+    @Override
+    public WkScore getScore(Integer siteId, Integer checkId) {
+        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+
+        List<WkScore> wkScoreList = wkScoreMapper.select(filter);
+        if (wkScoreList.isEmpty()) {
+            return null;
+        } else {
+            return wkScoreList.get(0);
+        }
+    }
+
+
 }

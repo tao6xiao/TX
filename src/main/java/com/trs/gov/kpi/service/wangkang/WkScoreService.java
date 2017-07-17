@@ -3,6 +3,7 @@ package com.trs.gov.kpi.service.wangkang;
 import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 
+import java.net.Inet4Address;
 import java.util.List;
 
 /**
@@ -19,4 +20,6 @@ public interface WkScoreService {
     void calcTotalScore(Integer siteId, Integer checkId);
 
     List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId, Integer checkId);
+
+    WkScore getScore(Integer siteId, Integer checkId);
 }

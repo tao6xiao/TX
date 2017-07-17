@@ -5,6 +5,7 @@ import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
+import com.trs.gov.kpi.dao.WkCheckTimeMapper;
 import com.trs.gov.kpi.dao.WkSiteManagementMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -13,9 +14,12 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Pager;
+import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.responsedata.WkSiteManagementResponse;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
+import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -37,6 +41,12 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
 
     @Resource
     private WkSiteManagementMapper wkSiteManagementMapper;
+
+    @Resource
+    private WkCheckTimeMapper wkCheckTimeMapper;
+
+    @Resource
+    private WkScoreService wkScoreService;
 
     @Override
     public String  addWkSite(SiteManagement siteManagement) {
@@ -115,6 +125,14 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
             wkSiteManagementResponse.setAutoCheckType(siteManagement.getAutoCheckType());
             wkSiteManagementResponse.setCheckStatus(siteManagement.getCheckStatus());
             wkSiteManagementResponse.setCheckTime(siteManagement.getCheckTime());
+
+            final Integer maxCheckId = wkCheckTimeMapper.getMaxCheckId(siteManagement.getSiteId());
+            if (maxCheckId != null) {
+                final WkScore score = wkScoreService.getScore(siteManagement.getSiteId(), maxCheckId);
+                if (score != null) {
+                    wkSiteManagementResponse.setTotal(score.getTotal());
+                }
+            }
 
             wkSiteResponseList.add(wkSiteManagementResponse);
         }
