@@ -103,27 +103,6 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         }
         return wkOneSiteScore;
     }
-//
-//    @Override
-//    public List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId) {
-//        List<WkScore> wkScoreList = wkSiteDetailMapper.getOneSiteScoreListBySiteId(siteId);
-//        List<WkOneSiteScoreResponse> wkOneSiteScoreList = new ArrayList<>();
-//
-//        if(!wkScoreList.isEmpty()){
-//            for (WkScore wkScore: wkScoreList) {
-//            WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
-//                wkOneSiteScore.setCheckTime(wkScore.getCheckTime());
-//                wkOneSiteScore.setTotal(wkScore.getTotal());
-//                wkOneSiteScore.setContentError(wkScore.getContentError());
-//                wkOneSiteScore.setInvalidLink(wkScore.getInvalidLink());
-//                wkOneSiteScore.setOverSpeed(wkScore.getOverSpeed());
-//                wkOneSiteScore.setUpdateContent(wkScore.getUpdateContent());
-//
-//                wkOneSiteScoreList.add(wkOneSiteScore);
-//            }
-//        }
-//        return wkOneSiteScoreList;
-//    }
 
     /*---链接可用性---*/
     @Override
@@ -329,8 +308,8 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         createScoresReport(sheet, style, siteId);
 
         // 网站断链检测
-        sheet = workbook.createSheet("网站断链检测");
-        createInvalidLinkReport(sheet, style, siteId);
+        Sheet linkSheet = workbook.createSheet("网站断链检测");
+        createInvalidLinkReport(linkSheet, style, siteId);
 
         // 网站内容检测
         sheet = workbook.createSheet("网站内容检测");
@@ -358,29 +337,31 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     private void createUpdatePageReport(Sheet sheet, CellStyle style, Integer siteId) {
         int beginRow = 0;
-        addTitle(sheet, style, "访问速度走势", 0, 0, 0, 1);
+        addTitle(sheet, style, "网站更新走势", beginRow, beginRow, 0, 1);
         beginRow++;
 
-        addRow(sheet, beginRow, "检测时间", "平均访问速度");
+        addRow(sheet, beginRow, "检测时间", "更新数量");
         beginRow++;
 
         List<WkUpdateContentResponse> updateHistory = wkAllStatsService.getUpdateContentHistory(siteId);
         for (WkUpdateContentResponse update : updateHistory) {
             addRow(sheet, beginRow, DateUtil.toString(update.getCheckTime()), update.getUpdateContent());
+            beginRow++;
         }
     }
 
     private void createAvgSpeedReport(Sheet sheet, CellStyle style, Integer siteId) {
         int beginRow = 0;
-        addTitle(sheet, style, "访问速度走势", 0, 0, 0, 1);
+        addTitle(sheet, style, "访问速度走势", beginRow, beginRow, 0, 1);
         beginRow++;
 
-        addRow(sheet, beginRow, "检测时间", "平均访问速度");
+        addRow(sheet, beginRow, "检测时间", "平均访问速度(ms)");
         beginRow++;
 
         List<WkAvgSpeedResponse> avgSpeedHistory = wkAllStatsService.getAvgSpeedHistory(siteId);
         for (WkAvgSpeedResponse speed : avgSpeedHistory) {
             addRow(sheet, beginRow, DateUtil.toString(speed.getCheckTime()), speed.getAvgSpeed());
+            beginRow++;
         }
     }
 
@@ -389,7 +370,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 //        1	疑似错别字	其它	国务院办公厅关于印发推行行政执法公示制度执法全过程记录制度重大执法决定法制审核制度试点工作方案的通知	关键词：佩带,应为：佩戴	http://www.nxww.gov.cn/news.jsp?id=1316&soncatalog_id=9	http://www.nxww.gov.cn/lanmu_zc.jsp
 
         int beginRow = 0;
-        addTitle(sheet, style, "问题统计数", 0, 0, 0, 1);
+        addTitle(sheet, style, "问题统计数", beginRow, beginRow, 0, 5);
         beginRow++;
 
         WkStatsCountResponse errorWordsStats = getContentErorStatsBySiteId(siteId);
@@ -400,7 +381,19 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
         // 空一行
         beginRow++;
-        addTitle(sheet, style, "问题列表", 0, 0, 0, 5);
+        addTitle(sheet, style, "问题走势", beginRow, beginRow, 0, 5);
+        beginRow++;
+        addRow(sheet, beginRow, "检测时间", "已解决问题数", "未解决问题数");
+        beginRow++;
+        List<WkStatsCountResponse> errorWordsHistoryStats = getContentErorHistoryStatsBySiteId(siteId);
+        for (WkStatsCountResponse count : errorWordsHistoryStats) {
+            addRow(sheet, beginRow, DateUtil.toString(count.getCheckTime()), count.getHandleIssue(), count.getUnhandleIssue());
+            beginRow++;
+        }
+
+        // 空一行
+        beginRow++;
+        addTitle(sheet, style, "问题列表", beginRow, beginRow, 0, 5);
         beginRow++;
         addRow(sheet, beginRow, "序号", "所属栏目", "错误类型", "疑似错误详情", "地址", "父链接地址", "定位地址");
         beginRow++;
@@ -411,24 +404,14 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
                     issue.getErrorInfo(), issue.getParentUrl(), issue.getLocationUrl());
             beginRow++;
         }
-
-        // 空一行
-        beginRow++;
-        addTitle(sheet, style, "问题走势", 0, 0, 0, 2);
-        beginRow++;
-        addRow(sheet, beginRow, "检测时间", "已解决问题数", "未解决问题数");
-        beginRow++;
-        List<WkStatsCountResponse> errorWordsHistoryStats = getContentErorHistoryStatsBySiteId(siteId);
-        for (WkStatsCountResponse count : errorWordsHistoryStats) {
-            addRow(sheet, beginRow, DateUtil.toString(count.getCheckTime()), count.getHandleIssue(), count.getUnhandleIssue());
-        }
     }
 
     private void createInvalidLinkReport(Sheet sheet, CellStyle style, Integer siteId) {
 //        序号	错误类型	所属栏目	标题	地址	父链接地址
 //        1	外部断链	其它	www.cqnx.cc	http://www.cqnx.cc	http://www.nxww.gov.cn/news.jsp?id=462&soncatalog_id=1
+
         int beginRow = 0;
-        addTitle(sheet, style, "问题统计数", 0, 0, 0, 1);
+        addTitle(sheet, style, "问题统计数", beginRow, beginRow, 0, 5);
         beginRow++;
 
         WkStatsCountResponse invalidlinkStats = getInvalidlinkStatsBySiteId(siteId);
@@ -439,7 +422,19 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
         // 空一行
         beginRow++;
-        addTitle(sheet, style, "问题列表", 0, 0, 0, 5);
+        addTitle(sheet, style, "问题走势", beginRow, beginRow, 0, 5);
+        beginRow++;
+        addRow(sheet, beginRow, "检测时间", "已解决问题数", "未解决问题数");
+        beginRow++;
+        List<WkStatsCountResponse> invalidlinkHistoryStats = getInvalidlinkHistoryStatsBySiteId(siteId);
+        for (WkStatsCountResponse count : invalidlinkHistoryStats) {
+            addRow(sheet, beginRow, DateUtil.toString(count.getCheckTime()), count.getHandleIssue(), count.getUnhandleIssue());
+            beginRow++;
+        }
+
+        // 空一行
+        beginRow++;
+        addTitle(sheet, style, "问题列表", beginRow, beginRow, 0, 5);
         beginRow++;
         addRow(sheet, beginRow, "序号", "所属栏目", "类型", "地址", "父链接地址", "定位地址");
         beginRow++;
@@ -449,17 +444,6 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             addRow(sheet, beginRow, index+1, issue.getChnlName(), issue.getSubTypeName(), issue.getUrl(),
                     issue.getParentUrl(), issue.getLocationUrl());
             beginRow++;
-        }
-
-        // 空一行
-        beginRow++;
-        addTitle(sheet, style, "问题走势", 0, 0, 0, 2);
-        beginRow++;
-        addRow(sheet, beginRow, "检测时间", "已解决问题数", "未解决问题数");
-        beginRow++;
-        List<WkStatsCountResponse> invalidlinkHistoryStats = getInvalidlinkHistoryStatsBySiteId(siteId);
-        for (WkStatsCountResponse count : invalidlinkHistoryStats) {
-            addRow(sheet, beginRow, DateUtil.toString(count.getCheckTime()), count.getHandleIssue(), count.getUnhandleIssue());
         }
     }
 
@@ -480,7 +464,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     private void createScoresReport(Sheet sheet, CellStyle style, Integer siteId) {
         int beginRow = 0;
-        addTitle(sheet, style, "综合评分", 0, 0, 0, 1);
+        addTitle(sheet, style, "综合评分", beginRow, beginRow, 0, 1);
         beginRow++;
 
 //        评分项目	分值
@@ -528,8 +512,9 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         beginRow++;
 
         // 空行
+        beginRow++;
         List<WkOneSiteScoreResponse> scores = wkScoreService.getListBySiteId(siteId);
-        addTitle(sheet, style, "综合评分走势", beginRow, beginRow, 0, 1);
+        addTitle(sheet, style, "综合评分走势", beginRow, beginRow, 0, 5);
         beginRow++;
 
         addRow(sheet, beginRow, "检测时间", "综合评分", "网站链接", "内容监控", "访问速度", "网站更新");
