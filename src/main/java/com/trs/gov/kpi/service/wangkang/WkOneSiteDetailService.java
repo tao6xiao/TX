@@ -26,7 +26,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    WkOneSiteScoreResponse getOneSiteScoreBySiteId(Integer siteId);
+    WkOneSiteScoreResponse getOneSiteScoreBySiteId(Integer siteId, Integer checkId);
 
 //    /**
 //     * 根据网站编号查询历史评分记录

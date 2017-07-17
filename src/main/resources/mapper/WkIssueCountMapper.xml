@@ -29,7 +29,7 @@
         <include refid="Base_Column_List" />
         from wkissuecount
         where siteId = #{siteId,jdbcType=INTEGER}
-        and checkId = #{checkId,jdbcType=INTEGER}
+        and checkId <![CDATA[<=]]> #{checkId,jdbcType=INTEGER}
         and typeId = #{typeId,jdbcType=INTEGER}
     </select>
 

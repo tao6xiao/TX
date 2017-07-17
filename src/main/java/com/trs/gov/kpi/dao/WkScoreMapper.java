@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.wangkang.WkAllStats;
-import com.trs.gov.kpi.entity.wangkang.WkAvgSpeed;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

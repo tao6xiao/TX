@@ -97,7 +97,7 @@ public class WkScoreServiceImpl implements WkScoreService {
     public List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId, Integer checkId) {
         QueryFilter filter = new QueryFilter(Table.WK_SCORE);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
-        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId).setRangeEnd(true);
         filter.addSortField(WkScoreTableField.CHECK_ID);
 
         List<WkScore> wkScoreList = wkScoreMapper.select(filter);

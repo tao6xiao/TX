@@ -3,6 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface WkSiteDetailMapper {
      * @param siteId
      * @return
      */
-    WkScore getOneSiteScoreBySiteId(Integer siteId);
+    WkScore getOneSiteScoreBySiteId(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
 
     /**
      * 根据网站编号查询历史评分记录

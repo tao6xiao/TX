@@ -41,7 +41,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
 
         QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
         filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
-        filter.addCond(Constants.DB_FIELD_CHECK_ID,checkId);
+        filter.addCond(Constants.DB_FIELD_CHECK_ID,checkId).setRangeEnd(true);
         filter.addSortField("checkId");
         final List<WkAllStats> wkAllStats = wkAllStatsMapper.select(filter);
 
@@ -74,7 +74,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
     public List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId, Integer checkId) {
         QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
         filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
-        filter.addCond(Constants.DB_FIELD_CHECK_ID,checkId);
+        filter.addCond(Constants.DB_FIELD_CHECK_ID, checkId).setRangeEnd(true);
         filter.addSortField("checkId");
         final List<WkAllStats> wkAllStats = wkAllStatsMapper.select(filter);
 
