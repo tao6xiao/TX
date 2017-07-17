@@ -87,8 +87,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             wkLinkTypeResponse.setImageLink(wkLinkType.getImageLink());
             wkLinkTypeResponse.setVideoLink(wkLinkType.getVideoLink());
             wkLinkTypeResponse.setEnclosuLink(wkLinkType.getEnclosuLink());
+
+            return wkLinkTypeResponse;
+        }else{
+            return null;
         }
-        return wkLinkTypeResponse;
     }
 
     @Override
@@ -102,8 +105,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             wkOneSiteScore.setOverSpeed(wkScore.getOverSpeed());
             wkOneSiteScore.setUpdateContent(wkScore.getUpdateContent());
             wkOneSiteScore.setCheckId(wkScore.getCheckId());
+
+            return wkOneSiteScore;
+        }else{
+            return null;
         }
-        return wkOneSiteScore;
     }
 //
 //    @Override
@@ -137,8 +143,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         if(wkIssueCount != null){
             wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
             wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
+
+            return wkStatsCountResponse;
+        }else{
+            return null;
         }
-        return wkStatsCountResponse;
     }
 
     @Override
@@ -157,8 +166,10 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
                 wkStatsCountResponseList.add(wkStatsCountResponse);
             }
+                return wkStatsCountResponseList;
+        }else{
+            return null;
         }
-        return wkStatsCountResponseList;
     }
 
     @Override
@@ -169,8 +180,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         if(siteManagement != null){
             wkLinkIndexPageStatus.setCheckTime(siteManagement.getCheckTime());
             wkLinkIndexPageStatus.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
+
+            return wkLinkIndexPageStatus;
+        }else{
+            return null;
         }
-        return wkLinkIndexPageStatus;
     }
 
     @Override
@@ -202,20 +216,24 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     private List<WkIssueResponse> toWkLinkIssueResponseByWkIssueList(List<WkIssue> wkIssueList){
         List<WkIssueResponse> wkIssueResponseList = new ArrayList<>();
 
-        for (WkIssue wkIssue: wkIssueList) {
-            WkIssueResponse wkIssueResponse = new WkIssueResponse();
+        if(!wkIssueList.isEmpty()){
+            for (WkIssue wkIssue: wkIssueList) {
+                WkIssueResponse wkIssueResponse = new WkIssueResponse();
 
-            wkIssueResponse.setId(wkIssue.getId());
-            wkIssueResponse.setChnlName(wkIssue.getChnlName());
-            wkIssueResponse.setSubTypeId(wkIssue.getSubTypeId());
-            wkIssueResponse.setSubTypeName(Types.WkLinkIssueType.valueOf(wkIssue.getSubTypeId()).getName());
-            wkIssueResponse.setUrl(wkIssue.getUrl());
-            wkIssueResponse.setParentUrl(wkIssue.getParentUrl());
-            wkIssueResponse.setLocationUrl(wkIssue.getLocationUrl());
+                wkIssueResponse.setId(wkIssue.getId());
+                wkIssueResponse.setChnlName(wkIssue.getChnlName());
+                wkIssueResponse.setSubTypeId(wkIssue.getSubTypeId());
+                wkIssueResponse.setSubTypeName(Types.WkLinkIssueType.valueOf(wkIssue.getSubTypeId()).getName());
+                wkIssueResponse.setUrl(wkIssue.getUrl());
+                wkIssueResponse.setParentUrl(wkIssue.getParentUrl());
+                wkIssueResponse.setLocationUrl(wkIssue.getLocationUrl());
 
-            wkIssueResponseList.add(wkIssueResponse);
+                wkIssueResponseList.add(wkIssueResponse);
+            }
+            return wkIssueResponseList;
+        }else{
+            return null;
         }
-        return wkIssueResponseList;
     }
 
     /*---内容检测---*/
@@ -228,8 +246,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         if(wkIssueCount != null){
             wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
             wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
+
+            return wkStatsCountResponse;
+        }else{
+            return null;
         }
-        return wkStatsCountResponse;
     }
 
     @Override
@@ -248,8 +269,11 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
                 wkStatsCountResponseList.add(wkStatsCountResponse);
             }
-        }
         return wkStatsCountResponseList;
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
