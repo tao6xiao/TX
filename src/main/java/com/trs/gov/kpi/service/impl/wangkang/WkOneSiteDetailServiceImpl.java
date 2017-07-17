@@ -400,8 +400,8 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         List<WkIssueResponse> allErrorWordsList = getAllContentErrorList(siteId);
         for (int index = 0; index < allErrorWordsList.size(); index++) {
             WkIssueResponse issue = allErrorWordsList.get(index);
-            addRow(sheet, beginRow, index+1, issue.getChnlName(), issue.getSubTypeName(), issue.getUrl(),
-                    issue.getErrorInfo(), issue.getParentUrl(), issue.getLocationUrl());
+            addRow(sheet, beginRow, index+1, issue.getChnlName(), issue.getSubTypeName(), issue.getErrorInfo(),
+                    issue.getUrl(), issue.getParentUrl(), issue.getLocationUrl());
             beginRow++;
         }
     }
