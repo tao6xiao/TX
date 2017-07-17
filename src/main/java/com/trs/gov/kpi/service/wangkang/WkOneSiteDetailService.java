@@ -18,7 +18,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId);
+    WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId, Integer CheckId);
 
     /**
      * 根据网站编号查询网站总分数 （获取最近一次检查记录）
@@ -46,7 +46,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId);
+    WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId,Integer checkId);
 
     /**
      *  链接可用性---根据网站编号已解决和未解决问题总数历史记录
@@ -54,7 +54,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId);
+    List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId, Integer checkId);
 
     /**
      * 根据网站编号查询首页链接的可用性
@@ -62,7 +62,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId);
+    WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId, Integer checkId);
 
     /**
      * 链接可用性---查询未处理的链接的可用性
@@ -82,7 +82,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId);
+    WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId, Integer checkId);
 
     /**
      *  内容检测---根据网站编号已解决和未解决问题总数历史记录
@@ -90,7 +90,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId);
+    List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId, Integer checkId);
 
     /**
      * 内容检测---查询未处理的链接的可用性
@@ -106,6 +106,6 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    String generateReport(Integer siteId) throws BizException;
+    String generateReport(Integer siteId, Integer checkId) throws BizException;
 
 }

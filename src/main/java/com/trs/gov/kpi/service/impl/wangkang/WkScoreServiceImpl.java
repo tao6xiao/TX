@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
-import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.WkAllStatsTableField;
 import com.trs.gov.kpi.constant.WkScoreTableField;
 import com.trs.gov.kpi.dao.CommonMapper;
@@ -9,7 +8,6 @@ import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
-import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.utils.DBUtil;
@@ -96,9 +94,10 @@ public class WkScoreServiceImpl implements WkScoreService {
     }
 
     @Override
-    public List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId) {
+    public List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId, Integer checkId) {
         QueryFilter filter = new QueryFilter(Table.WK_SCORE);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
         filter.addSortField(WkScoreTableField.CHECK_ID);
 
         List<WkScore> wkScoreList = wkScoreMapper.select(filter);

@@ -17,11 +17,12 @@
         id, checkId, siteId, allLink, webLink, imageLink, videoLink, enclosuLink, checkTime
     </sql>
 
-    <select id="getOneSiteLinkTypeBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="getOneSiteLinkTypeBySiteId" resultMap="BaseResultMap">
         SELECT
           <include refid="Base_Column_List"/>
         FROM wklinktype
         WHERE siteId = #{siteId,jdbcType=INTEGER}
+        and checkId = #{checkId,jdbcType=INTEGER}
     </select>
 
 </mapper>

@@ -48,12 +48,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "/link/count", method = RequestMethod.GET)
     @ResponseBody
-    public WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId) throws BizException {
+    public WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkOneSiteDetailService.getOneSiteLinkTypeBySiteId(siteId);
+        return wkOneSiteDetailService.getOneSiteLinkTypeBySiteId(siteId, checkId);
     }
 
     /**
@@ -80,13 +80,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "/scorelist", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkOneSiteScoreResponse> getOneSiteScoreListById(Integer siteId) throws BizException {
+    public List<WkOneSiteScoreResponse> getOneSiteScoreListById(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-
-        return wkScoreService.getListBySiteId(siteId);
+        return wkScoreService.getListBySiteId(siteId, checkId);
     }
 
     /**
@@ -97,12 +96,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "invalidlink/count/bytype", method = RequestMethod.GET)
     @ResponseBody
-    public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId) throws BizException {
+    public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId,Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkOneSiteDetailService.getInvalidlinkStatsBySiteId(siteId);
+        return wkOneSiteDetailService.getInvalidlinkStatsBySiteId(siteId, checkId);
     }
 
     /**
@@ -113,12 +112,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "invalidlink/counttrend/bytype", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId) throws BizException {
+    public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkOneSiteDetailService.getInvalidlinkHistoryStatsBySiteId(siteId);
+        return wkOneSiteDetailService.getInvalidlinkHistoryStatsBySiteId(siteId,checkId);
     }
 
     /**
@@ -128,12 +127,12 @@ public class WkOneSiteDetailController {
      * @return
      */
     @RequestMapping(value = "/indexpage/status")
-    public WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId) throws BizException {
+    public WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkOneSiteDetailService.getSiteIndexpageStatusBySiteId(siteId);
+        return wkOneSiteDetailService.getSiteIndexpageStatusBySiteId(siteId, checkId);
     }
 
     /**
@@ -158,12 +157,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "contenterror/count/bytype", method = RequestMethod.GET)
     @ResponseBody
-    public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId) throws BizException {
+    public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkOneSiteDetailService.getContentErorStatsBySiteId(siteId);
+        return wkOneSiteDetailService.getContentErorStatsBySiteId(siteId,checkId);
     }
 
     /**
@@ -174,12 +173,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "contenterror/counttrend/bytype", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId) throws BizException {
+    public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkOneSiteDetailService.getContentErorHistoryStatsBySiteId(siteId);
+        return wkOneSiteDetailService.getContentErorHistoryStatsBySiteId(siteId, checkId);
     }
 
     /**
@@ -202,12 +201,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "speed/counttrend", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkAvgSpeedResponse> getAvgSpeedHistory(Integer siteId) throws BizException {
+    public List<WkAvgSpeedResponse> getAvgSpeedHistory(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkAllStatsService.getAvgSpeedHistory(siteId);
+        return wkAllStatsService.getAvgSpeedHistory(siteId, checkId);
     }
 
     /**
@@ -216,12 +215,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "update/counttrend", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId) throws BizException {
+    public List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId, Integer checkId) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        return wkAllStatsService.getUpdateContentHistory(siteId);
+        return wkAllStatsService.getUpdateContentHistory(siteId, checkId);
     }
 
     /**
@@ -230,12 +229,12 @@ public class WkOneSiteDetailController {
      */
     @RequestMapping(value = "report/export", method = RequestMethod.GET)
     @ResponseBody
-    public String exportReport(Integer siteId, HttpServletResponse response) throws BizException {
+    public String exportReport(Integer siteId,Integer checkId, HttpServletResponse response) throws BizException {
         if (siteId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        String fileName = wkOneSiteDetailService.generateReport(siteId);
+        String fileName = wkOneSiteDetailService.generateReport(siteId,checkId);
         download(response, siteId, fileName);
         return null;
     }

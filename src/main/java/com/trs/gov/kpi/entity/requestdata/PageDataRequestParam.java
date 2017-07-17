@@ -18,4 +18,9 @@ public class PageDataRequestParam extends DateRequest {
     @NotNull
     private Integer siteId;
 
+    /**
+     * 检查编号
+     */
+    private Integer checkId;
+
 }

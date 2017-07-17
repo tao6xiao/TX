@@ -18,5 +18,5 @@ public interface WkScoreService {
 
     void calcTotalScore(Integer siteId, Integer checkId);
 
-    List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId);
+    List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId, Integer checkId);
 }

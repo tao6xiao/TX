@@ -20,7 +20,7 @@
         <include refid="Base_Column_List" />
         from wkissuecount
         where siteId = #{siteId,jdbcType=INTEGER}
-        and checkId = (select MAX(checkId) FROM wkissuecount where siteId = #{siteId,jdbcType=INTEGER})
+        and checkId = #{checkId,jdbcType=INTEGER}
         and typeId = #{typeId,jdbcType=INTEGER}
     </select>
 
@@ -29,6 +29,7 @@
         <include refid="Base_Column_List" />
         from wkissuecount
         where siteId = #{siteId,jdbcType=INTEGER}
+        and checkId = #{checkId,jdbcType=INTEGER}
         and typeId = #{typeId,jdbcType=INTEGER}
     </select>
 

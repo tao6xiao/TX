@@ -16,14 +16,14 @@ public interface WkAllStatsService {
      *
      * @return
      */
-    List<WkAvgSpeedResponse> getAvgSpeedHistory(Integer siteId);
+    List<WkAvgSpeedResponse> getAvgSpeedHistory(Integer siteId, Integer checkId);
 
     /**
      * 网站更新---查询网站每次更新数量的历史记录
      *
      * @return
      */
-    List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId);
+    List<WkUpdateContentResponse> getUpdateContentHistory(Integer siteId, Integer checkId);
 
     /**
      * 添加一次检测的网站更新数

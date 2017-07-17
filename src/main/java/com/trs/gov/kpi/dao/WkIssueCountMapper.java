@@ -19,7 +19,7 @@ public interface WkIssueCountMapper {
      * @param typeId
      * @return
      */
-    WkIssueCount getlinkAndContentStatsBySiteId(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId);
+    WkIssueCount getlinkAndContentStatsBySiteId(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId, @Param("typeId") Integer typeId);
 
     /**
      *  链接可用性---根据网站编号已解决和未解决问题总数历史记录
@@ -28,6 +28,6 @@ public interface WkIssueCountMapper {
      * @param typeId
      * @return
      */
-    List<WkIssueCount> getlinkAndContentHistoryStatsBySiteId(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId);
+    List<WkIssueCount> getlinkAndContentHistoryStatsBySiteId(@Param("siteId") Integer siteId,   @Param("checkId") Integer checkId, @Param("typeId") Integer typeId);
 
 }

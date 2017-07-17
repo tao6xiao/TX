@@ -10,6 +10,8 @@ import java.util.Date;
 @Data
 public class WkOneSiteScoreResponse {
 
+    private Integer checkId;//检查编号
+
     private Integer total;//综合评分
 
     private Integer invalidLink;//链接可用性分数

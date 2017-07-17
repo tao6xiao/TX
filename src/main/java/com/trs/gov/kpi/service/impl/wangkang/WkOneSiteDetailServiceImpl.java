@@ -15,8 +15,9 @@ import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkOneSiteDetailService;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
-import com.trs.gov.kpi.utils.*;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.PageInfoDeal;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -77,8 +78,8 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     private String wkReportDir;
 
     @Override
-    public WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId) {
-        WkLinkType wkLinkType = wkLinkTypeMapper.getOneSiteLinkTypeBySiteId(siteId);
+    public WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId, Integer checkId) {
+        WkLinkType wkLinkType = wkLinkTypeMapper.getOneSiteLinkTypeBySiteId(siteId, checkId);
         WkLinkTypeResponse wkLinkTypeResponse = new WkLinkTypeResponse();
         if (wkLinkType != null){
             wkLinkTypeResponse.setAllLink(wkLinkType.getAllLink());
@@ -100,6 +101,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             wkOneSiteScore.setInvalidLink(wkScore.getInvalidLink());
             wkOneSiteScore.setOverSpeed(wkScore.getOverSpeed());
             wkOneSiteScore.setUpdateContent(wkScore.getUpdateContent());
+            wkOneSiteScore.setCheckId(wkScore.getCheckId());
         }
         return wkOneSiteScore;
     }
@@ -127,10 +129,10 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     /*---链接可用性---*/
     @Override
-    public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId) {
+    public WkStatsCountResponse getInvalidlinkStatsBySiteId(Integer siteId,Integer checkId) {
         Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
 
-        WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId,typeId);
+        WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId,checkId,typeId);
         WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
         if(wkIssueCount != null){
             wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
@@ -140,10 +142,10 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     }
 
     @Override
-    public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId) {
+    public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId, Integer checkId) {
         Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
 
-        List<WkIssueCount> wkIssueCountList = wkIssueCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
+        List<WkIssueCount> wkIssueCountList = wkIssueCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, checkId, typeId);
         List<WkStatsCountResponse> wkStatsCountResponseList = new ArrayList<>();
 
         if(!wkIssueCountList.isEmpty()){
@@ -160,9 +162,9 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     }
 
     @Override
-    public WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId) {
+    public WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId, Integer checkId) {
         Integer isDel = Status.Delete.UN_DELETE.value;
-        SiteManagement siteManagement = wkSiteManagementMapper.getSiteIndexpageStatusBySiteId(siteId, isDel);
+        SiteManagement siteManagement = wkSiteManagementMapper.getSiteIndexpageStatusBySiteId(siteId, checkId, isDel);
         WkLinkIndexPageStatus wkLinkIndexPageStatus = new WkLinkIndexPageStatus();
         if(siteManagement != null){
             wkLinkIndexPageStatus.setCheckTime(siteManagement.getCheckTime());
@@ -177,17 +179,17 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
         }
 
-        Integer siteId = param.getSiteId();
-        final Integer maxCheckId = wkCheckTimeMapper.getMaxCheckId(siteId);
-        if (maxCheckId == null) {
-            Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), 0);
-            return new ApiPageData(pager, Collections.emptyList());
-        }
+//        Integer siteId = param.getSiteId();
+//        final Integer maxCheckId = wkCheckTimeMapper.getMaxCheckId(siteId);
+//        if (maxCheckId == null) {
+//            Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), 0);
+//            return new ApiPageData(pager, Collections.emptyList());
+//        }
 
         QueryFilter queryFilter = QueryFilterHelper.toWkIssueFilter(param, Types.WkSiteCheckType.INVALID_LINK);
         queryFilter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         queryFilter.addCond(WkIssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond(WkIssueTableField.CHECK_ID, maxCheckId);
+        queryFilter.addCond(WkIssueTableField.CHECK_ID, param.getCheckId());
         int itemCount = commonMapper.count(queryFilter);
 
         Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
@@ -218,10 +220,10 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     /*---内容检测---*/
     @Override
-    public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId) {
+    public WkStatsCountResponse getContentErorStatsBySiteId(Integer siteId, Integer checkId) {
         Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
 
-        WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId, typeId);
+        WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId, checkId, typeId);
         WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
         if(wkIssueCount != null){
             wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
@@ -231,10 +233,10 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     }
 
     @Override
-    public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId) {
+    public List<WkStatsCountResponse> getContentErorHistoryStatsBySiteId(Integer siteId, Integer checkId) {
         Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
 
-        List<WkIssueCount> wkIssueCountList = wkIssueCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, typeId);
+        List<WkIssueCount> wkIssueCountList = wkIssueCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, checkId, typeId);
         List<WkStatsCountResponse> wkStatsCountResponseList = new ArrayList<>();
 
         if(!wkIssueCountList.isEmpty()){
@@ -256,17 +258,17 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
         }
 
-        Integer siteId = param.getSiteId();
-        final Integer maxCheckId = wkCheckTimeMapper.getMaxCheckId(siteId);
-        if (maxCheckId == null) {
-            Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), 0);
-            return new ApiPageData(pager, Collections.emptyList());
-        }
+//        Integer siteId = param.getSiteId();
+//        final Integer maxCheckId = wkCheckTimeMapper.getMaxCheckId(siteId);
+//        if (maxCheckId == null) {
+//            Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), 0);
+//            return new ApiPageData(pager, Collections.emptyList());
+//        }
 
         QueryFilter queryFilter = QueryFilterHelper.toWkIssueFilter(param, Types.WkSiteCheckType.CONTENT_ERROR);
         queryFilter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.CONTENT_ERROR.value);
         queryFilter.addCond(WkIssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond(WkIssueTableField.CHECK_ID, maxCheckId);
+        queryFilter.addCond(WkIssueTableField.CHECK_ID, param.getCheckId());
         int itemCount = commonMapper.count(queryFilter);
 
         Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
@@ -309,7 +311,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     }
 
     @Override
-    public String generateReport(Integer siteId) throws BizException {
+    public String generateReport(Integer siteId, Integer checkId) throws BizException {
 
         // 5个标签页:综合评分，网站断链检测，网站内容检测，访问速度检测，网站更新检测
 
@@ -326,23 +328,23 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
         // 综合评分
         Sheet sheet = workbook.createSheet("综合评分");
-        createScoresReport(sheet, style, siteId);
+        createScoresReport(sheet, style, siteId, checkId);
 
         // 网站断链检测
         sheet = workbook.createSheet("网站断链检测");
-        createInvalidLinkReport(sheet, style, siteId);
+        createInvalidLinkReport(sheet, style, siteId, checkId);
 
         // 网站内容检测
         sheet = workbook.createSheet("网站内容检测");
-        createErrorWordsReport(sheet, style, siteId);
+        createErrorWordsReport(sheet, style, siteId, checkId);
 
         // 访问速度检测
         sheet = workbook.createSheet("访问速度检测");
-        createAvgSpeedReport(sheet, style, siteId);
+        createAvgSpeedReport(sheet, style, siteId, checkId);
 
         // 网站更新检测
         sheet = workbook.createSheet("网站更新检测");
-        createUpdatePageReport(sheet, style, siteId);
+        createUpdatePageReport(sheet, style, siteId, checkId);
 
         //写入文件
         String fullReportFilePath = wkReportDir + File.separator + siteId + File.separator + fileName;
@@ -356,7 +358,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         return fullReportFilePath;
     }
 
-    private void createUpdatePageReport(Sheet sheet, CellStyle style, Integer siteId) {
+    private void createUpdatePageReport(Sheet sheet, CellStyle style, Integer siteId, Integer checkId) {
         int beginRow = 0;
         addTitle(sheet, style, "访问速度走势", 0, 0, 0, 1);
         beginRow++;
@@ -364,13 +366,13 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         addRow(sheet, beginRow, "检测时间", "平均访问速度");
         beginRow++;
 
-        List<WkUpdateContentResponse> updateHistory = wkAllStatsService.getUpdateContentHistory(siteId);
+        List<WkUpdateContentResponse> updateHistory = wkAllStatsService.getUpdateContentHistory(siteId,checkId);
         for (WkUpdateContentResponse update : updateHistory) {
             addRow(sheet, beginRow, DateUtil.toString(update.getCheckTime()), update.getUpdateContent());
         }
     }
 
-    private void createAvgSpeedReport(Sheet sheet, CellStyle style, Integer siteId) {
+    private void createAvgSpeedReport(Sheet sheet, CellStyle style, Integer siteId, Integer checkId) {
         int beginRow = 0;
         addTitle(sheet, style, "访问速度走势", 0, 0, 0, 1);
         beginRow++;
@@ -378,13 +380,13 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         addRow(sheet, beginRow, "检测时间", "平均访问速度");
         beginRow++;
 
-        List<WkAvgSpeedResponse> avgSpeedHistory = wkAllStatsService.getAvgSpeedHistory(siteId);
+        List<WkAvgSpeedResponse> avgSpeedHistory = wkAllStatsService.getAvgSpeedHistory(siteId, checkId);
         for (WkAvgSpeedResponse speed : avgSpeedHistory) {
             addRow(sheet, beginRow, DateUtil.toString(speed.getCheckTime()), speed.getAvgSpeed());
         }
     }
 
-    private void createErrorWordsReport(Sheet sheet, CellStyle style, Integer siteId) {
+    private void createErrorWordsReport(Sheet sheet, CellStyle style, Integer siteId, Integer checkId) {
 //        序号	错误类型	所属栏目	标题	疑似错误详情	地址	父链接地址
 //        1	疑似错别字	其它	国务院办公厅关于印发推行行政执法公示制度执法全过程记录制度重大执法决定法制审核制度试点工作方案的通知	关键词：佩带,应为：佩戴	http://www.nxww.gov.cn/news.jsp?id=1316&soncatalog_id=9	http://www.nxww.gov.cn/lanmu_zc.jsp
 
@@ -392,7 +394,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         addTitle(sheet, style, "问题统计数", 0, 0, 0, 1);
         beginRow++;
 
-        WkStatsCountResponse errorWordsStats = getContentErorStatsBySiteId(siteId);
+        WkStatsCountResponse errorWordsStats = getContentErorStatsBySiteId(siteId, checkId);
         addRow(sheet, beginRow, "已解决问题", errorWordsStats.getHandleIssue());
         beginRow++;
         addRow(sheet, beginRow, "未解决问题", errorWordsStats.getUnhandleIssue());
@@ -418,20 +420,20 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         beginRow++;
         addRow(sheet, beginRow, "检测时间", "已解决问题数", "未解决问题数");
         beginRow++;
-        List<WkStatsCountResponse> errorWordsHistoryStats = getContentErorHistoryStatsBySiteId(siteId);
+        List<WkStatsCountResponse> errorWordsHistoryStats = getContentErorHistoryStatsBySiteId(siteId, checkId);
         for (WkStatsCountResponse count : errorWordsHistoryStats) {
             addRow(sheet, beginRow, DateUtil.toString(count.getCheckTime()), count.getHandleIssue(), count.getUnhandleIssue());
         }
     }
 
-    private void createInvalidLinkReport(Sheet sheet, CellStyle style, Integer siteId) {
+    private void createInvalidLinkReport(Sheet sheet, CellStyle style, Integer siteId, Integer checkId) {
 //        序号	错误类型	所属栏目	标题	地址	父链接地址
 //        1	外部断链	其它	www.cqnx.cc	http://www.cqnx.cc	http://www.nxww.gov.cn/news.jsp?id=462&soncatalog_id=1
         int beginRow = 0;
         addTitle(sheet, style, "问题统计数", 0, 0, 0, 1);
         beginRow++;
 
-        WkStatsCountResponse invalidlinkStats = getInvalidlinkStatsBySiteId(siteId);
+        WkStatsCountResponse invalidlinkStats = getInvalidlinkStatsBySiteId(siteId, checkId);
         addRow(sheet, beginRow, "已解决问题", invalidlinkStats.getHandleIssue());
         beginRow++;
         addRow(sheet, beginRow, "未解决问题", invalidlinkStats.getUnhandleIssue());
@@ -457,7 +459,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         beginRow++;
         addRow(sheet, beginRow, "检测时间", "已解决问题数", "未解决问题数");
         beginRow++;
-        List<WkStatsCountResponse> invalidlinkHistoryStats = getInvalidlinkHistoryStatsBySiteId(siteId);
+        List<WkStatsCountResponse> invalidlinkHistoryStats = getInvalidlinkHistoryStatsBySiteId(siteId,checkId);
         for (WkStatsCountResponse count : invalidlinkHistoryStats) {
             addRow(sheet, beginRow, DateUtil.toString(count.getCheckTime()), count.getHandleIssue(), count.getUnhandleIssue());
         }
@@ -478,7 +480,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
 
 
-    private void createScoresReport(Sheet sheet, CellStyle style, Integer siteId) {
+    private void createScoresReport(Sheet sheet, CellStyle style, Integer siteId, Integer checkId) {
         int beginRow = 0;
         addTitle(sheet, style, "综合评分", 0, 0, 0, 1);
         beginRow++;
@@ -528,7 +530,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         beginRow++;
 
         // 空行
-        List<WkOneSiteScoreResponse> scores = wkScoreService.getListBySiteId(siteId);
+        List<WkOneSiteScoreResponse> scores = wkScoreService.getListBySiteId(siteId,checkId);
         addTitle(sheet, style, "综合评分走势", beginRow, beginRow, 0, 1);
         beginRow++;
 

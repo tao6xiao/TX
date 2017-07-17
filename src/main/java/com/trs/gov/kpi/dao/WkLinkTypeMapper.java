@@ -2,6 +2,7 @@ package com.trs.gov.kpi.dao;
 
 import com.trs.gov.kpi.entity.wangkang.WkLinkType;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Created by li.hao on 2017/7/14.
@@ -15,6 +16,6 @@ public interface WkLinkTypeMapper {
      * @param siteId
      * @return
      */
-    WkLinkType getOneSiteLinkTypeBySiteId (Integer siteId);
+    WkLinkType getOneSiteLinkTypeBySiteId (@Param("siteId") Integer siteId, @Param("checkId") Integer checkId);
 
 }
