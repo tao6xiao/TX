@@ -1,16 +1,18 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.entity.responsedata.WkAllSiteScoreResponsed;
 import com.trs.gov.kpi.entity.responsedata.WkIndexLinkIssueResponse;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
+import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
@@ -46,7 +48,9 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
     WkSiteManagementMapper wkSiteManagementMapper;
 
     @Resource
-    private WkScoreMapper wkScoreMapper;
+    private WkAllStatsMapper wkAllStatsMapper;
+
+
 
     @Override
     public List<WkAllSiteScoreResponsed> queryAllSiteScore() {
@@ -98,19 +102,18 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             WkIndexLinkIssueResponse wkIndexLinkIssue = new WkIndexLinkIssueResponse();
 
             String siteName = wkSiteManagementService.getSiteNameBySiteId(wkIssue.getSiteId());
-            Integer invalidLinkCount = wkIssueMapper.getWkIssueCount(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.INVALID_LINK.value);
-            Integer contentErrorCount = wkIssueMapper.getWkIssueCount(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.CONTENT_ERROR.value);
 
-//            WkScore wkScore = wkScoreMapper.select(wkIssue.getSiteId(), wkIssue.getCheckId());
-            Integer overSpeedCount = wkRecordMapper.getWkRecordAvgSpeed(wkIssue.getSiteId(), wkIssue.getCheckId());
-            Integer updateContentCount = wkRecordMapper.getWkRecordUpdateContent(wkIssue.getSiteId(), wkIssue.getCheckId());
+            QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
+            filter.addCond(Constants.DB_FIELD_SITE_ID, wkIssue.getSiteId());
+            filter.addCond(Constants.DB_FIELD_CHECK_ID, wkIssue.getCheckId());
+            WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filter);
 
             wkIndexLinkIssue.setSiteId(wkIssue.getSiteId());
             wkIndexLinkIssue.setSiteName(siteName);
-            wkIndexLinkIssue.setInvalidLinkCount(invalidLinkCount);
-            wkIndexLinkIssue.setContentErrorCount(contentErrorCount);
-            wkIndexLinkIssue.setOverSpeedCount(overSpeedCount);
-            wkIndexLinkIssue.setUpdateContentCount(updateContentCount);
+            wkIndexLinkIssue.setInvalidLinkCount(wkAllStats.getInvalidLink());
+            wkIndexLinkIssue.setContentErrorCount(wkAllStats.getErrorInfo());
+            wkIndexLinkIssue.setOverSpeedCount(wkAllStats.getAvgSpeed());
+            wkIndexLinkIssue.setUpdateContentCount(wkAllStats.getUpdateContent());
 
             wkIndexLinkIssueList.add(wkIndexLinkIssue);
         }

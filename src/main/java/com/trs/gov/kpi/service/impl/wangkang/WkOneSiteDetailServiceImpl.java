@@ -198,13 +198,6 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
         }
 
-//        Integer siteId = param.getSiteId();
-//        final Integer maxCheckId = wkCheckTimeMapper.getMaxCheckId(siteId);
-//        if (maxCheckId == null) {
-//            Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), 0);
-//            return new ApiPageData(pager, Collections.emptyList());
-//        }
-
         QueryFilter queryFilter = QueryFilterHelper.toWkIssueFilter(param, Types.WkSiteCheckType.INVALID_LINK);
         queryFilter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         queryFilter.addCond(WkIssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
@@ -293,7 +286,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         return toWkContentIssueResponseByWkIssueList(wkIssueList);
     }
 
-    private List<WkIssueResponse> getAllInvalidLinkList(Integer siteId, Integer checkId) {
+    private List<WkIssueResponse> getAllInvalidLinkList(Integer siteId,Integer checkId) {
         QueryFilter queryFilter = new QueryFilter(Table.WK_ISSUE);
         queryFilter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         queryFilter.addCond(WkIssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
@@ -572,7 +565,6 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             wkIssueResponse.setChnlName(wkIssue.getChnlName());
             wkIssueResponse.setSubTypeId(wkIssue.getSubTypeId());
 
-            // TODO 需要修改一下界面显示的名称和错误信息
             wkIssueResponse.setSubTypeName(Types.InfoErrorIssueType.valueOf(wkIssue.getSubTypeId()).getDisplayName());
             wkIssueResponse.setErrorInfo(wkIssue.getDetailInfo());
 

@@ -141,7 +141,7 @@ public class WkOneSiteDetailController {
     @RequestMapping(value = "invalidlink/counttrend/bytype", method = RequestMethod.GET)
     @ResponseBody
     public List<WkStatsCountResponse> getInvalidlinkHistoryStatsBySiteId(Integer siteId, Integer checkId) throws BizException {
-        if (siteId == null) {
+        if (siteId == null  || checkId == null) {
             log.error(Constants.SITE_ID_IS_NULL);
             throw new BizException(Constants.INVALID_PARAMETER);
         }
