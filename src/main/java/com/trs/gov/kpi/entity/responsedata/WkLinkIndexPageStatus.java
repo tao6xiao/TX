@@ -14,4 +14,6 @@ public class WkLinkIndexPageStatus {
 
     private Date checkTime;
 
+    private Boolean status;
+
 }

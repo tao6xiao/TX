@@ -66,4 +66,14 @@
         <include refid="com.trs.gov.kpi.dao.CommonMapper.all_conditions_sql"/>
     </select>
 
+    <select id="getSiteIndexpageStatusBySiteId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wkissue
+        where siteId = #{siteId,jdbcType=INTEGER}
+        AND  checkId = #{checkId,jdbcType=INTEGER}
+        AND  url = #{url,jdbcType=VARCHAR}
+        AND  typeId = #{typeId,jdbcType=INTEGER}
+    </select>
+
 </mapper>

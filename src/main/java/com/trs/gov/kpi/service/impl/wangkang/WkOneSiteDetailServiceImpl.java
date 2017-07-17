@@ -171,16 +171,24 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
     @Override
     public WkLinkIndexPageStatus getSiteIndexpageStatusBySiteId(Integer siteId, Integer checkId) {
-        Integer isDel = Status.Delete.UN_DELETE.value;
-        SiteManagement siteManagement = wkSiteManagementMapper.getSiteIndexpageStatusBySiteId(siteId, checkId, isDel);
-        WkLinkIndexPageStatus wkLinkIndexPageStatus = new WkLinkIndexPageStatus();
-        if(siteManagement != null){
-            wkLinkIndexPageStatus.setCheckTime(siteManagement.getCheckTime());
-            wkLinkIndexPageStatus.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
+
+        SiteManagement site = wkSiteManagementMapper.getIndexpageBySiteId(siteId);
+        String siteIndexPage = site.getSiteIndexUrl();
+        Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
+        List<WkIssue> wkIssue = wkIssueMapper.getSiteIndexpageStatusBySiteId(siteId, checkId, siteIndexPage, typeId);
+
+        if(wkIssue.isEmpty()){
+            WkLinkIndexPageStatus wkLinkIndexPageStatus = new WkLinkIndexPageStatus();
+            wkLinkIndexPageStatus.setCheckTime(site.getCheckTime());
+            wkLinkIndexPageStatus.setSiteIndexUrl(siteIndexPage);
+            wkLinkIndexPageStatus.setStatus(true);
 
             return wkLinkIndexPageStatus;
         }else{
-            return null;
+            WkLinkIndexPageStatus wkLinkIndexPageStatus = new WkLinkIndexPageStatus();
+            wkLinkIndexPageStatus.setStatus(false);
+
+            return wkLinkIndexPageStatus;
         }
     }
 

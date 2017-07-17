@@ -73,6 +73,6 @@ public interface WkSiteManagementMapper {
      * @param siteId
      * @return
      */
-    SiteManagement getSiteIndexpageStatusBySiteId(@Param("siteId") Integer siteId, @Param("checkId") Integer checkId, @Param("isDel") Integer isDel);
+    SiteManagement getIndexpageBySiteId(@Param("siteId") Integer siteId);
 
 }

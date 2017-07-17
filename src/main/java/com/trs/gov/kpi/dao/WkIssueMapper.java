@@ -46,5 +46,13 @@ public interface WkIssueMapper {
      */
     List<WkIssue> select(@Param("filter") QueryFilter filter);
 
+    /**
+     * 查询首页是否可用（最近一次检测）
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    List<WkIssue> getSiteIndexpageStatusBySiteId(@Param("siteId")Integer siteId,@Param("checkId")Integer checkId,@Param("url") String url, @Param("typeId") Integer typeId);
+
 
 }

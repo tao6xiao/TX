@@ -16,7 +16,6 @@ import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -419,33 +418,11 @@ public class QueryFilterHelper {
 //     * @param wkAllSiteDetail
 //     * @return
 //     */
-//    public static QueryFilter toVagueWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
-//        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
-//
-//        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
-//            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
-//        }
-//        if ("checkStatus".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
-//            switch (wkAllSiteDetail.getSearchText()){
-//                case("0"):
-//                    filter.addCond("checkStatus",Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
-//                    break;
-//                case("1"):
-//                    filter.addCond("checkStatus",Types.WkCheckStatus.WAIT_CHECK.value);
-//                    break;
-//                case("2"):
-//                    filter.addCond("checkStatus",Types.WkCheckStatus.CONDUCT_CHECK.value);
-//                    break;
-//                case("3"):
-//                    filter.addCond("checkStatus",Types.WkCheckStatus.DONE_CHECK.value);
-//                    break;
-//                default:
-//            }
-//        }
-//
+//    public static QueryFilter toScWkFilter(WkScore wkScore){
+//        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
 //        // sort field
-//        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
-//            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
+//        if (!StringUtil.isEmpty(wkScore.getSortFields())) {
+//            String[] sortFields = wkScore.getSortFields().trim().split(";");
 //            addSort(filter, sortFields);
 //        }
 //

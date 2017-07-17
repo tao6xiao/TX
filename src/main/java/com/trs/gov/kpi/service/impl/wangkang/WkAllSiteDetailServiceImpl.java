@@ -3,10 +3,7 @@ package com.trs.gov.kpi.service.impl.wangkang;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.dao.WkSiteDetailMapper;
-import com.trs.gov.kpi.dao.WkIssueMapper;
-import com.trs.gov.kpi.dao.WkRecordMapper;
-import com.trs.gov.kpi.dao.WkSiteManagementMapper;
+import com.trs.gov.kpi.dao.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -47,6 +44,9 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
 
     @Resource
     WkSiteManagementMapper wkSiteManagementMapper;
+
+    @Resource
+    private WkScoreMapper wkScoreMapper;
 
     @Override
     public List<WkAllSiteScoreResponsed> queryAllSiteScore() {
@@ -100,6 +100,8 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             String siteName = wkSiteManagementService.getSiteNameBySiteId(wkIssue.getSiteId());
             Integer invalidLinkCount = wkIssueMapper.getWkIssueCount(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.INVALID_LINK.value);
             Integer contentErrorCount = wkIssueMapper.getWkIssueCount(wkIssue.getSiteId(), wkIssue.getCheckId(), Types.WkSiteCheckType.CONTENT_ERROR.value);
+
+//            WkScore wkScore = wkScoreMapper.select(wkIssue.getSiteId(), wkIssue.getCheckId());
             Integer overSpeedCount = wkRecordMapper.getWkRecordAvgSpeed(wkIssue.getSiteId(), wkIssue.getCheckId());
             Integer updateContentCount = wkRecordMapper.getWkRecordUpdateContent(wkIssue.getSiteId(), wkIssue.getCheckId());
 

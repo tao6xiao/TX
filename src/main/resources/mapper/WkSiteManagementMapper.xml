@@ -53,13 +53,11 @@
         where siteName = #{siteName,jdbcType=INTEGER}
     </select>
 
-    <select id="getSiteIndexpageStatusBySiteId" resultMap="BaseResultMap">
+    <select id="getIndexpageBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         from wksite
         where siteId = #{siteId,jdbcType=INTEGER}
-        and checkId = #{checkId,jdbcType=INTEGER}
-        and isDel = #{isDel,jdbcType=INTEGER}
     </select>
 
 
