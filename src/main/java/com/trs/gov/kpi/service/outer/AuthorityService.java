@@ -8,12 +8,22 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 public interface AuthorityService {
 
     /**
-     * 权限判断
+     * 根据oprkeys判断权限
      *
+     * @param currUserName
      * @param siteId
      * @param channelId
      * @param oprkeys
      * @return
+     * @throws RemoteException
      */
-    boolean hasRight(Integer siteId, Integer channelId, String oprkeys) throws RemoteException;
+    boolean hasRight(String currUserName, Integer siteId, Integer channelId, String oprkeys) throws RemoteException;
+
+    /**
+     * 根据当前登录用户查询角色
+     *
+     * @param currUserName
+     * @return
+     */
+    String getRoleByUser(String currUserName) throws RemoteException;
 }
