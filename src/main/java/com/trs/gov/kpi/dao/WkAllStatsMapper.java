@@ -13,20 +13,6 @@ import java.util.List;
 @Mapper
 public interface WkAllStatsMapper {
 
-//    /**
-//     * 访问速度---查询网站平均访问速度历史记录
-//     *
-//     * @return
-//     */
-//    List<WkAvgSpeed> getAvgSpeedHistory();
-//
-//    /**
-//     * 网站更新---查询网站每次更新数量的历史记录
-//     *
-//     * @return
-//     */
-//    List<WkAllStats> getUpdateContentHistory();
-
     /**
      * 网站更新---查询网站每次更新数量的历史记录
      *
