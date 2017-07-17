@@ -530,7 +530,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         beginRow++;
 
         // 空行
-        List<WkOneSiteScoreResponse> scores = wkScoreService.getListBySiteId(siteId,checkId);
+        List<WkOneSiteScoreResponse> scores = wkScoreService.getListBySiteId(siteId, checkId);
         addTitle(sheet, style, "综合评分走势", beginRow, beginRow, 0, 1);
         beginRow++;
 

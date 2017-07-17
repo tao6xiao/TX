@@ -52,9 +52,11 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
 
                 final List<WkCheckTime> checkTimes = getWkCheckTime(siteId, wkAllstats.getCheckId());
 
-                WkAvgSpeedAndUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
-                WkAvgSpeedAndUpdateContent.setAvgSpeed(wkAllstats.getAvgSpeed());
-                wkAvgSpeedRespList.add(WkAvgSpeedAndUpdateContent);
+                if (checkTimes.size() == 1) {
+                    WkAvgSpeedAndUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
+                    WkAvgSpeedAndUpdateContent.setAvgSpeed(wkAllstats.getAvgSpeed());
+                    wkAvgSpeedRespList.add(WkAvgSpeedAndUpdateContent);
+                }
             }
         }
         return wkAvgSpeedRespList;
@@ -82,9 +84,11 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
             for (WkAllStats wkAllstats: wkAllStats) {
                 WkUpdateContentResponse WkUpdateContent = new WkUpdateContentResponse();
                 final List<WkCheckTime> checkTimes = getWkCheckTime(siteId, wkAllstats.getCheckId());
-                WkUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
-                WkUpdateContent.setUpdateContent(wkAllstats.getUpdateContent());
-                wkUpdateContentList.add(WkUpdateContent);
+                if (checkTimes.size() == 1) {
+                    WkUpdateContent.setUpdateContent(wkAllstats.getUpdateContent());
+                    WkUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
+                    wkUpdateContentList.add(WkUpdateContent);
+                }
             }
         }
 
