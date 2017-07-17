@@ -64,8 +64,8 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     }
 
     @Override
-    public Integer getSiteCountBySiteNameAndUrl(String siteName, String siteIndexUrl) {
-        return wkSiteManagementMapper.getSiteCountBySiteNameAndUrl(siteName, siteIndexUrl);
+    public Integer getSiteCountByUrl(String siteIndexUrl) {
+        return wkSiteManagementMapper.getSiteCountByUrl(siteIndexUrl);
     }
 
     @Override

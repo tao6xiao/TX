@@ -32,10 +32,10 @@ public interface WkSiteManagementMapper {
     /**
      * 根据网站名称和首页URL查询网站个数
      *
-     * @param siteName
+     * @param siteIndexUrl
      * @return
      */
-    Integer getSiteCountBySiteNameAndUrl(@Param("siteName") String siteName, @Param("siteIndexUrl") String siteIndexUrl);
+    Integer getSiteCountByUrl(String siteIndexUrl);
 
     /**
      * 查询所有网站数量

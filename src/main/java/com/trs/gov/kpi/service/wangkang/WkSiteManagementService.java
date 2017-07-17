@@ -5,7 +5,6 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -38,12 +37,12 @@ public interface WkSiteManagementService {
     Integer getSiteCountBySiteName(String siteName);
 
     /**
-     * 根据网站名称和首页URL查询网站个数
+     * 根据首页URL查询网站个数
      *
-     * @param siteName
+     * @param siteIndexUrl
      * @return
      */
-    Integer getSiteCountBySiteNameAndUrl(@Param("siteName") String siteName, @Param("siteIndexUrl") String siteIndexUrl);
+    Integer getSiteCountByUrl(String siteIndexUrl);
 
     /**
      *  查询所有站点（支持分页、排序和模糊查询）
