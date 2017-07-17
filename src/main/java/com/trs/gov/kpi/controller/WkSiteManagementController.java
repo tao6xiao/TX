@@ -125,7 +125,12 @@ public class WkSiteManagementController {
      * @return
      */
     @RequestMapping(value = "/site/delete", method = RequestMethod.DELETE)
-    public String deleteSiteBySiteIds(Integer[] siteIds){
+    public String deleteSiteBySiteIds(Integer[] siteIds) throws BizException {
+
+        if (siteIds == null || siteIds.length == 0) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+
         wkSiteManagementService.deleteSiteBySiteIds(Arrays.asList(siteIds));
         return null;
     }
@@ -137,13 +142,20 @@ public class WkSiteManagementController {
      * @return
      */
     @RequestMapping(value = "/site/check", method = RequestMethod.PUT)
-    public String deleteSiteBySiteIds(Integer siteId){
+    public String deleteSiteBySiteIds(Integer siteId) throws BizException {
+        if (siteId == null) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+
         schedulerService.doCheckJobOnce(siteId);
         change2WaitCheckStatus(siteId);
         return null;
     }
 
-    private void change2WaitCheckStatus(Integer siteId) {
+    private void change2WaitCheckStatus(Integer siteId) throws BizException {
+        if (siteId == null) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
         // 修改状态
         DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
         updater.addField("checkStatus", Types.WkCheckStatus.WAIT_CHECK.value);
