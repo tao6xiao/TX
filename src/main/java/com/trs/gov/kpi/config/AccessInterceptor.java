@@ -67,6 +67,11 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
      * @throws BizException
      */
     private void checkAuthority(HttpServletRequest request) throws RemoteException, BizException {
+
+        if (request.getRequestURI().endsWith("gov/kpi/index")) {
+            return;
+        }
+
         Integer siteId = paramCheckAndParse(request);
         if (request.getRequestURL().indexOf(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH + UrlPath.HANDLE_PATH) >= 0) {//待解决问题
             if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_ISSUE_HANDLE) && !authorityService.hasRight(ContextHelper
