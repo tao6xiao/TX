@@ -14,7 +14,6 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Pager;
-import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.responsedata.WkSiteManagementResponse;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
@@ -62,6 +61,11 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     @Override
     public Integer getSiteCountBySiteName(String siteName) {
         return wkSiteManagementMapper.getSiteCountBySiteName(siteName);
+    }
+
+    @Override
+    public Integer getSiteCountBySiteNameAndUrl(String siteName, String siteIndexUrl) {
+        return wkSiteManagementMapper.getSiteCountBySiteNameAndUrl(siteName, siteIndexUrl);
     }
 
     @Override

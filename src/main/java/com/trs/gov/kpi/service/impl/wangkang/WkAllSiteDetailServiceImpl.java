@@ -42,9 +42,6 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
     WkIssueMapper wkIssueMapper;
 
     @Resource
-    WkRecordMapper wkRecordMapper;
-
-    @Resource
     WkSiteManagementMapper wkSiteManagementMapper;
 
     @Resource

@@ -53,6 +53,14 @@
         where siteName = #{siteName,jdbcType=INTEGER}
     </select>
 
+    <select id="getSiteCountBySiteNameAndUrl" resultType="int">
+        select
+        count(1)
+        from wksite
+        where siteName = #{siteName,jdbcType=INTEGER}
+        and siteIndexUrl = #{siteIndexUrl,jdbcType=INTEGER}
+    </select>
+
     <select id="getIndexpageBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />

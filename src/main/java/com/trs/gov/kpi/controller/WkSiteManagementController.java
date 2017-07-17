@@ -46,25 +46,19 @@ public class WkSiteManagementController {
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/site", method = RequestMethod.POST)
+    @RequestMapping(value = "/site/add", method = RequestMethod.POST)
     @ResponseBody
     public Object addWkSite(@ModelAttribute SiteManagement siteManagement) throws BizException {
         if (siteManagement.getSiteName() == null || siteManagement.getAutoCheckType() == null || siteManagement.getSiteIndexUrl() == null || siteManagement.getDeptAddress() == null || siteManagement.getDeptLatLng() == null){
-            log.error("Invalid parameter: 参数siteManagement对象中siteName、autoCheckType、SiteIndexUr、deptAddress、deptLatLng 五个属性中至少有一个存在null值");
+            log.error("Invalid parameter: 参数siteManagement对象中siteName、autoCheckType、SiteIndexUrl、deptAddress、deptLatLng 五个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String siteName = siteManagement.getSiteName();
-        Integer siteCount = wkSiteManagementService.getSiteCountBySiteName(siteName);
+        String siteIndexUrl = siteManagement.getSiteIndexUrl();
+        Integer siteCount = wkSiteManagementService.getSiteCountBySiteNameAndUrl(siteName, siteIndexUrl);
         if (siteCount != 0){
             log.error("Invalid parameter: 该网站名已存在！！！");
             throw new BizException(Constants.SITE_NAME_IS_EXIST);
-        }
-
-        Integer siteId = siteManagement.getSiteId();
-        SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId);
-        if(siteManage != null){
-            siteManagement.setCheckTime(new Date());
-            wkSiteManagementService.updateSiteManagement(siteManagement);
         }else{
             siteManagement.setCheckTime(new Date());
             wkSiteManagementService.addWkSite(siteManagement);
@@ -79,16 +73,25 @@ public class WkSiteManagementController {
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/site", method = RequestMethod.PUT)
+    @RequestMapping(value = "/site/update", method = RequestMethod.PUT)
     @ResponseBody
     public Object modifyWkSite(@ModelAttribute SiteManagement siteManagement) throws BizException {
         if (siteManagement.getSiteId() == null || siteManagement.getSiteName() == null || siteManagement.getAutoCheckType() == null || siteManagement.getSiteIndexUrl() == null || siteManagement.getDeptAddress() == null || siteManagement.getDeptLatLng() == null){
             log.error("Invalid parameter: 参数siteManagement对象中siteId, siteName、autoCheckType、SiteIndexUr、deptAddress、deptLatLng 五个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+
         Integer siteId = siteManagement.getSiteId();
         SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId);
         if(siteManage != null){
+
+            String siteName = siteManagement.getSiteName();
+            Integer siteCount = wkSiteManagementService.getSiteCountBySiteName(siteName);
+            if (siteCount > 1){
+                log.error("Invalid parameter: 该网站名已存在！！！");
+                throw new BizException(Constants.SITE_NAME_IS_EXIST);
+            }
+
             siteManagement.setCheckTime(new Date());
             wkSiteManagementService.updateSiteManagement(siteManagement);
 
