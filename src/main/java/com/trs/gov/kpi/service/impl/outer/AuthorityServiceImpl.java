@@ -33,6 +33,8 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Value("${service.outer.editcenter.url}")
     private String editCenterServiceUrl;
 
+    private static final String MODULE_ID = "40";
+
 
     @Override
     public boolean hasRight(String currUserName, Integer siteId, Integer channelId, String oprkeys) throws RemoteException {
@@ -45,6 +47,7 @@ public class AuthorityServiceImpl implements AuthorityService {
             params.put("channelId", String.valueOf(channelId));
         }
         params.put("oprkeys", oprkeys);
+        params.put("MODULEID", MODULE_ID);
 
         try {
             OkHttpClient client = new OkHttpClient();
