@@ -110,7 +110,7 @@ public class CKMScheduler implements SchedulerTask {
             }
             Issue issue = new Issue();
             issue.setSiteId(siteId);
-            Channel channel = siteApiService.findChannelByUrl("", page.getUrl());
+            Channel channel = siteApiService.findChannelByUrl("", page.getUrl(), siteId);
             if(channel != null){
                 issue.setCustomer2(String.valueOf(channel.getChannelId()));
             }
