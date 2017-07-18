@@ -3,6 +3,7 @@ package com.trs.gov.kpi.entity.responsedata;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.outer.UserApiService;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,10 @@ import java.util.Objects;
 public class UserDocMultiCounterResponse extends DocMultiCounterResponse {
 
     @Getter
-    private Long userId;
+    private Long userId = 0L;
 
     @Getter
+    @Setter
     private String userName;
 
     @Resource
@@ -29,13 +31,13 @@ public class UserDocMultiCounterResponse extends DocMultiCounterResponse {
 
     public void setUserId(Long userId){
         this.userId = userId;
-        try {
-            if(userApiService.findUserById("", Math.toIntExact(userId)) != null) {
-                this.userName = userApiService.findUserById("", Math.toIntExact(userId)).getUserName();
-            }
-        } catch (RemoteException e) {
-            log.error("", e);
-        }
+//        try {
+//            if(userApiService.findUserById("", Math.toIntExact(userId)) != null) {
+//                this.userName = userApiService.findUserById("", Math.toIntExact(userId)).getUserName();
+//            }
+//        } catch (RemoteException e) {
+//            log.error("", e);
+//        }
     }
 
     @Override
