@@ -75,7 +75,7 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId、四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        if(monitorSiteDeal.getIndexUrl() == null){
+        if(monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getIndexUrl().isEmpty()){
             log.error("Invalid parameter: 当前站点没有首页");
             throw new BizException("当前站点没有首页，不能设置！");
         }
