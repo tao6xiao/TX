@@ -142,7 +142,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
                 queryFilter.addCond(WebpageTableField.PAGE_LINK, pageDepthTo.getPageLink());
                 queryFilter.addCond(WebpageTableField.CHNL_ID, pageDepthTo.getChnlId());
-                queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
+                queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
 
                 List<PageSpace> urlLenghtList = webPageMapper.selectPageSpace(queryFilter);
                 if (urlLenghtList.isEmpty()) {
