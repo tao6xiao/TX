@@ -1,18 +1,13 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
-import com.trs.gov.kpi.entity.dao.DBUpdater;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
 import com.trs.gov.kpi.entity.wangkang.WkLinkType;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
-import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.wangkang.WkIdService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
@@ -22,13 +17,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,8 +38,8 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-    @Resource
-    private LinkAvailabilityService linkAvailabilityService;
+//    @Resource
+//    private LinkAvailabilityService linkAvailabilityService;
 
     @Resource
     private WkIdService wkIdService;
