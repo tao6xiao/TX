@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.wangkang.WkScore;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,5 +20,7 @@ public interface WkScoreMapper {
      * @return
      */
     List<WkScore> select(@Param("filter") QueryFilter filter);
+
+    int getOneWeekUpdateCount(@Param("checkTime") Date checkTime, @Param("siteId") Integer siteId);
 
 }

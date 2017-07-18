@@ -1,11 +1,16 @@
 package com.trs.gov.kpi.processor;
 
+import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.dao.WkCheckTimeMapper;
+import com.trs.gov.kpi.dao.WkScoreMapper;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.msg.CalcScoreMsg;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.msg.PageInfoMsg;
-import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
+import com.trs.gov.kpi.entity.wangkang.WkEveryLink;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
 import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.msgqueue.MQListener;
@@ -16,6 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +42,13 @@ public class SpeedAndUpdateProcessor implements MQListener {
     private WkScoreService wkScoreService;
 
     @Resource
+    private WkScoreMapper wkScoreMapper;
+
+    @Resource
     private CommonMQ commonMQ;
+
+    @Resource
+    private WkCheckTimeMapper wkCheckTimeMapper;
 
     private final String name = "SpeedAndUpdateProcessor";
 
@@ -46,7 +58,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
     }
 
     @Override
-    public void onMessage(IMQMsg msg) {
+    public void onMessage(IMQMsg msg) throws ParseException {
 
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
             // 检查结束
@@ -59,7 +71,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
             wkAllStats.setUpdateContent(count);
             wkAllStats.setAvgSpeed(avgSpeed);
             wkAllStatsService.insertOrUpdateUpdateContentAndSpeed(wkAllStats);
-            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), avgSpeed, count);
+            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), avgSpeed);
 
             CalcScoreMsg calcUpdateScoreMsg = new CalcScoreMsg();
             calcUpdateScoreMsg.setCheckId(checkEndMsg.getCheckId());
@@ -113,13 +125,49 @@ public class SpeedAndUpdateProcessor implements MQListener {
         return count;
     }
 
-    private void calcScoreAndInsert(Integer siteId, Integer checkId, long avgSpeed, int updateCount) {
+    private void calcScoreAndInsert(Integer siteId, Integer checkId, long avgSpeed) throws ParseException {
 
-        int updateCountScore = updateCount >= 10 ? 100 : updateCount * 100 / 10;
-        long avgSpeedScore = avgSpeed <= 1000 ? 100 : 100 - (avgSpeed - 1000) / 1000;
+//        int updateCountScore = updateCount >= 10 ? 100 : updateCount * 100 / 10;
+//        long avgSpeedScore = avgSpeed <= 1000 ? 100 : 100 - (avgSpeed - 1000) / 1000;
+        /**
+         * T1(性能检测得分)= 100(1-ln(T/10+1) ,T为页面抓取平均耗时是200毫秒的倍数
+         */
+        double avg = avgSpeed;
+        double avgLog = Math.log((avg / 200)/10 + 1);
+        double avgScore = 100 * (1 - avgLog);
+        int avgSpeedScore = (int)avgScore;
         if (avgSpeedScore < 0) {
             avgSpeedScore = 0;
         }
+        /**
+         * SD更新得分(权值20%)	 	=D1x50%+D2x50%
+         * 	D1(网站最近更新时间T天)			=	100 (1- ln(T/10+1))
+         * 	D2(网站最近一周更新文章数N) 	=	100 ln(N/100+1)		N<250
+         */
+        long thisTime = new Date().getTime();
+
+        Integer lastCheckId = wkCheckTimeMapper.getLastCheckId(siteId, checkId);
+        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
+        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+        filter.addCond(Constants.DB_FIELD_CHECK_ID, lastCheckId);
+        List<WkScore> wkScore = wkScoreMapper.select(filter);
+        long lastTime = wkScore.get(0).getCheckTime().getTime();
+
+        double days = ((thisTime - lastTime)/(1000 * 60 * 60 * 24));
+
+//        double daysD = days;
+        double updateContentD1 = Math.log(days / 10 + 1);
+        double updateD1 = 100 * (1 - updateContentD1);
+
+        Integer oneWeekUpdateCount = wkScoreMapper.getOneWeekUpdateCount(new Date(), siteId);
+        if (250 <= oneWeekUpdateCount ){
+            oneWeekUpdateCount = 249;
+        }
+        double oneWeekUpdateCountD = oneWeekUpdateCount;
+        double updateContentD2 = Math.log(oneWeekUpdateCountD / 100 + 1);
+        double updateD2 = 100 * updateContentD2;
+
+        int updateCountScore = (int)(updateD1 * 0.5 + updateD2 * 0.5);
 
         WkScore score = new WkScore();
         score.setSiteId(siteId);
@@ -129,8 +177,6 @@ public class SpeedAndUpdateProcessor implements MQListener {
         score.setUpdateContent(updateCountScore);
 
         wkScoreService.insertOrUpdateUpdateContentAndSpeed(score);
-
-
     }
 
     @Override

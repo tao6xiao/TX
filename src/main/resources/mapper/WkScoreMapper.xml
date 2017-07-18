@@ -2,6 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.WkScoreMapper">
 
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkScore">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="total" jdbcType="INTEGER" property="total" />
+        <result column="invalidLink" jdbcType="INTEGER" property="invalidLink" />
+        <result column="contentError" jdbcType="INTEGER" property="contentError" />
+        <result column="overSpeed" jdbcType="INTEGER" property="overSpeed" />
+        <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, checkId, siteId, allLink, webLink, imageLink, videoLink, enclosuLink, checkTime
+    </sql>
+
     <select id="select" resultType="com.trs.gov.kpi.entity.wangkang.WkScore">
         SELECT
         *
@@ -9,6 +24,13 @@
         <include refid="com.trs.gov.kpi.dao.CommonMapper.all_conditions_sql"/>
     </select>
 
-
+    <select id="getOneWeekUpdateCount" resultType="int">
+        select
+        SUM(updateContent)
+        from wkscore
+        where DATE_SUB(#{checkTime,jdbcType=TIMESTAMP}, INTERVAL 7 DAY)
+        <![CDATA[ <= ]]> DATE(checkTime)
+        and siteId = #{siteId, jdbcType=INTEGER}
+    </select>
 
 </mapper>
