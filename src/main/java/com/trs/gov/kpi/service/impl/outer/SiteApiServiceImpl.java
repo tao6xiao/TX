@@ -210,9 +210,10 @@ public class SiteApiServiceImpl implements SiteApiService {
     }
 
     @Override
-    public Channel findChannelByUrl(String userName, String url) throws RemoteException {
+    public Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
+            params.put(SITE_ID, String.valueOf(siteId));
             params.put("URL", url);
 
             OkHttpClient client = new OkHttpClient();

@@ -64,7 +64,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
 
-            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
+            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, siteId, baseUrl);
             Date checkTime = new Date();
             for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
                 LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
