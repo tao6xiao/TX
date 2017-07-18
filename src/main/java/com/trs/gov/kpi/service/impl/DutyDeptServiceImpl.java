@@ -102,7 +102,7 @@ public class DutyDeptServiceImpl implements DutyDeptService {
         DutyDeptResponse deptResponse = new DutyDeptResponse();
         if (siteApiService.getChannelById(dutyDept.getChnlId(), "") != null && deptApiService.findDeptById("", dutyDept.getDeptId()) != null) {
             deptResponse.setChnlId(dutyDept.getChnlId());
-            deptResponse.setChnlName(siteApiService.getChannelById(dutyDept.getChnlId(), "").getChnlName());
+            deptResponse.setChnlName(siteApiService.getChannelById(dutyDept.getChnlId(), "").getChnlDesc());
             deptResponse.setSiteId(dutyDept.getSiteId());
             deptResponse.setDeptId(dutyDept.getDeptId());
             deptResponse.setDeptName(deptApiService.findDeptById("", dutyDept.getDeptId()).getGName());

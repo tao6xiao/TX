@@ -77,8 +77,8 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
         } else {
             try {
                 Channel outerChannel = siteApiService.getChannelById(channelGroup.getChnlId(), "");
-                chnl.setChnlName(outerChannel.getChnlName());
-                chnlNamCache.put(outerChannel.getChannelId(), outerChannel.getChnlName());
+                chnl.setChnlName(outerChannel.getChnlDesc());
+                chnlNamCache.put(outerChannel.getChannelId(), outerChannel.getChnlDesc());
             } catch (RemoteException e) {
                 log.error("failed to get channl id: " + channelGroup.getChnlId(), e);
             }

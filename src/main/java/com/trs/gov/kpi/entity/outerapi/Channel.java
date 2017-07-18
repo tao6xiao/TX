@@ -14,9 +14,9 @@ public class Channel {
 
     private int channelId;
 
-    private String chnlName;
-
     private int parentId;
+
+    private String chnlDesc;
 
 
 //    "HASCHILDREN" : "false",
