@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl.wangkang;
 
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.constant.WkAllStatsTableField;
+import com.trs.gov.kpi.constant.WkIssueTableField;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WkIssueMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -30,7 +31,7 @@ public class WkIssueServiceImpl implements WkIssueService {
         QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
         filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
-        filter.addCond("typeId", Types.WkSiteCheckType.CONTENT_ERROR.value);
+        filter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.CONTENT_ERROR.value);
         return commonMapper.count(filter);
     }
 
@@ -39,7 +40,7 @@ public class WkIssueServiceImpl implements WkIssueService {
         QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
         filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
-        filter.addCond("typeId", Types.WkSiteCheckType.INVALID_LINK.value);
+        filter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         return commonMapper.count(filter);
     }
 
@@ -48,7 +49,7 @@ public class WkIssueServiceImpl implements WkIssueService {
         QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
         filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
-        filter.addCond("typeId", Types.WkSiteCheckType.CONTENT_ERROR.value);
+        filter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.CONTENT_ERROR.value);
         return wkIssueMapper.select(filter);
     }
 
@@ -57,7 +58,7 @@ public class WkIssueServiceImpl implements WkIssueService {
         QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
         filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
-        filter.addCond("typeId", Types.WkSiteCheckType.INVALID_LINK.value);
+        filter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         return wkIssueMapper.select(filter);
     }
 }

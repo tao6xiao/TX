@@ -3,7 +3,7 @@ package com.trs.gov.kpi.constant;
 /**
  * Created by li.hao on 2017/7/18.
  */
-public interface WkSiteTableField {
+public class WkSiteTableField {
 
     public static final String SITE_ID = Constants.DB_FIELD_SITE_ID;
     public static final String SITE_NAME = "siteName";
@@ -14,5 +14,7 @@ public interface WkSiteTableField {
     public static final String CHECK_TIME = "checkTime";
     public static final String CHECK_STATUS = "checkStatus";
     public static final String IS_DEL = "isDel";
+
+    private WkSiteTableField(){};
 
 }
