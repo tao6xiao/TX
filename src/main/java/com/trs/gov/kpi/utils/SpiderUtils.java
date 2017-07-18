@@ -68,6 +68,8 @@ public class SpiderUtils {
 
     private String baseUrl;
 
+    private Integer siteId;
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
@@ -153,7 +155,7 @@ public class SpiderUtils {
 
             Integer chnlId = null;
             try {
-                Channel channel = siteApiService.findChannelByUrl("", request.getUrl().intern());
+                Channel channel = siteApiService.findChannelByUrl("", request.getUrl().intern(), siteId);
                 if (channel != null) {
                     chnlId = channel.getChannelId();
                 }
@@ -213,7 +215,8 @@ public class SpiderUtils {
     };
 
 
-    private synchronized void init(String baseUrl) {
+    private synchronized void init(String baseUrl, Integer siteId) {
+        this.siteId = siteId;
         this.baseUrl = baseUrl;
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
@@ -226,11 +229,11 @@ public class SpiderUtils {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized List<Pair<String, String>> linkCheck(int threadNum, String baseUrl) {
+    public synchronized List<Pair<String, String>> linkCheck(int threadNum, Integer siteId, String baseUrl) {
 
 
         log.info("linkCheck started!");
-        init(baseUrl);
+        init(baseUrl, siteId);
         if (StringUtils.isBlank(baseUrl)) {
 
             log.info("linkCheck completed, no URL has been checked!");
@@ -300,7 +303,7 @@ public class SpiderUtils {
     public synchronized List<String> homePageCheck(String... homePageUrls) {
 
         log.info("homePageCheck started!");
-        init(baseUrl);
+        init(baseUrl, siteId);
         for (String homePageUrl : homePageUrls) {
 
             recordUnavailableUrlDownloader.download(new Request(homePageUrl), new Task() {

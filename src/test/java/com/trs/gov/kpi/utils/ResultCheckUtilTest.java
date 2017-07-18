@@ -55,7 +55,7 @@ public class ResultCheckUtilTest {
         @Override
         public Channel getChannelById(int channelId, String userName) throws RemoteException {
             if (channelId == 12) {
-                chnl.setChnlName("电影");
+                chnl.setChnlDesc("电影");
             }
             return chnl;
         }
@@ -86,7 +86,7 @@ public class ResultCheckUtilTest {
         }
 
         @Override
-        public Channel findChannelByUrl(String userName, String url) throws RemoteException {
+        public Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException {
             return null;
         }
     }

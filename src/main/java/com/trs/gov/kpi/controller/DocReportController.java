@@ -15,6 +15,7 @@ import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,6 +44,9 @@ public class DocReportController {
 
     @Resource
     private AuthorityService authorityService;
+
+    @Resource
+    private ApplicationContext applicationContext;
 
     private static final String PREX_EDIT_CENTER_REPORT = "editcenter_";
 
@@ -276,7 +280,8 @@ public class DocReportController {
             String key = newDocEntry.getKey();
             T counter = counterMap.get(key);
             if (counter == null) {
-                counter = counterClass.newInstance();
+                counter = applicationContext.getBean(counterClass);
+//                counter = counterClass.newInstance();
                 setIdFunc.apply(counter, key);
                 counterMap.put(key, counter);
             }

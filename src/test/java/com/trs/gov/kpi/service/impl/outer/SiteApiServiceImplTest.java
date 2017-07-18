@@ -47,16 +47,16 @@ public class SiteApiServiceImplTest {
     @Test
     public void findChannelByUrl_null_String() throws RemoteException {
         MockSiteApiService service = new MockSiteApiService();
-        Channel channel = service.findChannelByUrl("", "");
+        Channel channel = service.findChannelByUrl("", "", 1);
         assertEquals(null, channel);
     }
 
     @Test
     public void findChannelByUrl() throws RemoteException{
         MockSiteApiService service = new MockSiteApiService();
-        Channel channel = service.findChannelByUrl("", "www.test.com");
+        Channel channel = service.findChannelByUrl("", "www.test.com", 1);
         assertEquals(1, channel.getChannelId());
-        assertEquals("test", channel.getChnlName());
+        assertEquals("test", channel.getChnlDesc());
     }
 
     private class MockSiteApiService implements SiteApiService {
@@ -77,7 +77,7 @@ public class SiteApiServiceImplTest {
         @Override
         public Channel getChannelById(int channelId, String userName) throws RemoteException {
             if (channelId == 12) {
-                chnl.setChnlName("电影");
+                chnl.setChnlDesc("电影");
             }
             return chnl;
         }
@@ -112,11 +112,11 @@ public class SiteApiServiceImplTest {
         }
 
         @Override
-        public Channel findChannelByUrl(String userName, String url) throws RemoteException {
+        public Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException {
             if("www.test.com".equals(url)){
                 Channel channel = new Channel();
                 channel.setChannelId(1);
-                channel.setChnlName("test");
+                channel.setChnlDesc("test");
                 return channel;
             }
             return null;

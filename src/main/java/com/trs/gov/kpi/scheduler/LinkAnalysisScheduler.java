@@ -64,17 +64,17 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
 
-            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
+            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, siteId, baseUrl);
             Date checkTime = new Date();
             for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
                 LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
-                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
-                linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getKey());
                 linkAvailabilityResponse.setCheckTime(checkTime);
                 linkAvailabilityResponse.setSiteId(siteId);
-                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
+                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
 
-                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getKey())) {
+                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
                     linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
                 }
             }

@@ -124,7 +124,7 @@ public class PerformanceService {
         //总分
         double sum = availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;
 
-        return Double.parseDouble(String.format("%.2f",sum));
+        return Double.parseDouble(String.format("%.2f", sum));
     }
 
 

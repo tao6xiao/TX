@@ -471,7 +471,7 @@ public class QueryFilterHelperTest {
         }
 
         @Override
-        public Channel findChannelByUrl(String userName, String url) throws RemoteException {
+        public Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException {
             return null;
         }
     }
