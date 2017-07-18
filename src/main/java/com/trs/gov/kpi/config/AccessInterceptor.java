@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.config;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -12,6 +14,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
@@ -133,11 +136,26 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
 
 
     private Integer paramCheckAndParse(HttpServletRequest request) {
-        String siteIdStr = request.getParameter("siteId");
-        if (StringUtil.isEmpty(siteIdStr)) {
-            throw new IllegalArgumentException();
+
+        if (request.getHeader("Content-Type").indexOf("application/json") >= 0) {
+            StringBuffer jb = new StringBuffer();
+            try {
+                String line;
+                BufferedReader reader = request.getReader();
+                while ((line = reader.readLine()) != null)
+                    jb.append(line);
+            } catch (Exception e) { /*report an error*/ }
+
+            JSONObject jsonObject = JSON.parseObject(jb.toString());
+            return jsonObject.getInteger("siteId");
+        } else {
+            String siteIdStr = request.getParameter("siteId");
+            if (StringUtil.isEmpty(siteIdStr)) {
+                throw new IllegalArgumentException();
+            }
+            return Integer.valueOf(siteIdStr);
         }
-        return Integer.valueOf(siteIdStr);
+
     }
 
 
