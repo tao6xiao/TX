@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,7 +87,7 @@ public class PerformanceService {
         }
 
         //网站信息更新情况
-        List<Statistics> statisticsList = infoUpdateService.getUpdateNotInTimeCountList(param);
+        List<Statistics> statisticsList =  new ArrayList<>();//infoUpdateService.getUpdateNotInTimeCountList(param);
         int updateNotInTimeCount = 0;
         int blankChnlCount = 0;
         for (Statistics statistics : statisticsList) {
@@ -104,7 +105,7 @@ public class PerformanceService {
         }
 
         //办事指南要素的完整性、准确性
-        SGStatistics sgStatistics = null; //sgService.getSGCount(param);
+        SGStatistics sgStatistics = sgService.getSGCount(param);
         int handleIssueCount = 0;
         if (sgStatistics != null) {
             handleIssueCount = sgStatistics.getAbandonedCounts();
