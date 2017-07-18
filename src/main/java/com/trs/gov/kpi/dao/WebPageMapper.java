@@ -93,4 +93,40 @@ public interface WebPageMapper {
      */
     void delPageByIds(@Param("siteId") int siteId, @Param("ids") List<Integer> ids);
 
+    /**
+     * 更新过大页面：
+     * 多次检测时存储最新的一次
+     *
+     * @param pageSpace
+     */
+    void updatePageSpace(PageSpace pageSpace);
+
+
+    /**
+     * 更新过长URL页面：
+     * 多次检测时存储最新的一次
+     *
+     * @param urlLength
+     */
+    void updateUrlLength(UrlLength urlLength);
+
+
+    /**
+     * 更新过深页面：
+     * 多次检测时存储最新的一次
+     *
+     * @param pageDepth
+     */
+    void updatePageDepth(PageDepth pageDepth);
+
+
+    /**
+     * 更新响应速度：
+     * 多次检测时存储最新的一次
+     *
+     * @param replySpeed
+     */
+    void updateReplySpeed(ReplySpeed replySpeed);
+
+
 }

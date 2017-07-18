@@ -7,7 +7,7 @@
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="replySpeed" jdbcType="BIGINT" property="speed"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
-        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime"/>
     </resultMap>
 
     <resultMap id="PageSpaceMap" type="com.trs.gov.kpi.entity.PageSpace">
@@ -16,7 +16,7 @@
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="replySpeed" jdbcType="BIGINT" property="speed"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
-        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime"/>
     </resultMap>
 
     <resultMap id="PageDepthMap" type="com.trs.gov.kpi.entity.PageDepth">
@@ -25,7 +25,7 @@
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="pageDepth" jdbcType="INTEGER" property="depth"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
-        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime"/>
     </resultMap>
 
     <resultMap id="RepeatCodeMap" type="com.trs.gov.kpi.entity.RepeatCode">
@@ -33,8 +33,8 @@
         <result column="chnlId" jdbcType="INTEGER" property="chnlId"/>
         <result column="repeatPlace" jdbcType="INTEGER" property="repeatPlace"/>
         <result column="repeatDegree" jdbcType="VARCHAR" property="repeatDegree"/>
-        <result column="updateTime" jdbcType="DATE" property="updateTime"/>
-        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+        <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime"/>
     </resultMap>
 
     <resultMap id="UrlLengthMap" type="com.trs.gov.kpi.entity.UrlLength">
@@ -43,7 +43,7 @@
         <result column="pageLink" jdbcType="VARCHAR" property="pageLink"/>
         <result column="urlLength" jdbcType="BIGINT" property="length"/>
         <result column="pageSpace" jdbcType="BIGINT" property="space"/>
-        <result column="checkTime" jdbcType="DATE" property="checkTime"/>
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime"/>
     </resultMap>
 
     <select id="selectReplySpeed" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="ReplySpeedMap">
@@ -208,5 +208,69 @@
         SELECT min(checkTime)
         FROM webpage
     </select>
+
+    <update id="updatePageSpace" parameterType="com.trs.gov.kpi.entity.PageSpace">
+        update webpage
+        <set>
+            <if test="speed != null">
+                replySpeed = #{speed,jdbcType=INTEGER},
+            </if>
+            <if test="space != null">
+                pageSpace = #{space,jdbcType=INTEGER},
+            </if>
+            <if test="checkTime != null">
+                checkTime = #{checkTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateUrlLength" parameterType="com.trs.gov.kpi.entity.UrlLength">
+        update webpage
+        <set>
+            <if test="length != null">
+                urlLength = #{length,jdbcType=INTEGER},
+            </if>
+            <if test="space != null">
+                pageSpace = #{space,jdbcType=INTEGER},
+            </if>
+            <if test="checkTime != null">
+                checkTime = #{checkTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updatePageDepth" parameterType="com.trs.gov.kpi.entity.PageDepth">
+        update webpage
+        <set>
+            <if test="space != null">
+                pageSpace = #{space,jdbcType=INTEGER},
+            </if>
+            <if test="depth != null">
+                pageDepth = #{depth,jdbcType=INTEGER},
+            </if>
+            <if test="checkTime != null">
+                checkTime = #{checkTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateReplySpeed" parameterType="com.trs.gov.kpi.entity.ReplySpeed">
+        update webpage
+        <set>
+            <if test="space != null">
+                pageSpace = #{space,jdbcType=INTEGER},
+            </if>
+            <if test="speed != null">
+                replySpeed = #{speed,jdbcType=INTEGER},
+            </if>
+            <if test="checkTime != null">
+                checkTime = #{checkTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
 
 </mapper>
