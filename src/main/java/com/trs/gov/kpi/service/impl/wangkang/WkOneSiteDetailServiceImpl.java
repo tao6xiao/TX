@@ -68,8 +68,8 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     @Resource
     WkSiteManagementMapper wkSiteManagementMapper;
 
-    @Resource
-    private WkCheckTimeMapper wkCheckTimeMapper;
+//    @Resource
+//    private WkCheckTimeMapper wkCheckTimeMapper;
 
     @Resource
     private CommonMapper commonMapper;
@@ -139,6 +139,10 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         Integer typeId = Types.WkSiteCheckType.INVALID_LINK.value;
 
         WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId,checkId,typeId);
+        return getWkStatsCountResp(wkIssueCount);
+    }
+
+    private WkStatsCountResponse getWkStatsCountResp(WkIssueCount wkIssueCount) {
         if(wkIssueCount != null){
             WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
             wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
@@ -240,15 +244,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         Integer typeId = Types.WkSiteCheckType.CONTENT_ERROR.value;
 
         WkIssueCount wkIssueCount = wkIssueCountMapper.getlinkAndContentStatsBySiteId(siteId, checkId, typeId);
-        if(wkIssueCount != null){
-            WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
-            wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
-            wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
-
-            return wkStatsCountResponse;
-        }else{
-            return null;
-        }
+        return getWkStatsCountResp(wkIssueCount);
     }
 
     @Override
