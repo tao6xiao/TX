@@ -72,8 +72,12 @@ public class MonitorSiteController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getGuarderId() == null) {
-            log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId四个属性中至少有一个存在null值");
+            log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId、四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        if(monitorSiteDeal.getIndexUrl() == null){
+            log.error("Invalid parameter: 当前站点没有首页");
+            throw new BizException("当前站点没有首页，不能设置！");
         }
 
         int siteId = monitorSiteDeal.getSiteId();
