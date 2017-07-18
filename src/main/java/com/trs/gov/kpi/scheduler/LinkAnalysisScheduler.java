@@ -82,16 +82,15 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
                 QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
                 queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
-                queryFilter.addCond(WebpageTableField.REPLY_SPEED, replySpeedTo.getSpeed());
                 queryFilter.addCond(WebpageTableField.PAGE_LINK, replySpeedTo.getPageLink());
                 queryFilter.addCond(WebpageTableField.CHNL_ID, replySpeedTo.getChnlId());
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
 
                 List<ReplySpeed> pageSpaceList = webPageMapper.selectReplySpeed(queryFilter);
-                if(pageSpaceList.size() == 0){
+                if (pageSpaceList.isEmpty()) {
                     replySpeedTo.setSiteId(siteId);
                     webPageService.insertReplyspeed(replySpeedTo);
-                }else{
+                } else {
                     webPageMapper.updateReplySpeed(replySpeedTo);
                 }
             }
@@ -101,16 +100,15 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             for (PageSpace pageSpaceTo : biggerPageSpace) {
                 QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
                 queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
-                queryFilter.addCond(WebpageTableField.PAGE_SPACE, pageSpaceTo.getSpace());
                 queryFilter.addCond(WebpageTableField.PAGE_LINK, pageSpaceTo.getPageLink());
                 queryFilter.addCond(WebpageTableField.CHNL_ID, pageSpaceTo.getChnlId());
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
 
                 List<PageSpace> pageSpaceList = webPageMapper.selectPageSpace(queryFilter);
-                if(pageSpaceList.size() == 0){
+                if (pageSpaceList.isEmpty()) {
                     pageSpaceTo.setSiteId(siteId);
                     webPageService.insertPageSpace(pageSpaceTo);
-                }else{
+                } else {
                     webPageMapper.updatePageSpace(pageSpaceTo);
                 }
             }
@@ -121,16 +119,15 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
                 QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
                 queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
-                queryFilter.addCond(WebpageTableField.URL_LENGTH, urlLenghtTo.getLength());
                 queryFilter.addCond(WebpageTableField.PAGE_LINK, urlLenghtTo.getPageLink());
                 queryFilter.addCond(WebpageTableField.CHNL_ID, urlLenghtTo.getChnlId());
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
 
                 List<PageSpace> urlLenghtList = webPageMapper.selectPageSpace(queryFilter);
-                if(urlLenghtList.size() == 0){
+                if (urlLenghtList.isEmpty()) {
                     urlLenghtTo.setSiteId(siteId);
                     webPageService.insertUrlLength(urlLenghtTo);
-                }else {
+                } else {
                     webPageMapper.updateUrlLength(urlLenghtTo);
                 }
             }
@@ -140,16 +137,15 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             for (PageDepth pageDepthTo : pageDepthSet) {
                 QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
                 queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
-                queryFilter.addCond(WebpageTableField.PAGE_DEPTH, pageDepthTo.getDepth());
                 queryFilter.addCond(WebpageTableField.PAGE_LINK, pageDepthTo.getPageLink());
                 queryFilter.addCond(WebpageTableField.CHNL_ID, pageDepthTo.getChnlId());
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
 
                 List<PageSpace> urlLenghtList = webPageMapper.selectPageSpace(queryFilter);
-                if(urlLenghtList.size() == 0){
+                if (urlLenghtList.isEmpty()) {
                     pageDepthTo.setSiteId(siteId);
                     webPageService.insertPageDepth(pageDepthTo);
-                }else {
+                } else {
                     webPageMapper.updatePageDepth(pageDepthTo);
                 }
             }
