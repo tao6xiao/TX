@@ -338,7 +338,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
                 if (chnl != null) {
                     EmptyChnl emptyChnl = new EmptyChnl();
                     emptyChnl.setChnlId(chnlId);
-                    emptyChnl.setChnlName(chnl.getChnlName());
+                    emptyChnl.setChnlName(chnl.getChnlDesc());
                     emptyChnls.add(emptyChnl);
                 }
             }
@@ -391,7 +391,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         if (chnl != null) {
             UpdateNotInTimeChnl notInTimeChnl = new UpdateNotInTimeChnl();
             notInTimeChnl.setChnlId(update.getChnlId());
-            notInTimeChnl.setChnlName(chnl.getChnlName());
+            notInTimeChnl.setChnlName(chnl.getChnlDesc());
             notInTimeChnl.setCountMonth(countMonth);
             notInTimeChnls.add(notInTimeChnl);
         }

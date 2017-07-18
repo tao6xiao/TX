@@ -56,7 +56,7 @@ public class SiteApiServiceImplTest {
         MockSiteApiService service = new MockSiteApiService();
         Channel channel = service.findChannelByUrl("", "www.test.com");
         assertEquals(1, channel.getChannelId());
-        assertEquals("test", channel.getChnlName());
+        assertEquals("test", channel.getChnlDesc());
     }
 
     private class MockSiteApiService implements SiteApiService {
@@ -77,7 +77,7 @@ public class SiteApiServiceImplTest {
         @Override
         public Channel getChannelById(int channelId, String userName) throws RemoteException {
             if (channelId == 12) {
-                chnl.setChnlName("电影");
+                chnl.setChnlDesc("电影");
             }
             return chnl;
         }
@@ -116,7 +116,7 @@ public class SiteApiServiceImplTest {
             if("www.test.com".equals(url)){
                 Channel channel = new Channel();
                 channel.setChannelId(1);
-                channel.setChnlName("test");
+                channel.setChnlDesc("test");
                 return channel;
             }
             return null;

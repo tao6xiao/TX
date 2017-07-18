@@ -32,10 +32,10 @@ public class ResultCheckUtil {
     }
 
     private static String checkChannelName(Channel channel) {
-        if (channel == null || channel.getChnlName() == null) {
+        if (channel == null || channel.getChnlDesc() == null) {
             return "";
         }
-        return channel.getChnlName();
+        return channel.getChnlDesc();
     }
 
     public static String getSiteName(Integer siteId, SiteApiService siteApiService) {
