@@ -3,12 +3,12 @@ package com.trs.gov.kpi.ids;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.idm.client.actor.SSOUser;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
