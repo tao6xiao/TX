@@ -73,7 +73,10 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 linkAvailabilityResponse.setCheckTime(checkTime);
                 linkAvailabilityResponse.setSiteId(siteId);
                 linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
-                linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+
+                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getKey())) {
+                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+                }
             }
 
             //获取响应速度基本信息，信息入库并去除重复数据和更新数据库信息

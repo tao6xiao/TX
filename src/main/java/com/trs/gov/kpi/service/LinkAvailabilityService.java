@@ -35,6 +35,14 @@ public interface LinkAvailabilityService {
      */
     void insertLinkAvailability(LinkAvailabilityResponse linkAvailabilityResponse);
 
+
+    /**
+     * 插入链接不可用的问题
+     *
+     */
+    boolean existLinkAvailability(Integer siteId, String invalidLink);
+
+
     /**
      * 查询网站首页的有效性
      *

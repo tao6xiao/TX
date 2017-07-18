@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -162,6 +163,17 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         issueMapper.insert(DBUtil.toRow(issue));
     }
 
+    @Override
+    public boolean existLinkAvailability(Integer siteId, String invalidLink) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.DETAIL, invalidLink);
+        return issueMapper.count(filter) > 0;
+    }
+
     private Issue getIssueByLinkAvaliability(LinkAvailabilityResponse linkAvailabilityResponse) {
 
         Issue issue = new Issue();
@@ -171,6 +183,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         issue.setSubTypeId(linkAvailabilityResponse.getIssueTypeId());
         issue.setDetail(linkAvailabilityResponse.getInvalidLink());
         issue.setIssueTime(linkAvailabilityResponse.getCheckTime());
+        issue.setCheckTime(linkAvailabilityResponse.getCheckTime());
         issue.setCustomer1(linkAvailabilityResponse.getSnapshot());
         return issue;
     }
