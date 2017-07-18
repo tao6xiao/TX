@@ -203,7 +203,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         statisticsList.add(statistics);
 
         //获取空白栏目
-//        count = siteChannelServiceHelper.getEmptyChannel(param.getSiteId()).size();
+//        count = siteChannelServiceHelper.getEmptyChannel(param.getSiteId()).size();TODO
         count = 0;
         statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL.getCode(), count);
         statisticsList.add(statistics);
@@ -326,7 +326,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             buildNotInTimeChnls(update, siteId, notInTimeChnls);
         }
         monthUpdateResponse.setUpdateNotInTimeChnl(notInTimeChnls);
-//        buildEmptyChnls(siteId, emptyChnls);
+//        buildEmptyChnls(siteId, emptyChnls);TODO
         monthUpdateResponse.setEmptyChnl(emptyChnls);
         return monthUpdateResponse;
     }
