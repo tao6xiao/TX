@@ -4,6 +4,8 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -11,6 +13,8 @@ import java.util.Objects;
 /**
  * Created by linwei on 2017/6/15.
  */
+@Component
+@Scope("prototype")
 @Slf4j
 public class DepDocMultiCounterResponse extends DocMultiCounterResponse{
 
