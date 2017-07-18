@@ -1,9 +1,10 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.dao.*;
+import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.dao.WkAllStatsMapper;
+import com.trs.gov.kpi.dao.WkIssueMapper;
+import com.trs.gov.kpi.dao.WkSiteDetailMapper;
+import com.trs.gov.kpi.dao.WkSiteManagementMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
@@ -80,7 +81,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         }
 
         QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
-        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(WkSiteTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int itemCount = wkSiteManagementMapper.selectAllSiteCount(filter);
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
