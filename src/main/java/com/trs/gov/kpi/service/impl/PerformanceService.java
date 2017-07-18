@@ -105,7 +105,7 @@ public class PerformanceService {
         }
 
         //办事指南要素的完整性、准确性
-        SGStatistics sgStatistics = sgService.getSGCount(param);
+        SGStatistics sgStatistics = null;// sgService.getSGCount(param);
         int handleIssueCount = 0;
         if (sgStatistics != null) {
             handleIssueCount = sgStatistics.getAbandonedCounts();
