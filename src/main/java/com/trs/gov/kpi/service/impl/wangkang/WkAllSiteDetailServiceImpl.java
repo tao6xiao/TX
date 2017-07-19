@@ -103,15 +103,16 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             filterTo.addCond(Constants.DB_FIELD_CHECK_ID, wkIssue.getCheckId());
             WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filterTo);
 
-            wkIndexLinkIssue.setSiteId(wkIssue.getSiteId());
-            wkIndexLinkIssue.setSiteName(siteName);
-            wkIndexLinkIssue.setInvalidLinkCount(wkAllStats.getInvalidLink());
-            wkIndexLinkIssue.setContentErrorCount(wkAllStats.getErrorInfo());
-            wkIndexLinkIssue.setOverSpeedCount(wkAllStats.getAvgSpeed());
-            wkIndexLinkIssue.setUpdateContentCount(wkAllStats.getUpdateContent());
+            if (wkAllStats != null) {
+                wkIndexLinkIssue.setSiteId(wkIssue.getSiteId());
+                wkIndexLinkIssue.setSiteName(siteName);
+                wkIndexLinkIssue.setInvalidLinkCount(wkAllStats.getInvalidLink());
+                wkIndexLinkIssue.setContentErrorCount(wkAllStats.getErrorInfo());
+                wkIndexLinkIssue.setOverSpeedCount(wkAllStats.getAvgSpeed());
+                wkIndexLinkIssue.setUpdateContentCount(wkAllStats.getUpdateContent());
 
-            wkIndexLinkIssueList.add(wkIndexLinkIssue);
-
+                wkIndexLinkIssueList.add(wkIndexLinkIssue);
+            }
         }
 
 //        // TODO 处理排序
