@@ -166,7 +166,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     @Override
     public boolean existLinkAvailability(Integer siteId, String invalidLink) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE.value);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addCond(IssueTableField.SITE_ID, siteId);
