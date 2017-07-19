@@ -61,4 +61,31 @@ public class WkIssueServiceImpl implements WkIssueService {
         filter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         return wkIssueMapper.select(filter);
     }
+
+    @Override
+    public int getTyposCount(Integer siteId, Integer checkId) {
+        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addCond(WkIssueTableField.SUBTYPE_ID, Types.InfoErrorIssueType.TYPOS.value);
+        return commonMapper.count(filter);
+    }
+
+    @Override
+    public int getSensitiveWordsCount(Integer siteId, Integer checkId) {
+        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addCond(WkIssueTableField.SUBTYPE_ID, Types.InfoErrorIssueType.SENSITIVE_WORDS.value);
+        return commonMapper.count(filter);
+    }
+
+    @Override
+    public int getPoliticsCount(Integer siteId, Integer checkId) {
+        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addCond(WkIssueTableField.SUBTYPE_ID, Types.InfoErrorIssueType.POLITICS.value);
+        return commonMapper.count(filter);
+    }
 }

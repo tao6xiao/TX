@@ -19,7 +19,6 @@ import com.trs.gov.kpi.utils.DBUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import sun.rmi.runtime.Log;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -174,9 +173,29 @@ public class CKMProcessor implements MQListener {
     }
 
     private void calcScoreAndInsert(Integer siteId, Integer checkId, int errorCount) {
+        /**
+         *  SC 内容得分(权值20%)	 	= R123x20%+R4x40%+R5x40%
+         *	R1、2、3：党和领导人名字、党和领导人称谓、党和领导人排序
+         *	R4：敏感词
+         *	R5：错别字
+         *  各项得分计算公式：100(1-ln(R/100+1)) 其中R为次数除以总数后的百分比
+         */
+        double allErrorEount = errorCount;
 
-        int errorCountScore = 100 - errorCount;
+        double typosCount = wkIssueService.getTyposCount(siteId, checkId);
+        double sensitiveWordsCount = wkIssueService.getSensitiveWordsCount(siteId, checkId);
+        double politicsCount = wkIssueService.getPoliticsCount(siteId, checkId);
 
+        double typosR123 = Math.log((typosCount/allErrorEount)/100 + 1);
+        double typosScore = 100 * (1 - typosR123);
+
+        double sensitiveWordsR4 = Math.log((sensitiveWordsCount/allErrorEount)/100 + 1);
+        double sensitiveWordsScore = 100 * (1 - sensitiveWordsR4);
+
+        double politicsR5 = Math.log((politicsCount/allErrorEount)/100 + 1);
+        double politicsScore = 100 * (1 - politicsR5);
+
+        int errorCountScore = (int)(typosScore * 0.2 + sensitiveWordsScore * 0.4 + politicsScore * 0.4);
         if (errorCountScore < 0) {
             errorCountScore = 0;
         }

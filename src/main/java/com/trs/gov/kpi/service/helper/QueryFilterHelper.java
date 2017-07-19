@@ -372,18 +372,18 @@ public class QueryFilterHelper {
         return DateUtil.toString(calendar.getTime());
     }
 
-    /**
-     *  网康查询的filter处理
-     *
-     * @param wkAllSiteDetail
-     * @return
-     */
+        /**
+         *  网康查询的filter处理
+         *
+         * @param wkAllSiteDetail
+         * @return
+         */
     public static QueryFilter toWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
-        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
 
-        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
-            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
-        }
+//        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
+//            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
+//        }
         if ("checkStatus".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
             switch (wkAllSiteDetail.getSearchText()){
                 case("0"):
@@ -404,30 +404,14 @@ public class QueryFilterHelper {
         }
 
         // sort field
-        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
-            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
-            addSort(filter, sortFields);
-        }
+//        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
+//            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
+//            addSort(filter, sortFields);
+//        }
 
         return filter;
     }
 
-//    /**
-//     *  网康模糊查询的filter处理
-//     *
-//     * @param wkAllSiteDetail
-//     * @return
-//     */
-//    public static QueryFilter toScWkFilter(WkScore wkScore){
-//        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
-//        // sort field
-//        if (!StringUtil.isEmpty(wkScore.getSortFields())) {
-//            String[] sortFields = wkScore.getSortFields().trim().split(";");
-//            addSort(filter, sortFields);
-//        }
-//
-//        return filter;
-//    }
 
     /**
      * 把参数转换为查询 wkissue 的 filter

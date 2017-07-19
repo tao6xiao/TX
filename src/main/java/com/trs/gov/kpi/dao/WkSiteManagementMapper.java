@@ -38,7 +38,7 @@ public interface WkSiteManagementMapper {
     Integer getSiteCountByUrl(String siteIndexUrl);
 
     /**
-     * 查询所有网站数量
+     * 查询所有未删除和检查状态不为 0 网站数量
      *
      * @return
      */

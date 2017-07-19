@@ -2,6 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.WkAllStatsMapper">
 
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkAllStats">
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="updateContent" jdbcType="INTEGER" property="total" />
+        <result column="avgSpeed" jdbcType="INTEGER" property="invalidLink" />
+        <result column="errorInfo" jdbcType="INTEGER" property="contentError" />
+        <result column="invalidLink" jdbcType="INTEGER" property="overSpeed" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        checkId, siteId, updateContent, avgSpeed, errorInfo, invalidLink
+    </sql>
+
+
+
     <select id="select" resultType="com.trs.gov.kpi.entity.wangkang.WkAllStats">
         SELECT
         *

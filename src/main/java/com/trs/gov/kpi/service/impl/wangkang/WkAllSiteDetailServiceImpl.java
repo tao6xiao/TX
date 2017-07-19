@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
-import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.Status;
+import com.trs.gov.kpi.constant.WkSiteTableField;
 import com.trs.gov.kpi.dao.WkAllStatsMapper;
 import com.trs.gov.kpi.dao.WkIssueMapper;
 import com.trs.gov.kpi.dao.WkSiteDetailMapper;
@@ -16,7 +18,6 @@ import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.entity.wangkang.WkIssue;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
-import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.wangkang.WkAllSiteDetailService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -49,7 +50,6 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
     private WkAllStatsMapper wkAllStatsMapper;
 
 
-
     @Override
     public List<WkAllSiteScoreResponsed> queryAllSiteScore() {
         List<WkScore> wkScoreList = wkSiteDetailMapper.selectAllSiteScore();
@@ -76,11 +76,11 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
 
     @Override
     public ApiPageData queryAllWkSiteAvailable(WkAllSiteDetailRequest wkAllSiteDetail) {
-        if(!StringUtil.isEmpty(wkAllSiteDetail.getSearchText())){
+        if (!StringUtil.isEmpty(wkAllSiteDetail.getSearchText())) {
             wkAllSiteDetail.setSearchText(StringUtil.escape(wkAllSiteDetail.getSearchText()));
         }
 
-        QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
         filter.addCond(WkSiteTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int itemCount = wkSiteManagementMapper.selectAllSiteCount(filter);
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
@@ -90,21 +90,18 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         Integer isDel = Status.Delete.UN_DELETE.value;
         List<WkIssue> wkIssueList = wkIssueMapper.selectIssueSiteList(isResolved, isDel);
 
-        return new ApiPageData(pager, getWkIndexLinkIssueResponseByIssue(wkIssueList));
-    }
-
-    private List<WkIndexLinkIssueResponse> getWkIndexLinkIssueResponseByIssue(List<WkIssue> wkIssueList){
         List<WkIndexLinkIssueResponse> wkIndexLinkIssueList = new ArrayList<>();
 
-        for (WkIssue wkIssue: wkIssueList) {
+        for (WkIssue wkIssue : wkIssueList) {
             WkIndexLinkIssueResponse wkIndexLinkIssue = new WkIndexLinkIssueResponse();
 
             String siteName = wkSiteManagementService.getSiteNameBySiteId(wkIssue.getSiteId());
 
-            QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
-            filter.addCond(Constants.DB_FIELD_SITE_ID, wkIssue.getSiteId());
-            filter.addCond(Constants.DB_FIELD_CHECK_ID, wkIssue.getCheckId());
-            WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filter);
+//            QueryFilter filterTo = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
+            QueryFilter filterTo = new QueryFilter(Table.WK_ALL_STATS);
+            filterTo.addCond(Constants.DB_FIELD_SITE_ID, wkIssue.getSiteId());
+            filterTo.addCond(Constants.DB_FIELD_CHECK_ID, wkIssue.getCheckId());
+            WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filterTo);
 
             wkIndexLinkIssue.setSiteId(wkIssue.getSiteId());
             wkIndexLinkIssue.setSiteName(siteName);
@@ -114,7 +111,34 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             wkIndexLinkIssue.setUpdateContentCount(wkAllStats.getUpdateContent());
 
             wkIndexLinkIssueList.add(wkIndexLinkIssue);
+
         }
-        return wkIndexLinkIssueList;
+        return new ApiPageData(pager, wkIndexLinkIssueList);
     }
 }
+
+//    private List<WkIndexLinkIssueResponse> getWkIndexLinkIssueResponseByIssue(List<WkIssue> wkIssueList){
+//        List<WkIndexLinkIssueResponse> wkIndexLinkIssueList = new ArrayList<>();
+//
+//        for (WkIssue wkIssue: wkIssueList) {
+//            WkIndexLinkIssueResponse wkIndexLinkIssue = new WkIndexLinkIssueResponse();
+//
+//            String siteName = wkSiteManagementService.getSiteNameBySiteId(wkIssue.getSiteId());
+//
+//            QueryFilter filter = QueryFilterHelper.toWkFilter(wkAllSiteDetail);
+//            filter.addCond(Constants.DB_FIELD_SITE_ID, wkIssue.getSiteId());
+//            filter.addCond(Constants.DB_FIELD_CHECK_ID, wkIssue.getCheckId());
+//            WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filter);
+//
+//            wkIndexLinkIssue.setSiteId(wkIssue.getSiteId());
+//            wkIndexLinkIssue.setSiteName(siteName);
+//            wkIndexLinkIssue.setInvalidLinkCount(wkAllStats.getInvalidLink());
+//            wkIndexLinkIssue.setContentErrorCount(wkAllStats.getErrorInfo());
+//            wkIndexLinkIssue.setOverSpeedCount(wkAllStats.getAvgSpeed());
+//            wkIndexLinkIssue.setUpdateContentCount(wkAllStats.getUpdateContent());
+//
+//            wkIndexLinkIssueList.add(wkIndexLinkIssue);
+//        }
+//        return wkIndexLinkIssueList;
+//    }
+//}

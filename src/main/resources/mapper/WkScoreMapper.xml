@@ -14,7 +14,7 @@
         <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, checkId, siteId, allLink, webLink, imageLink, videoLink, enclosuLink, checkTime
+        id, checkId, siteId, total, invalidLink, contentError, overSpeed, updateContent, checkTime
     </sql>
 
     <select id="select" resultType="com.trs.gov.kpi.entity.wangkang.WkScore">

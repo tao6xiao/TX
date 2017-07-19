@@ -127,8 +127,6 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
     private void calcScoreAndInsert(Integer siteId, Integer checkId, long avgSpeed) throws ParseException {
 
-//        int updateCountScore = updateCount >= 10 ? 100 : updateCount * 100 / 10;
-//        long avgSpeedScore = avgSpeed <= 1000 ? 100 : 100 - (avgSpeed - 1000) / 1000;
         /**
          * T1(性能检测得分)= 100(1-ln(T/10+1) ,T为页面抓取平均耗时是200毫秒的倍数
          */
@@ -155,7 +153,6 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
         double days = ((thisTime - lastTime)/(1000 * 60 * 60 * 24));
 
-//        double daysD = days;
         double updateContentD1 = Math.log(days / 10 + 1);
         double updateD1 = 100 * (1 - updateContentD1);
 
@@ -166,6 +163,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
         double oneWeekUpdateCountD = oneWeekUpdateCount;
         double updateContentD2 = Math.log(oneWeekUpdateCountD / 100 + 1);
         double updateD2 = 100 * updateContentD2;
+        if(updateD2 >= 100){
+            updateD2 = 100;
+        }
 
         int updateCountScore = (int)(updateD1 * 0.5 + updateD2 * 0.5);
 
@@ -173,7 +173,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
         score.setSiteId(siteId);
         score.setCheckId(checkId);
         score.setCheckTime(new Date());
-        score.setOverSpeed((int)avgSpeedScore);
+        score.setOverSpeed(avgSpeedScore);
         score.setUpdateContent(updateCountScore);
 
         wkScoreService.insertOrUpdateUpdateContentAndSpeed(score);

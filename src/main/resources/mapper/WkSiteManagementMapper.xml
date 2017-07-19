@@ -28,6 +28,7 @@
         <include refid="Base_Column_List" />
         from wksite
         where 1 = 1
+        and checkStatus != 0
         <include refid="all_conditions_sql"/>
     </select>
 

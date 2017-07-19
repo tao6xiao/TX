@@ -4,10 +4,8 @@ import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
- * 网站更新数量记录
+ * 网站更新各项指标数量记录
  *
  * Created by li.hao on 2017/7/12.
  */
