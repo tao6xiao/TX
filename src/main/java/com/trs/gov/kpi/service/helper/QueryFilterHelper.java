@@ -379,11 +379,11 @@ public class QueryFilterHelper {
          * @return
          */
     public static QueryFilter toWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
-        QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
 
-//        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
-//            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
-//        }
+        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
+            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
+        }
         if ("checkStatus".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
             switch (wkAllSiteDetail.getSearchText()){
                 case("0"):
@@ -404,10 +404,10 @@ public class QueryFilterHelper {
         }
 
         // sort field
-//        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
-//            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
-//            addSort(filter, sortFields);
-//        }
+        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
+            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
+            addSort(filter, sortFields);
+        }
 
         return filter;
     }

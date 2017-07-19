@@ -113,6 +113,15 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             wkIndexLinkIssueList.add(wkIndexLinkIssue);
 
         }
+
+//        // TODO 处理排序
+//        wkIndexLinkIssueList.sort(new Comparator<WkIndexLinkIssueResponse>() {
+//            @Override
+//            public int compare(WkIndexLinkIssueResponse o1, WkIndexLinkIssueResponse o2) {
+//                return o1.getContentErrorCount() - o2.getContentErrorCount();
+//            }
+//        });
+
         return new ApiPageData(pager, wkIndexLinkIssueList);
     }
 }
