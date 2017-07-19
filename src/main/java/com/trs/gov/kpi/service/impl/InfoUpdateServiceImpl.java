@@ -106,7 +106,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            QueryFilter filter = QueryFilterHelper.toFilter(param);
+            QueryFilter filter = new QueryFilter(Table.ISSUE);
+            filter.addCond(IssueTableField.SITE_ID,param.getSiteId());
             filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
             filter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
             filter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
@@ -255,9 +256,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             infoUpdateResponse.setChnlUrl(infoUpdate.getChnlUrl());
             infoUpdateResponse.setCheckTime(infoUpdate.getIssueTime());
             infoUpdateResponse.setWorkOrderStatus(Status.WorkOrder.valueOf(infoUpdate.getWorkOrderStatus()).getName());
-            if(infoUpdate.getDeptId() == null){
+            if (infoUpdate.getDeptId() == null) {
                 infoUpdateResponse.setDeptName(Constants.EMPTY_STRING);
-            }else {
+            } else {
                 infoUpdateResponse.setDeptName(deptApiService.findDeptById("", infoUpdate.getDeptId()).getGName());
             }
             if (infoUpdate.getSubTypeId() < WARNING_BEGIN_ID) {
