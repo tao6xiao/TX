@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.dao.PerformanceMapper;
+import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -276,9 +277,9 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
             calendar.setTime(new Date());
             calendar.set(Calendar.MONTH, 0);
             calendar.set(Calendar.DAY_OF_MONTH, 1);
-            calendar.set(Calendar.HOUR,0);
-            calendar.set(Calendar.MINUTE,0);
-            calendar.set(Calendar.SECOND,0);
+            calendar.set(Calendar.HOUR, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
             param.setBeginDateTime(DateUtil.toString(calendar.getTime()));
             param.setEndDateTime(DateUtil.toString(new Date()));
         } else if (StringUtil.isEmpty(param.getEndDateTime())) {
@@ -288,13 +289,19 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
             calendar.add(Calendar.YEAR, -1);
             param.setBeginDateTime(DateUtil.toString(calendar.getTime()));
         }
-        List<Performance> performanceList = performanceMapper.getHistoryPerformance(param);
+        List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), null);
         List<HistoryStatistics> list = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        for (Performance performance : performanceList) {
+        for (HistoryDate historyDate : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            historyStatistics.setDoubleValue(performance.getIndex());
-            historyStatistics.setTime(sdf.format(performance.getCheckTime()));
+            param.setBeginDateTime(historyDate.getBeginDate());
+            param.setEndDateTime(historyDate.getEndDate());
+            List<Performance> performanceList = performanceMapper.getHistoryPerformance(param);
+            if (performanceList.isEmpty()) {
+                historyStatistics.setDoubleValue(0.0);
+            } else {
+                historyStatistics.setDoubleValue(performanceList.get(0).getIndex());
+            }
+            historyStatistics.setTime(historyDate.getDate());
             list.add(historyStatistics);
         }
         return list;
