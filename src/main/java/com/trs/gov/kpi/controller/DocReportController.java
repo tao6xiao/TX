@@ -138,8 +138,11 @@ public class DocReportController {
         for (int index = 1; index <= curDay; index++) {
             allMonthReport.put(monthPrefix + String.format("-%02d", index), "0");
         }
-
-        final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", null, null);
+        now.add(Calendar.DAY_OF_MONTH,1);
+        String endDay = DateUtil.toString(now.getTime());
+        now.set(Calendar.DAY_OF_MONTH,1);
+        String beginDay = DateUtil.toString(now.getTime());
+        final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
         allMonthReport.putAll(reportData);
         return allMonthReport;
     }
