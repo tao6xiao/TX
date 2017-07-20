@@ -69,16 +69,6 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     }
 
     @Override
-    public SiteManagement getSiteContentBySiteName(String siteName, Integer isDel) {
-        return wkSiteManagementMapper.getSiteContentBySiteName(siteName, isDel);
-    }
-
-    @Override
-    public SiteManagement getSiteContentByUrl(String siteIndexUrl, Integer isDel) {
-        return wkSiteManagementMapper.getSiteContentByUrl(siteIndexUrl, isDel);
-    }
-
-    @Override
     public ApiPageData queryAllSite(WkAllSiteDetailRequest wkAllSiteDetail) throws RemoteException {
 
         if(!StringUtil.isEmpty(wkAllSiteDetail.getSearchText())){
