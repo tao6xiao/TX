@@ -87,7 +87,8 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
+            QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+            queryFilter.addCond(IssueTableField.SITE_ID, param.getSiteId());
             queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
             queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
             queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
@@ -146,9 +147,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             linkAvailabilityResponse.setInvalidLink(link.getInvalidLink());
             linkAvailabilityResponse.setSnapshot(link.getSnapshot());
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());
-            if(link.getDeptId() == null){
+            if (link.getDeptId() == null) {
                 linkAvailabilityResponse.setDeptName(Constants.EMPTY_STRING);
-            }else {
+            } else {
                 linkAvailabilityResponse.setDeptName(deptApiService.findDeptById("", link.getDeptId()).getGName());
             }
             list.add(linkAvailabilityResponse);

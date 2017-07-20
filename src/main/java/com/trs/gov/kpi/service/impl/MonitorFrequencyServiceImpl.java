@@ -106,26 +106,27 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {
             return;
         }
-
+        Integer siteId = monitorFrequencyList.get(0).getSiteId();
         for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
             if (monitorFrequency.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
-                schedulerService.removeCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
-                        .CHECK_LINK);
-                schedulerService.addCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
-                        .CHECK_LINK);
-            } else if (monitorFrequency.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY
-                    .getTypeId()) {
-                schedulerService.removeCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
-                        .CHECK_HOME_PAGE);
-                schedulerService.addCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
-                        .CHECK_HOME_PAGE);
-            } else if (monitorFrequency.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId
-                    ()) {
-                schedulerService.removeCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
-                        .CHECK_CONTENT);
-                schedulerService.addCheckJob(monitorFrequency.getSiteId(), EnumCheckJobType
-                        .CHECK_CONTENT);
+                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_LINK);
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_LINK);
+            } else if (monitorFrequency.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY.getTypeId()) {
+                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+            } else if (monitorFrequency.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
+                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_CONTENT);
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_CONTENT);
             }
         }
+        //注册绩效指数计算调度器
+        schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
+        //注册报表按节点生成调度器
+        schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
+        //注册报表按区间生成调度器
+        schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
     }
 }

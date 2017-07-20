@@ -59,10 +59,10 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+//        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
+//                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+//            throw new BizException(Authority.NO_AUTHORITY);
+//        }
         ParamCheckUtil.paramCheck(param);
         return infoUpdateService.getIssueHistoryCount(param);
     }

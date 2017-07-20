@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.InfoErrorOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
@@ -83,7 +84,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
-            QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
+            QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+            queryFilter.addCond(IssueTableField.SITE_ID, param.getSiteId());
             queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
             queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
             queryFilter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
@@ -119,9 +121,9 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             infoErrorResponse.setIssueTypeName(Types.InfoErrorIssueType.valueOf(infoError.getSubTypeId()).getName());
             infoErrorResponse.setSnapshot(infoError.getSnapshot());
             infoErrorResponse.setCheckTime(infoError.getCheckTime());
-            if(infoError.getDeptId() == null){
+            if (infoError.getDeptId() == null) {
                 infoErrorResponse.setDeptName(Constants.EMPTY_STRING);
-            }else {
+            } else {
                 infoErrorResponse.setDeptName(deptApiService.findDeptById("", infoError.getDeptId()).getGName());
             }
             if (infoError.getErrorDetail() != null) {
