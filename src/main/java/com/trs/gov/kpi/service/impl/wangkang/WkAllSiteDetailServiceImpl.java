@@ -54,23 +54,31 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         List<WkScore> wkScoreList = wkSiteDetailMapper.selectAllSiteScore();
 
         List<WkAllSiteScoreResponsed> wkAllSiteScoreList = new ArrayList<>();
-        for (WkScore wkScore : wkScoreList) {
-            WkAllSiteScoreResponsed wkAllSiteScore = new WkAllSiteScoreResponsed();
-            SiteManagement siteManagement = wkSiteManagementService.getSiteManagementBySiteId(wkScore.getSiteId());
+        if (!wkScoreList.isEmpty()){
+            for (WkScore wkScore : wkScoreList) {
+                WkAllSiteScoreResponsed wkAllSiteScore = new WkAllSiteScoreResponsed();
 
-            wkAllSiteScore.setSiteId(wkScore.getSiteId());
-            wkAllSiteScore.setSiteName(wkSiteManagementService.getSiteNameBySiteId(wkScore.getSiteId()));
-            wkAllSiteScore.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
-            wkAllSiteScore.setDeptLatLng(siteManagement.getDeptLatLng());
-            wkAllSiteScore.setDeptAddress(siteManagement.getDeptAddress());
-            wkAllSiteScore.setAutoCheckType(siteManagement.getAutoCheckType());
-            wkAllSiteScore.setCheckTime(siteManagement.getCheckTime());
-            wkAllSiteScore.setCheckStatus(siteManagement.getCheckStatus());
-            wkAllSiteScore.setTotal(wkScore.getTotal());
+                Integer isDel = 0;
+                SiteManagement siteManagement = wkSiteManagementService.getSiteManagementBySiteId(wkScore.getSiteId(), isDel);
 
-            wkAllSiteScoreList.add(wkAllSiteScore);
+                if(siteManagement != null){
+                wkAllSiteScore.setSiteId(wkScore.getSiteId());
+                wkAllSiteScore.setSiteName(wkSiteManagementService.getSiteNameBySiteId(wkScore.getSiteId()));
+                wkAllSiteScore.setSiteIndexUrl(siteManagement.getSiteIndexUrl());
+                wkAllSiteScore.setDeptLatLng(siteManagement.getDeptLatLng());
+                wkAllSiteScore.setDeptAddress(siteManagement.getDeptAddress());
+                wkAllSiteScore.setAutoCheckType(siteManagement.getAutoCheckType());
+                wkAllSiteScore.setCheckTime(siteManagement.getCheckTime());
+                wkAllSiteScore.setCheckStatus(siteManagement.getCheckStatus());
+                wkAllSiteScore.setTotal(wkScore.getTotal());
+
+                wkAllSiteScoreList.add(wkAllSiteScore);
+                }
+            }
+            return wkAllSiteScoreList;
+        }else{
+            return Collections.EMPTY_LIST;
         }
-        return wkAllSiteScoreList;
     }
 
     @Override

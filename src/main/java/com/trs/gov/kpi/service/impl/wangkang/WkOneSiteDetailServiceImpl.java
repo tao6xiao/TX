@@ -69,9 +69,6 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     @Resource
     WkSiteManagementMapper wkSiteManagementMapper;
 
-//    @Resource
-//    private WkCheckTimeMapper wkCheckTimeMapper;
-
     @Resource
     private CommonMapper commonMapper;
 
@@ -112,27 +109,6 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             return null;
         }
     }
-//
-//    @Override
-//    public List<WkOneSiteScoreResponse> getOneSiteScoreListBySiteId(Integer siteId) {
-//        List<WkScore> wkScoreList = wkSiteDetailMapper.getOneSiteScoreListBySiteId(siteId);
-//        List<WkOneSiteScoreResponse> wkOneSiteScoreList = new ArrayList<>();
-//
-//        if(!wkScoreList.isEmpty()){
-//            for (WkScore wkScore: wkScoreList) {
-//            WkOneSiteScoreResponse wkOneSiteScore = new WkOneSiteScoreResponse();
-//                wkOneSiteScore.setCheckTime(wkScore.getCheckTime());
-//                wkOneSiteScore.setTotal(wkScore.getTotal());
-//                wkOneSiteScore.setContentError(wkScore.getContentError());
-//                wkOneSiteScore.setInvalidLink(wkScore.getInvalidLink());
-//                wkOneSiteScore.setOverSpeed(wkScore.getOverSpeed());
-//                wkOneSiteScore.setUpdateContent(wkScore.getUpdateContent());
-//
-//                wkOneSiteScoreList.add(wkOneSiteScore);
-//            }
-//        }
-//        return wkOneSiteScoreList;
-//    }
 
     /*---链接可用性---*/
     @Override
@@ -164,14 +140,18 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     private List<WkStatsCountResponse> getWkStatsCountHistoryResponses(Integer siteId, Integer checkId, Integer typeId) {
         List<WkIssueCount> wkIssueCountList = wkIssueCountMapper.getlinkAndContentHistoryStatsBySiteId(siteId, checkId, typeId);
         List<WkStatsCountResponse> wkStatsCountResponseList = new ArrayList<>();
-        for (WkIssueCount wkIssueCount : wkIssueCountList) {
-            WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
-            wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
-            wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
-            wkStatsCountResponse.setCheckTime(wkIssueCount.getCheckTime());
-            wkStatsCountResponseList.add(wkStatsCountResponse);
+        if(!wkIssueCountList.isEmpty()){
+            for (WkIssueCount wkIssueCount : wkIssueCountList) {
+                WkStatsCountResponse wkStatsCountResponse = new WkStatsCountResponse();
+                wkStatsCountResponse.setHandleIssue(wkIssueCount.getIsResolved());
+                wkStatsCountResponse.setUnhandleIssue(wkIssueCount.getUnResolved());
+                wkStatsCountResponse.setCheckTime(wkIssueCount.getCheckTime());
+                wkStatsCountResponseList.add(wkStatsCountResponse);
+            }
+            return wkStatsCountResponseList;
+        }else{
+            return Collections.EMPTY_LIST;
         }
-        return wkStatsCountResponseList;
     }
 
     @Override
@@ -235,7 +215,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             }
             return wkIssueResponseList;
         }else{
-            return wkIssueResponseList = Collections.EMPTY_LIST;
+            return Collections.EMPTY_LIST;
         }
     }
 
@@ -513,7 +493,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
 
         // 空行
         beginRow++;
-        SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId);
+        SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId, 0);
         addRow(sheet, beginRow, "网站名", site.getSiteName());
         beginRow++;
         addRow(sheet, beginRow, "URL地址", site.getSiteIndexUrl());
@@ -555,23 +535,27 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
     private List<WkIssueResponse> toWkContentIssueResponseByWkIssueList(List<WkIssue> wkIssueList){
         List<WkIssueResponse> wkIssueResponseList = new ArrayList<>();
 
-        for (WkIssue wkIssue: wkIssueList) {
-            WkIssueResponse wkIssueResponse = new WkIssueResponse();
+        if (!wkIssueList.isEmpty()){
+            for (WkIssue wkIssue: wkIssueList) {
+                WkIssueResponse wkIssueResponse = new WkIssueResponse();
 
-            wkIssueResponse.setId(wkIssue.getId());
-            wkIssueResponse.setChnlName(wkIssue.getChnlName());
-            wkIssueResponse.setSubTypeId(wkIssue.getSubTypeId());
+                wkIssueResponse.setId(wkIssue.getId());
+                wkIssueResponse.setChnlName(wkIssue.getChnlName());
+                wkIssueResponse.setSubTypeId(wkIssue.getSubTypeId());
 
-            wkIssueResponse.setSubTypeName(Types.InfoErrorIssueType.valueOf(wkIssue.getSubTypeId()).getDisplayName());
-            wkIssueResponse.setErrorInfo(wkIssue.getDetailInfo());
+                wkIssueResponse.setSubTypeName(Types.InfoErrorIssueType.valueOf(wkIssue.getSubTypeId()).getDisplayName());
+                wkIssueResponse.setErrorInfo(wkIssue.getDetailInfo());
 
-            wkIssueResponse.setUrl(wkIssue.getUrl());
-            wkIssueResponse.setParentUrl(wkIssue.getParentUrl());
-            wkIssueResponse.setLocationUrl(wkIssue.getLocationUrl());
+                wkIssueResponse.setUrl(wkIssue.getUrl());
+                wkIssueResponse.setParentUrl(wkIssue.getParentUrl());
+                wkIssueResponse.setLocationUrl(wkIssue.getLocationUrl());
 
-            wkIssueResponseList.add(wkIssueResponse);
+                wkIssueResponseList.add(wkIssueResponse);
+            }
+            return wkIssueResponseList;
+        }else{
+            return Collections.EMPTY_LIST;
         }
-        return wkIssueResponseList;
     }
 
 }

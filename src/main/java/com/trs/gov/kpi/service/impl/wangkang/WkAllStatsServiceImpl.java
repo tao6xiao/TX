@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,8 +65,10 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
                     wkAvgSpeedRespList.add(WkAvgSpeedAndUpdateContent);
                 }
             }
+            return wkAvgSpeedRespList;
+        }else{
+            return Collections.EMPTY_LIST;
         }
-        return wkAvgSpeedRespList;
     }
 
     private List<WkCheckTime> getWkCheckTime(Integer siteId, Integer checkId) {
@@ -96,9 +99,10 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
                     wkUpdateContentList.add(WkUpdateContent);
                 }
             }
+            return wkUpdateContentList;
+        }else{
+            return Collections.EMPTY_LIST;
         }
-
-        return wkUpdateContentList;
     }
 
     @Override
