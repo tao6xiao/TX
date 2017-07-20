@@ -61,11 +61,11 @@ public class AuthorityServiceImpl implements AuthorityService {
                 return JSON.parseObject(result.getData(), Boolean.class);
             } else {
                 log.error("failed to findRight, error: " + response);
-                throw new RemoteException("查找权限失败！");
+                throw new RemoteException("查找指定oprkeys的权限失败！");
             }
         } catch (IOException e) {
             log.error("failed findRight", e);
-            throw new RemoteException("查找权限失败！", e);
+            throw new RemoteException("查找指定oprkeys的权限失败！", e);
         }
     }
 
@@ -89,11 +89,11 @@ public class AuthorityServiceImpl implements AuthorityService {
                 return Authority.SITE_ROLE_ID;
             } else {
                 log.error("failed to findRight, error: " + response);
-                throw new RemoteException("查找权限失败！");
+                throw new RemoteException("查找用户所属角色失败！");
             }
         } catch (IOException e) {
             log.error("failed findRight", e);
-            throw new RemoteException("查找权限失败！", e);
+            throw new RemoteException("查找用户所属角色失败！", e);
         }
     }
 

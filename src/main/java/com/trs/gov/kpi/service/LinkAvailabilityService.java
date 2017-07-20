@@ -37,7 +37,7 @@ public interface LinkAvailabilityService {
 
 
     /**
-     * 插入链接不可用的问题
+     * 判断链接不可用是否已存在
      *
      */
     boolean existLinkAvailability(Integer siteId, String invalidLink);

@@ -39,7 +39,7 @@ public class OuterApiUtil {
         ApiResult result = null;
         try {
             result = OuterApiUtil.toResultObj(ret);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("invalid result msg: " + ret + ", response: " + response, e);
             throw new RemoteException(errMsg + "失败！");
         }

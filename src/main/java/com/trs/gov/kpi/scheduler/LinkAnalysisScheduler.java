@@ -90,12 +90,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
 
                 List<ReplySpeed> pageSpaceList = webPageMapper.selectReplySpeed(queryFilter);
-                if (pageSpaceList.isEmpty()) {
-                    replySpeedTo.setSiteId(siteId);
-                    webPageService.insertReplyspeed(replySpeedTo);
-                } else {
-                    webPageMapper.updateReplySpeed(replySpeedTo);
-                }
+                updateOrInsertSpeed(pageSpaceList, replySpeedTo);
             }
 
             //获取过大页面信息；信息入库并去除重复数据和更新数据库信息
@@ -108,12 +103,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
 
                 List<PageSpace> pageSpaceList = webPageMapper.selectPageSpace(queryFilter);
-                if (pageSpaceList.isEmpty()) {
-                    pageSpaceTo.setSiteId(siteId);
-                    webPageService.insertPageSpace(pageSpaceTo);
-                } else {
-                    webPageMapper.updatePageSpace(pageSpaceTo);
-                }
+                updateOrInsertSpace(pageSpaceList, pageSpaceTo);
             }
 
             //获取过长URL页面信息；信息入库并去除重复数据和更新数据库信息
@@ -126,13 +116,8 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 queryFilter.addCond(WebpageTableField.CHNL_ID, urlLenghtTo.getChnlId());
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
 
-                List<PageSpace> urlLenghtList = webPageMapper.selectPageSpace(queryFilter);
-                if (urlLenghtList.isEmpty()) {
-                    urlLenghtTo.setSiteId(siteId);
-                    webPageService.insertUrlLength(urlLenghtTo);
-                } else {
-                    webPageMapper.updateUrlLength(urlLenghtTo);
-                }
+                List<UrlLength> urlLenghtList = webPageMapper.selectUrlLength(queryFilter);
+                updateOrInsertLength(urlLenghtList, urlLenghtTo);
             }
 
             //获取过深页面信息；信息入库并去除重复数据和更新数据库信息
@@ -144,13 +129,8 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 queryFilter.addCond(WebpageTableField.CHNL_ID, pageDepthTo.getChnlId());
                 queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
 
-                List<PageSpace> urlLenghtList = webPageMapper.selectPageSpace(queryFilter);
-                if (urlLenghtList.isEmpty()) {
-                    pageDepthTo.setSiteId(siteId);
-                    webPageService.insertPageDepth(pageDepthTo);
-                } else {
-                    webPageMapper.updatePageDepth(pageDepthTo);
-                }
+                List<PageDepth> pageDepthList = webPageMapper.selectPageDepth(queryFilter);
+                updateOrInsertDepth(pageDepthList, pageDepthTo);
             }
 
         } catch (Exception e) {
@@ -160,6 +140,42 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         }
     }
 
+    private void updateOrInsertSpeed(List<ReplySpeed> pageSpaceList, ReplySpeed replySpeedTo) {
+        if (pageSpaceList.isEmpty()) {
+            replySpeedTo.setSiteId(siteId);
+            webPageService.insertReplyspeed(replySpeedTo);
+        } else {
+            webPageMapper.updateReplySpeed(replySpeedTo);
+        }
+    }
+
+    private void updateOrInsertSpace(List<PageSpace> pageSpaceList, PageSpace pageSpaceTo) {
+        if (pageSpaceList.isEmpty()) {
+            pageSpaceTo.setSiteId(siteId);
+            webPageService.insertPageSpace(pageSpaceTo);
+        } else {
+            webPageMapper.updatePageSpace(pageSpaceTo);
+        }
+    }
+
+    private void updateOrInsertLength(List<UrlLength> urlLenghtList, UrlLength urlLenghtTo) {
+        if (urlLenghtList.isEmpty()) {
+            urlLenghtTo.setSiteId(siteId);
+            webPageService.insertUrlLength(urlLenghtTo);
+        } else {
+            webPageMapper.updateUrlLength(urlLenghtTo);
+        }
+    }
+
+    private void updateOrInsertDepth(List<PageDepth> pageDepthList, PageDepth pageDepthTo) {
+        if (pageDepthList.isEmpty()) {
+            pageDepthTo.setSiteId(siteId);
+            webPageService.insertPageDepth(pageDepthTo);
+        } else {
+            webPageMapper.updatePageDepth(pageDepthTo);
+        }
+    }
+    
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
 
     private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
