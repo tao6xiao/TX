@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl.wangkang;
 
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.WkAllStatsTableField;
+import com.trs.gov.kpi.constant.WkSiteIndexStatsTableField;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WkAllStatsMapper;
 import com.trs.gov.kpi.dao.WkCheckTimeMapper;
@@ -12,7 +13,9 @@ import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedResponse;
 import com.trs.gov.kpi.entity.responsedata.WkUpdateContentResponse;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
+import com.trs.gov.kpi.entity.wangkang.WkSiteIndexStats;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
+import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import com.trs.gov.kpi.utils.DBUtil;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,9 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
 
     @Resource
     private WkCheckTimeMapper wkCheckTimeMapper;
+
+    @Resource
+    private WkSiteManagementService wkSiteManagementService;
 
     /*---平均访问速度---*/
     @Override
@@ -139,21 +145,37 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
 
     @Override
     public WkAllStats getLastTimeCheckBySiteIdAndCheckId(Integer siteId, Integer checkId) {
-//        QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
-//        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
-//        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
-//        WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filter);
-//
-//
-//
-//        if (commonMapper.count(filter) > 0) {
-//            DBUpdater updater = new DBUpdater(Table.WK_ALL_STATS.getTableName());
-//            updater.addField(WkAllStatsTableField.AVG_SPEED, wkAllStats.getAvgSpeed());
-//            updater.addField(WkAllStatsTableField.UPDATE_CONTENT, wkAllStats.getUpdateContent());
-//            commonMapper.update(updater, filter);
-//        } else {
-//            commonMapper.insert(DBUtil.toRow(wkAllStats));
-//        }
+        QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+        WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filter);
+
+        String siteName = wkSiteManagementService.getSiteNameBySiteId(siteId);
+
+        QueryFilter filterTo = new QueryFilter(Table.WK_SITE_INDEX_STATS);
+        filterTo.addCond(WkSiteIndexStatsTableField.SITE_ID, siteId);
+        if (commonMapper.count(filterTo) > 0) {
+            DBUpdater updater = new DBUpdater(Table.WK_SITE_INDEX_STATS.getTableName());
+            updater.addField(WkSiteIndexStatsTableField.CHECK_ID, wkAllStats.getCheckId());
+            updater.addField(WkSiteIndexStatsTableField.SITE_NAME, siteName);
+            updater.addField(WkSiteIndexStatsTableField.OVER_SPEED, wkAllStats.getAvgSpeed());
+            updater.addField(WkSiteIndexStatsTableField.UPDATE_CONTENT, wkAllStats.getUpdateContent());
+            updater.addField(WkSiteIndexStatsTableField.INVALID_LINK, wkAllStats.getInvalidLink());
+            updater.addField(WkSiteIndexStatsTableField.CONTENT_ERROR, wkAllStats.getErrorInfo());
+
+            commonMapper.update(updater, filterTo);
+        } else {
+            WkSiteIndexStats wkSiteIndexStats = new WkSiteIndexStats();
+            wkSiteIndexStats.setSiteId(wkAllStats.getSiteId());
+            wkSiteIndexStats.setCheckId(wkAllStats.getCheckId());
+            wkSiteIndexStats.setSiteName(siteName);
+            wkSiteIndexStats.setOverSpeed(wkAllStats.getAvgSpeed());
+            wkSiteIndexStats.setUpdateContent(wkAllStats.getUpdateContent());
+            wkSiteIndexStats.setContentError(wkAllStats.getErrorInfo());
+            wkSiteIndexStats.setInvalidLink(wkAllStats.getInvalidLink());
+
+            commonMapper.insert(DBUtil.toRow(wkSiteIndexStats));
+        }
         return null;
     }
 

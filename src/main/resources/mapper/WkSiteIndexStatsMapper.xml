@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.WkSiteIndexStatsMapper">
+
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkSiteIndexStats">
+        <result column="checkId" jdbcType="INTEGER" property="checkId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="siteName" jdbcType="VARCHAR" property="siteName" />
+        <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
+        <result column="overSpeed" jdbcType="INTEGER" property="overSpeed" />
+        <result column="contentError" jdbcType="INTEGER" property="contentError" />
+        <result column="invalidLink" jdbcType="INTEGER" property="invalidLink" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        checkId, siteId, siteName, updateContent, avgSpeed, contentError, invalidLink
+    </sql>
+
+
+    <select id="select" resultType="com.trs.gov.kpi.entity.wangkang.WkSiteIndexStats">
+        SELECT
+        *
+        FROM ${filter.table.tableName} WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.CommonMapper.all_conditions_sql"/>
+    </select>
+
+
+</mapper>

@@ -5,10 +5,10 @@
     <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.wangkang.WkAllStats">
         <result column="checkId" jdbcType="INTEGER" property="checkId" />
         <result column="siteId" jdbcType="INTEGER" property="siteId" />
-        <result column="updateContent" jdbcType="INTEGER" property="total" />
-        <result column="avgSpeed" jdbcType="INTEGER" property="invalidLink" />
-        <result column="errorInfo" jdbcType="INTEGER" property="contentError" />
-        <result column="invalidLink" jdbcType="INTEGER" property="overSpeed" />
+        <result column="updateContent" jdbcType="INTEGER" property="updateContent" />
+        <result column="avgSpeed" jdbcType="INTEGER" property="avgSpeed" />
+        <result column="errorInfo" jdbcType="INTEGER" property="errorInfo" />
+        <result column="invalidLink" jdbcType="INTEGER" property="invalidLink" />
     </resultMap>
     <sql id="Base_Column_List">
         checkId, siteId, updateContent, avgSpeed, errorInfo, invalidLink

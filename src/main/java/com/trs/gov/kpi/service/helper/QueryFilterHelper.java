@@ -411,7 +411,27 @@ public class QueryFilterHelper {
 
         return filter;
     }
+    /**
+     *  网康查询网站指标的filter处理
+     *
+     * @param wkAllSiteDetail
+     * @return
+     */
+    public static QueryFilter toStatsWkFilter(WkAllSiteDetailRequest wkAllSiteDetail){
+        QueryFilter filter = new QueryFilter(Table.WK_SITE_INDEX_STATS);
 
+        if ("siteName".equalsIgnoreCase(wkAllSiteDetail.getSearchField())){
+            filter.addCond("siteName", "%" + wkAllSiteDetail.getSearchText() + "%").setLike(true);
+        }
+
+        // sort field
+        if (!StringUtil.isEmpty(wkAllSiteDetail.getSortFields())) {
+            String[] sortFields = wkAllSiteDetail.getSortFields().trim().split(";");
+            addSort(filter, sortFields);
+        }
+
+        return filter;
+    }
 
     /**
      * 把参数转换为查询 wkissue 的 filter
