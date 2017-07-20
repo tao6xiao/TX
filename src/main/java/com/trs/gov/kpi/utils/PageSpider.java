@@ -17,6 +17,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -174,6 +176,7 @@ public class PageSpider {
     private Downloader recordUnavailableUrlDownloader = new HttpClientDownloader() {
 
         ThreadLocal<Boolean> isUrlAvailable = new ThreadLocal<>();
+        ThreadLocal<String> contentType = new ThreadLocal<>();
 
         @Override
         public Page download(Request request, Task task) {
@@ -238,7 +241,11 @@ public class PageSpider {
             return result;
         }
 
-
+        @Override
+        protected Page handleResponse(Request request, String charset, HttpResponse httpResponse, Task task) throws IOException {
+            contentType.set(httpResponse.getEntity().getContentType().getValue());
+            return super.handleResponse(request, charset, httpResponse, task);
+        }
 
         @Override
         public void onSuccess(Request request) {
