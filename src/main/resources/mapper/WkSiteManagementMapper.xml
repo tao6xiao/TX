@@ -28,7 +28,6 @@
         <include refid="Base_Column_List" />
         from wksite
         where 1 = 1
-        and checkStatus != 0
         <include refid="all_conditions_sql"/>
     </select>
 
@@ -37,7 +36,6 @@
         count(1)
         from wksite
         where 1 = 1
-        and checkStatus != 0
         <include refid="all_conditions_sql"/>
     </select>
 
@@ -48,18 +46,36 @@
         where siteId = #{siteId,jdbcType=INTEGER}
     </select>
 
-    <select id="getSiteCountBySiteName" parameterType="java.lang.String" resultType="int">
+    <select id="getSiteCountBySiteName" resultType="int">
         select
         count(1)
         from wksite
         where siteName = #{siteName,jdbcType=INTEGER}
+        and isDel = #{isDel,jdbcType=INTEGER}
     </select>
 
-    <select id="getSiteCountByUrl" parameterType="java.lang.String" resultType="int">
+    <select id="getSiteCountByUrl" resultType="int">
         select
         count(1)
         from wksite
         where siteIndexUrl = #{siteIndexUrl,jdbcType=INTEGER}
+        and isDel = #{isDel,jdbcType=INTEGER}
+    </select>
+
+    <select id="getSiteContentByUrl"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wksite
+        where siteIndexUrl = #{siteIndexUrl,jdbcType=INTEGER}
+        and isDel = #{isDel,jdbcType=INTEGER}
+    </select>
+
+    <select id="getSiteContentBySiteName"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wksite
+        where siteName = #{siteName,jdbcType=INTEGER}
+        and isDel = #{isDel,jdbcType=INTEGER}
     </select>
 
     <select id="getIndexpageBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -93,6 +109,9 @@
             </if>
             <if test="checkStatus != null">
                 checkStatus = #{checkStatus,jdbcType=INTEGER},
+            </if>
+            <if test="isDel != null">
+                isDel = #{isDel,jdbcType=INTEGER},
             </if>
         </set>
         where siteId = #{siteId,jdbcType=INTEGER}

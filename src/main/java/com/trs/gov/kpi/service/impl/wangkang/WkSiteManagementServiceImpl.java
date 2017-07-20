@@ -59,13 +59,23 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     }
 
     @Override
-    public Integer getSiteCountBySiteName(String siteName) {
-        return wkSiteManagementMapper.getSiteCountBySiteName(siteName);
+    public Integer getSiteCountBySiteName(String siteName, Integer isDel) {
+        return wkSiteManagementMapper.getSiteCountBySiteName(siteName, isDel);
     }
 
     @Override
-    public Integer getSiteCountByUrl(String siteIndexUrl) {
-        return wkSiteManagementMapper.getSiteCountByUrl(siteIndexUrl);
+    public Integer getSiteCountByUrl(String siteIndexUrl, Integer isDel) {
+        return wkSiteManagementMapper.getSiteCountByUrl(siteIndexUrl, isDel);
+    }
+
+    @Override
+    public SiteManagement getSiteContentBySiteName(String siteName, Integer isDel) {
+        return wkSiteManagementMapper.getSiteContentBySiteName(siteName, isDel);
+    }
+
+    @Override
+    public SiteManagement getSiteContentByUrl(String siteIndexUrl, Integer isDel) {
+        return wkSiteManagementMapper.getSiteContentByUrl(siteIndexUrl, isDel);
     }
 
     @Override
@@ -137,7 +147,6 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
                     wkSiteManagementResponse.setTotal(score.getTotal());
                 }
             }
-
             wkSiteResponseList.add(wkSiteManagementResponse);
         }
         return wkSiteResponseList;

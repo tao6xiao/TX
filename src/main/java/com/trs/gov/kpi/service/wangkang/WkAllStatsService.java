@@ -51,6 +51,13 @@ public interface WkAllStatsService {
      * @param siteId
      * @return
      */
-    Integer getLastCheckId(Integer siteId, Integer curCheckId);
+    Integer getLastCheckId(Integer siteId, Integer checkId);
 
+    /**
+     * 根据网站名称和检查编号查询最近一次网站指标
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    WkAllStats getLastTimeCheckBySiteIdAndCheckId(Integer siteId, Integer checkId);
 }
