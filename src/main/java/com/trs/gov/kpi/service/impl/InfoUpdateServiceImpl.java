@@ -205,7 +205,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
         //获取空白栏目
         count = siteChannelServiceHelper.getEmptyChannel(param.getSiteId()).size();
-        count = 0;
         statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL.getCode(), count);
         statisticsList.add(statistics);
 
