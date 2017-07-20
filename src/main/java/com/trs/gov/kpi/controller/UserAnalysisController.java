@@ -1,9 +1,12 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.ids.ContextHelper;
+import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.List;
 
 /**
  * Created by ranwei on 2017/6/13.
@@ -25,28 +27,47 @@ public class UserAnalysisController {
     @Resource
     private BasService basService;
 
+    @Resource
+    private AuthorityService authorityService;
+
     @RequestMapping(value = "/access", method = RequestMethod.GET)
     public Integer getVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         check(basRequest);
         return basService.getVisits(basRequest);
     }
 
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public History getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         check(basRequest);
         return basService.getHistoryVisits(basRequest);
     }
 
     @RequestMapping(value = "/stay", method = RequestMethod.GET)
     public Integer getStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         check(basRequest);
         return basService.getStayTime(basRequest);
     }
 
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> geHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public History getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         check(basRequest);
-        return basService.geHistoryStayTime(basRequest);
+        return basService.getHistoryStayTime(basRequest);
     }
 
     private void check(BasRequest basRequest) throws BizException {

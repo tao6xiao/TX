@@ -14,4 +14,6 @@ public class IssueIsNotResolvedResponse {
     private String detail;
 
     private String issueTime;
+
+    private String deptName;//部门名称
 }

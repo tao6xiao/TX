@@ -20,4 +20,6 @@ public class LinkAvailability {
     private String snapshot;//快照
 
     private Date checkTime;//监测时间
+
+    private Integer deptId;//部门编号
 }

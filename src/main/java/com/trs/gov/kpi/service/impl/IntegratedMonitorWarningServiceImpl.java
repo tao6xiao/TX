@@ -1,17 +1,20 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.IssueWarningResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.IssueDataUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -32,7 +35,10 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
     @Resource
     IssueMapper issueMapper;
 
-    private IssueWarningResponse getIssueWarningResponseDetailByIssue(Issue is) {
+    @Resource
+    DeptApiService deptApiService;
+
+    private IssueWarningResponse getIssueWarningResponseDetailByIssue(Issue is) throws RemoteException {
         IssueWarningResponse issueWarningResponse = new IssueWarningResponse();
         issueWarningResponse.setId(is.getId());
         issueWarningResponse.setIssueTime(DateUtil.toString(is.getIssueTime()));
@@ -44,11 +50,16 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         Long between = nowTime.getTime() - issueTime.getTime();
         Long limitTime = between / (24 * 60 * 60 * 1000);
         issueWarningResponse.setLimitTime(limitTime);
+        if(is.getDeptId() == null){
+            issueWarningResponse.setDeptName(Constants.EMPTY_STRING);
+        }else {
+            issueWarningResponse.setDeptName(deptApiService.findDeptById("", is.getDeptId()).getGName());
+        }
         return issueWarningResponse;
     }
 
     @Override
-    public ApiPageData get(PageDataRequestParam param) throws ParseException {
+    public ApiPageData get(PageDataRequestParam param) throws ParseException, RemoteException {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
@@ -68,7 +79,7 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
         return new ApiPageData(pager, responseByIssueList);
     }
 
-    private List<IssueWarningResponse> getReopnseByIssueList(List<Issue> issueList) {
+    private List<IssueWarningResponse> getReopnseByIssueList(List<Issue> issueList) throws RemoteException {
         List<Issue> fullIssueList = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
         List<IssueWarningResponse> issueWarningResponseList = new ArrayList<>();
         for (Issue is : fullIssueList) {

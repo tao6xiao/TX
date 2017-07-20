@@ -81,20 +81,10 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             Response response = client.newCall(
                     buildRequest("findDocumentById", userName, params)).execute();
 
-            if (response.isSuccessful()) {
-                ApiResult result = getValidResult(response, "获取发布文档");
-                if (result.getData() != null && !result.getData().trim().isEmpty()) {
-                    return JSON.parseObject(result.getData(), Document.class);
-                }
-
-                return null;
-            } else {
-                log.error("error: " + response);
-                throw new RemoteException("获取文档失败！");
-            }
+            return responseManger("findDocumentById", response);
         } catch (IOException e) {
-            log.error("", e);
-            throw new RemoteException("获取文档失败！", e);
+            log.error("failed to getDocument, error: ", e);
+            throw new RemoteException("获取发布文档失败！", e);
         }
     }
 
@@ -124,6 +114,35 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
         }
         return documentList;
+    }
+
+    @Override
+    public Document findDocumentByUrl(String userName, String url) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("URL", url);
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(
+                    buildRequest("findDocumentByUrl", userName, params)).execute();
+
+            return responseManger("findDocumentByUrl", response);
+        } catch (IOException e) {
+            log.error("failed to findDocumentByUrl, error", e);
+            throw new RemoteException("通过url获取文档失败！", e);
+        }
+    }
+
+    private Document responseManger(String method, Response response) throws IOException, RemoteException {
+        if (response.isSuccessful()) {
+            ApiResult result = getValidResult(response, "获取文档");
+            if (result.getData() != null && !result.getData().trim().isEmpty()) {
+                return JSON.parseObject(result.getData(), Document.class);
+            }
+            return null;
+        } else {
+            log.error("failed to " + method + ", error: " + response);
+            throw new RemoteException("获取文档失败！");
+        }
     }
 
     private ApiResult getValidResult(Response response, String errMsg) throws RemoteException,

@@ -24,6 +24,25 @@
 		<java.version>1.8</java.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>TRS Repository</id>
+			<url>http://mvn.devdemo.trs.net.cn/repository/maven-releases/</url>
+		</repository>
+	</repositories>
+
+	<!--<dependencyManagement>-->
+		<!--<dependencies>-->
+			<!--<dependency>-->
+				<!--<groupId>org.springframework.cloud</groupId>-->
+				<!--<artifactId>spring-cloud-consul-dependencies</artifactId>-->
+				<!--<version>1.0.1.RELEASE</version>-->
+				<!--<type>pom</type>-->
+				<!--<scope>import</scope>-->
+			<!--</dependency>-->
+		<!--</dependencies>-->
+	<!--</dependencyManagement>-->
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -72,6 +91,16 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-starter-actuator</artifactId>-->
+			<!--<version>1.5.4.RELEASE</version>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.cloud</groupId>-->
+			<!--<artifactId>spring-cloud-starter-consul-all</artifactId>-->
+		<!--</dependency>-->
 
 		<!-- 数据库 -->
 		<dependency>
@@ -125,6 +154,12 @@
 			<version>0.6.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.10.3</version>
+		</dependency>
+
 		<!--调度器-->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
@@ -148,6 +183,48 @@
 			<version>3.9</version>
 		</dependency>
 
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>com.ids.agent</groupId>-->
+			<!--<artifactId>trsids-agent</artifactId>-->
+			<!--<version>1.0.0</version>-->
+			<!--<scope>system</scope>-->
+			<!--<systemPath>${project.basedir}/trsids-agent.jar</systemPath>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>com.ids.filter</groupId>-->
+			<!--<artifactId>trsids-filter</artifactId>-->
+			<!--<version>1.0.0</version>-->
+			<!--<scope>system</scope>-->
+			<!--<systemPath>${project.basedir}/trsids-filter.jar</systemPath>-->
+		<!--</dependency>-->
+		<!--<dependency>-->
+			<!--<groupId>trs.com.cn</groupId>-->
+			<!--<artifactId>wcm-core</artifactId>-->
+			<!--<version>8.0-SNAPSHOT</version>-->
+			<!--<scope>system</scope>-->
+			<!--<systemPath>${project.basedir}/wcm-core-8.0-SNAPSHOT-classes.jar</systemPath>-->
+		<!--</dependency>-->
+		<dependency>
+			<groupId>com.trs.idm</groupId>
+			<artifactId>trsids-agent</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.trs.idm</groupId>
+			<artifactId>trsids-filter</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
 		<!-- Rabbit stream -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

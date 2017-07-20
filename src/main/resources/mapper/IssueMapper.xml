@@ -8,6 +8,7 @@
     <result column="subTypeId" jdbcType="INTEGER" property="subTypeId" />
     <result column="detail" jdbcType="VARCHAR" property="detail" />
     <result column="issueTime" jdbcType="TIMESTAMP" property="issueTime" />
+    <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime"/>
     <result column="isResolved" jdbcType="BIT" property="isResolved" />
     <result column="isDel" jdbcType="BIT" property="isDel" />
     <result column="customer1" jdbcType="VARCHAR" property="customer1" />
@@ -25,12 +26,15 @@
     <result column="isResolved" jdbcType="BIT" property="isResolved" />
     <result column="isDel" jdbcType="BIT" property="isDel" />
     <result column="customer2" property="chnlId"/>
+    <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
+    <result column="deptId" jdbcType="INTEGER" property="deptId" />
   </resultMap>
 
   <resultMap id="InfoUpdateOrderMap" type="com.trs.gov.kpi.entity.InfoUpdateOrder">
     <id column="id" property="id"/>
     <result column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="customer2" property="chnlId"/>
+    <result column="deptId" property="deptId"/>
     <result column="typeId" property="typeId"/>
     <result column="subTypeId" property="subTypeId"/>
     <result column="detail" property="detail"/>
@@ -47,12 +51,15 @@
     <result column="detail" property="snapshot"/>
     <result column="issueTime" property="checkTime"/>
     <result column="customer1" property="errorDetail"/>
+    <result column="workOrderStatus" jdbcType="BIT" property="workOrderStatus" />
+    <result column="deptId" jdbcType="INTEGER" property="deptId" />
   </resultMap>
 
   <resultMap id="InfoErrorOrderMap" type="com.trs.gov.kpi.entity.InfoErrorOrder">
     <id column="id" property="id"/>
     <result column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="customer2" property="chnlId"/>
+    <result column="deptId" property="deptId"/>
     <result column="typeId" property="typeId"/>
     <result column="subTypeId" property="subTypeId"/>
     <result column="detail" property="detail"/>
@@ -69,6 +76,7 @@
     <result column="detail" property="invalidLink"/>
     <result column="customer1" property="snapshot"/>
     <result column="issueTime" property="checkTime"/>
+    <result column="deptId" jdbcType="INTEGER" property="deptId" />
   </resultMap>
 
   <sql id="Base_Column_List">

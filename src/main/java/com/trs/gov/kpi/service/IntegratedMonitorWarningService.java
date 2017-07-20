@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
@@ -16,5 +17,5 @@ public interface IntegratedMonitorWarningService{
      * @param param
      * @return
      */
-    ApiPageData get(PageDataRequestParam param) throws ParseException;
+    ApiPageData get(PageDataRequestParam param) throws ParseException, RemoteException;
 }

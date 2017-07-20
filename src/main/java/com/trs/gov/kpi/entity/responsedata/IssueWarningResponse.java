@@ -19,4 +19,6 @@ public class IssueWarningResponse {
     private String chnlName;
 
     private Long limitTime;
+
+    private String deptName;//部门名称
 }

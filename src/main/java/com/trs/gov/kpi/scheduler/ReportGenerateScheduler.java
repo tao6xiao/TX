@@ -68,7 +68,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private int cellIndex = 0;//excel列的索引
 
     @Override
-    public void run() {
+    public void run() throws RemoteException {
         log.info("ReportGenerateScheduler " + siteId + " start...");
 
         IssueCountRequest request = new IssueCountRequest();
@@ -88,7 +88,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
         String title = "";
         if (site != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            title = site.getSiteDesc() + "报表" + "(" + sdf.format(new Date()) + ")";
+            title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
         }
         report.setTitle(title);
 

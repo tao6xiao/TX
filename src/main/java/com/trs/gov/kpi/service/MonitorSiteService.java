@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface MonitorSiteService {
      * @param siteId
      * @return
      */
-    MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId);
+    MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId) throws RemoteException;
 
     /**
      * 通过siteId获取MonitorSite

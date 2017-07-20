@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -97,13 +96,6 @@ public interface WebPageService {
     int selectUrlLengthCount(PageDataRequestParam param) throws RemoteException;
 
     /**
-     * 查询监测时间最早的网页分析数据
-     *
-     * @return
-     */
-    Date getEarliestCheckTime();
-
-    /**
      * 批量处理网页问题
      *
      * @param siteId
@@ -143,6 +135,7 @@ public interface WebPageService {
 
     /**
      * 插入响应速度信息
+     *
      * @param replySpeed
      */
     void insertReplyspeed(ReplySpeed replySpeed);

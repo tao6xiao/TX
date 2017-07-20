@@ -25,6 +25,7 @@ public interface SiteApiService extends OuterApiService {
     /**
      * 获取子栏目，如果parentId为0，查询的是站点下的第一级子栏目，
      * 如果parentId不为0，表示查询的是parent栏目下的第一级子栏目
+     *
      * @param siteId
      * @param parentId
      * @param userName
@@ -47,6 +48,7 @@ public interface SiteApiService extends OuterApiService {
     /**
      * 获取站点或者栏目的发布地址
      * 如果chnnelId为0，则使用siteId获取站点的发布地址，否则查询的是栏目的发布地址
+     *
      * @param siteId
      * @param channelId
      * @return
@@ -57,6 +59,7 @@ public interface SiteApiService extends OuterApiService {
 
     /**
      * 获取从第一层子栏目到最底层的栏目在内的所有子栏目的id
+     *
      * @param userName
      * @param siteId
      * @param channelId
@@ -69,6 +72,7 @@ public interface SiteApiService extends OuterApiService {
 
     /**
      * 获取所有最底层的栏目
+     *
      * @param userName
      * @param siteId
      * @param channelId
@@ -101,4 +105,14 @@ public interface SiteApiService extends OuterApiService {
      * @throws RemoteException
      */
     List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException;
+
+    /**
+     * 通过url查找栏目
+     *
+     * @param userName
+     * @param url
+     * @return
+     * @throws RemoteException
+     */
+    Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException;
 }

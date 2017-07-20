@@ -109,11 +109,7 @@ public final class Types {
      */
     public enum ServiceLinkIssueType {
         INVALID(-1, "未知问题"),
-        INVALID_LINK(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 1, "链接失效"),
-        INVALID_IMAGE(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 2, "图片失效"),
-        CONNECTION_TIME_OUT(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 3, "连接超时"),
-        INVALID_FILE(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 4, "附件失效"),
-        INVALID_HOME_PAGE(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 5, "首页失效");
+        INVALID_LINK(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 1, "链接失效");
 
         public final int value;
 

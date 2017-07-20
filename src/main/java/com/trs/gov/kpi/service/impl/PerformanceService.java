@@ -12,7 +12,6 @@ import com.trs.gov.kpi.service.outer.SGService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
 
@@ -125,7 +124,7 @@ public class PerformanceService {
         //总分
         double sum = availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;
 
-        return Double.parseDouble(String.format("%.2f",sum));
+        return Double.parseDouble(String.format("%.2f", sum));
     }
 
 

@@ -1,14 +1,18 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
 import com.trs.gov.kpi.entity.responsedata.MonitorFrequencyResponse;
+import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
 import com.trs.gov.kpi.service.MonitorSiteService;
+import com.trs.gov.kpi.service.outer.AuthorityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +33,9 @@ public class MonitorFrequencyController {
     @Resource
     MonitorSiteService monitorSiteService;
 
+    @Resource
+    private AuthorityService authorityService;
+
     /**
      * 通过siteId获取当前站点监测频率的设置记录集合
      *
@@ -38,7 +45,11 @@ public class MonitorFrequencyController {
      */
     @RequestMapping(value = "/checkfreq", method = RequestMethod.GET)
     @ResponseBody
-    public List<MonitorFrequencyResponse> queryBySiteId(@RequestParam Integer siteId) throws BizException {
+    public List<MonitorFrequencyResponse> queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
@@ -54,7 +65,11 @@ public class MonitorFrequencyController {
      */
     @RequestMapping(value = "/monitorfrequency", method = RequestMethod.POST)
     @ResponseBody
-    public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException {
+    public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException, RemoteException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), freqSetUp.getSiteId(), null, Authority.KPIWEB_MONITORSETUP_SAVE) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SAVE)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         MonitorFrequencyFreq[] freqs = freqSetUp.getFreqs();
         if (freqSetUp.getSiteId() == null || freqs == null || freqs.length == 0) {
             throw new BizException(Constants.INVALID_PARAMETER);

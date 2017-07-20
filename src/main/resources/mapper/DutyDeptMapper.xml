@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.DutyDeptMapper">
+    <resultMap id="BaseResultMap" type="com.trs.gov.kpi.entity.DutyDept">
+        <id column="chnlId" jdbcType="INTEGER" property="chnlId" />
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="deptId" jdbcType="INTEGER" property="deptId" />
+        <result column="contain" jdbcType="TINYINT" property="contain" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        chnlId, siteId, deptId, contain
+    </sql>
+
+    <select id="select" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="com.trs.gov.kpi.entity.DutyDept">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM dutydept WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+
+    <select id="count" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+        SELECT
+        count(1)
+        FROM dutydept WHERE 1=1
+        <include refid="com.trs.gov.kpi.dao.IssueMapper.all_conditions_sql"/>
+    </select>
+    <insert id="insert" parameterType="com.trs.gov.kpi.entity.dao.DBRow">
+        insert into dutydept
+        <foreach collection="fields" item="fieldName" open="(" separator="," close=")">
+            ${fieldName}
+        </foreach>
+        values
+        <foreach collection="values" item="value" open="(" separator="," close=")">
+            #{value}
+        </foreach>
+    </insert>
+    <update id="update" parameterType="com.trs.gov.kpi.entity.DutyDept">
+        UPDATE dutydept
+        SET
+        deptId = #{deptId, jdbcType=INTEGER},
+        contain = #{contain, jdbcType=TINYINT}
+        WHERE chnlId = #{chnlId, jdbcType=INTEGER}
+    </update>
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM dutydept
+        WHERE chnlId = #{chnlId, jdbcType=INTEGER}
+        AND siteId = #{siteId, jdbcType=INTEGER}
+    </delete>
+</mapper>

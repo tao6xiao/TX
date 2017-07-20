@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.EnumCheckJobType;
-import com.trs.gov.kpi.constant.FreqUnit;
-import com.trs.gov.kpi.constant.FrequencyType;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
@@ -18,10 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -35,7 +31,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 @Slf4j
 @Service
-public class SchedulerServiceImpl implements SchedulerService, ApplicationListener<ContextRefreshedEvent> {
+public class SchedulerServiceImpl implements SchedulerService {
 
 
     @Resource
@@ -103,40 +99,39 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         }
     }
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+    @PostConstruct
+    public void startService() {
+        // 启动完成后，就开始执行
+        try {
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
 
-        if (contextRefreshedEvent.getApplicationContext().getParent() == null) {
+            // 栏目更新检查
+            initInfoUpdateCheckJob(scheduler);
 
-            // 启动完成后，就开始执行
-            try {
-                Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-                scheduler.start();
+            // 首页有效性检查
+            initHomepageCheckJob(scheduler);
 
-                // 栏目更新检查
-                initInfoUpdateCheckJob(scheduler);
+            // 全站链接有效性检查
+            initLinkCheckJob(scheduler);
 
-                // 首页有效性检查
-                initHomepageCheckJob(scheduler);
+             //文档内容错误检测
+            initContentCheckJob(scheduler);
 
-                // 全站链接有效性检查
-                initLinkCheckJob(scheduler);
+            //计算绩效指数
+            initPerformanceCheckJob(scheduler);
 
-                // 文档内容错误检测
-                initContentCheckJob(scheduler);
+            //按时间节点生成报表
+            initTimeNodeCheckJob(scheduler);
 
-                //计算绩效指数
-                initPerformanceCheckJob(scheduler);
+            //按时间区间生成报表
+            initTimeIntervalCheckJob(scheduler);
 
-                //按时间节点生成报表
-                initTimeNodeCheckJob(scheduler);
+            //服务链接可用性监测
+            initServiceLinkCheckJob(scheduler);
 
-                //按时间区间生成报表
-                initTimeIntervalCheckJob(scheduler);
-
-            } catch (SchedulerException e) {
-                log.error("", e);
-            }
+        } catch (SchedulerException e) {
+            log.error("", e);
         }
     }
 
@@ -243,6 +238,23 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
         for (MonitorSite site : allMonitorSites) {
             // 每天凌晨0点执行一次
             scheduleJob(scheduler, EnumCheckJobType.TIMENODE_REPORT_GENERATE, site, "0 0 0 * * ?");
+        }
+    }
+
+    /**
+     * 服务链接监测
+     *
+     * @param scheduler
+     */
+    private void initServiceLinkCheckJob(Scheduler scheduler) {
+        // 查询数据库里面的所有站点
+        final List<MonitorSite> allMonitorSites = monitorSiteService.getAllMonitorSites();
+        if (allMonitorSites == null || allMonitorSites.isEmpty()) {
+            return;
+        }
+
+        for (MonitorSite site : allMonitorSites) {
+            scheduleJob(scheduler, EnumCheckJobType.SERVICE_LINK, site, DateUtil.SECOND_ONE_DAY);
         }
     }
 
@@ -406,6 +418,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationListen
             case TIMEINTERVAL_REPORT_GENERATE:
                 return applicationContext.getBean
                         (ReportGenerateScheduler.class);
+            case SERVICE_LINK:
+                return applicationContext.getBean
+                        (ServiceLinkScheduler.class);
             default:
                 return null;
         }

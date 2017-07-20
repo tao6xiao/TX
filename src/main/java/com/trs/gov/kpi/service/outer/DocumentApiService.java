@@ -43,4 +43,14 @@ public interface DocumentApiService extends OuterApiService {
      */
     List<Document> getPublishDocuments(int siteId) throws RemoteException, ParseException;
 
+    /**
+     * 通过url查找文档
+     *
+     * @param userName
+     * @param url
+     * @return
+     * @throws RemoteException
+     */
+    Document findDocumentByUrl(String userName, String url) throws RemoteException;
+
 }

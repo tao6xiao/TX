@@ -5,6 +5,9 @@ import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Channel;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,6 +22,7 @@ import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Scope("prototype")
 public class SpiderUtils {
+    @Resource
+    SiteApiService siteApiService;
 
     // 过大页面阀值
     private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
@@ -61,6 +67,8 @@ public class SpiderUtils {
     private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
 
     private String baseUrl;
+
+    private Integer siteId;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -106,13 +114,13 @@ public class SpiderUtils {
                     boolean isEqual = false;
                     if (targetUrl.startsWith(page.getUrl().get())) {
                         String remainStr = targetUrl.substring(page.getUrl().get().length());
-                        if (remainStr.equals("/")  || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                        if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
                             isEqual = true;
                         }
                     }
                     if (page.getUrl().get().startsWith(targetUrl)) {
                         String remainStr = page.getUrl().get().substring(targetUrl.length());
-                        if (remainStr.equals("/") ||  remainStr.equals("#") ||  remainStr.endsWith("/#")) {
+                        if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
                             isEqual = true;
                         }
                     }
@@ -145,13 +153,23 @@ public class SpiderUtils {
             Date endDate = new Date();
             long useTime = endDate.getTime() - startDate.getTime();
 
+            Integer chnlId = null;
+            try {
+                Channel channel = siteApiService.findChannelByUrl("", request.getUrl().intern(), siteId);
+                if (channel != null) {
+                    chnlId = channel.getChannelId();
+                }
+            } catch (RemoteException e) {
+                log.error("");
+            }
+
             if (!isUrlAvailable.get()) {
                 unavailableUrls.add(request.getUrl().intern());
             } else {
 
-                if(useTime > THRESHOLD_MAX_REPLY_SPEED){
+                if (useTime > THRESHOLD_MAX_REPLY_SPEED) {
                     replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
-                            0,
+                            chnlId,
                             request.getUrl().intern(),
                             useTime,
                             Long.valueOf(result.getRawText().getBytes().length),
@@ -169,7 +187,7 @@ public class SpiderUtils {
                 String[] urlSize = request.getUrl().split("/");
                 if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
                     biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
-                            0,
+                            chnlId,
                             request.getUrl().intern(),
                             Long.valueOf(request.getUrl().length()),
                             Long.valueOf(result.getRawText().getBytes().length),
@@ -179,7 +197,7 @@ public class SpiderUtils {
                 int deepSize = calcDeep(request.getUrl(), 100, 1);
                 if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
                     pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
-                            0,
+                            chnlId,
                             request.getUrl().intern(),
                             deepSize,
                             Long.valueOf(result.getRawText().getBytes().length),
@@ -197,7 +215,8 @@ public class SpiderUtils {
     };
 
 
-    private synchronized void init(String baseUrl) {
+    private synchronized void init(String baseUrl, Integer siteId) {
+        this.siteId = siteId;
         this.baseUrl = baseUrl;
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
@@ -210,11 +229,11 @@ public class SpiderUtils {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized List<Pair<String, String>> linkCheck(int threadNum, String baseUrl) {
+    public synchronized List<Pair<String, String>> linkCheck(int threadNum, Integer siteId, String baseUrl) {
 
 
         log.info("linkCheck started!");
-        init(baseUrl);
+        init(baseUrl, siteId);
         if (StringUtils.isBlank(baseUrl)) {
 
             log.info("linkCheck completed, no URL has been checked!");
@@ -250,7 +269,7 @@ public class SpiderUtils {
         }
     }
 
-    private int deepSize (Set<String> parentUrls, int minDeep, int deeps){
+    private int deepSize(Set<String> parentUrls, int minDeep, int deeps) {
 
         // 规避页面循环引用导致的无限递归问题
         if (deeps > 100) {
@@ -263,11 +282,11 @@ public class SpiderUtils {
 
         int newMinDeep = minDeep;
         for (String parentUrl : parentUrls) {
-            if (parentUrl.equals(baseUrl)){
+            if (parentUrl.equals(baseUrl)) {
                 return deeps + 1 < newMinDeep ? deeps + 1 : newMinDeep;
-            }else{
+            } else {
                 int newDeep = calcDeep(parentUrl, newMinDeep, deeps + 1);
-                newMinDeep = newMinDeep >  newDeep ? newDeep : newMinDeep;
+                newMinDeep = newMinDeep > newDeep ? newDeep : newMinDeep;
             }
         }
 
@@ -284,7 +303,7 @@ public class SpiderUtils {
     public synchronized List<String> homePageCheck(String... homePageUrls) {
 
         log.info("homePageCheck started!");
-        init(baseUrl);
+        init(baseUrl, siteId);
         for (String homePageUrl : homePageUrls) {
 
             recordUnavailableUrlDownloader.download(new Request(homePageUrl), new Task() {

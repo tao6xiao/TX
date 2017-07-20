@@ -17,6 +17,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +40,16 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
     public ContentCheckResult check(String text, String type) throws RemoteException {
         CloseableHttpClient httpClient = null;
         try {
+
+            // 清理html标签
+            String cleanText = Jsoup.clean(text, Whitelist.none());
+            // 去除空格
+            cleanText = cleanText.replaceAll("&nbsp;", " ");
+
             httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(cmkUrl);
             List<NameValuePair> parameters = new ArrayList<>();
-            parameters.add(new BasicNameValuePair("text", text));
+            parameters.add(new BasicNameValuePair("text", cleanText));
             parameters.add(new BasicNameValuePair("type", type));
             HttpEntity entity1 = new UrlEncodedFormEntity(parameters, "utf-8");
             httpPost.setEntity(entity1);

@@ -14,27 +14,27 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by ranwei on 2017/6/13.
  */
-public class ChnlCheckUtilTest {
+public class ResultCheckUtilTest {
 
     @Test
     public void getChannelName_ChannelId_Null() throws Exception {
         MockSiteApiService siteApiService = new MockSiteApiService();
         Integer channelId = null;
-        assertEquals("", ChnlCheckUtil.getChannelName(channelId, siteApiService));
+        assertEquals("", ResultCheckUtil.getChannelName(channelId, siteApiService));
     }
 
     @Test
     public void getChannelName_Channel_Null() throws Exception {
         MockSiteApiService siteApiService = new MockSiteApiService();
         Integer channelId = 1;
-        assertEquals("", ChnlCheckUtil.getChannelName(channelId, siteApiService));
+        assertEquals("", ResultCheckUtil.getChannelName(channelId, siteApiService));
     }
 
     @Test
     public void getChannelName_Normal() throws Exception {
         MockSiteApiService siteApiService = new MockSiteApiService();
         Integer channelId = 12;
-        assertEquals("电影", ChnlCheckUtil.getChannelName(channelId, siteApiService));
+        assertEquals("电影", ResultCheckUtil.getChannelName(channelId, siteApiService));
     }
 
 
@@ -55,7 +55,7 @@ public class ChnlCheckUtilTest {
         @Override
         public Channel getChannelById(int channelId, String userName) throws RemoteException {
             if (channelId == 12) {
-                chnl.setChnlName("电影");
+                chnl.setChnlDesc("电影");
             }
             return chnl;
         }
@@ -82,6 +82,11 @@ public class ChnlCheckUtilTest {
 
         @Override
         public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
+            return null;
+        }
+
+        @Override
+        public Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException {
             return null;
         }
     }

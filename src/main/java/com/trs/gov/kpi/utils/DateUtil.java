@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.Granularity;
 import com.trs.gov.kpi.entity.HistoryDate;
+import com.trs.gov.kpi.entity.requestdata.DateRequest;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,41 +111,141 @@ public class DateUtil {
     }
 
     /**
-     * 把时间按月拆分
+     * 格式化月份为两位有效数字
+     *
+     * @param month
+     * @return
+     */
+    private static String formatMonth(int month) {
+        return (month + 1) < 10 ? "0" + (month + 1) : String.valueOf(month + 1);
+    }
+
+    /**
+     * 格式化日期为两位有效数字
+     *
+     * @param day
+     * @return
+     */
+    private static String formatDay(int day) {
+        return day < 10 ? "0" + day : String.valueOf(day);
+    }
+
+    /**
+     * 根据粒度获取周期,用以返回数据中各个数据对应日期的显示
+     *
+     * @param calendar
+     * @param granularity
+     * @return
+     */
+    private static String getUnitByGranularity(Calendar calendar, Integer granularity) {
+        if (Granularity.DAY.equals(granularity)) {
+            return calendar.get(Calendar.YEAR) + "-" + formatMonth(calendar.get(Calendar.MONTH)) + "-" + formatDay(calendar.get(Calendar.DAY_OF_MONTH));
+        } else if (Granularity.WEEK.equals(granularity)) {
+            return calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.WEEK_OF_YEAR);
+        } else if (Granularity.YEAR.equals(granularity)) {
+            return Integer.toString(calendar.get(Calendar.YEAR));
+        } else {//不设置，默认为月
+            return calendar.get(Calendar.YEAR) + "-" + formatMonth(calendar.get(Calendar.MONTH));
+        }
+    }
+
+    /**
+     * 设置默认起止时间
+     *
+     * @param param
+     */
+    public static void setDefaultDate(DateRequest param) {
+        if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
+            Date endDate = new Date();
+            param.setEndDateTime(toString(endDate));
+            String beginDateTime;
+            Calendar calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(toDate(param.getEndDateTime()));
+            } catch (ParseException e) {
+                log.error("解析开始日期失败！", e);
+            }
+
+            if (Granularity.DAY.equals(param.getGranularity())) {
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            } else if (Granularity.WEEK.equals(param.getGranularity())) {
+                calendar.add(Calendar.WEEK_OF_YEAR, -11);
+                calendar.set(Calendar.DAY_OF_WEEK, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            } else if (Granularity.YEAR.equals(param.getGranularity())) {
+                calendar.add(Calendar.YEAR, -5);
+                calendar.set(Calendar.MONTH, 0);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            } else {//不设置，默认为月
+                calendar.set(Calendar.MONTH, 0);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginDateTime = DateUtil.toString(calendar.getTime());
+            }
+            param.setBeginDateTime(beginDateTime);
+        }
+    }
+
+    /**
+     * 分割日期
      *
      * @param start
      * @param end
-     * @return 返回拆分后的每个月
+     * @param granularity
+     * @return
      */
-    public static List<HistoryDate> splitDateByMonth(String start, String end) {
+    public static List<HistoryDate> splitDate(String start, String end, Integer granularity) {
+
+        int cycle;//日期分割周期
+        int unit;//周期的最小单位
+        if (Granularity.DAY.equals(granularity)) {
+            cycle = Calendar.DATE;
+            unit = Calendar.DATE;
+        } else if (Granularity.WEEK.equals(granularity)) {
+            cycle = Calendar.WEEK_OF_YEAR;
+            unit = Calendar.DAY_OF_WEEK;
+        } else if (Granularity.YEAR.equals(granularity)) {
+            cycle = Calendar.YEAR;
+            unit = Calendar.DAY_OF_YEAR;
+        } else {//不设置，默认为月
+            cycle = Calendar.MONTH;
+            unit = Calendar.DAY_OF_MONTH;
+        }
+
         List<HistoryDate> list = new ArrayList<>();
         try {
+            Date beginDate = new SimpleDateFormat(DAY_FORMAT).parse(start);// 定义开始时间
+            Date endDate = new SimpleDateFormat(DAY_FORMAT).parse(end);// 定义结束时间
 
-            Date beginDate = new SimpleDateFormat(DAY_FORMAT).parse(start);// 定义起始日期
-            Date endDate = new SimpleDateFormat(DAY_FORMAT).parse(end);// 定义结束日期
-
-            Calendar currBegin = Calendar.getInstance();// 当前起始日期
+            Calendar currBegin = Calendar.getInstance();// 定义当前开始日期
             currBegin.setTime(beginDate);
 
-            Calendar initCalender = Calendar.getInstance();//用于初始化起止时间段
+            Calendar initCalender = Calendar.getInstance();//用于给起止日期赋值
 
             Calendar endCalendar = Calendar.getInstance();//结束日期
             endCalendar.setTime(endDate);
 
-
             SimpleDateFormat sdf = new SimpleDateFormat(DAY_FORMAT);
+
 
             //起止日期相同时
             if (currBegin.getTime().equals(endCalendar.getTime())) {
                 HistoryDate historyDate = new HistoryDate();
-                historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatMonth(currBegin.get(Calendar.MONTH)));
+                historyDate.setDate(getUnitByGranularity(currBegin, granularity));
                 historyDate.setBeginDate(sdf.format(currBegin.getTime()));
-                endCalendar.add(Calendar.DAY_OF_MONTH, 1);
+                endCalendar.add(unit, 1);
                 historyDate.setEndDate(sdf.format(endCalendar.getTime()));
+                endCalendar.add(unit, -1);//减去一天，还原结束日期
                 list.add(historyDate);
-                currBegin.add(Calendar.MONTH, 1);//使得开始日期大于等于结束时间，跳过后两次判断
+                currBegin.add(unit, 1);//使得开始日期大于等于结束时间，跳过后两次判断
             }
 
+            //粒度为天，没有其他粒度那么复杂，单独处理
+            if (Granularity.DAY.equals(granularity)) {
+                initDayList(currBegin, endDate, list, unit, granularity, sdf);
+                return list;
+            }
 
             while (currBegin.getTime().before(endDate)) {// 判断是否到结束日期
                 HistoryDate historyDate = new HistoryDate();
@@ -152,56 +254,51 @@ public class DateUtil {
                 String firstDay;
                 String lastDay;
 
-                if (currBegin.getTime().equals(beginDate)) {
-                    initCalender.set(Calendar.DAY_OF_MONTH, currBegin
-                            .getActualMaximum(Calendar.DAY_OF_MONTH));
+                if (currBegin.getTime().equals(beginDate)) {//开始日期等于当前开始日期
+                    initCalender.set(unit, currBegin.getActualMaximum(unit));
 
+                    lastDay = getLastDay(initCalender, endCalendar, sdf, unit);
                     firstDay = sdf.format(beginDate);
-                    initCalender.add(Calendar.DAY_OF_MONTH, 1);//增加一天，让结束日期为下个月的第一天，避免查询时最后一天查不到的情况
-                    lastDay = sdf.format(initCalender.getTime());
 
                     historyDate.setBeginDate(firstDay);
                     historyDate.setEndDate(lastDay);
 
-
-                } else if (currBegin.get(Calendar.MONTH) == endCalendar.get(Calendar.MONTH) && currBegin.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)) {
-                    initCalender.set(Calendar.DAY_OF_MONTH, 1);//取当月的第一天
+                } else if (currBegin.get(cycle) == endCalendar.get(cycle) && currBegin.get(Calendar.YEAR) == endCalendar.get(Calendar.YEAR)) {
+                    //当前开始日期与结束日期在同一个周期内
+                    initCalender.set(unit, 1);//取当月的第一天
                     firstDay = sdf.format(initCalender.getTime());
 
-                    endCalendar.add(Calendar.DAY_OF_MONTH, 1);//增加一天，避免查询时最后一天查不到的情况
+                    endCalendar.add(unit, 1);//增加一天，避免查询时最后一天查不到的情况
                     lastDay = sdf.format(endCalendar.getTime());
-                    endCalendar.add(Calendar.DAY_OF_MONTH, -1);//减去一天，还原结束日期
+                    endCalendar.add(unit, -1);//减去一天，还原结束日期
 
                     historyDate.setBeginDate(firstDay);
                     historyDate.setEndDate(lastDay);
-
                 } else {
-                    initCalender.set(Calendar.DAY_OF_MONTH, 1);//取当月的第一天
+                    initCalender.set(unit, 1);//取当周的第一天
                     firstDay = sdf.format(initCalender.getTime());
 
-                    initCalender.set(Calendar.DAY_OF_MONTH, currBegin
-                            .getActualMaximum(Calendar.DAY_OF_MONTH));
-                    initCalender.add(Calendar.DAY_OF_MONTH, 1);//增加一天，让结束日期为下个月的第一天，避免查询时最后一天查不到的情况
+                    initCalender.set(unit, currBegin
+                            .getActualMaximum(unit));
+                    initCalender.add(unit, 1);//增加一天，让结束日期为下个月的第一天，避免查询时最后一天查不到的情况
                     lastDay = sdf.format(initCalender.getTime());
 
                     historyDate.setBeginDate(firstDay);
                     historyDate.setEndDate(lastDay);
 
                 }
-                int month = currBegin.get(Calendar.MONTH);
-                historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatMonth(month));
+                historyDate.setDate(getUnitByGranularity(currBegin, granularity));
                 list.add(historyDate);
-                currBegin.add(Calendar.MONTH, 1);// 进行当前日期月份加1
-                currBegin.set(Calendar.DAY_OF_MONTH, 1);//取当月的第一天
-
+                currBegin.add(cycle, 1);// 周期加1
+                currBegin.set(unit, 1);//取当当前周期的第一天
             }
 
-            //处理结束日期为当月第一天的情况
+            //处理结束日期为周期第一天的情况
             if (currBegin.getTime().equals(endCalendar.getTime())) {
                 HistoryDate historyDate = new HistoryDate();
-                historyDate.setMonth(currBegin.get(Calendar.YEAR) + "-" + formatMonth(currBegin.get(Calendar.MONTH)));
+                historyDate.setDate(getUnitByGranularity(currBegin, granularity));
                 historyDate.setBeginDate(sdf.format(currBegin.getTime()));
-                endCalendar.add(Calendar.DAY_OF_MONTH, 1);
+                endCalendar.add(unit, 1);
                 historyDate.setEndDate(sdf.format(endCalendar.getTime()));
                 list.add(historyDate);
             }
@@ -213,9 +310,64 @@ public class DateUtil {
         return list;
     }
 
-    private static String formatMonth(int month) {
-        return (month + 1) < 10 ? "0" + (month + 1) : String.valueOf(month + 1);
+    /**
+     * 粒度为天时，往日期集合里循环添加日期
+     *
+     * @param currBegin
+     * @param endDate
+     * @param list
+     * @param unit
+     * @param granularity
+     * @param sdf
+     */
+    private static void initDayList(Calendar currBegin, Date endDate, List<HistoryDate> list, int unit, Integer granularity, SimpleDateFormat sdf) {
+        while (currBegin.getTime().before(endDate)) {
+            addNextDay(list, currBegin, unit, granularity, sdf);
+            if (currBegin.getTime().equals(endDate)) {
+                addNextDay(list, currBegin, unit, granularity, sdf);
+            }
+        }
     }
+
+    /**
+     * 获取结束日期前，判断结束日期是否在第一个周期内
+     *
+     * @param initCalender
+     * @param endCalendar
+     * @param sdf
+     * @param unit
+     * @return
+     */
+    private static String getLastDay(Calendar initCalender, Calendar endCalendar, SimpleDateFormat sdf, int unit) {
+        if (initCalender.getTime().before(endCalendar.getTime())) {
+            initCalender.add(unit, 1);//增加一天，让结束日期为下个月的第一天，避免查询时最后一天查不到的情况
+            return sdf.format(initCalender.getTime());
+        } else {//结束日期在第一个周期内
+            endCalendar.add(unit, 1);
+            return sdf.format(endCalendar.getTime());
+        }
+    }
+
+    /**
+     * 粒度为天时，用于往日期集合里添加下一天的起止时间
+     *
+     * @param list
+     * @param currBegin
+     * @param unit
+     * @param granularity
+     * @param sdf
+     */
+    private static void addNextDay(List<HistoryDate> list, Calendar currBegin, int unit, Integer granularity, SimpleDateFormat sdf) {
+        HistoryDate historyDate = new HistoryDate();
+        historyDate.setDate(getUnitByGranularity(currBegin, granularity));
+        String firstDay = sdf.format(currBegin.getTime());
+        currBegin.add(unit, 1);
+        String lastDay = sdf.format(currBegin.getTime());
+        historyDate.setBeginDate(firstDay);
+        historyDate.setEndDate(lastDay);
+        list.add(historyDate);
+    }
+
 
     /**
      * 获取离指定时间最近的这个周期的起始时间

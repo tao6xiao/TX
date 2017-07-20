@@ -5,7 +5,8 @@ package com.trs.gov.kpi.constant;
  */
 public final class Constants {
 
-    private Constants() {}
+    private Constants() {
+    }
 
     public static final String INVALID_PARAMETER = "参数不合法！";
 
@@ -23,6 +24,12 @@ public final class Constants {
     // 数据库字段名siteId
     public static final String DB_FIELD_SITE_ID = "siteId";
 
+    // 数据库字段名siteId
+    public static final String DB_FIELD_CHNL_ID = "chnlId";
+
+    //检索字段chnlName
+    public static final String CHNL_NAME = "chnlName";
+
     //用于标识消息传输（接收和发送）的常量
     public static final String INPUT_CHANNEL = "input_channel";
     public static final String OUTPUT_CHANNEL = "output_channel";
@@ -31,4 +38,8 @@ public final class Constants {
 
     //用于issue表中的deptId（部门编号）为null或者字符串的空值情况
     public static final String DEPT_NULL = "未归属部门";
+
+    //空字符串，用于问题中返回部门
+    public static final String EMPTY_STRING = "";
+
 }

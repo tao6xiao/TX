@@ -35,7 +35,14 @@ public class OuterApiUtil {
     public static ApiResult getValidResult(Response response, String errMsg) throws RemoteException,
             IOException {
         String ret = response.body().string();
-        ApiResult result = OuterApiUtil.toResultObj(ret);
+
+        ApiResult result = null;
+        try {
+            result = OuterApiUtil.toResultObj(ret);
+        } catch (Exception e) {
+            log.error("invalid result msg: " + ret + ", response: " + response, e);
+            throw new RemoteException(errMsg + "失败！");
+        }
         if (result == null) {
             log.error("invalid result msg: " + ret + ", response: " + response);
             throw new RemoteException(errMsg + "失败！");

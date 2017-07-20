@@ -20,7 +20,7 @@ public class InfoUpdateOrderRes {
 
     private String issueTypeName;
 
-    private String department = "";//TODO 等接口，暂时设为空串
+    private String department;
 
     private String chnlUrl;
 

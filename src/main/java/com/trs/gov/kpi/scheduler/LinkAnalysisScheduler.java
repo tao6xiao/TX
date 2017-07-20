@@ -1,10 +1,14 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
@@ -39,6 +43,9 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     WebPageService webPageService;
 
+    @Resource
+    WebPageMapper webPageMapper;
+
     @Setter
     @Getter
     private Integer siteId;
@@ -57,43 +64,73 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
 
-            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, baseUrl);
+            List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(5, siteId, baseUrl);
             Date checkTime = new Date();
             for (Pair<String, String> unavailableUrlAndParentUrl : unavailableUrlAndParentUrls) {
                 LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
-                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getKey());
-                linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setSnapshot(unavailableUrlAndParentUrl.getKey());
                 linkAvailabilityResponse.setCheckTime(checkTime);
                 linkAvailabilityResponse.setSiteId(siteId);
-                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getKey()).value);
-                linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
+
+                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
+                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+                }
             }
-            //获取响应速度基本信息，信息入库
+
+            //获取响应速度基本信息，信息入库并去除重复数据和更新数据库信息
             Set<ReplySpeed> replySpeedSet = spider.getReplySpeeds();
-            for (ReplySpeed replySpeed : replySpeedSet) {
-                replySpeed.setSiteId(siteId);
-                webPageService.insertReplyspeed(replySpeed);
+            for (ReplySpeed replySpeedTo : replySpeedSet) {
+
+                QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+                queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+                queryFilter.addCond(WebpageTableField.PAGE_LINK, replySpeedTo.getPageLink());
+                queryFilter.addCond(WebpageTableField.CHNL_ID, replySpeedTo.getChnlId());
+                queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
+
+                List<ReplySpeed> pageSpaceList = webPageMapper.selectReplySpeed(queryFilter);
+                updateOrInsertSpeed(pageSpaceList, replySpeedTo);
             }
 
-            //获取过大页面信息；信息入库
+            //获取过大页面信息；信息入库并去除重复数据和更新数据库信息
             Set<PageSpace> biggerPageSpace = spider.biggerPageSpace();
-            for (PageSpace pageSpaceto : biggerPageSpace) {
-                pageSpaceto.setSiteId(siteId);
-                webPageService.insertPageSpace(pageSpaceto);
+            for (PageSpace pageSpaceTo : biggerPageSpace) {
+                QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+                queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+                queryFilter.addCond(WebpageTableField.PAGE_LINK, pageSpaceTo.getPageLink());
+                queryFilter.addCond(WebpageTableField.CHNL_ID, pageSpaceTo.getChnlId());
+                queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
+
+                List<PageSpace> pageSpaceList = webPageMapper.selectPageSpace(queryFilter);
+                updateOrInsertSpace(pageSpaceList, pageSpaceTo);
             }
 
-            //获取过长URL页面信息；信息入库
+            //获取过长URL页面信息；信息入库并去除重复数据和更新数据库信息
             Set<UrlLength> biggerUerLenght = spider.getBiggerUrlPage();
-            for (UrlLength urlLenght : biggerUerLenght) {
-                urlLenght.setSiteId(siteId);
-                webPageService.insertUrlLength(urlLenght);
+            for (UrlLength urlLenghtTo : biggerUerLenght) {
+
+                QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+                queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+                queryFilter.addCond(WebpageTableField.PAGE_LINK, urlLenghtTo.getPageLink());
+                queryFilter.addCond(WebpageTableField.CHNL_ID, urlLenghtTo.getChnlId());
+                queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
+
+                List<UrlLength> urlLenghtList = webPageMapper.selectUrlLength(queryFilter);
+                updateOrInsertLength(urlLenghtList, urlLenghtTo);
             }
 
-            //获取过深页面信息；信息入库
+            //获取过深页面信息；信息入库并去除重复数据和更新数据库信息
             Set<PageDepth> pageDepthSet = spider.getPageDepths();
-            for (PageDepth pageDepth : pageDepthSet) {
-                pageDepth.setSiteId(siteId);
-                webPageService.insertPageDepth(pageDepth);
+            for (PageDepth pageDepthTo : pageDepthSet) {
+                QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+                queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+                queryFilter.addCond(WebpageTableField.PAGE_LINK, pageDepthTo.getPageLink());
+                queryFilter.addCond(WebpageTableField.CHNL_ID, pageDepthTo.getChnlId());
+                queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
+
+                List<PageDepth> pageDepthList = webPageMapper.selectPageDepth(queryFilter);
+                updateOrInsertDepth(pageDepthList, pageDepthTo);
             }
 
         } catch (Exception e) {
@@ -103,6 +140,42 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         }
     }
 
+    private void updateOrInsertSpeed(List<ReplySpeed> pageSpaceList, ReplySpeed replySpeedTo) {
+        if (pageSpaceList.isEmpty()) {
+            replySpeedTo.setSiteId(siteId);
+            webPageService.insertReplyspeed(replySpeedTo);
+        } else {
+            webPageMapper.updateReplySpeed(replySpeedTo);
+        }
+    }
+
+    private void updateOrInsertSpace(List<PageSpace> pageSpaceList, PageSpace pageSpaceTo) {
+        if (pageSpaceList.isEmpty()) {
+            pageSpaceTo.setSiteId(siteId);
+            webPageService.insertPageSpace(pageSpaceTo);
+        } else {
+            webPageMapper.updatePageSpace(pageSpaceTo);
+        }
+    }
+
+    private void updateOrInsertLength(List<UrlLength> urlLenghtList, UrlLength urlLenghtTo) {
+        if (urlLenghtList.isEmpty()) {
+            urlLenghtTo.setSiteId(siteId);
+            webPageService.insertUrlLength(urlLenghtTo);
+        } else {
+            webPageMapper.updateUrlLength(urlLenghtTo);
+        }
+    }
+
+    private void updateOrInsertDepth(List<PageDepth> pageDepthList, PageDepth pageDepthTo) {
+        if (pageDepthList.isEmpty()) {
+            pageDepthTo.setSiteId(siteId);
+            webPageService.insertPageDepth(pageDepthTo);
+        } else {
+            webPageMapper.updatePageDepth(pageDepthTo);
+        }
+    }
+    
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
 
     private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
