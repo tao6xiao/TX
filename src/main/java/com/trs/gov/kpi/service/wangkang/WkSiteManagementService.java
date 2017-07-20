@@ -45,22 +45,6 @@ public interface WkSiteManagementService {
     Integer getSiteCountByUrl(String siteIndexUrl, Integer isDel);
 
     /**
-     * 根据名称查询网站信息
-     *
-     * @param siteName
-     * @return
-     */
-    SiteManagement getSiteContentBySiteName(String siteName, Integer isDel);
-    /**
-     * 根据首页URL查询网站
-     *
-     * @param siteIndexUrl
-     * @return
-     */
-    SiteManagement getSiteContentByUrl(String siteIndexUrl, Integer isDel);
-
-
-    /**
      *  查询所有站点（支持分页、排序和模糊查询）
      *
      * @param wkAllSiteDetail

@@ -62,22 +62,6 @@
         and isDel = #{isDel,jdbcType=INTEGER}
     </select>
 
-    <select id="getSiteContentByUrl"  resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List" />
-        from wksite
-        where siteIndexUrl = #{siteIndexUrl,jdbcType=INTEGER}
-        and isDel = #{isDel,jdbcType=INTEGER}
-    </select>
-
-    <select id="getSiteContentBySiteName"  resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List" />
-        from wksite
-        where siteName = #{siteName,jdbcType=INTEGER}
-        and isDel = #{isDel,jdbcType=INTEGER}
-    </select>
-
     <select id="getIndexpageBySiteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />

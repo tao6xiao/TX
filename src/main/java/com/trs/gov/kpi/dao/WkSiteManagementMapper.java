@@ -38,22 +38,6 @@ public interface WkSiteManagementMapper {
     Integer getSiteCountBySiteName(@Param("siteName") String siteName, @Param("isDel") Integer isDel);
 
     /**
-     * 根据网站名称和首页URL查询网站
-     *
-     * @param siteIndexUrl
-     * @return
-     */
-    SiteManagement getSiteContentByUrl(@Param("siteIndexUrl") String siteIndexUrl, @Param("isDel") Integer isDel);
-
-    /**
-     * 根据网站名称查询网站
-     *
-     * @param siteName
-     * @return
-     */
-    SiteManagement getSiteContentBySiteName(@Param("siteName") String siteName, @Param("isDel") Integer isDel);
-
-    /**
      * 查询所有未删除和检查状态不为 0 网站数量
      *
      * @return
