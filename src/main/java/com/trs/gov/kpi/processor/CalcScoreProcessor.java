@@ -10,8 +10,8 @@ import com.trs.gov.kpi.entity.msg.CalcScoreMsg;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
-import com.trs.gov.kpi.msgqueue.CommonMQ;
 import com.trs.gov.kpi.msgqueue.MQListener;
+import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
 import org.springframework.stereotype.Component;
@@ -35,6 +35,9 @@ public class CalcScoreProcessor implements MQListener {
 
     @Resource
     private CommonMapper commonMapper;
+
+    @Resource
+    private WkAllStatsService wkAllStatsService;
 
     // 算分消息计数的map， key = siteId#checkId
     private Map<String, Integer> scoreMsgCountMap = new HashMap<>();
@@ -62,6 +65,8 @@ public class CalcScoreProcessor implements MQListener {
                 wkScoreService.calcTotalScore(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
                 updateCheckEndTime(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
                 wkSiteManagementService.changeSiteStatus(calcScoreMsg.getSiteId(), Types.WkCheckStatus.DONE_CHECK);
+                wkAllStatsService.getLastTimeCheckBySiteIdAndCheckId(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
+
                 scoreMsgCountMap.remove(key);
             } else {
                 scoreMsgCountMap.put(key, count);

@@ -137,7 +137,6 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
                     wkSiteManagementResponse.setTotal(score.getTotal());
                 }
             }
-
             wkSiteResponseList.add(wkSiteManagementResponse);
         }
         return wkSiteResponseList;

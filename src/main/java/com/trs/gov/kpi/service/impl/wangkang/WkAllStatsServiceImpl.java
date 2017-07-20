@@ -133,8 +133,28 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
     }
 
     @Override
-    public Integer getLastCheckId(Integer siteId, Integer curCheckId) {
-        return wkCheckTimeMapper.getLastCheckId(siteId, curCheckId);
+    public Integer getLastCheckId(Integer siteId, Integer checkId) {
+        return wkCheckTimeMapper.getLastCheckId(siteId, checkId);
+    }
+
+    @Override
+    public WkAllStats getLastTimeCheckBySiteIdAndCheckId(Integer siteId, Integer checkId) {
+//        QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
+//        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+//        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+//        WkAllStats wkAllStats = wkAllStatsMapper.selectOnce(filter);
+//
+//
+//
+//        if (commonMapper.count(filter) > 0) {
+//            DBUpdater updater = new DBUpdater(Table.WK_ALL_STATS.getTableName());
+//            updater.addField(WkAllStatsTableField.AVG_SPEED, wkAllStats.getAvgSpeed());
+//            updater.addField(WkAllStatsTableField.UPDATE_CONTENT, wkAllStats.getUpdateContent());
+//            commonMapper.update(updater, filter);
+//        } else {
+//            commonMapper.insert(DBUtil.toRow(wkAllStats));
+//        }
+        return null;
     }
 
     private QueryFilter getFilter(WkAllStats wkAllStats) {
