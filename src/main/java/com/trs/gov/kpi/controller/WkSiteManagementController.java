@@ -55,14 +55,29 @@ public class WkSiteManagementController {
         }
         String siteName = siteManagement.getSiteName();
         String siteIndexUrl = siteManagement.getSiteIndexUrl();
-        Integer nameCount = wkSiteManagementService.getSiteCountBySiteName(siteName);
-        Integer urlCount = wkSiteManagementService.getSiteCountByUrl(siteIndexUrl);
+        int unDel = 0;
+        Integer nameCount = wkSiteManagementService.getSiteCountBySiteName(siteName , unDel);
+        Integer urlCount = wkSiteManagementService.getSiteCountByUrl(siteIndexUrl, unDel);
         if (nameCount != 0 || urlCount != 0){
             log.error("Invalid parameter: 网站名或首页URL已存在！！！");
             throw new BizException(Constants.SITE_NAME_IS_EXIST);
         }else{
-            siteManagement.setCheckTime(new Date());
-            wkSiteManagementService.addWkSite(siteManagement);
+            int isDel = 1;
+            SiteManagement siteNameContent = wkSiteManagementService.getSiteContentBySiteName(siteName, isDel);
+            SiteManagement SiteUrlContent = wkSiteManagementService.getSiteContentByUrl(siteIndexUrl, isDel);
+            if((SiteUrlContent != null && siteNameContent != null) || (SiteUrlContent == null && siteNameContent != null) || (SiteUrlContent != null && siteNameContent == null)){
+                siteManagement.setCheckTime(new Date());
+                siteManagement.setIsDel(0);
+                if(siteNameContent != null){
+                    siteManagement.setSiteId(siteNameContent.getSiteId());
+                }else {
+                    siteManagement.setSiteId(SiteUrlContent.getSiteId());
+                }
+                wkSiteManagementService.updateSiteManagement(siteManagement);
+            }else{
+                siteManagement.setCheckTime(new Date());
+                wkSiteManagementService.addWkSite(siteManagement);
+            }
         }
         return null;
     }
@@ -86,8 +101,9 @@ public class WkSiteManagementController {
         SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId);
         if(siteManage != null){
 
+            int isDel = 0;
             String siteName = siteManagement.getSiteName();
-            Integer siteCount = wkSiteManagementService.getSiteCountBySiteName(siteName);
+            Integer siteCount = wkSiteManagementService.getSiteCountBySiteName(siteName, isDel);
             if (siteCount > 1){
                 log.error("Invalid parameter: 该网站名已存在！！！");
                 throw new BizException(Constants.SITE_NAME_IS_EXIST);

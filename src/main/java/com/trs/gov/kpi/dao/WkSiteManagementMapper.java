@@ -22,20 +22,36 @@ public interface WkSiteManagementMapper {
     SiteManagement selectSiteManagementByStieId(Integer siteId);
 
     /**
-     * 根据网站名称查询网站个数
-     *
-     * @param siteName
-     * @return
-     */
-    Integer getSiteCountBySiteName(String siteName);
-
-    /**
      * 根据网站名称和首页URL查询网站个数
      *
      * @param siteIndexUrl
      * @return
      */
-    Integer getSiteCountByUrl(String siteIndexUrl);
+    Integer getSiteCountByUrl(@Param("siteIndexUrl") String siteIndexUrl, @Param("isDel") Integer isDel);
+
+    /**
+     * 根据网站名称查询网站个数
+     *
+     * @param siteName
+     * @return
+     */
+    Integer getSiteCountBySiteName(@Param("siteName") String siteName, @Param("isDel") Integer isDel);
+
+    /**
+     * 根据网站名称和首页URL查询网站
+     *
+     * @param siteIndexUrl
+     * @return
+     */
+    SiteManagement getSiteContentByUrl(@Param("siteIndexUrl") String siteIndexUrl, @Param("isDel") Integer isDel);
+
+    /**
+     * 根据网站名称查询网站
+     *
+     * @param siteName
+     * @return
+     */
+    SiteManagement getSiteContentBySiteName(@Param("siteName") String siteName, @Param("isDel") Integer isDel);
 
     /**
      * 查询所有未删除和检查状态不为 0 网站数量
