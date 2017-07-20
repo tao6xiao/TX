@@ -21,6 +21,7 @@
         <include refid="Base_Column_List" />
         from wksite
         where siteId = #{siteId,jdbcType=INTEGER}
+        and isDel = #{isDel,jdbcType=INTEGER}
     </select>
 
     <select id="selectAllSiteList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">

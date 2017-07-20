@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -115,8 +116,10 @@ public class WkScoreServiceImpl implements WkScoreService {
 
                 wkOneSiteScoreList.add(wkOneSiteScore);
             }
+            return wkOneSiteScoreList;
+        }else{
+            return Collections.EMPTY_LIST;
         }
-        return wkOneSiteScoreList;
     }
 
     @Override

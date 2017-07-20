@@ -54,8 +54,8 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     }
 
     @Override
-    public SiteManagement getSiteManagementBySiteId(Integer siteId ) {
-        return wkSiteManagementMapper.selectSiteManagementByStieId(siteId);
+    public SiteManagement getSiteManagementBySiteId(Integer siteId, Integer isDel) {
+        return wkSiteManagementMapper.selectSiteManagementByStieId(siteId, isDel);
     }
 
     @Override
