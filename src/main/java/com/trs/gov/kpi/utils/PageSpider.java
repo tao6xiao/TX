@@ -17,6 +17,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.Header;
+import org.apache.http.HttpConnection;
 import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -28,6 +30,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import java.io.IOException;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -177,6 +180,7 @@ public class PageSpider {
 
         ThreadLocal<Boolean> isUrlAvailable = new ThreadLocal<>();
         ThreadLocal<String> contentType = new ThreadLocal<>();
+        ThreadLocal<String> ContentDisposition = new ThreadLocal<>();
 
         @Override
         public Page download(Request request, Task task) {
@@ -192,58 +196,70 @@ public class PageSpider {
                 parentUrl = "";
             }
 
-            final EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
+            EnumUrlType urlType = null;
+            try {
 
-            // 链接类型计数
-            Types.WkLinkIssueType linkType = WebPageUtil.toWkLinkType(urlType);
-            synchronized (linkCountMap) {
-                Integer count = linkCountMap.get(linkType);
-                if (count == null) {
-                    linkCountMap.put(linkType, 1);
+                if (!isUrlAvailable.get()) {
+                    final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
+                    urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
+
+                    unavailableUrls.add(request.getUrl().intern());
+                    InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
+                    invalidLinkMsg.setCheckId(checkId);
+                    synchronized (pageContent) {
+                        invalidLinkMsg.setParentContent(pageContent.get(parentUrl.toString()));
+                    }
+                    invalidLinkMsg.setParentUrl(parentUrl.toString());
+                    invalidLinkMsg.setSiteId(siteManagement.getSiteId());
+                    invalidLinkMsg.setUrl(request.getUrl().intern());
+                    invalidLinkMsg.setErrorCode(Integer.valueOf(request.getExtra("statusCode").toString()));
+                    commonMQ.publishMsg(invalidLinkMsg);
                 } else {
-                    linkCountMap.put(linkType, count+1);
+                    urlType = WebPageUtil.getUrlTypeByContentType(contentType.get(), ContentDisposition.get());
+                    synchronized (pageContent) {
+                        pageContent.put(request.getUrl().intern(), result.getRawText());
+                    }
+
+                    String baseHost = UrlUtils.getHost(request.getUrl());
+                    // 只处理本域名下的网页
+                    if (urlType == EnumUrlType.HTML && StringUtils.equals(baseHost, homepageHost)) {
+                        PageInfoMsg pageInfoMsg = new PageInfoMsg();
+                        pageInfoMsg.setSiteId(siteManagement.getSiteId());
+                        pageInfoMsg.setParentUrl(parentUrl.toString());
+                        pageInfoMsg.setSpeed(useTime);
+                        pageInfoMsg.setUrl(request.getUrl());
+                        pageInfoMsg.setCheckId(checkId);
+                        pageInfoMsg.setContent(result.getRawText());
+                        count++;
+                        commonMQ.publishMsg(pageInfoMsg);
+                    }
+                }
+            } finally {
+
+                if (urlType != null) {
+                    // 链接类型计数
+                    Types.WkLinkIssueType linkType = WebPageUtil.toWkLinkType(urlType);
+                    synchronized (linkCountMap) {
+                        Integer count = linkCountMap.get(linkType);
+                        if (count == null) {
+                            linkCountMap.put(linkType, 1);
+                        } else {
+                            linkCountMap.put(linkType, count+1);
+                        }
+                    }
                 }
             }
 
-            // TODO 访问时间，入库
-            if (!isUrlAvailable.get()) {
-                unavailableUrls.add(request.getUrl().intern());
-
-                InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
-                invalidLinkMsg.setCheckId(checkId);
-                synchronized (pageContent) {
-                    invalidLinkMsg.setParentContent(pageContent.get(parentUrl.toString()));
-                }
-                invalidLinkMsg.setParentUrl(parentUrl.toString());
-                invalidLinkMsg.setSiteId(siteManagement.getSiteId());
-                invalidLinkMsg.setUrl(request.getUrl().intern());
-                invalidLinkMsg.setErrorCode(Integer.valueOf(request.getExtra("statusCode").toString()));
-                commonMQ.publishMsg(invalidLinkMsg);
-            } else {
-                synchronized (pageContent) {
-                    pageContent.put(request.getUrl().intern(), result.getRawText());
-                }
-
-                String baseHost = UrlUtils.getHost(request.getUrl());
-                // 只处理本域名下的网页
-                if (urlType == EnumUrlType.HTML && StringUtils.equals(baseHost, homepageHost)) {
-                    PageInfoMsg pageInfoMsg = new PageInfoMsg();
-                    pageInfoMsg.setSiteId(siteManagement.getSiteId());
-                    pageInfoMsg.setParentUrl(parentUrl.toString());
-                    pageInfoMsg.setSpeed(useTime);
-                    pageInfoMsg.setUrl(request.getUrl());
-                    pageInfoMsg.setCheckId(checkId);
-                    pageInfoMsg.setContent(result.getRawText());
-                    count++;
-                    commonMQ.publishMsg(pageInfoMsg);
-                }
-            }
             return result;
         }
 
         @Override
         protected Page handleResponse(Request request, String charset, HttpResponse httpResponse, Task task) throws IOException {
             contentType.set(httpResponse.getEntity().getContentType().getValue());
+            final Header[] headers = httpResponse.getHeaders("Content-Disposition");
+            if (headers != null && headers.length >= 1) {
+                contentType.set(headers[0].getValue());
+            }
             return super.handleResponse(request, charset, httpResponse, task);
         }
 

@@ -14,6 +14,9 @@ public enum EnumUrlType {
     // 视频
     VIDEO,
     // 音频
-    AUDIO
-
+    AUDIO,
+    // 资源文件 css,js
+    RES,
+    // 其他
+    OTHER
 }

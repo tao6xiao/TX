@@ -76,7 +76,6 @@ public class WebPageUtil {
         return EnumUrlType.HTML;
     }
 
-
     public static Types.WkLinkIssueType toWkLinkType(EnumUrlType urlType) {
 
         Types.WkLinkIssueType issueType;
@@ -100,6 +99,41 @@ public class WebPageUtil {
         }
         return issueType;
 
+    }
+
+    /**
+     * 判断url的类型
+     *
+     * @param contentType
+     * @param contentDisposition
+     * @return
+     */
+    public static EnumUrlType getUrlTypeByContentType(String contentType, String contentDisposition) {
+
+        if (StringUtil.isEmpty(contentType)) {
+            return null;
+        }
+
+        if (!StringUtil.isEmpty(contentDisposition) && contentDisposition.indexOf("attachment") >= 0) {
+            return EnumUrlType.FILE;
+        }
+
+        if (contentType.indexOf("text") >= 0) {
+
+            if (contentType.indexOf("css") >= 0 || contentType.indexOf("js") >= 0) {
+                return EnumUrlType.RES;
+            } else {
+                return EnumUrlType.HTML;
+            }
+        } else if (contentType.indexOf("video") >= 0 || contentType.indexOf("audio") >= 0) {
+            return EnumUrlType.VIDEO;
+        } else if (contentType.indexOf("image") >= 0) {
+            return EnumUrlType.IMAGE;
+        } else if (contentType.indexOf("download") >= 0) {
+            return EnumUrlType.FILE;
+        } else {
+            return EnumUrlType.FILE;
+        }
     }
 
 }
