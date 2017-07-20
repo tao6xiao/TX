@@ -37,7 +37,6 @@
         count(1)
         from wksite
         where 1 = 1
-        and checkStatus != 0
         <include refid="all_conditions_sql"/>
     </select>
 
