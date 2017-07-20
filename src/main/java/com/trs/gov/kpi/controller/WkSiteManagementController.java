@@ -62,23 +62,9 @@ public class WkSiteManagementController {
             log.error("Invalid parameter: 网站名或首页URL已存在！！！");
             throw new BizException(Constants.SITE_NAME_IS_EXIST);
         }else{
-            int isDel = 1;
-            SiteManagement siteNameContent = wkSiteManagementService.getSiteContentBySiteName(siteName, isDel);
-            SiteManagement SiteUrlContent = wkSiteManagementService.getSiteContentByUrl(siteIndexUrl, isDel);
-            if((SiteUrlContent != null && siteNameContent != null) || (SiteUrlContent == null && siteNameContent != null) || (SiteUrlContent != null && siteNameContent == null)){
-                siteManagement.setCheckTime(new Date());
-                siteManagement.setIsDel(0);
-                if(siteNameContent != null){
-                    siteManagement.setSiteId(siteNameContent.getSiteId());
-                }else {
-                    siteManagement.setSiteId(SiteUrlContent.getSiteId());
-                }
-                wkSiteManagementService.updateSiteManagement(siteManagement);
-            }else{
                 siteManagement.setCheckTime(new Date());
                 wkSiteManagementService.addWkSite(siteManagement);
             }
-        }
         return null;
     }
 
