@@ -281,12 +281,14 @@ public class SpiderUtils {
         }
 
         int newMinDeep = minDeep;
-        for (String parentUrl : parentUrls) {
-            if (parentUrl.equals(baseUrl)) {
-                return deeps + 1 < newMinDeep ? deeps + 1 : newMinDeep;
-            } else {
-                int newDeep = calcDeep(parentUrl, newMinDeep, deeps + 1);
-                newMinDeep = newMinDeep > newDeep ? newDeep : newMinDeep;
+        synchronized (pageParentMap) {
+            for (String parentUrl : parentUrls) {
+                if (parentUrl.equals(baseUrl)) {
+                    return deeps + 1 < newMinDeep ? deeps + 1 : newMinDeep;
+                } else {
+                    int newDeep = calcDeep(parentUrl, newMinDeep, deeps + 1);
+                    newMinDeep = newMinDeep > newDeep ? newDeep : newMinDeep;
+                }
             }
         }
 
