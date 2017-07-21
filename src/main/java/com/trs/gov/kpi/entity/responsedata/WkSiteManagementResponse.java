@@ -26,5 +26,5 @@ public class WkSiteManagementResponse {
 
     private Integer checkStatus;//检查完成状态
 
-    private Integer total = 0; // 总分
+    private double total = 0; // 总分
 }

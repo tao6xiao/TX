@@ -345,7 +345,6 @@ public class InvalidLinkProcessor implements MQListener {
     }
 
     private void calcScoreAndInsert(Integer siteId, Integer checkId, int invalidLinkCount) {
-
         /**
          * SL链接得分(权值40%)	 	=L1x50%+L2x20%+L3x30%
          * L1. L1(常规链接错误率R百分比得分)			=	100(1-ln(R/100+1))
@@ -354,15 +353,15 @@ public class InvalidLinkProcessor implements MQListener {
          *      js、css等文件链接错误。
          * L3. (错误链接最小层次L得分)					=	100ln(L/10+1) 		L<10
          */
-        // TODO: 求出常规链接错误率R百分比得分
-        double R1 = 100 / invalidLinkCount;
-        double linkL1 = Math.log(R1/100 + 1);
-        double linkL1Score = 100 * (1 - linkL1);
+        int routineLinkCount = wkIssueService.getRoutineLinkCount(siteId, checkId);
+        double RoutineLinkR = routineLinkCount / invalidLinkCount;
+        double linkL1Log = Math.log(RoutineLinkR/100 + 1);
+        double linkL1Score = 100 * (1 - linkL1Log);
 
-        // TODO: 求出其它链接错误率R百分比得分
-        double R2 = 100 / invalidLinkCount;
-        double linkL2 = Math.log(R2/100 + 1);
-        double linkL2Score = 100 * (1 - linkL2);
+        int othersLinkCount = wkIssueService.getOthersLinkCount(siteId, checkId);
+        double othersLinkCountR = othersLinkCount / invalidLinkCount;
+        double linkL2Log = Math.log(othersLinkCountR/100 + 1);
+        double linkL2Score = 100 * (1 - linkL2Log);
 
         // TODO: 求出错误链接最小层次L
         double L = 11;

@@ -1,7 +1,10 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
+import com.trs.gov.kpi.constant.Status;
+import com.trs.gov.kpi.constant.WkSiteTableField;
 import com.trs.gov.kpi.dao.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.Pager;
@@ -33,6 +36,9 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
 
     @Resource
     WkSiteManagementService wkSiteManagementService;
+
+    @Resource
+    private WkSiteManagementMapper wkSiteManagementMapper;
 
     @Resource
     private CommonMapper commonMapper;
@@ -77,33 +83,50 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         if (!StringUtil.isEmpty(wkAllSiteDetail.getSearchText())) {
             wkAllSiteDetail.setSearchText(StringUtil.escape(wkAllSiteDetail.getSearchText()));
         }
-
         QueryFilter filter = QueryFilterHelper.toStatsWkFilter(wkAllSiteDetail);
-        int itemCount = commonMapper.count(filter);
+        List<WkSiteIndexStats> wkSiteIndexStatsesList = wkSiteIndexStatsMapper.select(filter);
+
+        QueryFilter isDelFilter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        isDelFilter.addCond(WkSiteTableField.IS_DEL, Status.Delete.DELETED.value);
+        List<SiteManagement> siteManagementList = wkSiteManagementMapper.selectIsDelSiteList(isDelFilter);
+        int count = 0;
+        if (!siteManagementList.isEmpty()){
+            for (SiteManagement siteManagement:siteManagementList) {
+                for (WkSiteIndexStats wkSiteIndexStats : wkSiteIndexStatsesList) {
+                    if(siteManagement.getSiteId().equals(wkSiteIndexStats.getSiteId())){
+                        count ++;
+                        break;
+                    }
+                }
+            }
+        }
+        int SiteIndexStatsCount = commonMapper.count(filter);
+        int itemCount = SiteIndexStatsCount - count;
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
 
-        List<WkSiteIndexStats> wkSiteIndexStatsesList = wkSiteIndexStatsMapper.select(filter);
-
         return new ApiPageData(pager, getWkIndexLinkIssueResponseByIssue(wkSiteIndexStatsesList));
-
 }
-
     private List<WkIndexLinkIssueResponse> getWkIndexLinkIssueResponseByIssue(List<WkSiteIndexStats> wkSiteIndexStatsesList){
         List<WkIndexLinkIssueResponse> wkIndexLinkIssueList = new ArrayList<>();
 
         if(!wkSiteIndexStatsesList.isEmpty()){
             for (WkSiteIndexStats wkSiteIndexStats: wkSiteIndexStatsesList) {
-                WkIndexLinkIssueResponse wkIndexLinkIssue = new WkIndexLinkIssueResponse();
 
-                wkIndexLinkIssue.setSiteId(wkSiteIndexStats.getSiteId());
-                wkIndexLinkIssue.setSiteName(wkSiteIndexStats.getSiteName());
-                wkIndexLinkIssue.setInvalidLinkCount(wkSiteIndexStats.getInvalidLink());
-                wkIndexLinkIssue.setContentErrorCount(wkSiteIndexStats.getContentError());
-                wkIndexLinkIssue.setOverSpeedCount(wkSiteIndexStats.getOverSpeed());
-                wkIndexLinkIssue.setUpdateContentCount(wkSiteIndexStats.getUpdateContent());
+                Integer isDel = 0;
+                SiteManagement siteManagement = wkSiteManagementService.getSiteManagementBySiteId(wkSiteIndexStats.getSiteId(), isDel);
 
-                wkIndexLinkIssueList.add(wkIndexLinkIssue);
+                if (siteManagement != null) {
+                    WkIndexLinkIssueResponse wkIndexLinkIssue = new WkIndexLinkIssueResponse();
+                    wkIndexLinkIssue.setSiteId(wkSiteIndexStats.getSiteId());
+                    wkIndexLinkIssue.setSiteName(wkSiteIndexStats.getSiteName());
+                    wkIndexLinkIssue.setInvalidLinkCount(wkSiteIndexStats.getInvalidLink());
+                    wkIndexLinkIssue.setContentErrorCount(wkSiteIndexStats.getContentError());
+                    wkIndexLinkIssue.setOverSpeedCount(wkSiteIndexStats.getOverSpeed());
+                    wkIndexLinkIssue.setUpdateContentCount(wkSiteIndexStats.getUpdateContent());
+
+                    wkIndexLinkIssueList.add(wkIndexLinkIssue);
+                }
             }
             return wkIndexLinkIssueList;
         }else{

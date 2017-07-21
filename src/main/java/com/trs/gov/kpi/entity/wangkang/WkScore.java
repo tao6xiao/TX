@@ -28,7 +28,7 @@ public class WkScore {
     private Date checkTime;//检测时间
 
     @DBField
-    private Integer total = 0;//综合评分
+    private double total = 0;//综合评分
 
     @DBField
     private Integer invalidLink = 0;//链接可用性分数

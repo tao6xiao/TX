@@ -83,4 +83,12 @@ public interface WkSiteManagementMapper {
      */
     SiteManagement getIndexpageBySiteId(@Param("siteId") Integer siteId);
 
+    /**
+     * 查询所有网站信息
+     *
+     * @param isDelFilter
+     * @return
+     */
+    List<SiteManagement> selectIsDelSiteList(QueryFilter isDelFilter);
+
 }

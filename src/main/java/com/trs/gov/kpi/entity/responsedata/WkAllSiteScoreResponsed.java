@@ -26,5 +26,5 @@ public class WkAllSiteScoreResponsed {
 
     private Integer checkStatus;//检查完成状态
 
-    private Integer total;//总分
+    private double total;//总分
 }
