@@ -19,7 +19,7 @@ public interface WkSiteManagementMapper {
      * @param siteId
      * @return
      */
-    SiteManagement selectSiteManagementByStieId(@Param("siteId") Integer siteId, @Param("IsDel") Integer IsDel);
+    SiteManagement selectSiteManagementByStieId(@Param("siteId") Integer siteId, @Param("isDel") Integer isDel);
 
     /**
      * 根据网站名称和首页URL查询网站个数
