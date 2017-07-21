@@ -105,13 +105,15 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
 
-        return new ApiPageData(pager, getWkIndexLinkIssueResponseByIssue(wkSiteIndexStatsesList));
+        List<WkSiteIndexStats> wkSiteIndexStatsesListTo = wkSiteIndexStatsMapper.select(filter);
+
+        return new ApiPageData(pager, getWkIndexLinkIssueResponseByIssue(wkSiteIndexStatsesListTo));
 }
-    private List<WkIndexLinkIssueResponse> getWkIndexLinkIssueResponseByIssue(List<WkSiteIndexStats> wkSiteIndexStatsesList){
+    private List<WkIndexLinkIssueResponse> getWkIndexLinkIssueResponseByIssue(List<WkSiteIndexStats> wkSiteIndexStatsesListTo){
         List<WkIndexLinkIssueResponse> wkIndexLinkIssueList = new ArrayList<>();
 
-        if(!wkSiteIndexStatsesList.isEmpty()){
-            for (WkSiteIndexStats wkSiteIndexStats: wkSiteIndexStatsesList) {
+        if(!wkSiteIndexStatsesListTo.isEmpty()){
+            for (WkSiteIndexStats wkSiteIndexStats: wkSiteIndexStatsesListTo) {
 
                 Integer isDel = 0;
                 SiteManagement siteManagement = wkSiteManagementService.getSiteManagementBySiteId(wkSiteIndexStats.getSiteId(), isDel);
