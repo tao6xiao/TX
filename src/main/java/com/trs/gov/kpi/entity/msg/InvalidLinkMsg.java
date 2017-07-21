@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.entity.msg;
 
+import com.trs.gov.kpi.constant.EnumUrlType;
 import lombok.Data;
 
 /**
@@ -24,6 +25,9 @@ public class InvalidLinkMsg implements IMQMsg {
 
     // 内容
     private String parentContent;
+
+    // 链接类型
+    private EnumUrlType urlType;
 
     // 错误码
     private int errorCode = 404;

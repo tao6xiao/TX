@@ -94,8 +94,7 @@ public class InvalidLinkProcessor implements MQListener {
         } else {
             InvalidLinkMsg invalidLinkMsg = (InvalidLinkMsg)msg;
 
-            final EnumUrlType urlType = WebPageUtil.getUrlType(invalidLinkMsg.getUrl());
-            Types.WkLinkIssueType issueType = WebPageUtil.toWkLinkType(urlType);
+            Types.WkLinkIssueType issueType = WebPageUtil.toWkLinkType(invalidLinkMsg.getUrlType());
 
             try {
                 WkIssue issue = new WkIssue();

@@ -206,6 +206,7 @@ public class PageSpider {
                     unavailableUrls.add(request.getUrl().intern());
                     InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
                     invalidLinkMsg.setCheckId(checkId);
+                    invalidLinkMsg.setUrlType(urlType);
                     synchronized (pageContent) {
                         invalidLinkMsg.setParentContent(pageContent.get(parentUrl.toString()));
                     }
