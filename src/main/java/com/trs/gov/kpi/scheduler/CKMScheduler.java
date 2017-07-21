@@ -126,7 +126,7 @@ public class CKMScheduler implements SchedulerTask {
         return issueList;
     }
 
-    private void insert(List<Issue> issueList) {
+    private void insert(List<Issue> issueList) throws RemoteException {
         //插入监测出的信息错误数据
         for (Issue issue : issueList) {
 

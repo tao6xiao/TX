@@ -40,7 +40,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     private PerformanceService performanceService;
 
     @Override
-    public List<Statistics> getAllIssueCount(PageDataRequestParam param) {
+    public List<Statistics> getAllIssueCount(PageDataRequestParam param) throws RemoteException {
 
         param.setBeginDateTime(InitTime.initBeginDateTime(param.getBeginDateTime(), issueMapper.getEarliestIssueTime()));
         param.setEndDateTime(InitTime.initEndDateTime(param.getEndDateTime()));
@@ -89,7 +89,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     }
 
     @Override
-    public List<Statistics> getUnhandledIssueCount(PageDataRequestParam param) {
+    public List<Statistics> getUnhandledIssueCount(PageDataRequestParam param) throws RemoteException {
 
         List<Statistics> list = new ArrayList<>();
 
@@ -202,7 +202,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     }
 
     @Override
-    public List<Statistics> getWarningCount(PageDataRequestParam param) {
+    public List<Statistics> getWarningCount(PageDataRequestParam param) throws RemoteException {
 
         List<Statistics> list = new ArrayList<>();
 

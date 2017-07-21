@@ -38,7 +38,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     private DeptApiService deptApiService;
 
     @Override
-    public List<Statistics> getIssueCount(PageDataRequestParam param) {
+    public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
 
         Statistics handledIssueStatistics = new Statistics();
         handledIssueStatistics.setCount(getHandledIssueCount(param));
@@ -58,7 +58,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public int getHandledIssueCount(PageDataRequestParam param) {
+    public int getHandledIssueCount(PageDataRequestParam param) throws RemoteException {
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
@@ -69,7 +69,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public int getUnhandledIssueCount(PageDataRequestParam param) {
+    public int getUnhandledIssueCount(PageDataRequestParam param) throws RemoteException {
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
@@ -190,7 +190,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public boolean isIndexAvailable(PageDataRequestParam param) {
+    public boolean isIndexAvailable(PageDataRequestParam param) throws RemoteException {
 
         String indexUrl = getIndexUrl(param);
 
@@ -209,7 +209,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public IndexPage showIndexAvailability(PageDataRequestParam param) {
+    public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
         String indexUrl = getIndexUrl(param);
         IndexPage indexPage = new IndexPage();

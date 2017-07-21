@@ -22,7 +22,7 @@ public interface InfoErrorService {
      * @param param
      * @return
      */
-    List<Statistics> getIssueCount(PageDataRequestParam param);
+    List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询每月新增问题数量的历史记录

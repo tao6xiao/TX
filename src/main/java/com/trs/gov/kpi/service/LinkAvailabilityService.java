@@ -49,7 +49,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    boolean isIndexAvailable(PageDataRequestParam param);
+    boolean isIndexAvailable(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 获取网站首页
@@ -65,7 +65,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    IndexPage showIndexAvailability(PageDataRequestParam param);
+    IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 获取服务链接问题的列表
@@ -81,7 +81,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    int getHandledIssueCount(PageDataRequestParam param);
+    int getHandledIssueCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询未解决的问题数量
@@ -89,7 +89,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    int getUnhandledIssueCount(PageDataRequestParam param);
+    int getUnhandledIssueCount(PageDataRequestParam param) throws RemoteException;
 
     /**
      * 查询已解决和未解决的问题数量
@@ -97,6 +97,6 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    List<Statistics> getIssueCount(PageDataRequestParam param);
+    List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException;
 
 }

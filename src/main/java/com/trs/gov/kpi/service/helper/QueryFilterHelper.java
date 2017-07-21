@@ -12,6 +12,7 @@ import com.trs.gov.kpi.entity.requestdata.*;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 
 import java.text.ParseException;
@@ -39,7 +40,7 @@ public class QueryFilterHelper {
      * @param param
      * @return
      */
-    public static QueryFilter toFilter(PageDataRequestParam param, Types.IssueType... issueType) {
+    public static QueryFilter toFilter(PageDataRequestParam param, Types.IssueType... issueType) throws RemoteException {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
 
@@ -51,12 +52,23 @@ public class QueryFilterHelper {
             } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("issueType")) {
                 CondDBField field = buildIssueTypeCond(param.getSearchText(), issueType);
                 initSubTypeId(field, filter);
+            } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("deptName")) {
+                DeptApiService deptApiService = (DeptApiService) SpringContextUtil.getBean(DeptApiService.class);
+                List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
+                if (deptIds != null && !deptIds.isEmpty()) {
+                    filter.addCond(IssueTableField.DEPT_ID, deptIds);
+                } else {
+                    filter.addCond(IssueTableField.DEPT_ID, -1);
+                }
             } else if (param.getSearchField() == null) {
                 CondDBField idField = new CondDBField(IssueTableField.ID, '%' + param.getSearchText() + "%");
                 idField.setLike(true);
 
+                CondDBField deptIdsField = buildDeptIdsField(param);
+
                 CondDBField issueTypefield = buildIssueTypeCond(param.getSearchText(), issueType);
-                initAll(filter, idField, issueTypefield);
+                initAll(filter, idField, issueTypefield, deptIdsField);
+
             }
         }
 
@@ -69,6 +81,16 @@ public class QueryFilterHelper {
         return filter;
     }
 
+    private static CondDBField buildDeptIdsField(PageDataRequestParam param) throws RemoteException {
+        CondDBField deptIdsField = null;
+        DeptApiService deptApiService = (DeptApiService) SpringContextUtil.getBean(DeptApiService.class);
+        List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
+        if (deptIds != null && !deptIds.isEmpty()) {
+            deptIdsField = new CondDBField(IssueTableField.DEPT_ID, deptIds);
+        }
+        return deptIdsField;
+    }
+
     private static void initSubTypeId(CondDBField field, QueryFilter filter) {
         if (field != null) {
             filter.addCond(field);
@@ -77,15 +99,14 @@ public class QueryFilterHelper {
         }
     }
 
-    private static void initAll(QueryFilter filter, CondDBField idField, CondDBField issueTypefield) {
+    private static void initAll(QueryFilter filter, CondDBField idField, CondDBField issueTypefield, CondDBField deptIdsField) {
+        OrCondDBFields orFields = new OrCondDBFields();
+        orFields.addCond(idField);
+        orFields.addCond(deptIdsField);
         if (issueTypefield != null) {
-            OrCondDBFields orFields = new OrCondDBFields();
-            orFields.addCond(idField);
             orFields.addCond(issueTypefield);
-            filter.addOrConds(orFields);
-        } else {
-            filter.addCond(idField);
         }
+        filter.addOrConds(orFields);
     }
 
     private static void initTime(DateRequest param, String timeField, QueryFilter filter) {
@@ -381,7 +402,7 @@ public class QueryFilterHelper {
             List<Integer> chnlIds = siteApiService.findChnlIds("", param.getSiteId(), param.getSearchText());
             if (chnlIds != null && !chnlIds.isEmpty()) {
                 filter.addCond(DutyDeptTableField.CHNL_ID, chnlIds);
-            }else {
+            } else {
                 // 找不到符合条件的记录，构造一个不成立的条件
                 filter.addCond(DutyDeptTableField.CHNL_ID, -1);
             }
@@ -389,7 +410,7 @@ public class QueryFilterHelper {
             List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
             if (deptIds != null && !deptIds.isEmpty()) {
                 filter.addCond(DutyDeptTableField.DEPT_ID, deptIds);
-            }else {
+            } else {
                 // 找不到符合条件的记录，构造一个不成立的条件
                 filter.addCond(DutyDeptTableField.DEPT_ID, -1);
             }
@@ -402,14 +423,14 @@ public class QueryFilterHelper {
         List<Integer> chnlIds = siteApiService.findChnlIds("", param.getSiteId(), param.getSearchText());
         if (chnlIds != null && !chnlIds.isEmpty()) {
             orCondDBFields.addCond(DutyDeptTableField.CHNL_ID, chnlIds);
-        }else {
+        } else {
             // 找不到符合条件的记录，构造一个不成立的条件
             orCondDBFields.addCond(DutyDeptTableField.CHNL_ID, -1);
         }
         List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
         if (deptIds != null && !deptIds.isEmpty()) {
             orCondDBFields.addCond(DutyDeptTableField.DEPT_ID, deptIds);
-        }else {
+        } else {
             // 找不到符合条件的记录，构造一个不成立的条件
             orCondDBFields.addCond(DutyDeptTableField.DEPT_ID, -1);
         }

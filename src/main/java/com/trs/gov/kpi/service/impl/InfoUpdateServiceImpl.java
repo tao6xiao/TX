@@ -54,7 +54,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     private DeptApiService deptApiService;
 
     @Override
-    public List<Statistics> getIssueCount(PageDataRequestParam param) {
+    public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
         QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.INFO_UPDATE_ISSUE.value, Types.IssueType.INFO_UPDATE_WARNING.value));
         filter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));

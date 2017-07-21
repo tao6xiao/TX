@@ -45,7 +45,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     private DeptApiService deptApiService;
 
     @Override
-    public List<Statistics> getIssueCount(PageDataRequestParam param) {
+    public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);

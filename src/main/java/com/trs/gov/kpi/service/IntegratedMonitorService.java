@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface IntegratedMonitorService {
 
-    List<Statistics> getAllIssueCount(PageDataRequestParam param);
+    List<Statistics> getAllIssueCount(PageDataRequestParam param) throws RemoteException;
 
-    List<Statistics> getUnhandledIssueCount(PageDataRequestParam param);
+    List<Statistics> getUnhandledIssueCount(PageDataRequestParam param) throws RemoteException;
 
-    List<Statistics> getWarningCount(PageDataRequestParam param);
+    List<Statistics> getWarningCount(PageDataRequestParam param) throws RemoteException;
 
     Double getPerformance(PageDataRequestParam param) throws ParseException, RemoteException;
 
