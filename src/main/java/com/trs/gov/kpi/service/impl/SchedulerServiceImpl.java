@@ -134,7 +134,8 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Override
     public void doCheckJobOnce(int siteId) {
-        final SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId);
+        int isDel = 0;
+        final SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId, isDel);
         doCheckJobNow(site);
     }
 

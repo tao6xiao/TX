@@ -82,12 +82,11 @@ public class WkSiteManagementController {
             log.error("Invalid parameter: 参数siteManagement对象中siteId, siteName、autoCheckType、SiteIndexUr、deptAddress、deptLatLng 五个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-
+        int isDel = 0;
         Integer siteId = siteManagement.getSiteId();
-        SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId);
+        SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId, isDel);
         if(siteManage != null){
 
-            int isDel = 0;
             String siteName = siteManagement.getSiteName();
             Integer siteCount = wkSiteManagementService.getSiteCountBySiteName(siteName, isDel);
             if (siteCount > 1){
