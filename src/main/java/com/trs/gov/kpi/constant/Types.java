@@ -571,7 +571,8 @@ public final class Types {
         LINK_DISCONNECT(WkSiteCheckType.INVALID_LINK.value  * 10 + 1 , "网页断链"),
         IMAGE_DISCONNECT (WkSiteCheckType.INVALID_LINK.value * 10 + 2, "图片断链"),
         VIDEO_DISCONNECT(WkSiteCheckType.INVALID_LINK.value * 10 + 3, "视频断链"),
-        ENCLOSURE_DISCONNECT(WkSiteCheckType.INVALID_LINK.value * 10 + 4, "附件断链");
+        ENCLOSURE_DISCONNECT(WkSiteCheckType.INVALID_LINK.value * 10 + 4, "附件断链"),
+        OTHERS_DISCONNECT(WkSiteCheckType.INVALID_LINK.value * 10 + 5, "其他断链");
 
         public final int value;
 

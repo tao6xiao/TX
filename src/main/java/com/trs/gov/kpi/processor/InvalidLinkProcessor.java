@@ -4,8 +4,6 @@ import com.esotericsoftware.minlog.Log;
 import com.trs.gov.kpi.constant.EnumUrlType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
-import com.trs.gov.kpi.entity.dao.DBRow;
-import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.msg.CalcScoreMsg;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
@@ -348,8 +346,33 @@ public class InvalidLinkProcessor implements MQListener {
 
     private void calcScoreAndInsert(Integer siteId, Integer checkId, int invalidLinkCount) {
 
-        int invalidLinkScore = 100 - invalidLinkCount;
+        /**
+         * SL链接得分(权值40%)	 	=L1x50%+L2x20%+L3x30%
+         * L1. L1(常规链接错误率R百分比得分)			=	100(1-ln(R/100+1))
+         *      网页链接错误、图片链接错误、视频链接错误、附件链接错误。
+         * L2. (其它链接错误率R百分比得分)				=	100(1-ln(R/100+1))
+         *      js、css等文件链接错误。
+         * L3. (错误链接最小层次L得分)					=	100ln(L/10+1) 		L<10
+         */
+        // TODO: 求出常规链接错误率R百分比得分
+        double R1 = 100 / invalidLinkCount;
+        double linkL1 = Math.log(R1/100 + 1);
+        double linkL1Score = 100 * (1 - linkL1);
 
+        // TODO: 求出其它链接错误率R百分比得分
+        double R2 = 100 / invalidLinkCount;
+        double linkL2 = Math.log(R2/100 + 1);
+        double linkL2Score = 100 * (1 - linkL2);
+
+        // TODO: 求出错误链接最小层次L
+        double L = 11;
+        if (10 <= L){
+            L = 10;
+        }
+        double linkL3 = Math.log(L/10 + 1);
+        double linkL3Score = 100 * linkL3;
+
+        int invalidLinkScore = (int)(linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3);
         if (invalidLinkScore < 0) {
             invalidLinkScore = 0;
         }

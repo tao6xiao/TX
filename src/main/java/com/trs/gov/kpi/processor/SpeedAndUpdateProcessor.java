@@ -168,6 +168,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
         }
 
         int updateCountScore = (int)(updateD1 * 0.5 + updateD2 * 0.5);
+        if (updateCountScore < 0) {
+            updateCountScore = 0;
+        }
 
         WkScore score = new WkScore();
         score.setSiteId(siteId);
