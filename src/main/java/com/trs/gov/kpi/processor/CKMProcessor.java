@@ -70,43 +70,46 @@ public class CKMProcessor implements MQListener {
 
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
 
-            synchronized (threadPoolLocker) {
-                fixedThreadPool.shutdown();
+            CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
+            try {
+                synchronized (threadPoolLocker) {
+                    fixedThreadPool.shutdown();
 
-                while (true){
-                    try {
-                        final boolean isTerminate = fixedThreadPool.awaitTermination(1, TimeUnit.SECONDS);
-                        if (isTerminate) {
+                    while (true){
+                        try {
+                            final boolean isTerminate = fixedThreadPool.awaitTermination(1, TimeUnit.SECONDS);
+                            if (isTerminate) {
+                                break;
+                            }
+                        } catch (InterruptedException e) {
+                            log.error("", e);
                             break;
                         }
-                    } catch (InterruptedException e) {
-                        log.error("", e);
-                        break;
                     }
+
+                    fixedThreadPool = Executors.newFixedThreadPool(10);
                 }
 
-                fixedThreadPool = Executors.newFixedThreadPool(10);
+                WkAllStats wkAllStats = new WkAllStats();
+                wkAllStats.setSiteId(checkEndMsg.getSiteId());
+                wkAllStats.setCheckId(checkEndMsg.getCheckId());
+                wkAllStats.setErrorInfo(wkIssueService.getErrorWordsCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
+                wkAllStatsService.insertOrUpdateErrorWords(wkAllStats);
+
+                // 比较并记录入库
+                compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+
+                final int errorWordsCount = wkIssueService.getErrorWordsCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+                calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), errorWordsCount);
+            } catch (Throwable e) {
+                log.error("", e);
             }
-
-            CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
-            WkAllStats wkAllStats = new WkAllStats();
-            wkAllStats.setSiteId(checkEndMsg.getSiteId());
-            wkAllStats.setCheckId(checkEndMsg.getCheckId());
-            wkAllStats.setErrorInfo(wkIssueService.getErrorWordsCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
-            wkAllStatsService.insertOrUpdateErrorWords(wkAllStats);
-
-            // 比较并记录入库
-            compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
-
-            final int errorWordsCount = wkIssueService.getErrorWordsCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
-            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), errorWordsCount);
 
             CalcScoreMsg calcSpeedScoreMsg = new CalcScoreMsg();
             calcSpeedScoreMsg.setCheckId(checkEndMsg.getCheckId());
             calcSpeedScoreMsg.setSiteId(checkEndMsg.getSiteId());
             calcSpeedScoreMsg.setScoreType("errorWords");
             commonMQ.publishMsg(calcSpeedScoreMsg);
-
         } else {
             // 监听待检测的内容消息
             CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);

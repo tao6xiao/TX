@@ -9,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class WebPageUtil {
 
-    private static final String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
+    private static final String[] resSuffixs = new String[]{"css", "js"};
+
+    private static final String[] imageSuffixs = new String[]{"png", "gif", "mpg", "mpeg", "mpe", "m1v", "mov", "qt", "jpeg", "jpg", "jpe", "bmp", "gif", "ico", "png", "tif", "tiff"};
 
     private static final String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
 
@@ -17,11 +19,10 @@ public class WebPageUtil {
 
     private static final String[] htmlSuffixs = new String[]{"htm", "html", "shtml", "xml"};
 
-    private static final String[] videoSuffixs = new String[]{"avi", "rmvb", "rm", "asf", "divx", "mpg", "mpeg", "mpe", "wmv", "mp4", "mkv", "vob"};
+    private static final String[] videoSuffixs = new String[]{"m3u", "mpega", "mp1", "mp2", "mp3", "mpa", "wav", "wax", "wma", "aif", "aifc", "aiff", "au", "snd", "ulw", "mid", "midi", "kar", "smf", "wm", "wmv", "wvx", "avi", "flv", "asx", "asf", "swf", "swfl", "awf"};
 
     private WebPageUtil() {
     }
-
     /**
      * 判断url的类型
      *
@@ -69,7 +70,15 @@ public class WebPageUtil {
 
             if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
 
-                return EnumUrlType.AUDIO;
+                return EnumUrlType.VIDEO;
+            }
+        }
+
+        for (String fileSuffix : resSuffixs) {
+
+            if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
+
+                return EnumUrlType.RES;
             }
         }
 
@@ -92,6 +101,9 @@ public class WebPageUtil {
                 break;
             case IMAGE:
                 issueType = Types.WkLinkIssueType.IMAGE_DISCONNECT;
+                break;
+            case RES:
+                issueType = Types.WkLinkIssueType.OTHERS_DISCONNECT;
                 break;
             default:
                 issueType = Types.WkLinkIssueType.LINK_DISCONNECT;
@@ -120,7 +132,7 @@ public class WebPageUtil {
 
         if (contentType.indexOf("text") >= 0) {
 
-            if (contentType.indexOf("css") >= 0 || contentType.indexOf("js") >= 0) {
+            if (contentType.indexOf("css") >= 0 || contentType.indexOf("javascript") >= 0) {
                 return EnumUrlType.RES;
             } else {
                 return EnumUrlType.HTML;

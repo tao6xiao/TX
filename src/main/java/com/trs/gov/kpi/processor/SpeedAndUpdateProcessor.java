@@ -17,6 +17,7 @@ import com.trs.gov.kpi.msgqueue.MQListener;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkEveryLinkService;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ import java.util.Objects;
 /**
  * Created by linwei on 2017/7/12.
  */
+@Slf4j
 @Component
 public class SpeedAndUpdateProcessor implements MQListener {
 
@@ -63,15 +65,19 @@ public class SpeedAndUpdateProcessor implements MQListener {
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
             // 检查结束
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
-            Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
-            Integer count = getUpdateCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
-            WkAllStats wkAllStats = new WkAllStats();
-            wkAllStats.setSiteId(checkEndMsg.getSiteId());
-            wkAllStats.setCheckId(checkEndMsg.getCheckId());
-            wkAllStats.setUpdateContent(count);
-            wkAllStats.setAvgSpeed(avgSpeed);
-            wkAllStatsService.insertOrUpdateUpdateContentAndSpeed(wkAllStats);
-            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), avgSpeed);
+            try {
+                Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+                Integer count = getUpdateCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+                WkAllStats wkAllStats = new WkAllStats();
+                wkAllStats.setSiteId(checkEndMsg.getSiteId());
+                wkAllStats.setCheckId(checkEndMsg.getCheckId());
+                wkAllStats.setUpdateContent(count);
+                wkAllStats.setAvgSpeed(avgSpeed);
+                wkAllStatsService.insertOrUpdateUpdateContentAndSpeed(wkAllStats);
+                calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), avgSpeed);
+            } catch (Throwable e) {
+                log.error("", e);
+            }
 
             CalcScoreMsg calcUpdateScoreMsg = new CalcScoreMsg();
             calcUpdateScoreMsg.setCheckId(checkEndMsg.getCheckId());
@@ -84,7 +90,6 @@ public class SpeedAndUpdateProcessor implements MQListener {
             calcSpeedScoreMsg.setSiteId(checkEndMsg.getSiteId());
             calcSpeedScoreMsg.setScoreType("avgSpeed");
             commonMQ.publishMsg(calcSpeedScoreMsg);
-
         } else {
             PageInfoMsg speedMsg = (PageInfoMsg)msg;
             WkEveryLink wkEveryLink = new WkEveryLink();

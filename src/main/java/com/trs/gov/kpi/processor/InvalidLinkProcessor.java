@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.processor;
 
 import com.esotericsoftware.minlog.Log;
-import com.trs.gov.kpi.constant.EnumUrlType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.entity.msg.CalcScoreMsg;
@@ -20,6 +19,7 @@ import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import com.trs.gov.kpi.utils.WebPageUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -38,6 +38,7 @@ import java.util.Objects;
 /**
  * Created by linwei on 2017/7/12.
  */
+@Slf4j
 @Component
 public class InvalidLinkProcessor implements MQListener {
 
@@ -71,17 +72,21 @@ public class InvalidLinkProcessor implements MQListener {
 
         if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
-            WkAllStats wkAllStats = new WkAllStats();
-            wkAllStats.setSiteId(checkEndMsg.getSiteId());
-            wkAllStats.setCheckId(checkEndMsg.getCheckId());
-            wkAllStats.setInvalidLink(wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
-            wkAllStatsService.insertOrUpdateInvalidLink(wkAllStats);
+            try {
+                WkAllStats wkAllStats = new WkAllStats();
+                wkAllStats.setSiteId(checkEndMsg.getSiteId());
+                wkAllStats.setCheckId(checkEndMsg.getCheckId());
+                wkAllStats.setInvalidLink(wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
+                wkAllStatsService.insertOrUpdateInvalidLink(wkAllStats);
 
-            // 比较并记录入库
-            compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+                // 比较并记录入库
+                compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
 
-            final int invalidLinkCount = wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
-            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId() ,invalidLinkCount);
+                final int invalidLinkCount = wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+                calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId() ,invalidLinkCount);
+            } catch (Throwable e) {
+                log.error("", e);
+            }
 
             CalcScoreMsg calcSpeedScoreMsg = new CalcScoreMsg();
             calcSpeedScoreMsg.setCheckId(checkEndMsg.getCheckId());
