@@ -78,6 +78,10 @@ public class WebPageUtil {
 
     public static Types.WkLinkIssueType toWkLinkType(EnumUrlType urlType) {
 
+        if (urlType == null) {
+            return Types.WkLinkIssueType.LINK_DISCONNECT;
+        }
+
         Types.WkLinkIssueType issueType;
 
         switch (urlType) {
