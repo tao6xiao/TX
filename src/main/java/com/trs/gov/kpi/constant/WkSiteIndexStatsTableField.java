@@ -19,4 +19,8 @@ public class WkSiteIndexStatsTableField {
 
     public static final String CONTENT_ERROR = "contentError";
 
+    private WkSiteIndexStatsTableField(){
+
+    }
+
 }

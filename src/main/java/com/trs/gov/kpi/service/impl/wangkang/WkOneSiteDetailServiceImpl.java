@@ -150,7 +150,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             }
             return wkStatsCountResponseList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -217,7 +217,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             }
             return wkIssueResponseList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -254,7 +254,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         return new ApiPageData(pager, toWkContentIssueResponseByWkIssueList(wkIssueList));
     }
 
-    private List<WkIssueResponse> getAllContentErrorList(Integer siteId, Integer checkId) {
+    private List<WkIssueResponse> getAllContentErrorList(Integer checkId) {
         QueryFilter queryFilter = new QueryFilter(Table.WK_ISSUE);
         queryFilter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.CONTENT_ERROR.value);
         queryFilter.addCond(WkIssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
@@ -265,7 +265,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         return toWkContentIssueResponseByWkIssueList(wkIssueList);
     }
 
-    private List<WkIssueResponse> getAllInvalidLinkList(Integer siteId,Integer checkId) {
+    private List<WkIssueResponse> getAllInvalidLinkList(Integer checkId) {
         QueryFilter queryFilter = new QueryFilter(Table.WK_ISSUE);
         queryFilter.addCond(WkIssueTableField.TYPE_ID, Types.WkSiteCheckType.INVALID_LINK.value);
         queryFilter.addCond(WkIssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
@@ -388,7 +388,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         beginRow++;
         addRow(sheet, beginRow, "序号", "所属栏目", "错误类型", "疑似错误详情", "地址", "父链接地址", "定位地址");
         beginRow++;
-        List<WkIssueResponse> allErrorWordsList = getAllContentErrorList(siteId, checkId);
+        List<WkIssueResponse> allErrorWordsList = getAllContentErrorList(checkId);
         for (int index = 0; index < allErrorWordsList.size(); index++) {
             WkIssueResponse issue = allErrorWordsList.get(index);
             addRow(sheet, beginRow, index+1, issue.getChnlName(), issue.getSubTypeName(), issue.getErrorInfo(),
@@ -430,7 +430,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         beginRow++;
         addRow(sheet, beginRow, "序号", "所属栏目", "类型", "地址", "父链接地址", "定位地址");
         beginRow++;
-        List<WkIssueResponse> allInvalidLinkList = getAllInvalidLinkList(siteId, checkId);
+        List<WkIssueResponse> allInvalidLinkList = getAllInvalidLinkList(checkId);
         for (int index = 0; index < allInvalidLinkList.size(); index++) {
             WkIssueResponse issue = allInvalidLinkList.get(index);
             addRow(sheet, beginRow, index+1, issue.getChnlName(), issue.getSubTypeName(), issue.getUrl(),
@@ -556,7 +556,7 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
             }
             return wkIssueResponseList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

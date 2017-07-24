@@ -67,7 +67,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
             }
             return wkAvgSpeedRespList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -101,7 +101,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
             }
             return wkUpdateContentList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 

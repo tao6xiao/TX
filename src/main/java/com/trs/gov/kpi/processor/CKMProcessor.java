@@ -83,7 +83,6 @@ public class CKMProcessor implements MQListener {
                             }
                         } catch (InterruptedException e) {
                             log.error("", e);
-                            break;
                         }
                     }
 
@@ -101,7 +100,7 @@ public class CKMProcessor implements MQListener {
 
                 final int errorWordsCount = wkIssueService.getErrorWordsCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
                 calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), errorWordsCount);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 log.error("", e);
             }
 

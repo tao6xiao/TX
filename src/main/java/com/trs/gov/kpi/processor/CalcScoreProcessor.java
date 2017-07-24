@@ -67,7 +67,7 @@ public class CalcScoreProcessor implements MQListener {
                 log.info("==begin calc total score of site[" + calcScoreMsg.getSiteId() + "]");
                 try {
                     wkScoreService.calcTotalScore(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     log.error("", e);
                 } finally {
                     log.info("==end calc total score of site[" + calcScoreMsg.getSiteId() + "]");
@@ -79,7 +79,7 @@ public class CalcScoreProcessor implements MQListener {
                 log.info("==begin change site status of site[" + calcScoreMsg.getSiteId() + "]");
                 try {
                     wkSiteManagementService.changeSiteStatus(calcScoreMsg.getSiteId(), Types.WkCheckStatus.DONE_CHECK);
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     log.error("", e);
                 } finally {
                     log.info("==end change site status of site[" + calcScoreMsg.getSiteId() + "]");
@@ -88,7 +88,7 @@ public class CalcScoreProcessor implements MQListener {
                 log.info("==begin getLastTimeCheckBySiteIdAndCheckId of site[" + calcScoreMsg.getSiteId() + "]");
                 try {
                     wkAllStatsService.getLastTimeCheckBySiteIdAndCheckId(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     log.error("", e);
                 } finally {
                     log.info("==end getLastTimeCheckBySiteIdAndCheckId of site[" + calcScoreMsg.getSiteId() + "]");
@@ -113,7 +113,7 @@ public class CalcScoreProcessor implements MQListener {
             filter.addCond(Constants.DB_FIELD_CHECK_ID, checkId);
             filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
             commonMapper.update(updater, filter);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("", e);
         } finally {
             log.info("==end update check end time of site[" + siteId + "]");

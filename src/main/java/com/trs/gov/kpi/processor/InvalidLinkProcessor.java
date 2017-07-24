@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.processor;
 
-import com.esotericsoftware.minlog.Log;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.entity.msg.CalcScoreMsg;
@@ -31,7 +30,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;

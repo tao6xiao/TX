@@ -2,7 +2,6 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.EnumUrlType;
 import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
@@ -18,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.Header;
-import org.apache.http.HttpConnection;
 import org.apache.http.HttpResponse;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -29,8 +27,6 @@ import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
-import us.codecraft.webmagic.selector.Html;
-import us.codecraft.webmagic.selector.RegexSelector;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import java.io.IOException;
@@ -53,17 +49,17 @@ public class PageSpider {
 
     private SiteManagement siteManagement;
 
-    // 过大页面阀值
-    private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
-
-    //栏目URL地址层级阀值
-    private static final int THRESHOLD_MAX_URL_LENGHT = 6;
-
-    //页面深度阀值
-    private static final int THRESHOLD_MAX_PAGE_DEPTH = 8;
-
-    //响应速度阈值
-    private static final int THRESHOLD_MAX_REPLY_SPEED = 10 * 1000;
+//    // 过大页面阀值
+//    private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
+//
+//    //栏目URL地址层级阀值
+//    private static final int THRESHOLD_MAX_URL_LENGHT = 6;
+//
+//    //页面深度阀值
+//    private static final int THRESHOLD_MAX_PAGE_DEPTH = 8;
+//
+//    //响应速度阈值
+//    private static final int THRESHOLD_MAX_REPLY_SPEED = 10 * 1000;
 
     private Map<String, Set<String>> pageParentMap = new ConcurrentHashMap<>();
 
@@ -195,7 +191,7 @@ public class PageSpider {
 
         ThreadLocal<Boolean> isUrlAvailable = new ThreadLocal<>();
         ThreadLocal<String> contentType = new ThreadLocal<>();
-        ThreadLocal<String> ContentDisposition = new ThreadLocal<>();
+        ThreadLocal<String> contentDisposition = new ThreadLocal<>();
 
         @Override
         public Page download(Request request, Task task) {
@@ -221,7 +217,7 @@ public class PageSpider {
                     return null;
                 } else {
 
-                    urlType = WebPageUtil.getUrlTypeByContentType(contentType.get(), ContentDisposition.get());
+                    urlType = WebPageUtil.getUrlTypeByContentType(contentType.get(), contentDisposition.get());
                     final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
                     EnumUrlType guessUrlType;
                     if (StringUtil.isEmpty(contentTypeName)) {
@@ -267,7 +263,7 @@ public class PageSpider {
                     return result;
                 }
 
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
                 urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
                 handleInvalidLink(request, parentUrl);
@@ -277,8 +273,8 @@ public class PageSpider {
                     // 链接类型计数
                     Types.WkLinkIssueType linkType = WebPageUtil.toWkLinkType(urlType);
                     synchronized (linkCountMap) {
-                        Integer count = linkCountMap.get(linkType);
-                        if (count == null) {
+                        int count = linkCountMap.get(linkType);
+                        if (count == 0) {
                             linkCountMap.put(linkType, 1);
                         } else {
                             linkCountMap.put(linkType, count+1);

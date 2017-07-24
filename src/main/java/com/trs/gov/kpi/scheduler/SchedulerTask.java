@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.entity.exception.RemoteException;
 
 /**
  * Created by wangxuan on 2017/5/11.

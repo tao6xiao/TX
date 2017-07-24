@@ -38,9 +38,6 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-//    @Resource
-//    private LinkAvailabilityService linkAvailabilityService;
-
     @Resource
     private WkIdService wkIdService;
 
@@ -126,7 +123,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
     @Override
     public Boolean getIsTimeNode() {
-        return null;
+        return true;
     }
 
     @Override

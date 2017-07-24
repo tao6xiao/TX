@@ -74,7 +74,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             }
             return wkAllSiteScoreList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -132,7 +132,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             }
             return wkIndexLinkIssueList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 }

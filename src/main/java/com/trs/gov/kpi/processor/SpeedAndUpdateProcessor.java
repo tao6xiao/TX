@@ -75,7 +75,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
                 wkAllStats.setAvgSpeed(avgSpeed);
                 wkAllStatsService.insertOrUpdateUpdateContentAndSpeed(wkAllStats);
                 calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId(), avgSpeed);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 log.error("", e);
             }
 

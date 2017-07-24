@@ -118,7 +118,7 @@ public class WkScoreServiceImpl implements WkScoreService {
             }
             return wkOneSiteScoreList;
         }else{
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
