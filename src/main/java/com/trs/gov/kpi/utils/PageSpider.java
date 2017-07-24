@@ -206,7 +206,7 @@ public class PageSpider {
             EnumUrlType urlType = null;
             Object parentUrl = request.getExtra("parentUrl");
             if (parentUrl == null) {
-                parentUrl = "";
+                parentUrl = request.getUrl().intern();
             }
 
             try {
