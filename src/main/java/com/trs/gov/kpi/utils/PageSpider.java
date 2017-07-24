@@ -223,7 +223,15 @@ public class PageSpider {
                     invalidLinkMsg.setCheckId(checkId);
                     invalidLinkMsg.setUrlType(urlType);
                     synchronized (pageContent) {
-                        invalidLinkMsg.setParentContent(pageContent.get(parentUrl.toString()));
+                        String parentContent = pageContent.get(parentUrl.toString());
+                        if (parentContent == null) {
+                            if (siteManagement.getSiteIndexUrl().equals(request.getUrl())) {
+                                parentContent = "<html><body><h1>首页不可用！</h1></body></html>";
+                            } else {
+                                parentContent = "<html><body><h1>父页面不存在！</h1></body></html>";
+                            }
+                        }
+                        invalidLinkMsg.setParentContent(parentContent);
                     }
                     invalidLinkMsg.setParentUrl(parentUrl.toString());
                     invalidLinkMsg.setSiteId(siteManagement.getSiteId());
@@ -249,7 +257,15 @@ public class PageSpider {
                         invalidLinkMsg.setCheckId(checkId);
                         invalidLinkMsg.setUrlType(urlType);
                         synchronized (pageContent) {
-                            invalidLinkMsg.setParentContent(pageContent.get(parentUrl.toString()));
+                            String parentContent = pageContent.get(parentUrl.toString());
+                            if (parentContent == null) {
+                                if (siteManagement.getSiteIndexUrl().equals(request.getUrl())) {
+                                    parentContent = "<html><body><h1>首页不可用！</h1></body></html>";
+                                } else {
+                                    parentContent = "<html><body><h1>父页面不存在！</h1></body></html>";
+                                }
+                            }
+                            invalidLinkMsg.setParentContent(parentContent);
                         }
                         invalidLinkMsg.setParentUrl(parentUrl.toString());
                         invalidLinkMsg.setSiteId(siteManagement.getSiteId());
