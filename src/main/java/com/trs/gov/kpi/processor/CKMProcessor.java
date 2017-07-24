@@ -183,24 +183,29 @@ public class CKMProcessor implements MQListener {
          *	R5：错别字
          *  各项得分计算公式：100(1-ln(R/100+1)) 其中R为次数除以总数后的百分比
          */
-        double allErrorEount = errorCount;
 
-        double typosCount = wkIssueService.getTyposCount(siteId, checkId);
-        double sensitiveWordsCount = wkIssueService.getSensitiveWordsCount(siteId, checkId);
-        double politicsCount = wkIssueService.getPoliticsCount(siteId, checkId);
+        int errorCountScore = 100;
 
-        double typosR123 = Math.log((typosCount/allErrorEount)/100 + 1);
-        double typosScore = 100 * (1 - typosR123);
+        if(errorCount > 0){
+            double allErrorEount = errorCount;
 
-        double sensitiveWordsR4 = Math.log((sensitiveWordsCount/allErrorEount)/100 + 1);
-        double sensitiveWordsScore = 100 * (1 - sensitiveWordsR4);
+            double typosCount = wkIssueService.getTyposCount(siteId, checkId);
+            double sensitiveWordsCount = wkIssueService.getSensitiveWordsCount(siteId, checkId);
+            double politicsCount = wkIssueService.getPoliticsCount(siteId, checkId);
 
-        double politicsR5 = Math.log((politicsCount/allErrorEount)/100 + 1);
-        double politicsScore = 100 * (1 - politicsR5);
+            double typosR123 = Math.log((typosCount/allErrorEount)/100 + 1);
+            double typosScore = 100 * (1 - typosR123);
 
-        int errorCountScore = (int)(typosScore * 0.2 + sensitiveWordsScore * 0.4 + politicsScore * 0.4);
-        if (errorCountScore < 0) {
-            errorCountScore = 0;
+            double sensitiveWordsR4 = Math.log((sensitiveWordsCount/allErrorEount)/100 + 1);
+            double sensitiveWordsScore = 100 * (1 - sensitiveWordsR4);
+
+            double politicsR5 = Math.log((politicsCount/allErrorEount)/100 + 1);
+            double politicsScore = 100 * (1 - politicsR5);
+
+            errorCountScore = (int)(typosScore * 0.2 + sensitiveWordsScore * 0.4 + politicsScore * 0.4);
+            if (errorCountScore < 0) {
+                errorCountScore = 0;
+            }
         }
 
         WkScore score = new WkScore();

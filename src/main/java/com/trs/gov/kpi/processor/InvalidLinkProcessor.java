@@ -357,29 +357,32 @@ public class InvalidLinkProcessor implements MQListener {
          *      js、css等文件链接错误。
          * L3. (错误链接最小层次L得分)					=	100ln(L/10+1) 		L<10
          */
-        int routineLinkCount = wkIssueService.getRoutineLinkCount(siteId, checkId);
-        double RoutineLinkR = routineLinkCount / invalidLinkCount;
-        double linkL1Log = Math.log(RoutineLinkR/100 + 1);
-        double linkL1Score = 100 * (1 - linkL1Log);
 
-        int othersLinkCount = wkIssueService.getOthersLinkCount(siteId, checkId);
-        double othersLinkCountR = othersLinkCount / invalidLinkCount;
-        double linkL2Log = Math.log(othersLinkCountR/100 + 1);
-        double linkL2Score = 100 * (1 - linkL2Log);
+        int invalidLinkScore = 100;
+        if (invalidLinkCount > 0) {
+            int routineLinkCount = wkIssueService.getRoutineLinkCount(siteId, checkId);
+            double RoutineLinkR = routineLinkCount / invalidLinkCount;
+            double linkL1Log = Math.log(RoutineLinkR/100 + 1);
+            double linkL1Score = 100 * (1 - linkL1Log);
 
-        // TODO: 求出错误链接最小层次L
-        double L = 11;
-        if (10 <= L){
-            L = 10;
+            int othersLinkCount = wkIssueService.getOthersLinkCount(siteId, checkId);
+            double othersLinkCountR = othersLinkCount / invalidLinkCount;
+            double linkL2Log = Math.log(othersLinkCountR/100 + 1);
+            double linkL2Score = 100 * (1 - linkL2Log);
+
+            // TODO: 求出错误链接最小层次L
+            double L = 11;
+            if (10 <= L){
+                L = 10;
+            }
+            double linkL3 = Math.log(L/10 + 1);
+            double linkL3Score = 100 * linkL3;
+
+            invalidLinkScore = (int)(linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3);
+            if (invalidLinkScore < 0) {
+                invalidLinkScore = 0;
+            }
         }
-        double linkL3 = Math.log(L/10 + 1);
-        double linkL3Score = 100 * linkL3;
-
-        int invalidLinkScore = (int)(linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3);
-        if (invalidLinkScore < 0) {
-            invalidLinkScore = 0;
-        }
-
         WkScore score = new WkScore();
         score.setSiteId(siteId);
         score.setCheckId(checkId);
