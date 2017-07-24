@@ -202,42 +202,23 @@ public class PageSpider {
 
             isUrlAvailable.set(false);
             Date startDate = new Date();
-            Page result = super.download(request, task);
-            Date endDate = new Date();
-            long useTime = endDate.getTime() - startDate.getTime();
 
+            EnumUrlType urlType = null;
             Object parentUrl = request.getExtra("parentUrl");
             if (parentUrl == null) {
                 parentUrl = "";
             }
 
-            EnumUrlType urlType = null;
             try {
+                Page result = super.download(request, task);
+                Date endDate = new Date();
+                long useTime = endDate.getTime() - startDate.getTime();
 
                 if (!isUrlAvailable.get()) {
                     final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
                     urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
-
-                    unavailableUrls.add(request.getUrl().intern());
-                    InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
-                    invalidLinkMsg.setCheckId(checkId);
-                    invalidLinkMsg.setUrlType(urlType);
-                    synchronized (pageContent) {
-                        String parentContent = pageContent.get(parentUrl.toString());
-                        if (parentContent == null) {
-                            if (siteManagement.getSiteIndexUrl().equals(request.getUrl())) {
-                                parentContent = "<html><body><h1>首页不可用！</h1></body></html>";
-                            } else {
-                                parentContent = "<html><body><h1>父页面不存在！</h1></body></html>";
-                            }
-                        }
-                        invalidLinkMsg.setParentContent(parentContent);
-                    }
-                    invalidLinkMsg.setParentUrl(parentUrl.toString());
-                    invalidLinkMsg.setSiteId(siteManagement.getSiteId());
-                    invalidLinkMsg.setUrl(request.getUrl().intern());
-                    invalidLinkMsg.setErrorCode(Integer.valueOf(request.getExtra("statusCode").toString()));
-                    commonMQ.publishMsg(invalidLinkMsg);
+                    handleInvalidLink(request, parentUrl);
+                    return null;
                 } else {
 
                     urlType = WebPageUtil.getUrlTypeByContentType(contentType.get(), ContentDisposition.get());
@@ -256,18 +237,8 @@ public class PageSpider {
                         InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
                         invalidLinkMsg.setCheckId(checkId);
                         invalidLinkMsg.setUrlType(urlType);
-                        synchronized (pageContent) {
-                            String parentContent = pageContent.get(parentUrl.toString());
-                            if (parentContent == null) {
-                                if (siteManagement.getSiteIndexUrl().equals(request.getUrl())) {
-                                    parentContent = "<html><body><h1>首页不可用！</h1></body></html>";
-                                } else {
-                                    parentContent = "<html><body><h1>父页面不存在！</h1></body></html>";
-                                }
-                            }
-                            invalidLinkMsg.setParentContent(parentContent);
-                        }
                         invalidLinkMsg.setParentUrl(parentUrl.toString());
+                        setParentContent(request, parentUrl, invalidLinkMsg);
                         invalidLinkMsg.setSiteId(siteManagement.getSiteId());
                         invalidLinkMsg.setUrl(request.getUrl().intern());
                         invalidLinkMsg.setErrorCode(302);
@@ -292,9 +263,16 @@ public class PageSpider {
                             commonMQ.publishMsg(pageInfoMsg);
                         }
                     }
-                }
-            } finally {
 
+                    return result;
+                }
+
+            } catch (Throwable e) {
+                final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
+                urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
+                handleInvalidLink(request, parentUrl);
+                return null;
+            } finally {
                 if (urlType != null) {
                     // 链接类型计数
                     Types.WkLinkIssueType linkType = WebPageUtil.toWkLinkType(urlType);
@@ -308,8 +286,36 @@ public class PageSpider {
                     }
                 }
             }
+        }
 
-            return result;
+        private void setParentContent(Request request, Object parentUrl, InvalidLinkMsg invalidLinkMsg) {
+            synchronized (pageContent) {
+                String parentContent = pageContent.get(parentUrl.toString());
+                if (parentContent == null) {
+                    if (siteManagement.getSiteIndexUrl().equals(request.getUrl())) {
+                        parentContent = "<html><body><h1>首页不可用！</h1></body></html>";
+                    } else {
+                        parentContent = "<html><body><h1>父页面不存在！</h1></body></html>";
+                    }
+                }
+                invalidLinkMsg.setParentContent(parentContent);
+            }
+        }
+
+        private void handleInvalidLink(Request request, Object parentUrl) {
+            final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
+            final EnumUrlType urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
+
+            unavailableUrls.add(request.getUrl().intern());
+            InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
+            invalidLinkMsg.setCheckId(checkId);
+            invalidLinkMsg.setUrlType(urlType);
+            setParentContent(request, parentUrl, invalidLinkMsg);
+            invalidLinkMsg.setParentUrl(parentUrl.toString());
+            invalidLinkMsg.setSiteId(siteManagement.getSiteId());
+            invalidLinkMsg.setUrl(request.getUrl().intern());
+            invalidLinkMsg.setErrorCode(Integer.valueOf(request.getExtra("statusCode").toString()));
+            commonMQ.publishMsg(invalidLinkMsg);
         }
 
         @Override
