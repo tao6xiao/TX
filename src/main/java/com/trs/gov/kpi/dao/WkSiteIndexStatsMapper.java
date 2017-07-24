@@ -14,7 +14,7 @@ import java.util.List;
 public interface WkSiteIndexStatsMapper {
 
     /**
-     * 网站更新---查询网站每次更新数量的历史记录
+     * 网站更新---查询所有已检查网站最近一次更新的记录
      *
      * @return
      */

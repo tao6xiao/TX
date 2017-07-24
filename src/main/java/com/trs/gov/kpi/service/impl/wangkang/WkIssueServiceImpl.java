@@ -12,6 +12,7 @@ import com.trs.gov.kpi.service.wangkang.WkIssueService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,6 +87,29 @@ public class WkIssueServiceImpl implements WkIssueService {
         filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
         filter.addCond(WkIssueTableField.SUBTYPE_ID, Types.InfoErrorIssueType.POLITICS.value);
+        return commonMapper.count(filter);
+    }
+
+    @Override
+    public int getRoutineLinkCount(Integer siteId, Integer checkId) {
+        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        List<Integer> subTypes = new ArrayList<>();
+        subTypes.add(Types.WkLinkIssueType.LINK_DISCONNECT.value);
+        subTypes.add(Types.WkLinkIssueType.IMAGE_DISCONNECT.value);
+        subTypes.add(Types.WkLinkIssueType.VIDEO_DISCONNECT.value);
+        subTypes.add(Types.WkLinkIssueType.ENCLOSURE_DISCONNECT.value);
+        filter.addCond(WkIssueTableField.SUBTYPE_ID, subTypes);
+        return commonMapper.count(filter);
+    }
+
+    @Override
+    public int getOthersLinkCount(Integer siteId, Integer checkId) {
+        QueryFilter filter = new QueryFilter(Table.WK_ISSUE);
+        filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);
+        filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
+        filter.addCond(WkIssueTableField.SUBTYPE_ID, Types.WkLinkIssueType.OTHERS_DISCONNECT.value);
         return commonMapper.count(filter);
     }
 }

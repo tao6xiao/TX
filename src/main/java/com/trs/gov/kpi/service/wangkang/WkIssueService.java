@@ -52,4 +52,20 @@ public interface WkIssueService {
      * @return
      */
     int getPoliticsCount(Integer siteId, Integer checkId);
+
+    /**
+     * 根据网站编号、检查编号、subTypeId常规链接错误数量
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    int getRoutineLinkCount(Integer siteId, Integer checkId);
+
+    /**
+     * 根据网站编号、检查编号、subTypeId其他链接错误数量
+     * @param siteId
+     * @param checkId
+     * @return
+     */
+    int getOthersLinkCount(Integer siteId, Integer checkId);
 }

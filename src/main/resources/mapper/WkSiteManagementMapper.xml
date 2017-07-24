@@ -32,6 +32,14 @@
         <include refid="all_conditions_sql"/>
     </select>
 
+    <select id="selectIsDelSiteList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from wksite
+        where 1 = 1
+        <include refid="all_conditions_sql"/>
+    </select>
+
     <select id="selectAllSiteCount" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
         select
         count(1)

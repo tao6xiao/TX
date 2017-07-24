@@ -6,7 +6,7 @@
         <id column="id" jdbcType="INTEGER" property="id" />
         <result column="checkId" jdbcType="INTEGER" property="checkId" />
         <result column="siteId" jdbcType="INTEGER" property="siteId" />
-        <result column="total" jdbcType="INTEGER" property="total" />
+        <result column="total" jdbcType="DOUBLE" property="total" />
         <result column="invalidLink" jdbcType="INTEGER" property="invalidLink" />
         <result column="contentError" jdbcType="INTEGER" property="contentError" />
         <result column="overSpeed" jdbcType="INTEGER" property="overSpeed" />
