@@ -100,8 +100,8 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
                 }
             }
         }
-        int SiteIndexStatsCount = commonMapper.count(filter);
-        int itemCount = SiteIndexStatsCount - count;
+        int siteIndexStatsCount = commonMapper.count(filter);
+        int itemCount = siteIndexStatsCount - count;
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
         filter.setPager(pager);
 

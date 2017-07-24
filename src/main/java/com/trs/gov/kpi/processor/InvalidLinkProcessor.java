@@ -355,8 +355,8 @@ public class InvalidLinkProcessor implements MQListener {
         int invalidLinkScore = 100;
         if (invalidLinkCount > 0) {
             int routineLinkCount = wkIssueService.getRoutineLinkCount(siteId, checkId);
-            double RoutineLinkR = routineLinkCount / invalidLinkCount;
-            double linkL1Log = Math.log(RoutineLinkR/100 + 1);
+            double routineLinkR = routineLinkCount / invalidLinkCount;
+            double linkL1Log = Math.log(routineLinkR/100 + 1);
             double linkL1Score = 100 * (1 - linkL1Log);
 
             int othersLinkCount = wkIssueService.getOthersLinkCount(siteId, checkId);
@@ -364,13 +364,14 @@ public class InvalidLinkProcessor implements MQListener {
             double linkL2Log = Math.log(othersLinkCountR/100 + 1);
             double linkL2Score = 100 * (1 - linkL2Log);
 
-            // TODO: 求出错误链接最小层次L
-            double L = 11;
-            if (10 <= L){
-                L = 10;
-            }
-            double linkL3 = Math.log(L/10 + 1);
-            double linkL3Score = 100 * linkL3;
+            // TODO: 求出错误链接最小层次L(目前规则待定；L3给定默认值100)
+//            double L = 11;
+//            if (10 <= L){
+//                L = 10;
+//            }
+//            double linkL3 = Math.log(L/10 + 1);
+//            double linkL3Score = 100 * linkL3;
+            double linkL3Score = 100;
 
             invalidLinkScore = (int)(linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3);
             if (invalidLinkScore < 0) {

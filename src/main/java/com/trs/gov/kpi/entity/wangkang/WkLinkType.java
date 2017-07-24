@@ -2,7 +2,6 @@ package com.trs.gov.kpi.entity.wangkang;
 
 import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

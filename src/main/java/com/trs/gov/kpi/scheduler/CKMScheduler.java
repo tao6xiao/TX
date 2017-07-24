@@ -137,7 +137,7 @@ public class CKMScheduler implements SchedulerTask {
             queryFilter.addCond(IssueTableField.DETAIL, issue.getDetail());
 
             List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
-            if(infoErrors.size() == 0){
+            if(infoErrors.isEmpty()){
                 issueMapper.insert(DBUtil.toRow(issue));
             }
         }

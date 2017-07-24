@@ -18,7 +18,7 @@ public interface WkOneSiteDetailService {
      * @param siteId
      * @return
      */
-    WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId, Integer CheckId);
+    WkLinkTypeResponse getOneSiteLinkTypeBySiteId(Integer siteId, Integer checkId);
 
     /**
      * 根据网站编号查询网站总分数 （获取最近一次检查记录）

@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.job;
 
-import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.scheduler.SchedulerTask;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;

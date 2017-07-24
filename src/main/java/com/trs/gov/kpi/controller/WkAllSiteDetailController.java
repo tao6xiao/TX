@@ -35,7 +35,7 @@ public class WkAllSiteDetailController {
      */
     @RequestMapping(value="/score", method = RequestMethod.GET)
     @ResponseBody
-    public List<WkAllSiteScoreResponsed> allWkSiteScore() throws BizException {
+    public List<WkAllSiteScoreResponsed> allWkSiteScore(){
         return wkAllSiteDetailService.queryAllSiteScore();
     }
 

@@ -15,6 +15,5 @@ public class WkSiteTableField {
     public static final String CHECK_STATUS = "checkStatus";
     public static final String IS_DEL = "isDel";
 
-    private WkSiteTableField(){};
 
 }

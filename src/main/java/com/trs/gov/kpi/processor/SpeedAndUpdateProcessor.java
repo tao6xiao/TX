@@ -125,7 +125,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
         return count;
     }
 
-    private void calcScoreAndInsert(Integer siteId, Integer checkId, long avgSpeed) throws ParseException {
+    private void calcScoreAndInsert(Integer siteId, Integer checkId, long avgSpeed){
 
         /**
          * T1(性能检测得分)= 100(1-ln(T/10+1) ,T为页面抓取平均耗时是200毫秒的倍数

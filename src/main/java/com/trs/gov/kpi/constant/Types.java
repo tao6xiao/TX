@@ -619,34 +619,4 @@ public final class Types {
         }
     }
 
-//    public enum WkErrorInfoIssueType {
-//        INVALID(-1, "未知问题"),
-//        TYPOS(WkSiteCheckType.CONTENT_ERROR.value * 10 + 1, "错别字"),
-//        SENSITIVE_WORDS(WkSiteCheckType.CONTENT_ERROR.value * 10 + 2, "敏感词"),
-//        POLITICS(WkSiteCheckType.CONTENT_ERROR.value * 10 + 3, "政治");
-//
-//        public final int value;
-//
-//        @Getter
-//        private final String name;
-//
-//        WkErrorInfoIssueType(int type, String name) {
-//            this.value = type;
-//            this.name = name;
-//        }
-//
-//        public static WkErrorInfoIssueType valueOf(int value) {
-//            if (value <= 0) {
-//                return INVALID;
-//            }
-//            WkErrorInfoIssueType[] types = WkErrorInfoIssueType.values();
-//            for (WkErrorInfoIssueType type : types) {
-//                if (type.value == value) {
-//                    return type;
-//                }
-//            }
-//            return INVALID;
-//        }
-//    }
-
 }

@@ -2,8 +2,6 @@ package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
-
-import java.net.Inet4Address;
 import java.util.List;
 
 /**

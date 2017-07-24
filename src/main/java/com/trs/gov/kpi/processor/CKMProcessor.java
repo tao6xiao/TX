@@ -182,7 +182,6 @@ public class CKMProcessor implements MQListener {
          */
 
         int errorCountScore = 100;
-
         if(errorCount > 0){
             double allErrorEount = errorCount;
 

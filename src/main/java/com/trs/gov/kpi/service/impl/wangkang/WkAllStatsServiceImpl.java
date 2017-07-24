@@ -55,14 +55,14 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
         List<WkAvgSpeedResponse> wkAvgSpeedRespList = new ArrayList<>();
         if(!wkAllStats.isEmpty()){
             for (WkAllStats wkAllstats: wkAllStats) {
-                WkAvgSpeedResponse WkAvgSpeedAndUpdateContent = new WkAvgSpeedResponse();
+                WkAvgSpeedResponse wkAvgSpeedAndUpdateContent = new WkAvgSpeedResponse();
 
                 final List<WkCheckTime> checkTimes = getWkCheckTime(siteId, wkAllstats.getCheckId());
 
                 if (checkTimes.size() == 1) {
-                    WkAvgSpeedAndUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
-                    WkAvgSpeedAndUpdateContent.setAvgSpeed(wkAllstats.getAvgSpeed());
-                    wkAvgSpeedRespList.add(WkAvgSpeedAndUpdateContent);
+                    wkAvgSpeedAndUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
+                    wkAvgSpeedAndUpdateContent.setAvgSpeed(wkAllstats.getAvgSpeed());
+                    wkAvgSpeedRespList.add(wkAvgSpeedAndUpdateContent);
                 }
             }
             return wkAvgSpeedRespList;
@@ -91,12 +91,12 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
 
         if(!wkAllStats.isEmpty()){
             for (WkAllStats wkAllstats: wkAllStats) {
-                WkUpdateContentResponse WkUpdateContent = new WkUpdateContentResponse();
+                WkUpdateContentResponse wkUpdateContent = new WkUpdateContentResponse();
                 final List<WkCheckTime> checkTimes = getWkCheckTime(siteId, wkAllstats.getCheckId());
                 if (checkTimes.size() == 1) {
-                    WkUpdateContent.setUpdateContent(wkAllstats.getUpdateContent());
-                    WkUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
-                    wkUpdateContentList.add(WkUpdateContent);
+                    wkUpdateContent.setUpdateContent(wkAllstats.getUpdateContent());
+                    wkUpdateContent.setCheckTime(checkTimes.get(0).getBeginTime());
+                    wkUpdateContentList.add(wkUpdateContent);
                 }
             }
             return wkUpdateContentList;

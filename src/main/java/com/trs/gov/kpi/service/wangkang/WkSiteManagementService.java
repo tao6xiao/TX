@@ -26,7 +26,7 @@ public interface WkSiteManagementService {
      * @param siteId
      * @return
      */
-    SiteManagement getSiteManagementBySiteId(Integer siteId, Integer IsDel);
+    SiteManagement getSiteManagementBySiteId(Integer siteId, Integer isDel);
 
     /**
      * 根据名称查询网站数量
