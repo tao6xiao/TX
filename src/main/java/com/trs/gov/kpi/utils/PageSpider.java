@@ -20,6 +20,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.Header;
 import org.apache.http.HttpConnection;
 import org.apache.http.HttpResponse;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,6 +29,8 @@ import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.selector.Html;
+import us.codecraft.webmagic.selector.RegexSelector;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import java.io.IOException;
@@ -107,6 +111,19 @@ public class PageSpider {
                 return;
             }
 
+            final Elements medias = page.getHtml().getDocument().select("[src]");
+            Elements imports = page.getHtml().getDocument().select("link[href]");
+
+            for (Element importElem : imports) {
+//                log.info(importElem.attr("rel") + ":" + UrlUtils.canonicalizeUrl(importElem.attr("href"), page.getUrl().get()) );
+                targetUrls.add(UrlUtils.canonicalizeUrl(importElem.attr("href"), page.getUrl().get()));
+            }
+
+            for (Element mediaElem : medias) {
+//                log.info(mediaElem.attr("type") + ":" + UrlUtils.canonicalizeUrl( mediaElem.attr("src"), page.getUrl().get()) );
+                targetUrls.add(UrlUtils.canonicalizeUrl( mediaElem.attr("src"), page.getUrl().get()));
+            }
+
             //相对/绝对路径的处理问题
             List<String> imgUrls = page.getHtml().$("img", "src").all();
             for (String imgUrl : imgUrls) {
@@ -118,9 +135,7 @@ public class PageSpider {
             for (String targetUrl : targetUrls) {
                 if (!pageParentMap.containsKey(targetUrl)) {
                     synchronized (pageParentMap) {
-
                         if (!pageParentMap.containsKey(targetUrl)) {
-
                             pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
                         }
                     }
@@ -187,56 +202,77 @@ public class PageSpider {
 
             isUrlAvailable.set(false);
             Date startDate = new Date();
-            Page result = super.download(request, task);
-            Date endDate = new Date();
-            long useTime = endDate.getTime() - startDate.getTime();
-
-            Object parentUrl = request.getExtra("parentUrl");
-            if (parentUrl == null) {
-                parentUrl = "";
-            }
 
             EnumUrlType urlType = null;
+            Object parentUrl = request.getExtra("parentUrl");
+            if (parentUrl == null) {
+                parentUrl = request.getUrl().intern();
+            }
+
             try {
+                Page result = super.download(request, task);
+                Date endDate = new Date();
+                long useTime = endDate.getTime() - startDate.getTime();
 
                 if (!isUrlAvailable.get()) {
                     final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
                     urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
-
-                    unavailableUrls.add(request.getUrl().intern());
-                    InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
-                    invalidLinkMsg.setCheckId(checkId);
-                    invalidLinkMsg.setUrlType(urlType);
-                    synchronized (pageContent) {
-                        invalidLinkMsg.setParentContent(pageContent.get(parentUrl.toString()));
-                    }
-                    invalidLinkMsg.setParentUrl(parentUrl.toString());
-                    invalidLinkMsg.setSiteId(siteManagement.getSiteId());
-                    invalidLinkMsg.setUrl(request.getUrl().intern());
-                    invalidLinkMsg.setErrorCode(Integer.valueOf(request.getExtra("statusCode").toString()));
-                    commonMQ.publishMsg(invalidLinkMsg);
+                    handleInvalidLink(request, parentUrl);
+                    return null;
                 } else {
+
                     urlType = WebPageUtil.getUrlTypeByContentType(contentType.get(), ContentDisposition.get());
-                    synchronized (pageContent) {
-                        pageContent.put(request.getUrl().intern(), result.getRawText());
+                    final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
+                    EnumUrlType guessUrlType;
+                    if (StringUtil.isEmpty(contentTypeName)) {
+                        guessUrlType = WebPageUtil.getUrlType(request.getUrl());
+                    } else {
+                        guessUrlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
+                    }
+                    if (guessUrlType == EnumUrlType.RES && urlType != guessUrlType) {
+                        urlType = guessUrlType;
+                        // 断链重定向到情况
+                        log.warn("redirect url = " + request.getUrl().intern() + ", content type=" + contentType.get());
+                        unavailableUrls.add(request.getUrl().intern());
+                        InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
+                        invalidLinkMsg.setCheckId(checkId);
+                        invalidLinkMsg.setUrlType(urlType);
+                        invalidLinkMsg.setParentUrl(parentUrl.toString());
+                        setParentContent(request, parentUrl, invalidLinkMsg);
+                        invalidLinkMsg.setSiteId(siteManagement.getSiteId());
+                        invalidLinkMsg.setUrl(request.getUrl().intern());
+                        invalidLinkMsg.setErrorCode(302);
+                        commonMQ.publishMsg(invalidLinkMsg);
+                        result = null;
+                    } else {
+                        synchronized (pageContent) {
+                            pageContent.put(request.getUrl().intern(), result.getRawText());
+                        }
+
+                        String baseHost = UrlUtils.getHost(request.getUrl());
+                        // 只处理本域名下的网页
+                        if (urlType == EnumUrlType.HTML && StringUtils.equals(baseHost, homepageHost)) {
+                            PageInfoMsg pageInfoMsg = new PageInfoMsg();
+                            pageInfoMsg.setSiteId(siteManagement.getSiteId());
+                            pageInfoMsg.setParentUrl(parentUrl.toString());
+                            pageInfoMsg.setSpeed(useTime);
+                            pageInfoMsg.setUrl(request.getUrl());
+                            pageInfoMsg.setCheckId(checkId);
+                            pageInfoMsg.setContent(result.getRawText());
+                            count++;
+                            commonMQ.publishMsg(pageInfoMsg);
+                        }
                     }
 
-                    String baseHost = UrlUtils.getHost(request.getUrl());
-                    // 只处理本域名下的网页
-                    if (urlType == EnumUrlType.HTML && StringUtils.equals(baseHost, homepageHost)) {
-                        PageInfoMsg pageInfoMsg = new PageInfoMsg();
-                        pageInfoMsg.setSiteId(siteManagement.getSiteId());
-                        pageInfoMsg.setParentUrl(parentUrl.toString());
-                        pageInfoMsg.setSpeed(useTime);
-                        pageInfoMsg.setUrl(request.getUrl());
-                        pageInfoMsg.setCheckId(checkId);
-                        pageInfoMsg.setContent(result.getRawText());
-                        count++;
-                        commonMQ.publishMsg(pageInfoMsg);
-                    }
+                    return result;
                 }
-            } finally {
 
+            } catch (Throwable e) {
+                final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
+                urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
+                handleInvalidLink(request, parentUrl);
+                return null;
+            } finally {
                 if (urlType != null) {
                     // 链接类型计数
                     Types.WkLinkIssueType linkType = WebPageUtil.toWkLinkType(urlType);
@@ -250,8 +286,36 @@ public class PageSpider {
                     }
                 }
             }
+        }
 
-            return result;
+        private void setParentContent(Request request, Object parentUrl, InvalidLinkMsg invalidLinkMsg) {
+            synchronized (pageContent) {
+                String parentContent = pageContent.get(parentUrl.toString());
+                if (parentContent == null) {
+                    if (siteManagement.getSiteIndexUrl().equals(request.getUrl())) {
+                        parentContent = "<html><body><h1>首页不可用！</h1></body></html>";
+                    } else {
+                        parentContent = "<html><body><h1>父页面不存在！</h1></body></html>";
+                    }
+                }
+                invalidLinkMsg.setParentContent(parentContent);
+            }
+        }
+
+        private void handleInvalidLink(Request request, Object parentUrl) {
+            final String contentTypeName = URLConnection.guessContentTypeFromName(request.getUrl());
+            final EnumUrlType urlType = WebPageUtil.getUrlTypeByContentType(contentTypeName, null);
+
+            unavailableUrls.add(request.getUrl().intern());
+            InvalidLinkMsg invalidLinkMsg = new InvalidLinkMsg();
+            invalidLinkMsg.setCheckId(checkId);
+            invalidLinkMsg.setUrlType(urlType);
+            setParentContent(request, parentUrl, invalidLinkMsg);
+            invalidLinkMsg.setParentUrl(parentUrl.toString());
+            invalidLinkMsg.setSiteId(siteManagement.getSiteId());
+            invalidLinkMsg.setUrl(request.getUrl().intern());
+            invalidLinkMsg.setErrorCode(Integer.valueOf(request.getExtra("statusCode").toString()));
+            commonMQ.publishMsg(invalidLinkMsg);
         }
 
         @Override

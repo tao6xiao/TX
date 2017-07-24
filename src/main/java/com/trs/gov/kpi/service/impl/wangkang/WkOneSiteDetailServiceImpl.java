@@ -172,6 +172,8 @@ class WkOneSiteDetailServiceImpl implements WkOneSiteDetailService {
         }else{
             WkLinkIndexPageStatus wkLinkIndexPageStatus = new WkLinkIndexPageStatus();
             wkLinkIndexPageStatus.setStatus(false);
+            wkLinkIndexPageStatus.setCheckTime(wkIssue.get(0).getCheckTime());
+            wkLinkIndexPageStatus.setSiteIndexUrl(siteIndexPage);
 
             return wkLinkIndexPageStatus;
         }

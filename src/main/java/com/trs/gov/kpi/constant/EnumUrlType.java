@@ -16,7 +16,5 @@ public enum EnumUrlType {
     // 音频
     AUDIO,
     // 资源文件 css,js
-    RES,
-    // 其他
-    OTHER
+    RES
 }

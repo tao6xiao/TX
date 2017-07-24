@@ -64,10 +64,15 @@ public class CommonMQ extends Thread {
 
                 for (IMQMsg msg : msgList) {
                     for (MQListener listener : listeners) {
-                        if (msg.getType().equals(listener.getType())) {
-                            listener.onMessage(msg);
-                        } else if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
-                            listener.onMessage(msg);
+                        try {
+                            if (msg.getType().equals(listener.getType())) {
+                                listener.onMessage(msg);
+                            } else if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
+                                listener.onMessage(msg);
+                            }
+                        } catch (Throwable e) {
+                            // 一个消息监听器失败，不能影响其他监听器处理
+                            log.error("", e);
                         }
                     }
                 }

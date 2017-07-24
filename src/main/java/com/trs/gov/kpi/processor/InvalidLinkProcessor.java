@@ -19,6 +19,7 @@ import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import com.trs.gov.kpi.utils.WebPageUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -37,6 +39,7 @@ import java.util.Objects;
 /**
  * Created by linwei on 2017/7/12.
  */
+@Slf4j
 @Component
 public class InvalidLinkProcessor implements MQListener {
 
@@ -70,17 +73,21 @@ public class InvalidLinkProcessor implements MQListener {
 
         if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
-            WkAllStats wkAllStats = new WkAllStats();
-            wkAllStats.setSiteId(checkEndMsg.getSiteId());
-            wkAllStats.setCheckId(checkEndMsg.getCheckId());
-            wkAllStats.setInvalidLink(wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
-            wkAllStatsService.insertOrUpdateInvalidLink(wkAllStats);
+            try {
+                WkAllStats wkAllStats = new WkAllStats();
+                wkAllStats.setSiteId(checkEndMsg.getSiteId());
+                wkAllStats.setCheckId(checkEndMsg.getCheckId());
+                wkAllStats.setInvalidLink(wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId()));
+                wkAllStatsService.insertOrUpdateInvalidLink(wkAllStats);
 
-            // 比较并记录入库
-            compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+                // 比较并记录入库
+                compareLastCheckAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
 
-            final int invalidLinkCount = wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
-            calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId() ,invalidLinkCount);
+                final int invalidLinkCount = wkIssueService.getInvalidLinkCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
+                calcScoreAndInsert(checkEndMsg.getSiteId(), checkEndMsg.getCheckId() ,invalidLinkCount);
+            } catch (Throwable e) {
+                log.error("", e);
+            }
 
             CalcScoreMsg calcSpeedScoreMsg = new CalcScoreMsg();
             calcSpeedScoreMsg.setCheckId(checkEndMsg.getCheckId());
@@ -93,23 +100,24 @@ public class InvalidLinkProcessor implements MQListener {
 
             Types.WkLinkIssueType issueType = WebPageUtil.toWkLinkType(invalidLinkMsg.getUrlType());
 
+            WkIssue issue = new WkIssue();
+            final String relativeDir = CKMProcessWorker.getRelativeDir(invalidLinkMsg.getSiteId(), invalidLinkMsg.getCheckId(), invalidLinkMsg.getUrl(), 1, 2);
+
             try {
-                WkIssue issue = new WkIssue();
-                final String relativeDir = CKMProcessWorker.getRelativeDir(invalidLinkMsg.getSiteId(), invalidLinkMsg.getCheckId(), invalidLinkMsg.getUrl(), 1, 2);
                 String absoluteDir = locationDir + File.separator + relativeDir;
                 CKMProcessWorker.createDir(absoluteDir);
 
                 // 网页定位
                 String pageLocContent = generatePageLocHtmlText(invalidLinkMsg);
                 if (pageLocContent == null) {
-                    return;
+                    pageLocContent = "";
                 }
                 CKMProcessWorker.createPagePosHtml(absoluteDir, pageLocContent);
 
                 // 源码定位
                 String srcLocContent = generateSourceLocHtmlText(invalidLinkMsg);
                 if (srcLocContent == null) {
-                    return;
+                    srcLocContent = "";
                 }
                 CKMProcessWorker.createSrcPosHtml(absoluteDir, srcLocContent);
 
@@ -118,21 +126,21 @@ public class InvalidLinkProcessor implements MQListener {
 
                 // 创建首页
                 CKMProcessWorker.createIndexHtml(absoluteDir);
-
-                issue.setLocationUrl("gov/wangkang/loc/" +  relativeDir.replace(File.separator, "/") + "/" + "index.html");
-                issue.setTypeId(Types.WkSiteCheckType.INVALID_LINK.value);
-                issue.setSubTypeId(issueType.value);
-                issue.setSiteId(invalidLinkMsg.getSiteId());
-                issue.setUrl(invalidLinkMsg.getUrl());
-                issue.setCheckTime(new Date());
-                issue.setCheckId(invalidLinkMsg.getCheckId());
-                issue.setParentUrl(invalidLinkMsg.getParentUrl());
-                issue.setChnlName(CKMProcessWorker.getChnlName(invalidLinkMsg.getParentUrl()));
-                issue.setDetailInfo(String.valueOf(invalidLinkMsg.getErrorCode()));
-                commonMapper.insert(DBUtil.toRow(issue));
-            } catch (IOException e) {
-                Log.error("", e);
+            } catch (Throwable e) {
+                log.error("generate location pages error! relativeDir = " + relativeDir, e);
             }
+
+            issue.setLocationUrl("gov/wangkang/loc/" +  relativeDir.replace(File.separator, "/") + "/" + "index.html");
+            issue.setTypeId(Types.WkSiteCheckType.INVALID_LINK.value);
+            issue.setSubTypeId(issueType.value);
+            issue.setSiteId(invalidLinkMsg.getSiteId());
+            issue.setUrl(invalidLinkMsg.getUrl());
+            issue.setCheckTime(new Date());
+            issue.setCheckId(invalidLinkMsg.getCheckId());
+            issue.setParentUrl(invalidLinkMsg.getParentUrl());
+            issue.setChnlName(CKMProcessWorker.getChnlName(invalidLinkMsg.getParentUrl()));
+            issue.setDetailInfo(String.valueOf(invalidLinkMsg.getErrorCode()));
+            commonMapper.insert(DBUtil.toRow(issue));
         }
     }
 
@@ -277,7 +285,7 @@ public class InvalidLinkProcessor implements MQListener {
         String result = sb.toString();
         int index = result.indexOf(msg.getUrl(), 0);
         if (index == -1) {
-            return null;
+            return result;
         } else {
             String msgStr = "状态：" + msg.getErrorCode() + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
             String errorinfo = "<font trserrid=\"anchor\" msg=\"" + msgStr + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + msg.getUrl() + "</font>";

@@ -14,6 +14,7 @@ import com.trs.gov.kpi.msgqueue.MQListener;
 import com.trs.gov.kpi.service.wangkang.WkAllStatsService;
 import com.trs.gov.kpi.service.wangkang.WkScoreService;
 import com.trs.gov.kpi.service.wangkang.WkSiteManagementService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,6 +25,7 @@ import java.util.Map;
 /**
  * Created by linwei on 2017/7/15.
  */
+@Slf4j
 @Component
 public class CalcScoreProcessor implements MQListener {
 
@@ -62,11 +64,35 @@ public class CalcScoreProcessor implements MQListener {
             count++;
             if (count >= 4) {
                 // 算总分
-                wkScoreService.calcTotalScore(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
-                updateCheckEndTime(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
-                wkSiteManagementService.changeSiteStatus(calcScoreMsg.getSiteId(), Types.WkCheckStatus.DONE_CHECK);
-                wkAllStatsService.getLastTimeCheckBySiteIdAndCheckId(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
+                log.info("==begin calc total score of site[" + calcScoreMsg.getSiteId() + "]");
+                try {
+                    wkScoreService.calcTotalScore(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
+                } catch (Throwable e) {
+                    log.error("", e);
+                } finally {
+                    log.info("==end calc total score of site[" + calcScoreMsg.getSiteId() + "]");
+                }
 
+                updateCheckEndTime(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
+
+                // 修改站点检测状态
+                log.info("==begin change site status of site[" + calcScoreMsg.getSiteId() + "]");
+                try {
+                    wkSiteManagementService.changeSiteStatus(calcScoreMsg.getSiteId(), Types.WkCheckStatus.DONE_CHECK);
+                } catch (Throwable e) {
+                    log.error("", e);
+                } finally {
+                    log.info("==end change site status of site[" + calcScoreMsg.getSiteId() + "]");
+                }
+
+                log.info("==begin getLastTimeCheckBySiteIdAndCheckId of site[" + calcScoreMsg.getSiteId() + "]");
+                try {
+                    wkAllStatsService.getLastTimeCheckBySiteIdAndCheckId(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
+                } catch (Throwable e) {
+                    log.error("", e);
+                } finally {
+                    log.info("==end getLastTimeCheckBySiteIdAndCheckId of site[" + calcScoreMsg.getSiteId() + "]");
+                }
                 scoreMsgCountMap.remove(key);
             } else {
                 scoreMsgCountMap.put(key, count);
@@ -77,12 +103,20 @@ public class CalcScoreProcessor implements MQListener {
     }
 
     private void updateCheckEndTime(Integer siteId, Integer checkId) {
-        DBUpdater updater = new DBUpdater(Table.WK_CHECK_TIME.getTableName());
-        updater.addField("endTime", new Date());
-        updater.addField("checkStatus", WkCheckTime.CHECK_END);
-        QueryFilter filter = new QueryFilter(Table.WK_CHECK_TIME);
-        filter.addCond(Constants.DB_FIELD_CHECK_ID, checkId);
-        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
-        commonMapper.update(updater, filter);
+
+        try {
+            log.info("==begin update check end time of site[" + siteId + "]");
+            DBUpdater updater = new DBUpdater(Table.WK_CHECK_TIME.getTableName());
+            updater.addField("endTime", new Date());
+            updater.addField("checkStatus", WkCheckTime.CHECK_END);
+            QueryFilter filter = new QueryFilter(Table.WK_CHECK_TIME);
+            filter.addCond(Constants.DB_FIELD_CHECK_ID, checkId);
+            filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+            commonMapper.update(updater, filter);
+        } catch (Throwable e) {
+            log.error("", e);
+        } finally {
+            log.info("==end update check end time of site[" + siteId + "]");
+        }
     }
 }
