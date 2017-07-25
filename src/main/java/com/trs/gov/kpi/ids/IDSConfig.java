@@ -10,8 +10,6 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.servlet.DispatcherType;
-
 /**
  * Created by he.lang on 2017/6/29.
  */
