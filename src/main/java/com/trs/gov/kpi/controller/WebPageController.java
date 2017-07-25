@@ -30,6 +30,13 @@ public class WebPageController {
     @Resource
     private AuthorityService authorityService;
 
+    /**
+     * 响应速度的统计查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/speed/count", method = RequestMethod.GET)
     public int selectReplySpeedCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -40,6 +47,13 @@ public class WebPageController {
         return webPageService.selectReplySpeedCount(param);
     }
 
+    /**
+     * 响应速度的列表查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/speed", method = RequestMethod.GET)
     public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
