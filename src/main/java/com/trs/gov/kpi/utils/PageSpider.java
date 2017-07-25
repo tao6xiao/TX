@@ -273,8 +273,8 @@ public class PageSpider {
                     // 链接类型计数
                     Types.WkLinkIssueType linkType = WebPageUtil.toWkLinkType(urlType);
                     synchronized (linkCountMap) {
-                        int count = linkCountMap.get(linkType);
-                        if (count == 0) {
+                        Integer count = linkCountMap.get(linkType);
+                        if (count == null) {
                             linkCountMap.put(linkType, 1);
                         } else {
                             linkCountMap.put(linkType, count+1);
