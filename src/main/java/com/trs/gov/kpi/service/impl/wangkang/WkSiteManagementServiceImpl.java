@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WkCheckTimeMapper;
 import com.trs.gov.kpi.dao.WkSiteManagementMapper;
@@ -103,7 +100,9 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
 
     @Override
     public List<SiteManagement> getAllSites() {
-        return wkSiteManagementMapper.selectAllSiteList(new QueryFilter(Table.WK_SITEMANAGEMENT));
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        filter.addCond(WkSiteTableField.IS_DEL,Status.Delete.UN_DELETE);
+        return wkSiteManagementMapper.selectAllSiteList(filter);
     }
 
     @Override
