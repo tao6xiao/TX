@@ -378,7 +378,9 @@ public class InvalidLinkProcessor implements MQListener {
 //            double linkL3Score = 100 * linkL3;
             double linkL3Score = 100;
 
-            invalidLinkScore = (int)(linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3);
+            //对计算结果做四舍五入处理
+            long invalidLinkScoreL = Math.round(linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3);
+            invalidLinkScore = (int)invalidLinkScoreL;
             if (invalidLinkScore < 0) {
                 invalidLinkScore = 0;
             }

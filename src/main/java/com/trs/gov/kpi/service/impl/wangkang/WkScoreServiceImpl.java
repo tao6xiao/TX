@@ -79,7 +79,9 @@ public class WkScoreServiceImpl implements WkScoreService {
         final List<WkScore> wkScores = wkScoreMapper.select(filter);
 
         final WkScore score = wkScores.get(0);
-        score.setTotal((score.getInvalidLink() * 0.4 + score.getContentError() * 0.2 + score.getOverSpeed() * 0.2 + score.getUpdateContent() * 0.2));
+        //对计算结果做四舍五入处理
+        long totalScore = Math.round(score.getInvalidLink() * 0.4 + score.getContentError() * 0.2 + score.getOverSpeed() * 0.2 + score.getUpdateContent() * 0.2);
+        score.setTotal(totalScore);
         score.setCheckTime(new Date());
         DBUpdater updater = new DBUpdater(Table.WK_SCORE.getTableName());
         updater.addField(WkScoreTableField.TOTAL, score.getTotal());

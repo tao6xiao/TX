@@ -200,7 +200,9 @@ public class CKMProcessor implements MQListener {
             double politicsR5 = Math.log((politicsCount/allErrorEount)/100 + 1);
             double politicsScore = 100 * (1 - politicsR5);
 
-            errorCountScore = (int)(typosScore * 0.2 + sensitiveWordsScore * 0.4 + politicsScore * 0.4);
+            //对计算结果做四舍五入处理
+            long errorCountScoreL = Math.round(typosScore * 0.2 + sensitiveWordsScore * 0.4 + politicsScore * 0.4);
+            errorCountScore = (int)errorCountScoreL;
             if (errorCountScore < 0) {
                 errorCountScore = 0;
             }

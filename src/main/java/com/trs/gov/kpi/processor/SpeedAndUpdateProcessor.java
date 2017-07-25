@@ -137,8 +137,10 @@ public class SpeedAndUpdateProcessor implements MQListener {
          */
         double avg = avgSpeed;
         double avgLog = Math.log((avg / 200)/10 + 1);
-        double avgScore = 100 * (1 - avgLog);
-        int avgSpeedScore = (int)avgScore;
+        double avgScoreD = 100 * (1 - avgLog);
+        //对计算结果做四舍五入处理
+        long avgScoreL = Math.round(avgScoreD);
+        int avgSpeedScore = (int)avgScoreL;
         if (avgSpeedScore < 0) {
             avgSpeedScore = 0;
         }
@@ -172,7 +174,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
             updateD2 = 100;
         }
 
-        int updateCountScore = (int)(updateD1 * 0.5 + updateD2 * 0.5);
+        //对计算结果做四舍五入处理
+        long updateCountScoreL = Math.round(updateD1 * 0.5 + updateD2 * 0.5);
+        int updateCountScore = (int)updateCountScoreL;
         if (updateCountScore < 0) {
             updateCountScore = 0;
         }
