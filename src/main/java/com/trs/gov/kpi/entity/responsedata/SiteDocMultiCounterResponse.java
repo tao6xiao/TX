@@ -3,7 +3,6 @@ package com.trs.gov.kpi.entity.responsedata;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
@@ -36,7 +35,6 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
     public void setSiteId(Long id) {
         this.siteId = id;
         try {
-//            SiteApiService siteApiService = (SiteApiService) SpringContextUtil.getBean(SiteApiService.class);
             final Site site = siteApiService.getSiteById(id.intValue(), null);
             if (site != null) {
                 this.siteName = site.getSiteName();
@@ -44,7 +42,7 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
                 this.siteName = "SiteId[" + id + "]";
             }
         } catch (RemoteException e) {
-            log.error("", e);
+            log.error("调用外部接口 getSiteById 失败", e);
         }
     }
 
