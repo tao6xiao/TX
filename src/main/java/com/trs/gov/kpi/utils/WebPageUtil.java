@@ -31,7 +31,6 @@ public class WebPageUtil {
      */
     public static EnumUrlType getUrlType(String url) {
 
-
         String suffix = url.substring(url.lastIndexOf('.') + 1);
 
         for (String imageSuffix : htmlSuffixs) {

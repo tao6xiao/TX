@@ -12,21 +12,21 @@ import java.util.List;
  */
 public enum Table {
 
-    ISSUE("issue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "typeId", "subTypeId",
-            "detail", "issueTime", "checkTime", "isResolved", "isDel", "workOrderStatus", "deptId", "customer1", "customer2", "customer3")),
-    WEB_PAGE("webpage", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "typeId", "chnlId","chnlName",
-            "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel")),
+    ISSUE("issue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_TYPE_ID,Constants.DB_FIELD_CHECK_TIME, "subTypeId",
+            "detail", "issueTime", "isResolved", "isDel", "workOrderStatus", "deptId", "customer1", "customer2", "customer3")),
+    WEB_PAGE("webpage", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_TYPE_ID,Constants.DB_FIELD_CHECK_TIME, "chnlId","chnlName",
+            "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "isResolved", "isDel")),
     FREQ_SETUP("frequencysetup", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "presetFeqId", "chnlId", "setTime", "isOpen")),
     REPORT("report", Arrays.asList("id", "siteId", "title", "reportTime", "crTime", "type", "path")),
-    WK_SITEMANAGEMENT("wksite", Arrays.asList(Constants.DB_FIELD_SITE_ID, "siteName",
-            "siteIndexUrl", "deptAddress", "deptLatLng", "autoCheckType", "checkTime", "checkStatus", "isDel")),
-    WK_ISSUE("wkissue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID,"checkId","typeId",
-            "subTypeId","chnlName","url","detailInfo","parentUrl","checkTime","isResolved","resolvedTime","isDel","locationUrl")),
+    WK_SITEMANAGEMENT("wksite", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_TIME,"siteName",
+            "siteIndexUrl", "deptAddress", "deptLatLng", "autoCheckType", "checkStatus", "isDel")),
+    WK_ISSUE("wkissue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID,Constants.DB_FIELD_TYPE_ID,Constants.DB_FIELD_CHECK_TIME,"checkId",
+            "subTypeId","chnlName","url","detailInfo","parentUrl","isResolved","resolvedTime","isDel","locationUrl")),
     WK_ALL_STATS("wkallstats", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "updateContent", "avgSpeed", "errorInfo", "invalidLink")),
-    WK_ISSUE_COUNT("wkissuecount", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "typeId", "checkTime", "isResolved", "unResolved")),
-    WK_EVERY_LINK("wkeverylink", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "url", "checkTime", "md5", "accessSpeed")),
+    WK_ISSUE_COUNT("wkissuecount", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, Constants.DB_FIELD_TYPE_ID, Constants.DB_FIELD_CHECK_TIME, "isResolved", "unResolved")),
+    WK_EVERY_LINK("wkeverylink", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID,Constants.DB_FIELD_CHECK_TIME, "url", "md5", "accessSpeed")),
     WK_CHECK_TIME("wkchecktime", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "beginTime", "endTime", "checkStatus")),
-    WK_SCORE("wkscore", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "checkTime", "total", "invalidLink", "contentError", "overSpeed", "updateContent")),
+    WK_SCORE("wkscore", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID,Constants.DB_FIELD_CHECK_TIME, "total", "invalidLink", "contentError", "overSpeed", "updateContent")),
     WK_SITE_INDEX_STATS("wksiteindexstats", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "siteName","updateContent", "overSpeed", "contentError", "invalidLink"));
 
     // 表名

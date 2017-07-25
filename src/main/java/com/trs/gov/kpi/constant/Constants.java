@@ -26,6 +26,12 @@ public final class Constants {
     // 数据库字段名 checkid
     public static final String DB_FIELD_CHECK_ID = "checkId";
 
+    // 数据库字段名 typeid
+    public static final String DB_FIELD_TYPE_ID = "typeId";
+
+    // 数据库字段名 checkTime
+    public static final String DB_FIELD_CHECK_TIME = "checkTime";
+
     //用于标识消息传输（接收和发送）的常量
     public static final String INPUT_CHANNEL = "input_channel";
     public static final String OUTPUT_CHANNEL = "output_channel";
