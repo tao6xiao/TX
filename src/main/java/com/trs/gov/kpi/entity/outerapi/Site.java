@@ -14,6 +14,8 @@ public class Site {
 
     private String siteName;
 
+    private String webHttp;
+
 
 //    "SITEDESC" : "TRS演示站点",
 //            "CRUSER" : "admin",

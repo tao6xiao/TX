@@ -9,10 +9,13 @@ import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.SpiderUtils;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,9 @@ import java.util.Set;
 public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     LinkAvailabilityService linkAvailabilityService;
+
+    @Resource
+    private SiteApiService siteApiService;
 
     @Resource
     SpiderUtils spider;
@@ -63,6 +69,18 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
         log.info("LinkAnalysisScheduler " + siteId + " start...");
         try {
+
+            final Site checkSite = siteApiService.getSiteById(siteId, null);
+            if (checkSite == null) {
+                log.error("site[" + siteId + "] is not exsit!");
+                return;
+            }
+
+            baseUrl = checkSite.getWebHttp();
+            if (StringUtil.isEmpty(baseUrl)) {
+                log.warn("site[" + siteId + "]'s web http is empty!");
+                return;
+            }
 
             List<Pair<String, String>> unavailableUrlAndParentUrls = spider.linkCheck(3, siteId, baseUrl);
             Date checkTime = new Date();
