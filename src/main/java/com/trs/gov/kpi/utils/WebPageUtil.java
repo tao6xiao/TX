@@ -8,7 +8,10 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class WebPageUtil {
 
-    private static final String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
+
+    private static final String[] resSuffixs = new String[]{"css", "js"};
+
+    private static final String[] imageSuffixs = new String[]{"png", "gif", "mpg", "mpeg", "mpe", "m1v", "mov", "qt", "jpeg", "jpg", "jpe", "bmp", "gif", "ico", "png", "tif", "tiff"};
 
     private static final String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
 
@@ -16,11 +19,10 @@ public class WebPageUtil {
 
     private static final String[] htmlSuffixs = new String[]{"htm", "html", "shtml", "xml"};
 
-    private static final String[] videoSuffixs = new String[]{"avi", "rmvb", "rm", "asf", "divx", "mpg", "mpeg", "mpe", "wmv", "mp4", "mkv", "vob"};
+    private static final String[] videoSuffixs = new String[]{"m3u", "mpega", "mp1", "mp2", "mp3", "mpa", "wav", "wax", "wma", "aif", "aifc", "aiff", "au", "snd", "ulw", "mid", "midi", "kar", "smf", "wm", "wmv", "wvx", "avi", "flv", "asx", "asf", "swf", "swfl", "awf"};
 
     private WebPageUtil() {
     }
-
     /**
      * 判断url的类型
      *
@@ -29,22 +31,21 @@ public class WebPageUtil {
      */
     public static EnumUrlType getUrlType(String url) {
 
-
         String suffix = url.substring(url.lastIndexOf('.') + 1);
-
-        for (String imageSuffix : videoSuffixs) {
-
-            if (StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
-
-                return EnumUrlType.VIDEO;
-            }
-        }
 
         for (String imageSuffix : htmlSuffixs) {
 
             if (StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
 
                 return EnumUrlType.HTML;
+            }
+        }
+
+        for (String imageSuffix : videoSuffixs) {
+
+            if (StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
+
+                return EnumUrlType.VIDEO;
             }
         }
 
@@ -68,7 +69,15 @@ public class WebPageUtil {
 
             if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
 
-                return EnumUrlType.AUDIO;
+                return EnumUrlType.VIDEO;
+            }
+        }
+
+        for (String fileSuffix : resSuffixs) {
+
+            if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
+
+                return EnumUrlType.RES;
             }
         }
 

@@ -61,6 +61,31 @@ public class UserApiServiceImpl implements UserApiService {
         }
     }
 
+    @Override
+    public User finUserByUserName(String currUserName, String userName) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("userName", userName);
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(
+                    buildRequest("findUserByUserName", currUserName, params)).execute();
+
+            if (response.isSuccessful()) {
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取用户");
+                if (StringUtil.isEmpty(result.getData())) {
+                    return null;
+                }
+                return JSON.parseObject(result.getData(), User.class);
+            } else {
+                log.error("failed to finUserByUserName, error: " + response);
+                throw new RemoteException("通过用户账号获取用户对象失败！");
+            }
+        } catch (IOException e) {
+            log.error("", e);
+            throw new RemoteException("获取用户失败！", e);
+        }
+    }
+
     private Request buildRequest(String methodName, String userName, Map<String, String> params) {
         OuterApiServiceUtil.addUserNameParam(userName, params);
         return newServiceRequestBuilder()

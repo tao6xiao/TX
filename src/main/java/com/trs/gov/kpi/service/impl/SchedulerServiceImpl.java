@@ -1,6 +1,9 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.EnumCheckJobType;
+import com.trs.gov.kpi.constant.FreqUnit;
+import com.trs.gov.kpi.constant.FrequencyType;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
@@ -12,15 +15,16 @@ import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.text.ParseException;
-import java.util.Date;
+import java.io.*;
 import java.util.List;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -35,6 +39,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @Service
 public class SchedulerServiceImpl implements SchedulerService {
 
+    @Value("${issue.location.dir}")
+    private String locationDir;
 
     @Resource
     SchedulerTask[] schedulerTasks;
@@ -56,7 +62,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             final MonitorSite site = monitorSiteService.getMonitorSiteBySiteId
                     (siteId);
-            if(site == null){
+            if (site == null) {
                 log.error("Invalid parameter: 当前站点不是监测中的站点");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
@@ -105,6 +111,9 @@ public class SchedulerServiceImpl implements SchedulerService {
     public void startService() {
         // 启动完成后，就开始执行
         try {
+            // 分发样式文件
+            distStyleFile();
+
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
 
@@ -117,7 +126,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             // 全站链接有效性检查
             initLinkCheckJob(scheduler);
 
-             //文档内容错误检测
+            //文档内容错误检测
             initContentCheckJob(scheduler);
 
             //计算绩效指数
@@ -334,7 +343,7 @@ public class SchedulerServiceImpl implements SchedulerService {
      * @param scheduler
      * @param jobType
      * @param site
-     * @param interval 间隔时间
+     * @param interval  间隔时间
      */
     private void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, int interval) {
         scheduleJob(scheduler, jobType, site, simpleSchedule()
@@ -371,26 +380,19 @@ public class SchedulerServiceImpl implements SchedulerService {
         }
         job.getJobDataMap().put("task", task);
 
-        final String todayString = DateUtil.toDayString(new Date());
 
+        // 每天执行一次
+        Trigger trigger = newTrigger()
+                .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
+                .startNow()
+                .forJob(job.getKey())
+                .withSchedule(builder)
+                .build();
         try {
-            final Date nextDate = DateUtil.addDay(DateUtil.toDayDate(todayString), 1);
-            // 每天执行一次
-            Trigger trigger = newTrigger()
-                    .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
-                    .startAt(nextDate)
-                    .forJob(job.getKey())
-                    .withSchedule(builder)
-                    .build();
-            try {
-                scheduler.scheduleJob(job, trigger);
-            } catch (SchedulerException e) {
-                log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
-            }
-        } catch (ParseException e) {
-            log.error("scheduleJob  " + site.getSiteId() + " failed!", e);
+            scheduler.scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
         }
-
     }
 
     private String getJobName(int siteId, EnumCheckJobType checkType) {
@@ -433,6 +435,36 @@ public class SchedulerServiceImpl implements SchedulerService {
                         (ServiceLinkScheduler.class);
             default:
                 return null;
+        }
+    }
+
+    /**
+     * 写入问题定位文件所需的样式文件
+     */
+    private void distStyleFile() {
+        final InputStream resourceAsStream = getClass().getResourceAsStream("/style/css.css");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + System.getProperty("line.separator"));
+            }
+        } catch (IOException e) {
+            log.error("", e);
+        } finally {
+            try {
+                resourceAsStream.close();
+            } catch (IOException e) {
+                log.error("", e);
+            }
+        }
+
+        try {
+            FileUtils.forceMkdir(new File(locationDir + File.separator + "style"));
+            FileUtils.writeStringToFile(new File(locationDir + File.separator + "style" + File.separator + "css.css"), sb.toString());
+        } catch (IOException e) {
+            log.error("", e);
         }
     }
 }

@@ -1,19 +1,33 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.EnumUrlType;
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
+import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
+import com.trs.gov.kpi.scheduler.CKMScheduler;
+import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.*;
@@ -23,6 +37,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,8 +48,25 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Scope("prototype")
 public class SpiderUtils {
+
+    private static final String LOC_TAG = "||||||";
+
+    private static final String DOUBLE_QUOTS = "&quot;";
+
+    @Value("${issue.location.dir}")
+    private String locationDir;
+
     @Resource
-    SiteApiService siteApiService;
+    private SiteApiService siteApiService;
+
+    @Resource
+    private WebPageService webPageService;
+
+    @Resource
+    private WebPageMapper webPageMapper;
+
+    @Resource
+    private LinkAvailabilityService linkAvailabilityService;
 
     // 过大页面阀值
     private static final int THRESHOLD_MAX_PAGE_SIZE = 5 * 1024 * 1024;
@@ -50,19 +82,9 @@ public class SpiderUtils {
 
     private Map<String, Set<String>> pageParentMap = new ConcurrentHashMap<>();
 
+    private Map<String, String> pageContentMap = new ConcurrentHashMap<>();
+
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
-
-    //响应速度
-    private Set<ReplySpeed> replySpeeds = Collections.synchronizedSet(new HashSet<ReplySpeed>());
-
-    //过大页面
-    private Set<PageSpace> biggerPage = Collections.synchronizedSet(new HashSet<PageSpace>());
-
-    //过长URL页面
-    private Set<UrlLength> biggerUrlPage = Collections.synchronizedSet(new HashSet<UrlLength>());
-
-    //过深页面
-    private Set<PageDepth> pageDepths = Collections.synchronizedSet(new HashSet<PageDepth>());
 
     private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
 
@@ -70,63 +92,71 @@ public class SpiderUtils {
 
     private Integer siteId;
 
+    private String baseHost;
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
         public void process(Page page) {
 
-            //去掉外站链接
+            // 当页面已经完全跳转到外部去了，就不再处理了。
+            String curHost = UrlUtils.getHost(page.getUrl().get());
+            if (!StringUtils.equals(curHost, baseHost)) {
+                return;
+            }
+
+            EnumUrlType urlType = WebPageUtil.getUrlType(page.getUrl().get());
+            if (urlType != EnumUrlType.HTML) {
+                return;
+            }
+
+            //存放页面内容
+            pageContentMap.put(page.getUrl().get(), page.getRawText());
+
+            // 获取页面内的所有连接
             List<String> targetUrls = page.getHtml().links().all();
-            Iterator<String> targetUrlIter = targetUrls.iterator();
-            String baseHost = UrlUtils.getHost(page.getUrl().get());
-            while (targetUrlIter.hasNext()) {
-
-                String targetHost = UrlUtils.getHost(targetUrlIter.next());
-                if (!StringUtils.equals(baseHost, targetHost)) {
-
-                    targetUrlIter.remove();
-                }
+            final Elements medias = page.getHtml().getDocument().select("[src]");
+            Elements imports = page.getHtml().getDocument().select("link[href]");
+            for (Element importElem : imports) {
+                targetUrls.add(UrlUtils.canonicalizeUrl(importElem.attr("href"), page.getUrl().get()));
+            }
+            for (Element mediaElem : medias) {
+                targetUrls.add(UrlUtils.canonicalizeUrl( mediaElem.attr("src"), page.getUrl().get()));
             }
 
             //相对/绝对路径的处理问题
-            List<String> imgUrls = page.getHtml().$("img", "src").all();
-            for (String imgUrl : imgUrls) {
+//            List<String> imgUrls = page.getHtml().$("img", "src").all();
+//            for (String imgUrl : imgUrls) {
+//
+//                targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
+//            }
+//            targetUrls.addAll(page.getHtml().$("img", "src").all());
 
-                targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
-            }
-            targetUrls.addAll(page.getHtml().$("img", "src").all());
-
-            for (String targetUrl : targetUrls) {
-
-                if (!pageParentMap.containsKey(targetUrl)) {
-
-                    synchronized (pageParentMap) {
-
-                        if (!pageParentMap.containsKey(targetUrl)) {
-
-                            pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
-                        }
+            synchronized (pageParentMap) {
+                for (String targetUrl : targetUrls) {
+                    if (!pageParentMap.containsKey(targetUrl)) {
+                        pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
                     }
-                }
-                Set<String> parentUrlSet = pageParentMap.get(targetUrl);
-                if (!targetUrl.equals(page.getUrl().get().intern())) {
+                    Set<String> parentUrlSet = pageParentMap.get(targetUrl);
+                    if (!targetUrl.equals(page.getUrl().get().intern())) {
 
-                    boolean isEqual = false;
-                    if (targetUrl.startsWith(page.getUrl().get())) {
-                        String remainStr = targetUrl.substring(page.getUrl().get().length());
-                        if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                            isEqual = true;
+                        boolean isEqual = false;
+                        if (targetUrl.startsWith(page.getUrl().get())) {
+                            String remainStr = targetUrl.substring(page.getUrl().get().length());
+                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                                isEqual = true;
+                            }
                         }
-                    }
-                    if (page.getUrl().get().startsWith(targetUrl)) {
-                        String remainStr = page.getUrl().get().substring(targetUrl.length());
-                        if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                            isEqual = true;
+                        if (page.getUrl().get().startsWith(targetUrl)) {
+                            String remainStr = page.getUrl().get().substring(targetUrl.length());
+                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                                isEqual = true;
+                            }
                         }
-                    }
 
-                    if (!isEqual) {
-                        parentUrlSet.add(page.getUrl().get().intern());
+                        if (!isEqual) {
+                            parentUrlSet.add(page.getUrl().get().intern());
+                        }
                     }
                 }
             }
@@ -160,15 +190,20 @@ public class SpiderUtils {
                     chnlId = channel.getChannelId();
                 }
             } catch (RemoteException e) {
-                log.error("");
+                log.error("", e);
             }
 
             if (!isUrlAvailable.get()) {
-                unavailableUrls.add(request.getUrl().intern());
+                String unavailableUrl = request.getUrl().intern();
+                Set<String> parents = pageParentMap.get(request.getUrl().intern());
+                for (String parentUrl : parents) {
+                    String parentContent = pageContentMap.get(parentUrl);
+                    insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), new Date(), parentContent, (Integer) request.getExtras().get("statusCode"));
+                }
             } else {
 
                 if (useTime > THRESHOLD_MAX_REPLY_SPEED) {
-                    replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
+                    updateOrInsertSpeed(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
                             chnlId,
                             request.getUrl().intern(),
                             useTime,
@@ -177,7 +212,7 @@ public class SpiderUtils {
                 }
 
                 if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
-                    biggerPage.add(new PageSpace(0,
+                    updateOrInsertSpace(new PageSpace(0,
                             request.getUrl().intern(),
                             useTime,
                             Long.valueOf(result.getRawText().getBytes().length),
@@ -186,7 +221,7 @@ public class SpiderUtils {
 
                 String[] urlSize = request.getUrl().split("/");
                 if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
-                    biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
+                    updateOrInsertLength(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
                             chnlId,
                             request.getUrl().intern(),
                             Long.valueOf(request.getUrl().length()),
@@ -196,7 +231,7 @@ public class SpiderUtils {
 
                 int deepSize = calcDeep(request.getUrl(), 100, 1);
                 if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
-                    pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
+                    updateOrInsertDepth(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
                             chnlId,
                             request.getUrl().intern(),
                             deepSize,
@@ -204,6 +239,7 @@ public class SpiderUtils {
                             new Date()));
                 }
             }
+
             return result;
         }
 
@@ -212,15 +248,358 @@ public class SpiderUtils {
 
             isUrlAvailable.set(true);
         }
+
+        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Date checkTime, String parentContent, Integer statusCode) {
+
+            try {
+
+                LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
+                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setCheckTime(checkTime);
+                linkAvailabilityResponse.setSiteId(siteId);
+                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
+                final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
+                        linkAvailabilityResponse.getInvalidLink());
+                String absoluteDir = locationDir + File.separator + relativeDir;
+                linkAvailabilityResponse.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
+                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
+
+                    CKMScheduler.createDir(absoluteDir);
+
+                    // 网页定位
+                    String pageLocContent = generatePageLocHtmlText(unavailableUrlAndParentUrl, parentContent, statusCode);
+                    if (pageLocContent == null) {
+                        log.warn(unavailableUrlAndParentUrl.getValue() + " create location file failed ... ");
+                        return;
+                    }
+                    CKMScheduler.createPagePosHtml(absoluteDir, pageLocContent);
+
+                    // 源码定位
+                    String srcLocContent = generateSourceLocHtmlText(unavailableUrlAndParentUrl, parentContent, statusCode);
+                    if (srcLocContent == null) {
+                        log.warn(unavailableUrlAndParentUrl.getValue() + " create location file failed ... ");
+                        return;
+                    }
+                    CKMScheduler.createSrcPosHtml(absoluteDir, srcLocContent);
+
+                    // 创建头部导航页面
+                    CKMScheduler.createContHtml(absoluteDir, unavailableUrlAndParentUrl.getValue(), unavailableUrlAndParentUrl.getKey());
+
+                    // 创建首页
+                    CKMScheduler.createIndexHtml(absoluteDir);
+                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+                }
+            } catch (Exception e) {
+                log.error("", e);
+            }
+        }
+
+        private String generateSourceLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
+            // 将html标签转义
+            String processSource = processSourceLocation(unavailableUrlAndParentUrl, parentUrlContent);
+            String sourceEscape = StringEscapeUtils.escapeHtml4(processSource);
+            StringBuffer sb = new StringBuffer();
+            sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	<head>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<title>源码定位</title>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	</head>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	<body> ");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<div class=\"sh_code\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("			<ol start=\"1\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sourceEscape = sourceEscape.replaceAll("\r", "");
+            sourceEscape = sourceEscape.replaceAll("\n", CKMScheduler.LINE_SP);
+            sourceEscape = sourceEscape.replaceAll(" ", "&nbsp;");
+            sourceEscape = sourceEscape.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+            String[] sourceArr = sourceEscape.split(CKMScheduler.LINE_SP);
+            for (int i = 0; i < sourceArr.length; i++) {
+                String line = sourceArr[i];
+                if (i % 2 == 0) {
+                    sb.append("				<li>" + line + "</li>");
+                } else {
+                    sb.append("				<li class=\"alt\">" + line + "</li>");
+                }
+                sb.append(CKMScheduler.LINE_SP);
+            }
+            sb.append("			</ol>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		</div>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	</body>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("</html>");
+            sb.append(CKMScheduler.LINE_SP);
+
+            // 在源码中增加定位用的脚本定义
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+
+            String result = sb.toString();
+
+            int start = 0;
+            int end = 0;
+            int index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, start);
+            if (index >= 0) {
+
+                end = result.indexOf(LOC_TAG, index + DOUBLE_QUOTS.length() + LOC_TAG.length());
+                if (end >= 0) {
+                    String sourceLinkText = result.substring(index + DOUBLE_QUOTS.length() + LOC_TAG.length(), end);
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() +
+                            "</a>";
+                    String errorinfo = "<font trserrid=\"anchor\" msg=\"" + msgStr + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + sourceLinkText +
+                            "</font>";
+                    result = result.substring(0, index + DOUBLE_QUOTS.length()) + errorinfo + result.substring(end + LOC_TAG.length());
+                }
+            } else {
+                return null;
+            }
+            index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, index + DOUBLE_QUOTS.length());
+            while (index > 0) {
+                end = result.indexOf(LOC_TAG, index + DOUBLE_QUOTS.length() + LOC_TAG.length());
+                if (end >= 0) {
+                    String sourceLinkText = result.substring(index + "&quot;".length() + LOC_TAG.length(), end);
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() + "</a>";
+                    String errorinfo = "<font msg=\"" + msgStr + "\" style=\"border:2px red solid;color:red;\">" + sourceLinkText + "</font>";
+                    result = result.substring(0, index + DOUBLE_QUOTS.length()) + errorinfo + result.substring(end + LOC_TAG.length());
+                }
+                index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, index + DOUBLE_QUOTS.length());
+            }
+
+            return result;
+        }
+
+        private String generatePageLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
+            StringBuffer sb = new StringBuffer();
+            // 给网站增加base标签
+            sb.append("<base href=\"" + unavailableUrlAndParentUrl.getKey() + "\" />");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append(parentUrlContent.intern());
+            // 在源码中增加定位用的脚本定义
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+            // 解析源码，找到断链标签，加上标记信息。
+            String result = sb.toString();
+
+            final Document parseDoc = Jsoup.parse(result, unavailableUrlAndParentUrl.getKey());
+            Elements links = parseDoc.select("[href]");
+            Elements media = parseDoc.select("[src]");
+
+            // 处理a标签
+            for (int i = 0; i < links.size(); i++) {
+                Element link = links.get(i);
+                String relHref = link.attr("href");
+                String absHref = link.attr("abs:href");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("trserrid", "anchor");
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() + "</a>";
+                    link.attr("msg", msgStr);
+                    link.attr("msgtitle", "定位");
+                    link.attr("style", "border:2px red solid;color:red;");
+                }
+            }
+            // 处理img标签
+            for (int i = 0; i < media.size(); i++) {
+                Element link = media.get(i);
+                String relHref = link.attr("src");
+                String absHref = link.attr("abs:src");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("trserrid", "anchor");
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() + "</a>";
+                    link.attr("msg", msgStr);
+                    link.attr("msgtitle", "定位");
+                    link.attr("style", "border:2px red solid;color:red;");
+                }
+            }
+
+            result = parseDoc.html();
+
+            return result;
+        }
+
+        private String getDisplayErrorWord(String url) {
+            return "无效链接：" + url;
+        }
+
+        private String processSourceLocation(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(parentUrlContent.intern());
+            // 解析源码，找到断链标签，加上标记信息。
+            String result = sb.toString();
+
+            final Document parseDoc = Jsoup.parse(result, unavailableUrlAndParentUrl.getKey());
+            Elements links = parseDoc.select("[href]");
+            Elements media = parseDoc.select("[src]");
+
+            // 处理a标签
+            for (int i = 0; i < links.size(); i++) {
+                Element link = links.get(i);
+                String relHref = link.attr("href");
+                String absHref = link.attr("abs:href");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("href", LOC_TAG + relHref + LOC_TAG);
+                }
+            }
+            // 处理img标签
+            for (int i = 0; i < media.size(); i++) {
+                Element link = media.get(i);
+                String relHref = link.attr("src");
+                String absHref = link.attr("abs:src");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("src", LOC_TAG + relHref + LOC_TAG);
+                }
+            }
+
+            result = parseDoc.html();
+            return result;
+        }
+
+        private Types.LinkAvailableIssueType getTypeByLink(String url) {
+
+            String suffix = url.substring(url.lastIndexOf('.') + 1);
+            for (String imageSuffix : imageSuffixs) {
+
+                if (StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
+
+                    return Types.LinkAvailableIssueType.INVALID_IMAGE;
+                }
+            }
+
+            for (String fileSuffix : fileSuffixs) {
+
+                if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
+
+                    return Types.LinkAvailableIssueType.INVALID_FILE;
+                }
+            }
+
+            return Types.LinkAvailableIssueType.INVALID_LINK;
+        }
+
+        private void updateOrInsertSpeed(ReplySpeed replySpeedTo) {
+
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, replySpeedTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, replySpeedTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
+
+            List<ReplySpeed> pageSpaceList = webPageMapper.selectReplySpeed(queryFilter);
+            if (pageSpaceList.isEmpty()) {
+                replySpeedTo.setSiteId(siteId);
+                webPageService.insertReplyspeed(replySpeedTo);
+            } else {
+                webPageMapper.updateReplySpeed(replySpeedTo);
+            }
+        }
+
+        private void updateOrInsertSpace(PageSpace pageSpaceTo) {
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, pageSpaceTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, pageSpaceTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
+
+            List<PageSpace> pageSpaceList = webPageMapper.selectPageSpace(queryFilter);
+
+            if (pageSpaceList.isEmpty()) {
+                pageSpaceTo.setSiteId(siteId);
+                webPageService.insertPageSpace(pageSpaceTo);
+            } else {
+                webPageMapper.updatePageSpace(pageSpaceTo);
+            }
+        }
+
+        private void updateOrInsertLength(UrlLength urlLenghtTo) {
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, urlLenghtTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, urlLenghtTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
+
+            List<UrlLength> urlLenghtList = webPageMapper.selectUrlLength(queryFilter);
+
+            if (urlLenghtList.isEmpty()) {
+                urlLenghtTo.setSiteId(siteId);
+                webPageService.insertUrlLength(urlLenghtTo);
+            } else {
+                webPageMapper.updateUrlLength(urlLenghtTo);
+            }
+        }
+
+        private void updateOrInsertDepth(PageDepth pageDepthTo) {
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, pageDepthTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, pageDepthTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
+
+            List<PageDepth> pageDepthList = webPageMapper.selectPageDepth(queryFilter);
+
+            if (pageDepthList.isEmpty()) {
+                pageDepthTo.setSiteId(siteId);
+                webPageService.insertPageDepth(pageDepthTo);
+            } else {
+                webPageMapper.updatePageDepth(pageDepthTo);
+            }
+        }
     };
 
+    private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
+
+    private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
 
     private synchronized void init(String baseUrl, Integer siteId) {
         this.siteId = siteId;
         this.baseUrl = baseUrl;
+        this.baseHost = UrlUtils.getHost(this.baseUrl);
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
     }
+
 
     /**
      * 检索链接/图片/附件是否可用
@@ -229,34 +608,12 @@ public class SpiderUtils {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized List<Pair<String, String>> linkCheck(int threadNum, Integer siteId, String baseUrl) {
-
+    public synchronized void linkCheck(int threadNum, Integer siteId, String baseUrl) {
 
         log.info("linkCheck started!");
         init(baseUrl, siteId);
-        if (StringUtils.isBlank(baseUrl)) {
-
-            log.info("linkCheck completed, no URL has been checked!");
-            return Collections.emptyList();
-        }
-
         Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();
-        List<Pair<String, String>> unavailableUrlAndParentUrls = new LinkedList<>();
-        for (String unavailableUrl : unavailableUrls) {
-
-            Set<String> parentUrls = pageParentMap.get(unavailableUrl);
-
-            if (CollectionUtils.isNotEmpty(parentUrls)) {
-
-                for (String parentUrl : parentUrls) {
-
-                    unavailableUrlAndParentUrls.add(new ImmutablePair<String, String>(parentUrl, unavailableUrl));
-                }
-            }
-        }
-
         log.info("linkCheck completed!");
-        return unavailableUrlAndParentUrls;
     }
 
     private int calcDeep(String url, int minDeep, int deep) {
@@ -324,51 +681,5 @@ public class SpiderUtils {
         }
         log.info("homePageCheck completed!");
         return new LinkedList<>(unavailableUrls);
-    }
-
-    /**
-     * 过大页面
-     *
-     * @return
-     */
-    public Set<PageSpace> biggerPageSpace() {
-        return this.biggerPage;
-    }
-
-    /**
-     * 过长URL页面
-     *
-     * @return
-     */
-    public Set<UrlLength> getBiggerUrlPage() {
-        return this.biggerUrlPage;
-    }
-
-    /**
-     * 响应熟读
-     *
-     * @return
-     */
-    public Set<ReplySpeed> getReplySpeeds() {
-        return this.replySpeeds;
-    }
-
-    /**
-     * 过深页面
-     *
-     * @return
-     */
-    public Set<PageDepth> getPageDepths() {
-        return this.pageDepths;
-    }
-
-    @Data
-    public static class CheckResult {
-
-        private String baseUrl;
-
-        private String unavailableUrl;
-
-        private String parentUrl;
     }
 }
