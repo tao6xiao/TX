@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -13,7 +14,10 @@ import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +39,9 @@ public class InfoUpdateController extends IssueHandler {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
+
     /**
      * 查询已解决、预警和更新不及时的数量
      *
@@ -48,6 +55,7 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return infoUpdateService.getIssueCount(param);
     }
 
@@ -64,6 +72,7 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return infoUpdateService.getIssueHistoryCount(param);
     }
 
@@ -81,6 +90,7 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return infoUpdateService.get(param);
     }
 
@@ -101,6 +111,7 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取栏目信息更新不及时的统计信息", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return infoUpdateService.getUpdateNotInTimeCountList(param);
     }
 
@@ -123,6 +134,7 @@ public class InfoUpdateController extends IssueHandler {
             log.error("Invalid parameter: 参数siteId为null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取更新不及时栏目的更新不及时总月数以及空栏目", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return infoUpdateService.getNotInTimeCountMonth(siteId);
     }
 

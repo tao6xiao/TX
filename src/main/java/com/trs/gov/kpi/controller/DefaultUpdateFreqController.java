@@ -2,12 +2,16 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.DefaultUpdateFreq;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +31,9 @@ public class DefaultUpdateFreqController {
 
     @Resource
     private AuthorityService authorityService;
+
+    @Resource
+    SiteApiService siteApiService;
 
     /**
      * 通过siteId查询对应自查提醒记录
@@ -51,6 +58,7 @@ public class DefaultUpdateFreqController {
         if (defaultUpdateFreq != null) {
             value = defaultUpdateFreq.getValue();
         }
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "通过siteId查询对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return value;
     }
 
@@ -76,8 +84,10 @@ public class DefaultUpdateFreqController {
         DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
         if (defaultUpdateFreqCheck == null) {//不存在对应siteId的自查提醒记录，需要新增记录
             defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "插入自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         } else {//存在当前siteId对应自查提醒记录，修改记录
             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         }
         return null;
     }

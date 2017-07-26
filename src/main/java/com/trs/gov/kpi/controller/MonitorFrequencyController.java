@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.FrequencyType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -13,6 +14,9 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.MonitorFrequencyService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +40,9 @@ public class MonitorFrequencyController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
+
     /**
      * 通过siteId获取当前站点监测频率的设置记录集合
      *
@@ -53,6 +60,7 @@ public class MonitorFrequencyController {
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前站点的监测频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return monitorFrequencyService.queryBySiteId(siteId);
     }
 
@@ -98,8 +106,10 @@ public class MonitorFrequencyController {
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
         if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
             monitorFrequencyService.addMonitorFrequencySetUp(freqSetUp);
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加监测频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         } else {//siteId和typeId同时存在，修改对应站点的监测频率记录
             monitorFrequencyService.updateMonitorFrequencySetUp(freqSetUp);
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改监测频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         }
         return null;
     }

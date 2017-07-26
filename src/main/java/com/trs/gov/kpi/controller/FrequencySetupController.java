@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -14,7 +15,10 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +42,9 @@ public class FrequencySetupController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
+
     /**
      * 分页查询当前站点的数据（附带模糊查询）
      *
@@ -56,6 +63,7 @@ public class FrequencySetupController {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前站点频率设置", siteApiService.getSiteById(selectRequest.getSiteId(), "").getSiteName()).info();
         ParamCheckUtil.pagerCheck(selectRequest.getPageIndex(), selectRequest.getPageSize());
         return frequencySetupService.getPageData(selectRequest);
 
@@ -98,9 +106,11 @@ public class FrequencySetupController {
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
                 frequencySetup = frequencySetupService.toFrequencySetupBySetupRequest(frequencySetupSetRequest, chnlIds[i]);
                 frequencySetupService.insert(frequencySetup);
+                SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加更新频率", siteApiService.getSiteById(frequencySetupSetRequest.getSiteId(), "").getSiteName()).info();
             } else {//当前站点的当前栏目设置过更新频率，需要修改
                 frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
                 frequencySetupService.updateFrequencySetupById(frequencySetup);
+                SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "添加更新频率时，当前更新频率存在，那么修改这个更新频率", siteApiService.getSiteById(frequencySetupSetRequest.getSiteId(), "").getSiteName()).info();
             }
         }
         return null;
@@ -126,6 +136,7 @@ public class FrequencySetupController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequest);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "直接修改更新频率", siteApiService.getSiteById(frequencySetupUpdateRequest.getSiteId(), "").getSiteName()).info();
         return null;
     }
 
@@ -157,6 +168,7 @@ public class FrequencySetupController {
         for (Integer id : ids) {
             frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
         }
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.DELETE, "删除这个更新频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return null;
     }
 
@@ -198,7 +210,7 @@ public class FrequencySetupController {
             log.error("Invalid parameter: 参数isOpen不存在对应数值的请求");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "关闭或者生效更新频率记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return null;
     }
 

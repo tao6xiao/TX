@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.EnumCheckJobType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -11,6 +12,7 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.TRSLogUserUtil;
 import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.Setter;
@@ -38,6 +40,9 @@ public class MonitorSiteController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
+
     /**
      * 通过siteId查询监测站点的设置参数
      *
@@ -56,7 +61,7 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询监测站点设置信息", "查询监测站点设置信息", siteId.toString()).info();
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return monitorSiteService.getMonitorSiteDealBySiteId(siteId);
     }
 
@@ -95,11 +100,16 @@ public class MonitorSiteController {
                 schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }
 
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+
         } else {//检测站点表中不存在siteId对应记录，将插入记录
             monitorSiteService.addMonitorSite(monitorSiteDeal);
 
             // 触发监控
             schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+
         }
         return null;
     }
