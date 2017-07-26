@@ -236,6 +236,10 @@ public class CKMScheduler implements SchedulerTask {
 
     private String generatePageLocHtmlText(PageCKMSpiderUtil.CKMPage page, Types.InfoErrorIssueType subIssueType, String errorInfo) {
 
+        if (StringUtil.isEmpty(page.getContent())) {
+            return "<html><body><h1>快照内容已不存在！</h1></body></html>";
+        }
+
         StringBuffer sb = new StringBuffer();
         // 给网站增加base标签
         sb.append("<base href=\"" + page.getUrl() + "\" />");
@@ -339,6 +343,11 @@ public class CKMScheduler implements SchedulerTask {
     }
 
     private String generateSourceLocHtmlText(PageCKMSpiderUtil.CKMPage page, Types.InfoErrorIssueType subIssueType, String errorInfo) {
+
+        if (StringUtil.isEmpty(page.getContent())) {
+            return "<html><body><h1>快照内容已不存在！</h1></body></html>";
+        }
+
         // 将html标签转义
         String sourceEscape = StringEscapeUtils.escapeHtml4(page.getContent());
         StringBuffer sb = new StringBuffer();
