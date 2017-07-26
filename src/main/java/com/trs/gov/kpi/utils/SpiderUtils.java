@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.EnumUrlType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.dao.WebPageMapper;
@@ -91,40 +92,50 @@ public class SpiderUtils {
 
     private Integer siteId;
 
+    private String baseHost;
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
         public void process(Page page) {
+
+            // 当页面已经完全跳转到外部去了，就不再处理了。
+            String curHost = UrlUtils.getHost(page.getUrl().get());
+            if (!StringUtils.equals(curHost, baseHost)) {
+                return;
+            }
+
+            EnumUrlType urlType = WebPageUtil.getUrlType(page.getUrl().get());
+            if (urlType != EnumUrlType.HTML) {
+                return;
+            }
+
             //存放页面内容
             pageContentMap.put(page.getUrl().get(), page.getRawText());
 
-            //去掉外站链接
+            // 获取页面内的所有连接
             List<String> targetUrls = page.getHtml().links().all();
-            Iterator<String> targetUrlIter = targetUrls.iterator();
-            String baseHost = UrlUtils.getHost(page.getUrl().get());
-            while (targetUrlIter.hasNext()) {
-
-                String targetHost = UrlUtils.getHost(targetUrlIter.next());
-                if (!StringUtils.equals(baseHost, targetHost)) {
-
-                    targetUrlIter.remove();
-                }
+            final Elements medias = page.getHtml().getDocument().select("[src]");
+            Elements imports = page.getHtml().getDocument().select("link[href]");
+            for (Element importElem : imports) {
+                targetUrls.add(UrlUtils.canonicalizeUrl(importElem.attr("href"), page.getUrl().get()));
+            }
+            for (Element mediaElem : medias) {
+                targetUrls.add(UrlUtils.canonicalizeUrl( mediaElem.attr("src"), page.getUrl().get()));
             }
 
             //相对/绝对路径的处理问题
-            List<String> imgUrls = page.getHtml().$("img", "src").all();
-            for (String imgUrl : imgUrls) {
-
-                targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
-            }
-            targetUrls.addAll(page.getHtml().$("img", "src").all());
+//            List<String> imgUrls = page.getHtml().$("img", "src").all();
+//            for (String imgUrl : imgUrls) {
+//
+//                targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
+//            }
+//            targetUrls.addAll(page.getHtml().$("img", "src").all());
 
             synchronized (pageParentMap) {
                 for (String targetUrl : targetUrls) {
                     if (!pageParentMap.containsKey(targetUrl)) {
-
                         pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
-
                     }
                     Set<String> parentUrlSet = pageParentMap.get(targetUrl);
                     if (!targetUrl.equals(page.getUrl().get().intern())) {
@@ -250,7 +261,7 @@ public class SpiderUtils {
                 final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
                         linkAvailabilityResponse.getInvalidLink());
                 String absoluteDir = locationDir + File.separator + relativeDir;
-                linkAvailabilityResponse.setSnapshot("gov/kpi/loc/" + relativeDir.replaceAll(File.separator, "/") + "/index.html");
+                linkAvailabilityResponse.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
                 if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
 
                     CKMScheduler.createDir(absoluteDir);
@@ -584,6 +595,7 @@ public class SpiderUtils {
     private synchronized void init(String baseUrl, Integer siteId) {
         this.siteId = siteId;
         this.baseUrl = baseUrl;
+        this.baseHost = UrlUtils.getHost(this.baseUrl);
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
     }

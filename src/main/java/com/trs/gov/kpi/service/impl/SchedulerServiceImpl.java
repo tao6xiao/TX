@@ -25,8 +25,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -382,26 +380,19 @@ public class SchedulerServiceImpl implements SchedulerService {
         }
         job.getJobDataMap().put("task", task);
 
-        final String todayString = DateUtil.toDayString(new Date());
 
+        // 每天执行一次
+        Trigger trigger = newTrigger()
+                .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
+                .startNow()
+                .forJob(job.getKey())
+                .withSchedule(builder)
+                .build();
         try {
-            final Date nextDate = DateUtil.addDay(DateUtil.toDayDate(todayString), 1);
-            // 每天执行一次
-            Trigger trigger = newTrigger()
-                    .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
-                    .startAt(nextDate)
-                    .forJob(job.getKey())
-                    .withSchedule(builder)
-                    .build();
-            try {
-                scheduler.scheduleJob(job, trigger);
-            } catch (SchedulerException e) {
-                log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
-            }
-        } catch (ParseException e) {
-            log.error("scheduleJob  " + site.getSiteId() + " failed!", e);
+            scheduler.scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
         }
-
     }
 
     private String getJobName(int siteId, EnumCheckJobType checkType) {

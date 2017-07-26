@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by he.lang on 2017/5/24.
@@ -90,13 +89,11 @@ public class CKMScheduler implements SchedulerTask {
             return;
         }
 
-        List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
-        Set<PageCKMSpiderUtil.CKMPage> ckmPages = spider.fetchPages(5, baseUrl);//"http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
-        for (PageCKMSpiderUtil.CKMPage page : ckmPages) {
-            insert(buildList(page, checkTypeList));
-        }
+        spider.fetchPages(5, "http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1", this);//"http://www.55zxx
+        // .net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
         log.info("CKMScheduler " + siteId + " end...");
     }
+
 
     private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList) throws RemoteException {
         List<Issue> issueList = new ArrayList<>();
@@ -155,7 +152,7 @@ public class CKMScheduler implements SchedulerTask {
                 createSrcPosHtml(absoluteDir, srcLocContent);
 
                 // 创建头部导航页面
-                createContHtml(absoluteDir, page.getUrl(), baseUrl);
+                createContHtml(absoluteDir, page.getUrl(), spider.getParentUrl(page.getUrl()));
 
                 // 创建首页
                 createIndexHtml(absoluteDir);
@@ -173,7 +170,7 @@ public class CKMScheduler implements SchedulerTask {
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
-            issue.setDetail("gov/kpi/loc/" + relativeDir.replaceAll(File.separator, "/") + "/index.html");
+            issue.setDetail("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
             Date nowTime = new Date();
             issue.setIssueTime(nowTime);
             issue.setCheckTime(nowTime);
@@ -206,7 +203,7 @@ public class CKMScheduler implements SchedulerTask {
                 "\t<head>\n" +
                 "\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n" +
                 "\t\t<title>TRS网站健康检查系统-定位</title>\n" +
-                "\t\t<link href=\"../../../../../style/css.css\" rel=\"stylesheet\" type=\"text/css\">\n" +
+                "\t\t<link href=\"../../../../style/css.css\" rel=\"stylesheet\" type=\"text/css\">\n" +
                 "\t</head>\n" +
                 "\t<body>\n" +
                 "\t\t<div class=\"jkd_positiontop\">\n" +
@@ -404,28 +401,41 @@ public class CKMScheduler implements SchedulerTask {
     }
 
 
-    private void insert(List<Issue> issueList) throws RemoteException {
+    public void insert(List<Issue> issueList) {
         //插入监测出的信息错误数据
         for (Issue issue : issueList) {
 
-            PageDataRequestParam param = new PageDataRequestParam();
-            param.setSiteId(siteId);
-            QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
-            queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-            queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-            queryFilter.addCond(IssueTableField.DETAIL, issue.getDetail());
-            queryFilter.addCond(IssueTableField.CUSTOMER1, issue.getCustomer1());
-            queryFilter.addCond(IssueTableField.SUBTYPE_ID, issue.getSubTypeId());
-            if (issue.getCustomer2() != null) {
-                queryFilter.addCond(IssueTableField.CUSTOMER2, issue.getCustomer2());
-            }
+            try {
+                PageDataRequestParam param = new PageDataRequestParam();
+                param.setSiteId(siteId);
+                QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
+                queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+                queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+                queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+                queryFilter.addCond(IssueTableField.DETAIL, issue.getDetail());
+                queryFilter.addCond(IssueTableField.CUSTOMER1, issue.getCustomer1());
+                queryFilter.addCond(IssueTableField.SUBTYPE_ID, issue.getSubTypeId());
+                if (issue.getCustomer2() != null) {
+                    queryFilter.addCond(IssueTableField.CUSTOMER2, issue.getCustomer2());
+                }
 
-            List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
-            if (infoErrors.isEmpty()) {
-                issueMapper.insert(DBUtil.toRow(issue));
+                List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
+                if (infoErrors.isEmpty()) {
+                    issueMapper.insert(DBUtil.toRow(issue));
+                }
+            } catch (Exception e) {
+                log.error("", e);
             }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
+    }
+
+    public void insert(PageCKMSpiderUtil.CKMPage page) {
+        List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
+        try {
+            insert(buildList(page, checkTypeList));
+        } catch (RemoteException e) {
+            log.error("", e);
+        }
     }
 }
