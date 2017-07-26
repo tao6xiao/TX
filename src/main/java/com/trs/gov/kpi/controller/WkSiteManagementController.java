@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
@@ -55,9 +56,9 @@ public class WkSiteManagementController {
         }
         String siteName = siteManagement.getSiteName();
         String siteIndexUrl = siteManagement.getSiteIndexUrl();
-        int unDel = 0;
-        Integer nameCount = wkSiteManagementService.getSiteCountBySiteName(siteName , unDel);
-        Integer urlCount = wkSiteManagementService.getSiteCountByUrl(siteIndexUrl, unDel);
+        int isDel = Status.Delete.UN_DELETE.value;
+        Integer nameCount = wkSiteManagementService.getSiteCountBySiteName(siteName , isDel);
+        Integer urlCount = wkSiteManagementService.getSiteCountByUrl(siteIndexUrl, isDel);
         if (nameCount != 0 || urlCount != 0){
             log.error("Invalid parameter: 网站名或首页URL已存在！！！");
             throw new BizException(Constants.SITE_NAME_IS_EXIST);
@@ -82,7 +83,7 @@ public class WkSiteManagementController {
             log.error("Invalid parameter: 参数siteManagement对象中siteId, siteName、autoCheckType、SiteIndexUr、deptAddress、deptLatLng 五个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        int isDel = 0;
+        int isDel = Status.Delete.UN_DELETE.value;
         Integer siteId = siteManagement.getSiteId();
         SiteManagement siteManage = wkSiteManagementService.getSiteManagementBySiteId(siteId, isDel);
         if(siteManage != null){

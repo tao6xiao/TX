@@ -55,7 +55,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             for (WkScore wkScore : wkScoreList) {
                 WkAllSiteScoreResponsed wkAllSiteScore = new WkAllSiteScoreResponsed();
 
-                Integer isDel = 0;
+                Integer isDel = Status.Delete.UN_DELETE.value;
                 SiteManagement siteManagement = wkSiteManagementService.getSiteManagementBySiteId(wkScore.getSiteId(), isDel);
 
                 if(siteManagement != null){
@@ -115,7 +115,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
         if(!wkSiteIndexStatsesListTo.isEmpty()){
             for (WkSiteIndexStats wkSiteIndexStats: wkSiteIndexStatsesListTo) {
 
-                Integer isDel = 0;
+                Integer isDel = Status.Delete.UN_DELETE.value;
                 SiteManagement siteManagement = wkSiteManagementService.getSiteManagementBySiteId(wkSiteIndexStats.getSiteId(), isDel);
 
                 if (siteManagement != null) {
