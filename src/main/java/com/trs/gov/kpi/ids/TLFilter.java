@@ -23,13 +23,12 @@ public class TLFilter implements Filter{
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        log.info("init TLFilter!");
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse resp = (HttpServletResponse) response;
         if(req.getSession().getAttribute(IDSActor.LOGIN_FLAG) != null) {
             ContextHelper.initContext((SSOUser) req.getSession().getAttribute(IDSActor.LOGIN_FLAG));
             chain.doFilter(request, response);
@@ -40,12 +39,13 @@ public class TLFilter implements Filter{
             } catch (BizException e) {
                 log.error("", e);
             }
+            HttpServletResponse resp = (HttpServletResponse) response;
             resp.sendError(HttpServletResponse.SC_BAD_GATEWAY);
         }
     }
 
     @Override
     public void destroy() {
-
+        log.info("destroy TLFilter!");
     }
 }

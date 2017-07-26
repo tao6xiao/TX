@@ -36,7 +36,7 @@ public class DepDocMultiCounterResponse extends DocMultiCounterResponse{
                 this.departmentName = deptApiService.findDeptById("", Math.toIntExact(id)).getGName();
             }
         } catch (RemoteException e) {
-            log.error("",e);
+            log.error("调用外部接口 findDeptById 失败",e);
         }
     }
 

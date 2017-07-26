@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
@@ -76,6 +77,19 @@ public class CKMScheduler implements SchedulerTask {
     @Override
     public void run() throws RemoteException {
         log.info("CKMScheduler " + siteId + " start...");
+
+        final Site checkSite = siteApiService.getSiteById(siteId, null);
+        if (checkSite == null) {
+            log.error("site[" + siteId + "] is not exsit!");
+            return;
+        }
+
+        baseUrl = checkSite.getWebHttp();
+        if (StringUtil.isEmpty(baseUrl)) {
+            log.warn("site[" + siteId + "]'s web http is empty!");
+            return;
+        }
+
         List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
         Set<PageCKMSpiderUtil.CKMPage> ckmPages = spider.fetchPages(5, baseUrl);//"http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
         for (PageCKMSpiderUtil.CKMPage page : ckmPages) {
