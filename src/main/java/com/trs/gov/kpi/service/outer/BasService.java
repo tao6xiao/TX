@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.outer;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
 import com.trs.gov.kpi.entity.responsedata.History;
@@ -33,7 +34,7 @@ public interface BasService {
      * @param request
      * @return
      */
-    Integer getStayTime(BasRequest request) throws RemoteException;
+    Integer getStayTime(BasRequest request) throws RemoteException, BizException;
 
     /**
      * 获取次均停留时间的历史记录
@@ -41,5 +42,5 @@ public interface BasService {
      * @param request
      * @return
      */
-    History getHistoryStayTime(BasRequest request) throws ParseException, RemoteException;
+    History getHistoryStayTime(BasRequest request) throws ParseException, RemoteException, BizException;
 }

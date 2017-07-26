@@ -5,6 +5,7 @@ import com.squareup.okhttp.*;
 import com.trs.gov.kpi.constant.Granularity;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.bas.BasPVResponse;
 import com.trs.gov.kpi.entity.outerapi.bas.SiteSummary;
@@ -14,6 +15,7 @@ import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.BasService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -39,7 +41,10 @@ public class BasServiceImpl implements BasService {
     @Resource
     private MonitorSiteService monitorSiteService;
 
-    private static final String SITE_IDS = "mpIds";
+    @Resource
+    private SiteApiService siteApiService;
+
+    private static final String MPIDS = "mpIds";
     private static final String DAY = "day";
 
     @Override
@@ -169,10 +174,15 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public Integer getStayTime(BasRequest basRequest) throws RemoteException {
+    public Integer getStayTime(BasRequest basRequest) throws RemoteException, BizException {
 
         Map<String, String> params = new HashMap<>();
-        params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));
+        String mpId = siteApiService.getSiteById(basRequest.getSiteId(), null).getMpId();
+        if (StringUtil.isEmpty(mpId)) {
+            throw new BizException("当前站点没有对应的mpId，无法获取数据！");
+        } else {
+            params.put(MPIDS, mpId);
+        }
 
         SiteSummary siteSummary = requestBasSummary(params);
         if (siteSummary == null) {
@@ -183,7 +193,7 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public History getHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException {
+    public History getHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException, BizException {
 
         DateUtil.setDefaultDate(basRequest);
 
@@ -200,7 +210,12 @@ public class BasServiceImpl implements BasService {
             historyStatistics.setTime(historyDate.getDate());
 
             Map<String, String> params = new HashMap<>();
-            params.put(SITE_IDS, Integer.toString(basRequest.getSiteId()));
+            String mpId = siteApiService.getSiteById(basRequest.getSiteId(), null).getMpId();
+            if (StringUtil.isEmpty(mpId)) {
+                throw new BizException("当前站点没有对应的mpId，无法获取数据！");
+            } else {
+                params.put(MPIDS, mpId);
+            }
 
             if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
                 List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
