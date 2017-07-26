@@ -196,9 +196,13 @@ public class SpiderUtils {
             if (!isUrlAvailable.get()) {
                 String unavailableUrl = request.getUrl().intern();
                 Set<String> parents = pageParentMap.get(request.getUrl().intern());
-                for (String parentUrl : parents) {
-                    String parentContent = pageContentMap.get(parentUrl);
-                    insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), new Date(), parentContent, (Integer) request.getExtras().get("statusCode"));
+                if(parents == null){
+                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), new Date(), "", (Integer) request.getExtras().get("statusCode"));
+                } else {
+                    for (String parentUrl : parents) {
+                        String parentContent = pageContentMap.get(parentUrl);
+                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), new Date(), parentContent, (Integer) request.getExtras().get("statusCode"));
+                    }
                 }
             } else {
 
