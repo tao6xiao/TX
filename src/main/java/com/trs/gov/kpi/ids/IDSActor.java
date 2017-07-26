@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.ids;
 
+import com.trs.gov.kpi.utils.RemoteAddrUtil;
 import com.trs.idm.client.actor.ActorException;
 import com.trs.idm.client.actor.SSOUser;
 import com.trs.idm.client.actor.StdHttpSessionBasedActor;
@@ -42,6 +43,7 @@ public class IDSActor extends StdHttpSessionBasedActor{
      */
     public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) throws ActorException {
         HttpSession session = request.getSession();
+        loginUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
         session.setAttribute(LOGIN_FLAG, loginUser);
         LOG.info("loadLoginUser[" + loginUser.getUserName() + "], user groups info:" + loginUser.getSSOGroups());
     }

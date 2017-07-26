@@ -15,4 +15,13 @@ public interface UserApiService {
      * @return
      */
     User findUserById(String currUserName,int userId) throws RemoteException;
+
+    /**
+     * 通过userName查询用户
+     * @param currUserName
+     * @param userName
+     * @return
+     * @throws RuntimeException
+     */
+    User finUserByUserName(String currUserName, String userName) throws RemoteException;
 }

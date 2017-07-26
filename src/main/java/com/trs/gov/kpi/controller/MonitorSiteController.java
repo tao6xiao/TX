@@ -11,6 +11,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -46,14 +48,16 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+//        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
+//                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
+//            throw new BizException(Authority.NO_AUTHORITY);
+//        }
         if (siteId == null) {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询监测站点设置信息", "查询监测站点设置信息", siteId.toString()).info();
+        log.error("============================================================================================");
         return monitorSiteService.getMonitorSiteDealBySiteId(siteId);
     }
 
@@ -75,7 +79,7 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId、四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        if(monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getIndexUrl().isEmpty()){
+        if (monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getIndexUrl().isEmpty()) {
             log.error("Invalid parameter: 当前站点没有首页");
             throw new BizException("当前站点没有首页，不能设置！");
         }

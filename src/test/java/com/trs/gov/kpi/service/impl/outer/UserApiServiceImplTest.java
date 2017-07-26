@@ -68,6 +68,11 @@ public class UserApiServiceImplTest {
             }
             return new User();
         }
+
+        @Override
+        public User finUserByUserName(String currUserName, String userName) throws RuntimeException {
+            return null;
+        }
     }
 
 }

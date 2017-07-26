@@ -47,6 +47,7 @@ public class ContextHelper {
      */
     public static void initContext(SSOUser loginUser) {
         setLoginUser(loginUser);
+        setArg(CONTEXT_INDEX_IP, loginUser.getLastLoginIP());//添加ip记录
     } // END of initContext
 
     /**

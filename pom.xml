@@ -250,6 +250,13 @@
 			<artifactId>amqp-client</artifactId>
 			<version>4.1.1</version>
 		</dependency>
+
+		<!-- trs日志 -->
+		<dependency>
+			<groupId>com.trs.log</groupId>
+			<artifactId>trslog-simplelog</artifactId>
+			<version>0.0.7</version>
+		</dependency>
 	</dependencies>
 
 	<build>
