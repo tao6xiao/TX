@@ -141,6 +141,7 @@ public class CKMScheduler implements SchedulerTask {
                 // 网页定位
                 String pageLocContent = generatePageLocHtmlText(page, subIssueType, errorContent);
                 if (pageLocContent == null) {
+                    log.warn(page.getUrl() + " create location file failed ... ");
                     continue;
                 }
                 createPagePosHtml(absoluteDir, pageLocContent);
@@ -148,6 +149,7 @@ public class CKMScheduler implements SchedulerTask {
                 // 源码定位
                 String srcLocContent = generateSourceLocHtmlText(page, subIssueType, errorContent);
                 if (srcLocContent == null) {
+                    log.warn(page.getUrl() + " create location file failed ... ");
                     continue;
                 }
                 createSrcPosHtml(absoluteDir, srcLocContent);
@@ -171,7 +173,7 @@ public class CKMScheduler implements SchedulerTask {
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
-            issue.setDetail(absoluteDir + File.separator + "cont.html");
+            issue.setDetail("gov/kpi/loc/" + relativeDir.replaceAll(File.separator, "/") + "/index.html");
             Date nowTime = new Date();
             issue.setIssueTime(nowTime);
             issue.setCheckTime(nowTime);
