@@ -44,7 +44,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Scope("prototype")
 public class SpiderUtils {
 
-    public static final String LOC_TAG = "||||||";
+    private static final String LOC_TAG = "||||||";
+
+    private static final String DOUBLE_QUOTS = "&quot;";
 
     @Value("${issue.location.dir}")
     private String locationDir;
@@ -70,8 +72,6 @@ public class SpiderUtils {
     private Map<String, Set<String>> pageParentMap = new ConcurrentHashMap<>();
 
     private Map<String, String> pageContentMap = new ConcurrentHashMap<>();
-
-    private Map<String, Integer> pageStatusCodeMap = new ConcurrentHashMap<>();
 
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
 
@@ -124,9 +124,9 @@ public class SpiderUtils {
             synchronized (pageParentMap) {
                 for (String targetUrl : targetUrls) {
                     if (!pageParentMap.containsKey(targetUrl)) {
-                        if (!pageParentMap.containsKey(targetUrl)) {
-                            pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
-                        }
+
+                        pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
+
                     }
                     Set<String> parentUrlSet = pageParentMap.get(targetUrl);
                     if (!targetUrl.equals(page.getUrl().get().intern())) {
@@ -238,282 +238,281 @@ public class SpiderUtils {
 
             isUrlAvailable.set(true);
         }
-    };
 
-    private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Date checkTime, String parentContent, Integer statusCode) {
+        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Date checkTime, String parentContent, Integer statusCode) {
 
-        try {
+            try {
 
-            LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
-            linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getValue());
-            linkAvailabilityResponse.setCheckTime(checkTime);
-            linkAvailabilityResponse.setSiteId(siteId);
-            linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
-            final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
-                    linkAvailabilityResponse.getInvalidLink());
-            linkAvailabilityResponse.setSnapshot(relativeDir + File.separator + "index.html");
+                LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
+                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getValue());
+                linkAvailabilityResponse.setCheckTime(checkTime);
+                linkAvailabilityResponse.setSiteId(siteId);
+                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
+                final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
+                        linkAvailabilityResponse.getInvalidLink());
+                linkAvailabilityResponse.setSnapshot(relativeDir + File.separator + "index.html");
 
-            if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
-                String absoluteDir = locationDir + File.separator + relativeDir;
-                CKMScheduler.createDir(absoluteDir);
+                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
+                    String absoluteDir = locationDir + File.separator + relativeDir;
+                    CKMScheduler.createDir(absoluteDir);
 
-                // 网页定位
-                String pageLocContent = generatePageLocHtmlText(unavailableUrlAndParentUrl, parentContent, statusCode);
-                if (pageLocContent == null) {
-                    log.warn(unavailableUrlAndParentUrl.getValue() + " create location file failed ... ");
-                    return;
+                    // 网页定位
+                    String pageLocContent = generatePageLocHtmlText(unavailableUrlAndParentUrl, parentContent, statusCode);
+                    if (pageLocContent == null) {
+                        log.warn(unavailableUrlAndParentUrl.getValue() + " create location file failed ... ");
+                        return;
+                    }
+                    CKMScheduler.createPagePosHtml(absoluteDir, pageLocContent);
+
+                    // 源码定位
+                    String srcLocContent = generateSourceLocHtmlText(unavailableUrlAndParentUrl, parentContent, statusCode);
+                    if (srcLocContent == null) {
+                        log.warn(unavailableUrlAndParentUrl.getValue() + " create location file failed ... ");
+                        return;
+                    }
+                    CKMScheduler.createSrcPosHtml(absoluteDir, srcLocContent);
+
+                    // 创建头部导航页面
+                    CKMScheduler.createContHtml(absoluteDir, unavailableUrlAndParentUrl.getValue(), unavailableUrlAndParentUrl.getKey());
+
+                    // 创建首页
+                    CKMScheduler.createIndexHtml(absoluteDir);
+                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
                 }
-                CKMScheduler.createPagePosHtml(absoluteDir, pageLocContent);
-
-                // 源码定位
-                String srcLocContent = generateSourceLocHtmlText(unavailableUrlAndParentUrl, parentContent, statusCode);
-                if (srcLocContent == null) {
-                    log.warn(unavailableUrlAndParentUrl.getValue() + " create location file failed ... ");
-                    return;
-                }
-                CKMScheduler.createSrcPosHtml(absoluteDir, srcLocContent);
-
-                // 创建头部导航页面
-                CKMScheduler.createContHtml(absoluteDir, unavailableUrlAndParentUrl.getValue(), unavailableUrlAndParentUrl.getKey());
-
-                // 创建首页
-                CKMScheduler.createIndexHtml(absoluteDir);
-                linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
-            }
-        } catch (Exception e) {
-            log.error("", e);
-        }
-    }
-
-
-    private String processSourceLocation(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(parentUrlContent.intern());
-        // 解析源码，找到断链标签，加上标记信息。
-        String result = sb.toString();
-
-        final Document parseDoc = Jsoup.parse(result, unavailableUrlAndParentUrl.getKey());
-        Elements links = parseDoc.select("[href]");
-        Elements media = parseDoc.select("[src]");
-
-        // 处理a标签
-        for (int i = 0; i < links.size(); i++) {
-            Element link = links.get(i);
-            String relHref = link.attr("href");
-            String absHref = link.attr("abs:href");
-            if (StringUtil.isEmpty(absHref)) {
-                absHref = relHref;
-            }
-            if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
-                link.attr("href", LOC_TAG + relHref + LOC_TAG);
-            }
-        }
-        // 处理img标签
-        for (int i = 0; i < media.size(); i++) {
-            Element link = media.get(i);
-            String relHref = link.attr("src");
-            String absHref = link.attr("abs:src");
-            if (StringUtil.isEmpty(absHref)) {
-                absHref = relHref;
-            }
-            if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
-                link.attr("src", LOC_TAG + relHref + LOC_TAG);
+            } catch (Exception e) {
+                log.error("", e);
             }
         }
 
-        result = parseDoc.html();
-        return result;
-    }
-
-    private String generateSourceLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
-        // 将html标签转义
-        String processSource = processSourceLocation(unavailableUrlAndParentUrl, parentUrlContent);
-        String sourceEscape = StringEscapeUtils.escapeHtml4(processSource);
-        StringBuffer sb = new StringBuffer();
-        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("	<head>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("		<title>源码定位</title>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("	</head>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("	<body> ");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("		<div class=\"sh_code\">");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("			<ol start=\"1\">");
-        sb.append(CKMScheduler.LINE_SP);
-        sourceEscape = sourceEscape.replaceAll("\r", "");
-        sourceEscape = sourceEscape.replaceAll("\n", CKMScheduler.LINE_SP);
-        sourceEscape = sourceEscape.replaceAll(" ", "&nbsp;");
-        sourceEscape = sourceEscape.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-        String[] sourceArr = sourceEscape.split(CKMScheduler.LINE_SP);
-        for (int i = 0; i < sourceArr.length; i++) {
-            String line = sourceArr[i];
-            if (i % 2 == 0) {
-                sb.append("				<li>" + line + "</li>");
-            } else {
-                sb.append("				<li class=\"alt\">" + line + "</li>");
-            }
+        private String generateSourceLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
+            // 将html标签转义
+            String processSource = processSourceLocation(unavailableUrlAndParentUrl, parentUrlContent);
+            String sourceEscape = StringEscapeUtils.escapeHtml4(processSource);
+            StringBuffer sb = new StringBuffer();
+            sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
             sb.append(CKMScheduler.LINE_SP);
-        }
-        sb.append("			</ol>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("		</div>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("	</body>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("</html>");
-        sb.append(CKMScheduler.LINE_SP);
-
-        // 在源码中增加定位用的脚本定义
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
-
-        String result = sb.toString();
-
-        int start = 0;
-        int end = 0;
-        int index = result.indexOf("&quot;" + LOC_TAG, start);
-        if (index >= 0) {
-
-            end = result.indexOf(LOC_TAG, index + "&quot;".length() + LOC_TAG.length());
-            if (end >= 0) {
-                String sourceLinkText = result.substring(index + "&quot;".length() + LOC_TAG.length(), end);
-                String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
-                        "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
-                        .getValue() +
-                        "</a>";
-                String errorinfo = "<font trserrid=\"anchor\" msg=\"" + msgStr + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + sourceLinkText +
-                        "</font>";
-                result = result.substring(0, index + "&quot;".length()) + errorinfo + result.substring(end + LOC_TAG.length());
+            sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	<head>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<title>源码定位</title>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	</head>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	<body> ");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		<div class=\"sh_code\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("			<ol start=\"1\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sourceEscape = sourceEscape.replaceAll("\r", "");
+            sourceEscape = sourceEscape.replaceAll("\n", CKMScheduler.LINE_SP);
+            sourceEscape = sourceEscape.replaceAll(" ", "&nbsp;");
+            sourceEscape = sourceEscape.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+            String[] sourceArr = sourceEscape.split(CKMScheduler.LINE_SP);
+            for (int i = 0; i < sourceArr.length; i++) {
+                String line = sourceArr[i];
+                if (i % 2 == 0) {
+                    sb.append("				<li>" + line + "</li>");
+                } else {
+                    sb.append("				<li class=\"alt\">" + line + "</li>");
+                }
+                sb.append(CKMScheduler.LINE_SP);
             }
-        } else {
-            return null;
-        }
-        index = result.indexOf("&quot;" + LOC_TAG, index + "&quot;".length());
-        while (index > 0) {
-            end = result.indexOf(LOC_TAG, index + "&quot;".length() + LOC_TAG.length());
-            if (end >= 0) {
-                String sourceLinkText = result.substring(index + "&quot;".length() + LOC_TAG.length(), end);
-                String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
-                        "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
-                        .getValue() + "</a>";
-                String errorinfo = "<font msg=\"" + msgStr + "\" style=\"border:2px red solid;color:red;\">" + sourceLinkText + "</font>";
-                result = result.substring(0, index + "&quot;".length()) + errorinfo + result.substring(end + LOC_TAG.length());
-            }
-            index = result.indexOf("&quot;" + LOC_TAG, index + "&quot;".length());
-        }
+            sb.append("			</ol>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("		</div>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("	</body>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("</html>");
+            sb.append(CKMScheduler.LINE_SP);
 
-        return result;
-    }
+            // 在源码中增加定位用的脚本定义
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
 
-    private String generatePageLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
-        StringBuffer sb = new StringBuffer();
-        // 给网站增加base标签
-        sb.append("<base href=\"" + unavailableUrlAndParentUrl.getKey() + "\" />");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append(parentUrlContent.intern());
-        // 在源码中增加定位用的脚本定义
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(CKMScheduler.LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
-        // 解析源码，找到断链标签，加上标记信息。
-        String result = sb.toString();
+            String result = sb.toString();
 
-        final Document parseDoc = Jsoup.parse(result, unavailableUrlAndParentUrl.getKey());
-        Elements links = parseDoc.select("[href]");
-        Elements media = parseDoc.select("[src]");
+            int start = 0;
+            int end = 0;
+            int index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, start);
+            if (index >= 0) {
 
-        // 处理a标签
-        for (int i = 0; i < links.size(); i++) {
-            Element link = links.get(i);
-            String relHref = link.attr("href");
-            String absHref = link.attr("abs:href");
-            if (StringUtil.isEmpty(absHref)) {
-                absHref = relHref;
+                end = result.indexOf(LOC_TAG, index + DOUBLE_QUOTS.length() + LOC_TAG.length());
+                if (end >= 0) {
+                    String sourceLinkText = result.substring(index + DOUBLE_QUOTS.length() + LOC_TAG.length(), end);
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() +
+                            "</a>";
+                    String errorinfo = "<font trserrid=\"anchor\" msg=\"" + msgStr + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + sourceLinkText +
+                            "</font>";
+                    result = result.substring(0, index + DOUBLE_QUOTS.length()) + errorinfo + result.substring(end + LOC_TAG.length());
+                }
+            } else {
+                return null;
             }
-            if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
-                link.attr("trserrid", "anchor");
-                String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
-                        "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
-                        .getValue() + "</a>";
-                link.attr("msg", msgStr);
-                link.attr("msgtitle", "定位");
-                link.attr("style", "border:2px red solid;color:red;");
+            index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, index + DOUBLE_QUOTS.length());
+            while (index > 0) {
+                end = result.indexOf(LOC_TAG, index + DOUBLE_QUOTS.length() + LOC_TAG.length());
+                if (end >= 0) {
+                    String sourceLinkText = result.substring(index + "&quot;".length() + LOC_TAG.length(), end);
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() + "</a>";
+                    String errorinfo = "<font msg=\"" + msgStr + "\" style=\"border:2px red solid;color:red;\">" + sourceLinkText + "</font>";
+                    result = result.substring(0, index + DOUBLE_QUOTS.length()) + errorinfo + result.substring(end + LOC_TAG.length());
+                }
+                index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, index + DOUBLE_QUOTS.length());
             }
-        }
-        // 处理img标签
-        for (int i = 0; i < media.size(); i++) {
-            Element link = media.get(i);
-            String relHref = link.attr("src");
-            String absHref = link.attr("abs:src");
-            if (StringUtil.isEmpty(absHref)) {
-                absHref = relHref;
-            }
-            if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
-                link.attr("trserrid", "anchor");
-                String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
-                        "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
-                        .getValue() + "</a>";
-                link.attr("msg", msgStr);
-                link.attr("msgtitle", "定位");
-                link.attr("style", "border:2px red solid;color:red;");
-            }
+
+            return result;
         }
 
-        result = parseDoc.html();
+        private String generatePageLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
+            StringBuffer sb = new StringBuffer();
+            // 给网站增加base标签
+            sb.append("<base href=\"" + unavailableUrlAndParentUrl.getKey() + "\" />");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append(parentUrlContent.intern());
+            // 在源码中增加定位用的脚本定义
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
+            sb.append(CKMScheduler.LINE_SP);
+            sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+            // 解析源码，找到断链标签，加上标记信息。
+            String result = sb.toString();
 
-        return result;
-    }
+            final Document parseDoc = Jsoup.parse(result, unavailableUrlAndParentUrl.getKey());
+            Elements links = parseDoc.select("[href]");
+            Elements media = parseDoc.select("[src]");
 
-    private String getDisplayErrorWord(String url) {
-        return "无效链接：" + url;
-    }
+            // 处理a标签
+            for (int i = 0; i < links.size(); i++) {
+                Element link = links.get(i);
+                String relHref = link.attr("href");
+                String absHref = link.attr("abs:href");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("trserrid", "anchor");
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() + "</a>";
+                    link.attr("msg", msgStr);
+                    link.attr("msgtitle", "定位");
+                    link.attr("style", "border:2px red solid;color:red;");
+                }
+            }
+            // 处理img标签
+            for (int i = 0; i < media.size(); i++) {
+                Element link = media.get(i);
+                String relHref = link.attr("src");
+                String absHref = link.attr("abs:src");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("trserrid", "anchor");
+                    String msgStr = "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(unavailableUrlAndParentUrl.getValue()) +
+                            "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + unavailableUrlAndParentUrl.getValue() + "'>" + unavailableUrlAndParentUrl
+                            .getValue() + "</a>";
+                    link.attr("msg", msgStr);
+                    link.attr("msgtitle", "定位");
+                    link.attr("style", "border:2px red solid;color:red;");
+                }
+            }
+
+            result = parseDoc.html();
+
+            return result;
+        }
+
+        private String getDisplayErrorWord(String url) {
+            return "无效链接：" + url;
+        }
+
+        private String processSourceLocation(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent) {
+            StringBuffer sb = new StringBuffer();
+            sb.append(parentUrlContent.intern());
+            // 解析源码，找到断链标签，加上标记信息。
+            String result = sb.toString();
+
+            final Document parseDoc = Jsoup.parse(result, unavailableUrlAndParentUrl.getKey());
+            Elements links = parseDoc.select("[href]");
+            Elements media = parseDoc.select("[src]");
+
+            // 处理a标签
+            for (int i = 0; i < links.size(); i++) {
+                Element link = links.get(i);
+                String relHref = link.attr("href");
+                String absHref = link.attr("abs:href");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("href", LOC_TAG + relHref + LOC_TAG);
+                }
+            }
+            // 处理img标签
+            for (int i = 0; i < media.size(); i++) {
+                Element link = media.get(i);
+                String relHref = link.attr("src");
+                String absHref = link.attr("abs:src");
+                if (StringUtil.isEmpty(absHref)) {
+                    absHref = relHref;
+                }
+                if (absHref.equals(unavailableUrlAndParentUrl.getValue())) {
+                    link.attr("src", LOC_TAG + relHref + LOC_TAG);
+                }
+            }
+
+            result = parseDoc.html();
+            return result;
+        }
+
+        private Types.LinkAvailableIssueType getTypeByLink(String url) {
+
+            String suffix = url.substring(url.lastIndexOf('.') + 1);
+            for (String imageSuffix : imageSuffixs) {
+
+                if (StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
+
+                    return Types.LinkAvailableIssueType.INVALID_IMAGE;
+                }
+            }
+
+            for (String fileSuffix : fileSuffixs) {
+
+                if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
+
+                    return Types.LinkAvailableIssueType.INVALID_FILE;
+                }
+            }
+
+            return Types.LinkAvailableIssueType.INVALID_LINK;
+        }
+    };
 
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
 
     private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
-
-    private Types.LinkAvailableIssueType getTypeByLink(String url) {
-
-        String suffix = url.substring(url.lastIndexOf('.') + 1);
-        for (String imageSuffix : imageSuffixs) {
-
-            if (StringUtils.equalsIgnoreCase(suffix, imageSuffix)) {
-
-                return Types.LinkAvailableIssueType.INVALID_IMAGE;
-            }
-        }
-
-        for (String fileSuffix : fileSuffixs) {
-
-            if (StringUtils.equalsIgnoreCase(suffix, fileSuffix)) {
-
-                return Types.LinkAvailableIssueType.INVALID_FILE;
-            }
-        }
-
-        return Types.LinkAvailableIssueType.INVALID_LINK;
-    }
 
     private synchronized void init(String baseUrl, Integer siteId) {
         this.siteId = siteId;
