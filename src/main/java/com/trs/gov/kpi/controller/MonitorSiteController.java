@@ -57,7 +57,6 @@ public class MonitorSiteController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询监测站点设置信息", "查询监测站点设置信息", siteId.toString()).info();
-        log.error("============================================================================================");
         return monitorSiteService.getMonitorSiteDealBySiteId(siteId);
     }
 

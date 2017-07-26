@@ -37,10 +37,10 @@ public class TRSLogUserUtil {
         if(user.getGroups() != null && !user.getGroups().isEmpty()){
             for(int i= 0; i < user.getGroups().size(); i++){
                 Map map = user.getGroups().get(i);
-                if(map.get("GName") == null){
+                if(map.get("GNAME") == null){
                     continue;
                 }
-                buffer.append(map.get("GName"));
+                buffer.append(map.get("GNAME"));
                 buffer.append(",");
             }
         }
