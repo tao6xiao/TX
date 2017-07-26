@@ -14,6 +14,7 @@ import com.trs.gov.kpi.utils.DBUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -79,7 +80,11 @@ public class WkScoreServiceImpl implements WkScoreService {
         final List<WkScore> wkScores = wkScoreMapper.select(filter);
 
         final WkScore score = wkScores.get(0);
-        score.setTotal(score.getInvalidLink() * 0.4 + score.getContentError() * 0.2 + score.getOverSpeed() * 0.2 + score.getUpdateContent() * 0.2);
+        //对计算结果小数点后两位做四舍五入处理
+        DecimalFormat df = new DecimalFormat("#.00");
+        double totalD = score.getInvalidLink() * 0.4 + score.getContentError() * 0.2 + score.getOverSpeed() * 0.2 + score.getUpdateContent() * 0.2;
+        double totalS = Double.valueOf(df.format(totalD));
+        score.setTotal(totalS);
         score.setCheckTime(new Date());
         DBUpdater updater = new DBUpdater(Table.WK_SCORE.getTableName());
         updater.addField(WkScoreTableField.TOTAL, score.getTotal());

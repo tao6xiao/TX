@@ -17,6 +17,8 @@ public class WkAllStatsTableField {
 
     public static final String ERROR_INFO = "errorInfo";
 
+    public static final String CHECK_TIME = "checkTime";
+
     private WkAllStatsTableField(){
 
     }

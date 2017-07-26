@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -112,6 +113,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
             DBUpdater updater = new DBUpdater(Table.WK_ALL_STATS.getTableName());
             updater.addField(WkAllStatsTableField.AVG_SPEED, wkAllStats.getAvgSpeed());
             updater.addField(WkAllStatsTableField.UPDATE_CONTENT, wkAllStats.getUpdateContent());
+            updater.addField(WkAllStatsTableField.CHECK_TIME, new Date());
             commonMapper.update(updater, filter);
         } else {
             commonMapper.insert(DBUtil.toRow(wkAllStats));
@@ -124,6 +126,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
         if (commonMapper.count(filter) > 0) {
             DBUpdater updater = new DBUpdater(Table.WK_ALL_STATS.getTableName());
             updater.addField(WkAllStatsTableField.INVALID_LINK, wkAllStats.getInvalidLink());
+            updater.addField(WkAllStatsTableField.CHECK_TIME, new Date());
             commonMapper.update(updater, filter);
         } else {
             commonMapper.insert(DBUtil.toRow(wkAllStats));
@@ -136,6 +139,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
         if (commonMapper.count(filter) > 0) {
             DBUpdater updater = new DBUpdater(Table.WK_ALL_STATS.getTableName());
             updater.addField(WkAllStatsTableField.ERROR_INFO, wkAllStats.getErrorInfo());
+            updater.addField(WkAllStatsTableField.CHECK_TIME, new Date());
             commonMapper.update(updater, filter);
         } else {
             commonMapper.insert(DBUtil.toRow(wkAllStats));

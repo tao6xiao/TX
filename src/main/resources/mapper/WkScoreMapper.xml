@@ -24,13 +24,5 @@
         <include refid="com.trs.gov.kpi.dao.CommonMapper.all_conditions_sql"/>
     </select>
 
-    <select id="getOneWeekUpdateCount" resultType="int">
-        select
-        SUM(updateContent)
-        from wkscore
-        where DATE_SUB(#{checkTime,jdbcType=TIMESTAMP}, INTERVAL 7 DAY)
-        <![CDATA[ <= ]]> DATE(checkTime)
-        and siteId = #{siteId, jdbcType=INTEGER}
-    </select>
 
 </mapper>

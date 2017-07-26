@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -174,7 +175,7 @@ public class CKMProcessor implements MQListener {
         }
     }
 
-    private void calcScoreAndInsert(Integer siteId, Integer checkId, int errorCount) {
+    private void calcScoreAndInsert(Integer siteId, Integer checkId, double errorCount) {
         /**
          *  SC 内容得分(权值20%)	 	= R123x20%+R4x40%+R5x40%
          *	R1、2、3：党和领导人名字、党和领导人称谓、党和领导人排序
@@ -183,7 +184,7 @@ public class CKMProcessor implements MQListener {
          *  各项得分计算公式：100(1-ln(R/100+1)) 其中R为次数除以总数后的百分比
          */
 
-        int errorCountScore = 100;
+        double errorCountScore = 100;
         if(errorCount > 0){
             double allErrorEount = errorCount;
 
@@ -200,9 +201,11 @@ public class CKMProcessor implements MQListener {
             double politicsR5 = Math.log((politicsCount/allErrorEount)/100 + 1);
             double politicsScore = 100 * (1 - politicsR5);
 
-            //对计算结果做四舍五入处理
-            long errorCountScoreL = Math.round(typosScore * 0.2 + sensitiveWordsScore * 0.4 + politicsScore * 0.4);
-            errorCountScore = (int)errorCountScoreL;
+            //对计算结果小数点后一位做四舍五入处理
+            double errorCountScoreL = typosScore * 0.2 + sensitiveWordsScore * 0.4 + politicsScore * 0.4;
+            DecimalFormat df = new DecimalFormat("#.0");
+            String errorCountScoreD = df.format(errorCountScoreL);
+            errorCountScore = Double.valueOf(errorCountScoreD);
             if (errorCountScore < 0) {
                 errorCountScore = 0;
             }

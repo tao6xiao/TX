@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -347,7 +348,7 @@ public class InvalidLinkProcessor implements MQListener {
         }
     }
 
-    private void calcScoreAndInsert(Integer siteId, Integer checkId, int invalidLinkCount) {
+    private void calcScoreAndInsert(Integer siteId, Integer checkId, double invalidLinkCount) {
         /**
          * SL链接得分(权值40%)	 	=L1x50%+L2x20%+L3x30%
          * L1. L1(常规链接错误率R百分比得分)			=	100(1-ln(R/100+1))
@@ -357,14 +358,14 @@ public class InvalidLinkProcessor implements MQListener {
          * L3. (错误链接最小层次L得分)					=	100ln(L/10+1) 		L<10
          */
 
-        int invalidLinkScore = 100;
+        double invalidLinkScore = 100;
         if (invalidLinkCount > 0) {
-            int routineLinkCount = wkIssueService.getRoutineLinkCount(siteId, checkId);
+            double routineLinkCount = wkIssueService.getRoutineLinkCount(siteId, checkId);
             double routineLinkR = routineLinkCount / invalidLinkCount;
             double linkL1Log = Math.log(routineLinkR/100 + 1);
             double linkL1Score = 100 * (1 - linkL1Log);
 
-            int othersLinkCount = wkIssueService.getOthersLinkCount(siteId, checkId);
+            double othersLinkCount = wkIssueService.getOthersLinkCount(siteId, checkId);
             double othersLinkCountR = othersLinkCount / invalidLinkCount;
             double linkL2Log = Math.log(othersLinkCountR/100 + 1);
             double linkL2Score = 100 * (1 - linkL2Log);
@@ -378,9 +379,11 @@ public class InvalidLinkProcessor implements MQListener {
 //            double linkL3Score = 100 * linkL3;
             double linkL3Score = 100;
 
-            //对计算结果做四舍五入处理
-            long invalidLinkScoreL = Math.round(linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3);
-            invalidLinkScore = (int)invalidLinkScoreL;
+            //对计算结果小数点后一位做四舍五入处理
+            double invalidLinkScoreL = linkL1Score * 0.5 + linkL2Score * 0.2 + linkL3Score * 0.3;
+            DecimalFormat df = new DecimalFormat("#.0");
+            String invalidLinkScoreD = df.format(invalidLinkScoreL);
+            invalidLinkScore = Double.valueOf(invalidLinkScoreD);
             if (invalidLinkScore < 0) {
                 invalidLinkScore = 0;
             }

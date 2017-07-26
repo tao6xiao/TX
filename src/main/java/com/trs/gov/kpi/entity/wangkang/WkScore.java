@@ -31,14 +31,14 @@ public class WkScore {
     private double total = 0;//综合评分
 
     @DBField
-    private Integer invalidLink = 0;//链接可用性分数
+    private double invalidLink = 0;//链接可用性分数
 
     @DBField
-    private Integer contentError = 0;//内容检测分数
+    private double contentError = 0;//内容检测分数
 
     @DBField
-    private Integer overSpeed = 0;//访问速度分数
+    private double overSpeed = 0;//访问速度分数
 
     @DBField
-    private Integer updateContent = 0;//网站更新分数
+    private double updateContent = 0;//网站更新分数
 }

@@ -4,6 +4,8 @@ import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 网站更新各项指标数量记录
  *
@@ -30,5 +32,8 @@ public class WkAllStats {
 
     @DBField
     private Integer invalidLink;// 失效链接个数
+
+    @DBField
+    private Date checkTime;
 
 }

@@ -5,6 +5,7 @@ import com.trs.gov.kpi.entity.wangkang.WkAllStats;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,4 +27,6 @@ public interface WkAllStatsMapper {
      * @return
      */
     WkAllStats selectOnce(@Param("filter") QueryFilter filter);
+
+    int getOneWeekUpdateCount(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime, @Param("siteId") Integer siteId);
 }

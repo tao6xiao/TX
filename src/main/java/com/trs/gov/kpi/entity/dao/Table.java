@@ -22,7 +22,7 @@ public enum Table {
             "siteIndexUrl", "deptAddress", "deptLatLng", "autoCheckType", "checkStatus", "isDel")),
     WK_ISSUE("wkissue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID,Constants.DB_FIELD_TYPE_ID,Constants.DB_FIELD_CHECK_TIME,"checkId",
             "subTypeId","chnlName","url","detailInfo","parentUrl","isResolved","resolvedTime","isDel","locationUrl")),
-    WK_ALL_STATS("wkallstats", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "updateContent", "avgSpeed", "errorInfo", "invalidLink")),
+    WK_ALL_STATS("wkallstats", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, Constants.DB_FIELD_CHECK_TIME, "updateContent", "avgSpeed", "errorInfo", "invalidLink")),
     WK_ISSUE_COUNT("wkissuecount", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, Constants.DB_FIELD_TYPE_ID, Constants.DB_FIELD_CHECK_TIME, "isResolved", "unResolved")),
     WK_EVERY_LINK("wkeverylink", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID,Constants.DB_FIELD_CHECK_TIME, "url", "md5", "accessSpeed")),
     WK_CHECK_TIME("wkchecktime", Arrays.asList(Constants.DB_FIELD_SITE_ID, Constants.DB_FIELD_CHECK_ID, "beginTime", "endTime", "checkStatus")),

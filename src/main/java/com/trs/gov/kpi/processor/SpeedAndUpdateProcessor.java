@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.processor;
 
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.dao.WkAllStatsMapper;
 import com.trs.gov.kpi.dao.WkCheckTimeMapper;
 import com.trs.gov.kpi.dao.WkScoreMapper;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -22,7 +23,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +42,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
     @Resource
     private WkAllStatsService wkAllStatsService;
+
+    @Resource
+    private WkAllStatsMapper wkAllStatsMapper;
 
     @Resource
     private WkScoreService wkScoreService;
@@ -138,9 +144,10 @@ public class SpeedAndUpdateProcessor implements MQListener {
         double avg = avgSpeed;
         double avgLog = Math.log((avg / 200)/10 + 1);
         double avgScoreD = 100 * (1 - avgLog);
-        //对计算结果做四舍五入处理
-        long avgScoreL = Math.round(avgScoreD);
-        int avgSpeedScore = (int)avgScoreL;
+        //对计算结果小数点后一位做四舍五入处理
+        DecimalFormat df = new DecimalFormat("#.0");
+        String avgScoreL = df.format(avgScoreD);
+        double avgSpeedScore = Double.valueOf(avgScoreL);
         if (avgSpeedScore < 0) {
             avgSpeedScore = 0;
         }
@@ -149,21 +156,26 @@ public class SpeedAndUpdateProcessor implements MQListener {
          * 	D1(网站最近更新时间T天)			=	100 (1- ln(T/10+1))
          * 	D2(网站最近一周更新文章数N) 	=	100 ln(N/100+1)		N<250
          */
-        long thisTime = new Date().getTime();
+        double thisTime = new Date().getTime();
 
         Integer lastCheckId = wkCheckTimeMapper.getLastCheckId(siteId, checkId);
         QueryFilter filter = new QueryFilter(Table.WK_SCORE);
         filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
         filter.addCond(Constants.DB_FIELD_CHECK_ID, lastCheckId);
         List<WkScore> wkScore = wkScoreMapper.select(filter);
-        long lastTime = wkScore.get(0).getCheckTime().getTime();
+        double lastTime = wkScore.get(0).getCheckTime().getTime();
 
         double days = ((thisTime - lastTime)/(1000 * 60 * 60 * 24));
 
         double updateContentD1 = Math.log(days / 10 + 1);
         double updateD1 = 100 * (1 - updateContentD1);
 
-        Integer oneWeekUpdateCount = wkScoreMapper.getOneWeekUpdateCount(new Date(), siteId);
+        Calendar c = Calendar.getInstance();
+        //过去七天
+        Date endTime = new Date();
+        c.add(Calendar.DATE, - 7);
+        Date beginTime = c.getTime();
+        Integer oneWeekUpdateCount = wkAllStatsMapper.getOneWeekUpdateCount(beginTime, endTime, siteId);
         if (250 <= oneWeekUpdateCount ){
             oneWeekUpdateCount = 249;
         }
@@ -175,8 +187,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
         }
 
         //对计算结果做四舍五入处理
-        long updateCountScoreL = Math.round(updateD1 * 0.5 + updateD2 * 0.5);
-        int updateCountScore = (int)updateCountScoreL;
+        double updateCountScoreL = updateD1 * 0.5 + updateD2 * 0.5;
+        String updateCountScoreD = df.format(updateCountScoreL);
+        double updateCountScore = Double.valueOf(updateCountScoreD);
         if (updateCountScore < 0) {
             updateCountScore = 0;
         }
