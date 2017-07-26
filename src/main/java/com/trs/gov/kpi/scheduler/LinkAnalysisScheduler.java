@@ -19,7 +19,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +34,6 @@ import java.util.Set;
 @Component
 @Scope("prototype")
 public class LinkAnalysisScheduler implements SchedulerTask {
-
-    @Value("${issue.location.dir}")
-    private String locationDir;
 
     @Resource
     LinkAvailabilityService linkAvailabilityService;

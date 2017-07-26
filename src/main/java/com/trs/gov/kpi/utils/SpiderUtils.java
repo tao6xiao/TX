@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpiderUtils {
 
     public static final String LOC_TAG = "||||||";
+
     @Value("${issue.location.dir}")
     private String locationDir;
 
@@ -250,11 +251,10 @@ public class SpiderUtils {
             linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
             final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
                     linkAvailabilityResponse.getInvalidLink());
-            String absoluteDir = locationDir + File.separator + relativeDir;
-            linkAvailabilityResponse.setSnapshot(absoluteDir + File.separator + "index.html");
+            linkAvailabilityResponse.setSnapshot(relativeDir + File.separator + "index.html");
 
             if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
-
+                String absoluteDir = locationDir + File.separator + relativeDir;
                 CKMScheduler.createDir(absoluteDir);
 
                 // 网页定位
