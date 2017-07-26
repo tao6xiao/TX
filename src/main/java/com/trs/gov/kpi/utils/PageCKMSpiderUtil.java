@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.EnumUrlType;
+import com.trs.gov.kpi.scheduler.CKMScheduler;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,74 +25,57 @@ public class PageCKMSpiderUtil {
 
     private Map<String, Set<String>> pageParentMap = new ConcurrentHashMap<>();
 
-    private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
-
-    // ckm 页面
-    private Set<CKMPage> pages = Collections.synchronizedSet(new HashSet<CKMPage>());
-
     private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
 
     @Setter
     @Getter
     private String baseUrl;
 
+    private CKMScheduler ckmScheduler;
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
         public void process(Page page) {
 
-            //去掉外站链接
+            // 获取所有 <a href> 的连接
             List<String> targetUrls = page.getHtml().links().all();
+
+            // 去掉外站链接
             Iterator<String> targetUrlIter = targetUrls.iterator();
             String baseHost = UrlUtils.getHost(page.getUrl().get());
             while (targetUrlIter.hasNext()) {
-
                 String targetHost = UrlUtils.getHost(targetUrlIter.next());
                 if (!StringUtils.equals(baseHost, targetHost)) {
-
                     targetUrlIter.remove();
                 }
             }
 
-            //相对/绝对路径的处理问题
-            List<String> imgUrls = page.getHtml().$("img", "src").all();
-            for (String imgUrl : imgUrls) {
-
-                targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
-            }
-            targetUrls.addAll(page.getHtml().$("img", "src").all());
-
-            for (String targetUrl : targetUrls) {
-
-                if (!pageParentMap.containsKey(targetUrl)) {
-
-                    synchronized (pageParentMap) {
-
-                        if (!pageParentMap.containsKey(targetUrl)) {
-
-                            pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
-                        }
+            synchronized (pageParentMap) {
+                for (String targetUrl : targetUrls) {
+                    if (!pageParentMap.containsKey(targetUrl)) {
+                        pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
                     }
-                }
-                Set<String> parentUrlSet = pageParentMap.get(targetUrl);
-                if (!targetUrl.equals(page.getUrl().get().intern())) {
+                    Set<String> parentUrlSet = pageParentMap.get(targetUrl);
+                    if (!targetUrl.equals(page.getUrl().get().intern())) {
 
-                    boolean isEqual = false;
-                    if (targetUrl.startsWith(page.getUrl().get())) {
-                        String remainStr = targetUrl.substring(page.getUrl().get().length());
-                        if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                            isEqual = true;
+                        boolean isEqual = false;
+                        if (targetUrl.startsWith(page.getUrl().get())) {
+                            String remainStr = targetUrl.substring(page.getUrl().get().length());
+                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                                isEqual = true;
+                            }
                         }
-                    }
-                    if (page.getUrl().get().startsWith(targetUrl)) {
-                        String remainStr = page.getUrl().get().substring(targetUrl.length());
-                        if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                            isEqual = true;
+                        if (page.getUrl().get().startsWith(targetUrl)) {
+                            String remainStr = page.getUrl().get().substring(targetUrl.length());
+                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                                isEqual = true;
+                            }
                         }
-                    }
 
-                    if (!isEqual) {
-                        parentUrlSet.add(page.getUrl().get().intern());
+                        if (!isEqual) {
+                            parentUrlSet.add(page.getUrl().get().intern());
+                        }
                     }
                 }
             }
@@ -116,12 +100,12 @@ public class PageCKMSpiderUtil {
             if (urlType == EnumUrlType.HTML) {
                 isUrlAvailable.set(false);
                 Page result = super.download(request, task);
-                if (!isUrlAvailable.get()) {
-                    unavailableUrls.add(request.getUrl().intern());
+                if (isUrlAvailable.get()) {
+                    ckmScheduler.insert(new CKMPage(request.getUrl().intern(), result.getRawText()));
+                    return result;
                 } else {
-                    pages.add(new CKMPage(request.getUrl().intern(), result.getRawText()));
+                    return null;
                 }
-                return result;
             } else {
                 return null;
             }
@@ -137,8 +121,6 @@ public class PageCKMSpiderUtil {
 
     private synchronized void init(String baseUrl) {
         this.baseUrl = baseUrl;
-        pageParentMap = new HashMap<>();
-        unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
     }
 
     /**
@@ -148,21 +130,31 @@ public class PageCKMSpiderUtil {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized Set<CKMPage> fetchPages(int threadNum, String baseUrl) {
-
+    public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler) {
 
         log.info("fetch ckm pages started!");
+        this.ckmScheduler = ckmScheduler;
         init(baseUrl);
         if (StringUtils.isBlank(baseUrl)) {
 
             log.info("fetch ckm pages completed, no URL has been checked!");
-            return Collections.emptySet();
+            return;
         }
 
         Spider.create(kpiProcessor).setDownloader(recordPageDownloader).addUrl(baseUrl).thread(threadNum).run();
         log.info("fetch ckm pages completed!");
-        return pages;
     }
+
+    public String getParentUrl(String url) {
+        synchronized (pageParentMap) {
+            Set<String> parents = pageParentMap.get(url);
+            if (parents != null && !parents.isEmpty()) {
+                return parents.iterator().next();
+            }
+            return null;
+        }
+    }
+
 
     @Data
     public static class CKMPage {
