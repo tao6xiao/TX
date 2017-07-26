@@ -16,6 +16,8 @@ public class Site {
 
     private String webHttp;
 
+    private String mpId;
+
 
 //    "SITEDESC" : "TRS演示站点",
 //            "CRUSER" : "admin",
