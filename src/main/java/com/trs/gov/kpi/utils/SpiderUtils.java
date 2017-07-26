@@ -1,17 +1,21 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.scheduler.CKMScheduler;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -52,7 +56,13 @@ public class SpiderUtils {
     private String locationDir;
 
     @Resource
-    SiteApiService siteApiService;
+    private SiteApiService siteApiService;
+
+    @Resource
+    private WebPageService webPageService;
+
+    @Resource
+    private WebPageMapper webPageMapper;
 
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
@@ -74,18 +84,6 @@ public class SpiderUtils {
     private Map<String, String> pageContentMap = new ConcurrentHashMap<>();
 
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
-
-    //响应速度
-    private Set<ReplySpeed> replySpeeds = Collections.synchronizedSet(new HashSet<ReplySpeed>());
-
-    //过大页面
-    private Set<PageSpace> biggerPage = Collections.synchronizedSet(new HashSet<PageSpace>());
-
-    //过长URL页面
-    private Set<UrlLength> biggerUrlPage = Collections.synchronizedSet(new HashSet<UrlLength>());
-
-    //过深页面
-    private Set<PageDepth> pageDepths = Collections.synchronizedSet(new HashSet<PageDepth>());
 
     private Site site = Site.me().setRetryTimes(3).setSleepTime(10).setTimeOut(15000);
 
@@ -181,7 +179,7 @@ public class SpiderUtils {
                     chnlId = channel.getChannelId();
                 }
             } catch (RemoteException e) {
-                log.error("");
+                log.error("", e);
             }
 
             if (!isUrlAvailable.get()) {
@@ -194,7 +192,7 @@ public class SpiderUtils {
             } else {
 
                 if (useTime > THRESHOLD_MAX_REPLY_SPEED) {
-                    replySpeeds.add(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
+                    updateOrInsertSpeed(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
                             chnlId,
                             request.getUrl().intern(),
                             useTime,
@@ -203,7 +201,7 @@ public class SpiderUtils {
                 }
 
                 if (result.getRawText().getBytes().length >= THRESHOLD_MAX_PAGE_SIZE) {
-                    biggerPage.add(new PageSpace(0,
+                    updateOrInsertSpace(new PageSpace(0,
                             request.getUrl().intern(),
                             useTime,
                             Long.valueOf(result.getRawText().getBytes().length),
@@ -212,7 +210,7 @@ public class SpiderUtils {
 
                 String[] urlSize = request.getUrl().split("/");
                 if ((urlSize.length - 3) >= THRESHOLD_MAX_URL_LENGHT) {
-                    biggerUrlPage.add(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
+                    updateOrInsertLength(new UrlLength(Types.AnalysisType.TOO_LONG_URL.value,
                             chnlId,
                             request.getUrl().intern(),
                             Long.valueOf(request.getUrl().length()),
@@ -222,7 +220,7 @@ public class SpiderUtils {
 
                 int deepSize = calcDeep(request.getUrl(), 100, 1);
                 if (deepSize > THRESHOLD_MAX_PAGE_DEPTH) {
-                    pageDepths.add(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
+                    updateOrInsertDepth(new PageDepth(Types.AnalysisType.OVER_DEEP_PAGE.value,
                             chnlId,
                             request.getUrl().intern(),
                             deepSize,
@@ -230,6 +228,7 @@ public class SpiderUtils {
                             new Date()));
                 }
             }
+
             return result;
         }
 
@@ -250,10 +249,10 @@ public class SpiderUtils {
                 linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
                 final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
                         linkAvailabilityResponse.getInvalidLink());
-                linkAvailabilityResponse.setSnapshot(relativeDir + File.separator + "index.html");
-
+                String absoluteDir = locationDir + File.separator + relativeDir;
+                linkAvailabilityResponse.setSnapshot("gov/kpi/loc/" + relativeDir.replaceAll(File.separator, "/") + "/index.html");
                 if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
-                    String absoluteDir = locationDir + File.separator + relativeDir;
+
                     CKMScheduler.createDir(absoluteDir);
 
                     // 网页定位
@@ -508,6 +507,74 @@ public class SpiderUtils {
 
             return Types.LinkAvailableIssueType.INVALID_LINK;
         }
+
+        private void updateOrInsertSpeed(ReplySpeed replySpeedTo) {
+
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, replySpeedTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, replySpeedTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.REPLY_SPEED.value);
+
+            List<ReplySpeed> pageSpaceList = webPageMapper.selectReplySpeed(queryFilter);
+            if (pageSpaceList.isEmpty()) {
+                replySpeedTo.setSiteId(siteId);
+                webPageService.insertReplyspeed(replySpeedTo);
+            } else {
+                webPageMapper.updateReplySpeed(replySpeedTo);
+            }
+        }
+
+        private void updateOrInsertSpace(PageSpace pageSpaceTo) {
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, pageSpaceTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, pageSpaceTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVERSIZE_PAGE.value);
+
+            List<PageSpace> pageSpaceList = webPageMapper.selectPageSpace(queryFilter);
+
+            if (pageSpaceList.isEmpty()) {
+                pageSpaceTo.setSiteId(siteId);
+                webPageService.insertPageSpace(pageSpaceTo);
+            } else {
+                webPageMapper.updatePageSpace(pageSpaceTo);
+            }
+        }
+
+        private void updateOrInsertLength(UrlLength urlLenghtTo) {
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, urlLenghtTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, urlLenghtTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.TOO_LONG_URL.value);
+
+            List<UrlLength> urlLenghtList = webPageMapper.selectUrlLength(queryFilter);
+
+            if (urlLenghtList.isEmpty()) {
+                urlLenghtTo.setSiteId(siteId);
+                webPageService.insertUrlLength(urlLenghtTo);
+            } else {
+                webPageMapper.updateUrlLength(urlLenghtTo);
+            }
+        }
+
+        private void updateOrInsertDepth(PageDepth pageDepthTo) {
+            QueryFilter queryFilter = new QueryFilter(Table.WEB_PAGE);
+            queryFilter.addCond(WebpageTableField.SITE_ID, siteId);
+            queryFilter.addCond(WebpageTableField.PAGE_LINK, pageDepthTo.getPageLink());
+            queryFilter.addCond(WebpageTableField.CHNL_ID, pageDepthTo.getChnlId());
+            queryFilter.addCond(WebpageTableField.TYPE_ID, Types.AnalysisType.OVER_DEEP_PAGE.value);
+
+            List<PageDepth> pageDepthList = webPageMapper.selectPageDepth(queryFilter);
+
+            if (pageDepthList.isEmpty()) {
+                pageDepthTo.setSiteId(siteId);
+                webPageService.insertPageDepth(pageDepthTo);
+            } else {
+                webPageMapper.updatePageDepth(pageDepthTo);
+            }
+        }
     };
 
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
@@ -520,6 +587,7 @@ public class SpiderUtils {
         pageParentMap = new HashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
     }
+
 
     /**
      * 检索链接/图片/附件是否可用
@@ -601,51 +669,5 @@ public class SpiderUtils {
         }
         log.info("homePageCheck completed!");
         return new LinkedList<>(unavailableUrls);
-    }
-
-    /**
-     * 过大页面
-     *
-     * @return
-     */
-    public Set<PageSpace> biggerPageSpace() {
-        return this.biggerPage;
-    }
-
-    /**
-     * 过长URL页面
-     *
-     * @return
-     */
-    public Set<UrlLength> getBiggerUrlPage() {
-        return this.biggerUrlPage;
-    }
-
-    /**
-     * 响应熟读
-     *
-     * @return
-     */
-    public Set<ReplySpeed> getReplySpeeds() {
-        return this.replySpeeds;
-    }
-
-    /**
-     * 过深页面
-     *
-     * @return
-     */
-    public Set<PageDepth> getPageDepths() {
-        return this.pageDepths;
-    }
-
-    @Data
-    public static class CheckResult {
-
-        private String baseUrl;
-
-        private String unavailableUrl;
-
-        private String parentUrl;
     }
 }
