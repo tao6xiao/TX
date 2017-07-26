@@ -2,6 +2,9 @@ package com.trs.gov.kpi.entity.outerapi;
 
 import lombok.Data;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by he.lang on 2017/6/27.
  */
@@ -15,6 +18,8 @@ public class User {
     private String trueName;//用户真实姓名
 
     private String mobile;//手机号
+
+    private List<Map> groups;//所属组织
 
 //            "USERID"    : 1,                // 用户ID
 //            "USERNAME"  : 1,                // 用户名
