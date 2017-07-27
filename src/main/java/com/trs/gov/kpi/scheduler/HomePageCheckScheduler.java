@@ -65,7 +65,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
                 return;
             }
 
-            List<String> unavailableUrls = spider.homePageCheck(baseUrl);
+            List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
             if (unavailableUrls.contains(baseUrl)) {
                 Issue issue = new Issue();
                 issue.setSiteId(siteId);
