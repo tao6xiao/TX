@@ -267,7 +267,7 @@ public class SpiderUtils {
                 final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
                         linkAvailabilityResponse.getInvalidLink());
                 String absoluteDir = locationDir + File.separator + relativeDir;
-                linkAvailabilityResponse.setSnapshot("kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
+                linkAvailabilityResponse.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
                 if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
 
                     CKMScheduler.createDir(absoluteDir);

@@ -40,7 +40,7 @@ public class WebConfigure extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/govapp/kpi/loc/**").addResourceLocations("file:" + locationDir + File.separator);
+        registry.addResourceHandler("/gov/kpi/loc/**").addResourceLocations("file:" + locationDir + File.separator);
         super.addResourceHandlers(registry);
     }
 }
