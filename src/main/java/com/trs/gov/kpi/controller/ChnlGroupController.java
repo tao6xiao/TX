@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.ChnlGroupChannelRequest;
@@ -13,8 +14,11 @@ import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +39,9 @@ public class ChnlGroupController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
+
     /**
      * 获取栏目分类
      *
@@ -47,6 +54,7 @@ public class ChnlGroupController {
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询栏目分类", "查询栏目分类", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return chnlGroupService.getChnlGroupsResponseDetailArray();
     }
 
@@ -76,6 +84,7 @@ public class ChnlGroupController {
         int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
         Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
         List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, pager.getCurrPage() - 1, pager.getPageSize());
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询站点和根栏目分类下的数据", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return new ApiPageData(pager, chnlGroupChnlsResponseList);
     }
 
@@ -99,6 +108,7 @@ public class ChnlGroupController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequest);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "在当前站点和根栏目下添加栏目", siteApiService.getSiteById(chnlGroupChnlsAddRequest.getSiteId(), "").getSiteName()).info();
         return null;
     }
 
@@ -124,6 +134,7 @@ public class ChnlGroupController {
         }
         chnlGroupChnlRequestDetail.getId();
         chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "在当前站点和根栏目下修改栏目", siteApiService.getSiteById(chnlGroupChnlRequestDetail.getSiteId(), "").getSiteName()).info();
         return null;
     }
 
@@ -147,6 +158,7 @@ public class ChnlGroupController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         chnlGroupService.deleteBySiteIdAndId(siteId, id);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.DELETE, "删除对应站点和id的栏目记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return null;
     }
 }

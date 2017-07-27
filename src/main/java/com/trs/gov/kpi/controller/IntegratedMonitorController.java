@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -9,7 +10,10 @@ import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +36,9 @@ public class IntegratedMonitorController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
+
     /**
      * 查询当前的绩效指数得分
      *
@@ -45,6 +52,7 @@ public class IntegratedMonitorController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前的绩效指数得分", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return integratedMonitorService.getPerformance(param);
     }
 
@@ -61,6 +69,7 @@ public class IntegratedMonitorController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询绩效指数得分的历史记录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return integratedMonitorService.getHistoryPerformance(param);
     }
 
@@ -77,6 +86,7 @@ public class IntegratedMonitorController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询所有问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return integratedMonitorService.getAllIssueCount(param);
     }
 
@@ -93,6 +103,7 @@ public class IntegratedMonitorController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询各类问题的待解决问题数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return integratedMonitorService.getUnhandledIssueCount(param);
     }
 
@@ -109,6 +120,7 @@ public class IntegratedMonitorController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询各类预警的待解决数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return integratedMonitorService.getWarningCount(param);
     }
 

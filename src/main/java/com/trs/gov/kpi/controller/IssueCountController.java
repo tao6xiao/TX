@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
@@ -10,7 +11,11 @@ import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +37,9 @@ public class IssueCountController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
+
     /**
      * 分类查询问题数量统计
      *
@@ -44,7 +52,21 @@ public class IssueCountController {
     public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中分类查询问题数量统计", getSystemName(request)).info();
         return countService.countSort(request);
+    }
+
+    private String getSystemName(IssueCountRequest request) throws RemoteException {
+        StringBuilder builder = new StringBuilder();
+        Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
+        for(int i = 0; i < siteIds.length; i++){
+            builder.append(siteApiService.getSiteById(siteIds[i], "").getSiteName());
+            builder.append(",");
+        }
+        if(builder.length() != 0) {
+            builder = builder.deleteCharAt(builder.lastIndexOf(","));
+        }
+        return builder.toString();
     }
 
     /**
@@ -58,6 +80,7 @@ public class IssueCountController {
     public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中分类查询统计历史数量", getSystemName(request)).info();
         return countService.historyCountSort(request);
     }
 
@@ -72,11 +95,12 @@ public class IssueCountController {
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中部门分类查询统计数量", getSystemName(request)).info();
         return countService.deptCountSort(request);
     }
 
     /**
-     * 更具问题类型部门分类查询统计数量
+     * 根据问题类型部门分类查询统计数量
      *
      * @param request
      * @return
@@ -89,7 +113,7 @@ public class IssueCountController {
         if (request.getTypeId() > 5 || request.getTypeId() < 1) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中根据问题类型部门分类查询统计数量", getSystemName(request)).info();
         return countService.getDeptCountByType(request);
     }
 

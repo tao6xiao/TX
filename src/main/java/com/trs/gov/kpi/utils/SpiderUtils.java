@@ -38,6 +38,7 @@ import us.codecraft.webmagic.utils.UrlUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.lang.ref.SoftReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -82,7 +83,8 @@ public class SpiderUtils {
 
     private Map<String, Set<String>> pageParentMap = new ConcurrentHashMap<>();
 
-    private Map<String, String> pageContentMap = new ConcurrentHashMap<>();
+    // 缓存页面正文内容，如果内存紧张的情况下，可以释放
+    private Map<String, SoftReference<String>> pageContentMap = new ConcurrentHashMap<>();
 
     private Set<String> unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
 
@@ -111,7 +113,7 @@ public class SpiderUtils {
             }
 
             //存放页面内容
-            pageContentMap.put(page.getUrl().get(), page.getRawText());
+            pageContentMap.put(page.getUrl().get(), new SoftReference(page.getRawText()));
 
             // 获取页面内的所有连接
             List<String> targetUrls = page.getHtml().links().all();
@@ -196,9 +198,13 @@ public class SpiderUtils {
             if (!isUrlAvailable.get()) {
                 String unavailableUrl = request.getUrl().intern();
                 Set<String> parents = pageParentMap.get(request.getUrl().intern());
-                for (String parentUrl : parents) {
-                    String parentContent = pageContentMap.get(parentUrl);
-                    insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), new Date(), parentContent, (Integer) request.getExtras().get("statusCode"));
+                if(parents == null){
+                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), new Date(), "", (Integer) request.getExtras().get("statusCode"));
+                } else {
+                    for (String parentUrl : parents) {
+                        final SoftReference<String> parentContentSoftReference = pageContentMap.get(parentUrl);
+                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), new Date(), parentContentSoftReference.get(), (Integer) request.getExtras().get("statusCode"));
+                    }
                 }
             } else {
 
@@ -295,6 +301,11 @@ public class SpiderUtils {
         }
 
         private String generateSourceLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
+
+            if (StringUtil.isEmpty(parentUrlContent)) {
+                return "<html><body><h1>快照内容已不存在！</h1></body></html>";
+            }
+
             // 将html标签转义
             String processSource = processSourceLocation(unavailableUrlAndParentUrl, parentUrlContent);
             String sourceEscape = StringEscapeUtils.escapeHtml4(processSource);
@@ -391,6 +402,11 @@ public class SpiderUtils {
         }
 
         private String generatePageLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {
+
+            if (StringUtil.isEmpty(parentUrlContent)) {
+                return "<html><body><h1>快照内容已不存在！</h1></body></html>";
+            }
+
             StringBuffer sb = new StringBuffer();
             // 给网站增加base标签
             sb.append("<base href=\"" + unavailableUrlAndParentUrl.getKey() + "\" />");
