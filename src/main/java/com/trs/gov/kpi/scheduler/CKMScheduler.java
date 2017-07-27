@@ -169,7 +169,7 @@ public class CKMScheduler implements SchedulerTask {
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
-            issue.setDetail("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
+            issue.setDetail("kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
             Date nowTime = new Date();
             issue.setIssueTime(nowTime);
             issue.setCheckTime(nowTime);
