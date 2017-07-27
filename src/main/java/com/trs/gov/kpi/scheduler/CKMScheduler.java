@@ -136,18 +136,12 @@ public class CKMScheduler implements SchedulerTask {
 
                 // 网页定位
                 String pageLocContent = generatePageLocHtmlText(page, subIssueType, errorContent);
-                if (pageLocContent == null) {
-                    log.warn(page.getUrl() + " create location file failed ... ");
-                    continue;
-                }
+
                 createPagePosHtml(absoluteDir, pageLocContent);
 
                 // 源码定位
                 String srcLocContent = generateSourceLocHtmlText(page, subIssueType, errorContent);
-                if (srcLocContent == null) {
-                    log.warn(page.getUrl() + " create location file failed ... ");
-                    continue;
-                }
+
                 createSrcPosHtml(absoluteDir, srcLocContent);
 
                 // 创建头部导航页面
@@ -262,48 +256,62 @@ public class CKMScheduler implements SchedulerTask {
     private String addTips(String errorInfo, Types.InfoErrorIssueType subIssueType, String result) {
         String errorWord;
         String correctWord = "";
-        String tipsResult = "";
+        String errorTip = "";
+        String tipsResult = result;
         String[] errorInfos = errorInfo.replaceAll("[\\{\\}\"]", "").split(",");
+
         for (String error : errorInfos) {
-            String[] info = error.split("：");
-            errorWord = info[0];
-            if (info.length > 1) {
-                String[] correntInfo = info[1].split(":");
-                correctWord = correntInfo[0];
+            boolean isFound = true;
+            if (Types.InfoErrorIssueType.TYPOS.equals(subIssueType)) {
+                String[] info = error.split("：");
+                errorWord = info[0];
+                if (info.length > 1) {
+                    String[] correntInfo = info[1].split(":");
+                    correctWord = correntInfo[0];
+                }
+            } else {
+                String[] info = error.split(";");
+                errorWord = info[0];
+                if (info.length > 1) {
+                    String[] correntInfo = info[1].split(":");
+                    correctWord = correntInfo[0];
+                }
             }
             int left = 0;
-            int index;
-            int right;
+            int index = 0;
+            int right = 0;
             while (true) {
-                right = result.indexOf('>', left);
-                left = result.indexOf('<', right);
+                right = tipsResult.indexOf('>', left);
+                left = tipsResult.indexOf('<', right);
                 if (left == -1) {
-                    return null;
+                    isFound = false;
+                    break;
                 }
-                String subString = result.substring(right, left);
+                String subString = tipsResult.substring(right, left);
                 if (subString.contains(errorWord)) {
                     index = right + subString.indexOf(errorWord);
                     break;
                 }
             }
-
-            String errorTip = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(subIssueType, errorWord, correctWord) + "\" msgtitle=\"定位\" style=\"border:2px red solid;" +
-                    "color:red;" +
-                    "\">" + errorWord + "</font>";
-            tipsResult = result.substring(0, index) + errorTip + result.substring(index + errorWord.length());
-
-            left = index + errorTip.length();
+            if (isFound) {
+                errorTip = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(subIssueType, errorWord, correctWord) + "\" msgtitle=\"定位\" style=\"border:2px red solid;" +
+                        "color:red;" +
+                        "\">" + errorWord + "</font>";
+                tipsResult = tipsResult.substring(0, index) + errorTip + tipsResult.substring(index + errorWord.length());
+                left = index + errorTip.length();
+            }
             while (true) {
-                right = result.indexOf('>', left);
-                left = result.indexOf('<', right);
+                right = tipsResult.indexOf('>', left);
+                left = tipsResult.indexOf('<', right);
                 if (left == -1) {
                     break;
                 }
-                String subString = result.substring(right, left);
+                String subString = tipsResult.substring(right, left);
                 if (subString.contains(errorWord)) {
                     index = right + subString.indexOf(errorWord);
                     errorTip = "<font msg=\"" + getDisplayErrorWord(subIssueType, errorWord, correctWord) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
-                    tipsResult = tipsResult.substring(0, index) + errorTip + result.substring(index + errorWord.length());
+                    tipsResult = tipsResult.substring(0, index) + errorTip + tipsResult.substring(index + errorWord.length());
+                    left = index + errorTip.length();
                 }
             }
 
