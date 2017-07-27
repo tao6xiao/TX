@@ -98,14 +98,28 @@ public class PageSpider {
         @Override
         public void process(Page page) {
 
-            //去掉外站链接
-            List<String> targetUrls = page.getHtml().links().all();
-
             // 当页面已经完全跳转到外部去了，就不再处理了。
             String baseHost = UrlUtils.getHost(page.getUrl().get());
             if (!StringUtils.equals(baseHost, homepageHost)) {
                 return;
             }
+
+            final Object urlType = page.getRequest().getExtra("urlType");
+            if (urlType == null) {
+                return;
+            }
+
+            EnumUrlType type = (EnumUrlType)urlType;
+            if (type != EnumUrlType.HTML) {
+                return;
+            }
+
+            synchronized (pageContent) {
+                pageContent.put(page.getRequest().getUrl().intern(), page.getRawText());
+            }
+
+            //去掉外站链接
+            List<String> targetUrls = page.getHtml().links().all();
 
             final Elements medias = page.getHtml().getDocument().select("[src]");
             Elements imports = page.getHtml().getDocument().select("link[href]");
@@ -241,9 +255,6 @@ public class PageSpider {
                         commonMQ.publishMsg(invalidLinkMsg);
                         result = null;
                     } else {
-                        synchronized (pageContent) {
-                            pageContent.put(request.getUrl().intern(), result.getRawText());
-                        }
 
                         String baseHost = UrlUtils.getHost(request.getUrl());
                         // 只处理本域名下的网页
@@ -258,6 +269,7 @@ public class PageSpider {
                             count++;
                             commonMQ.publishMsg(pageInfoMsg);
                         }
+                        result.getRequest().putExtra("urlType", urlType);
                     }
 
                     return result;
