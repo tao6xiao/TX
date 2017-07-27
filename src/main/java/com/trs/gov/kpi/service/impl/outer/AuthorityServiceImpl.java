@@ -1,12 +1,9 @@
 package com.trs.gov.kpi.service.impl.outer;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.service.outer.AuthorityService;
@@ -33,7 +30,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Value("${service.outer.editcenter.url}")
     private String editCenterServiceUrl;
 
-    private static final String MODULE_ID = "40";
+    private static final String MODULE_ID = "40";//绩效考核模块ID
 
 
     @Override
@@ -47,6 +44,7 @@ public class AuthorityServiceImpl implements AuthorityService {
             params.put("channelId", String.valueOf(channelId));
         }
         params.put("oprkeys", oprkeys);
+        //判断平台级权限需要用到
         params.put("MODULEID", MODULE_ID);
 
         try {
@@ -66,34 +64,6 @@ public class AuthorityServiceImpl implements AuthorityService {
         } catch (IOException e) {
             log.error("failed findRight", e);
             throw new RemoteException("查找指定oprkeys的权限失败！", e);
-        }
-    }
-
-    @Override
-    public String getRoleByUser(String currUserName) throws RemoteException {
-        Map<String, String> params = new HashMap<>();
-        try {
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(buildRequest("findUserById", params, "gov_user", currUserName)).execute();
-
-            if (response.isSuccessful()) {
-                String result = response.body().string();
-                JSONArray jsonArray = JSON.parseObject(result).getJSONObject("DATA").getJSONArray("ROLES");
-                for (Object obj : jsonArray) {
-                    JSONObject jsonObj = (JSONObject) obj;
-                    String roleId = (String) jsonObj.get("OBJTYPE");
-                    if (Authority.PLATFORM_ROLE_ID.equals(roleId)) {
-                        return roleId;
-                    }
-                }
-                return Authority.SITE_ROLE_ID;
-            } else {
-                log.error("failed to findRight, error: " + response);
-                throw new RemoteException("查找用户所属角色失败！");
-            }
-        } catch (IOException e) {
-            log.error("failed findRight", e);
-            throw new RemoteException("查找用户所属角色失败！", e);
         }
     }
 

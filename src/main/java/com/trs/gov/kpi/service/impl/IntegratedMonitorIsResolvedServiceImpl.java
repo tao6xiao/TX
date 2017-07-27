@@ -55,7 +55,6 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
         filter.addCond(IssueTableField.TYPE_ID, Constants.ISSUE_BEGIN_ID).setRangeBegin(true);
         filter.addCond(IssueTableField.TYPE_ID, Constants.WARNING_END_ID).setRangeEnd(true);
 
-
         int itemCount = issueMapper.count(filter);
 
         Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
