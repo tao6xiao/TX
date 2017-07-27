@@ -134,7 +134,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
     private String[] imageSuffixs = new String[]{"bmp", "jpg", "jpeg", "png", "gif"};
 
-    private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
+    private String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar", "pdf"};
 
     private Types.LinkAvailableIssueType getTypeByLink(String url) {
 
