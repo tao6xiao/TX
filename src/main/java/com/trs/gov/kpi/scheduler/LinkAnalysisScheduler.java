@@ -87,11 +87,6 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
             pageSpider.fetchAllPages(5, site.getSiteIndexUrl());
 
-            CheckEndMsg endMsg = new CheckEndMsg();
-            endMsg.setCheckId(checkId);
-            endMsg.setSiteId(site.getSiteId());
-            commonMQ.publishMsg(endMsg);
-
             final Map<Types.WkLinkIssueType, Integer> linkCountMap = pageSpider.getLinkCountMap();
             WkLinkType wkLinkType = new WkLinkType();
             wkLinkType.setSiteId(site.getSiteId());
@@ -101,9 +96,15 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             wkLinkType.setImageLink(linkCountMap.get(Types.WkLinkIssueType.IMAGE_DISCONNECT));
             wkLinkType.setVideoLink(linkCountMap.get(Types.WkLinkIssueType.VIDEO_DISCONNECT));
             wkLinkType.setWebLink(linkCountMap.get(Types.WkLinkIssueType.LINK_DISCONNECT));
+            wkLinkType.setOthersLink(linkCountMap.get(Types.WkLinkIssueType.OTHERS_DISCONNECT));
             wkLinkType.calcTotal();
 
             commonMapper.insert(DBUtil.toRow(wkLinkType));
+
+            CheckEndMsg endMsg = new CheckEndMsg();
+            endMsg.setCheckId(checkId);
+            endMsg.setSiteId(site.getSiteId());
+            commonMQ.publishMsg(endMsg);
 
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);

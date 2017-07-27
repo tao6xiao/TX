@@ -192,13 +192,13 @@ public class CKMProcessor implements MQListener {
             double sensitiveWordsCount = wkIssueService.getSensitiveWordsCount(siteId, checkId);
             double politicsCount = wkIssueService.getPoliticsCount(siteId, checkId);
 
-            double typosR123 = Math.log((typosCount/allErrorEount)/100 + 1);
+            double typosR123 = Math.log((typosCount/allErrorEount)*100 /100 + 1);
             double typosScore = 100 * (1 - typosR123);
 
-            double sensitiveWordsR4 = Math.log((sensitiveWordsCount/allErrorEount)/100 + 1);
+            double sensitiveWordsR4 = Math.log((sensitiveWordsCount/allErrorEount) *100 /100 + 1);
             double sensitiveWordsScore = 100 * (1 - sensitiveWordsR4);
 
-            double politicsR5 = Math.log((politicsCount/allErrorEount)/100 + 1);
+            double politicsR5 = Math.log((politicsCount/allErrorEount)*100 /100 + 1);
             double politicsScore = 100 * (1 - politicsR5);
 
             //对计算结果小数点后一位做四舍五入处理

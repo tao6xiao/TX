@@ -225,7 +225,7 @@ public class InvalidLinkProcessor implements MQListener {
     private String generateSourceLocHtmlText(InvalidLinkMsg msg) {
 
         // 将html标签转义
-        String sourceEscape = StringEscapeUtils.escapeHtml4(msg.getParentContent());
+        String sourceEscape = StringEscapeUtils.escapeHtml4(msg.getParentContent().intern());
         StringBuffer sb = new StringBuffer();
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
         sb.append(CKMProcessWorker.LINE_SP);
@@ -361,12 +361,12 @@ public class InvalidLinkProcessor implements MQListener {
         double invalidLinkScore = 100;
         if (invalidLinkCount > 0) {
             double routineLinkCount = wkIssueService.getRoutineLinkCount(siteId, checkId);
-            double routineLinkR = routineLinkCount / invalidLinkCount;
+            double routineLinkR = (routineLinkCount / invalidLinkCount) * 100;
             double linkL1Log = Math.log(routineLinkR/100 + 1);
             double linkL1Score = 100 * (1 - linkL1Log);
 
             double othersLinkCount = wkIssueService.getOthersLinkCount(siteId, checkId);
-            double othersLinkCountR = othersLinkCount / invalidLinkCount;
+            double othersLinkCountR = (othersLinkCount / invalidLinkCount) * 100;
             double linkL2Log = Math.log(othersLinkCountR/100 + 1);
             double linkL2Score = 100 * (1 - linkL2Log);
 

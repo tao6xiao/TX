@@ -104,7 +104,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
             wkEveryLink.setSiteId(speedMsg.getSiteId());
             wkEveryLink.setUrl(speedMsg.getUrl());
             wkEveryLink.setAccessSpeed(speedMsg.getSpeed());
-            wkEveryLink.setMd5(DigestUtils.md5Hex(speedMsg.getContent()));
+            wkEveryLink.setMd5(DigestUtils.md5Hex(speedMsg.getContent().intern()));
             wkEveryLinkService.insertWkEveryLinkAccessSpeed(wkEveryLink);
         }
     }
@@ -169,6 +169,9 @@ public class SpeedAndUpdateProcessor implements MQListener {
 
         double updateContentD1 = Math.log(days / 10 + 1);
         double updateD1 = 100 * (1 - updateContentD1);
+        if(updateD1 < 0){
+            updateD1 = 0;
+        }
 
         Calendar c = Calendar.getInstance();
         //过去七天

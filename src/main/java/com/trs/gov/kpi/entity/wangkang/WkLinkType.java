@@ -48,13 +48,17 @@ public class WkLinkType {
     @DBField
     private Integer enclosuLink = 0;//附件个数
 
+    @Getter
+    @DBField
+    private Integer othersLink = 0;//其他链接个数
+
     @Setter
     @Getter
     @DBField
     private Date checkTime;//入库时间
 
     public void calcTotal() {
-        allLink = webLink + imageLink + videoLink + enclosuLink;
+        allLink = webLink + imageLink + videoLink + enclosuLink + othersLink;
     }
 
     public void setWebLink(Integer webLink) {
@@ -78,6 +82,12 @@ public class WkLinkType {
     public void setEnclosuLink(Integer enclosuLink) {
         if (enclosuLink != null) {
             this.enclosuLink = enclosuLink;
+        }
+    }
+
+    public void setOthersLink(Integer othersLink) {
+        if(othersLink != null){
+            this.othersLink = othersLink;
         }
     }
 }

@@ -135,10 +135,10 @@ public class PageSpider {
             }
 
             //相对/绝对路径的处理问题
-            List<String> imgUrls = page.getHtml().$("img", "src").all();
-            for (String imgUrl : imgUrls) {
-                targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
-            }
+//            List<String> imgUrls = page.getHtml().$("img", "src").all();
+//            for (String imgUrl : imgUrls) {
+//                targetUrls.add(UrlUtils.canonicalizeUrl(imgUrl, page.getUrl().get()));
+//            }
 //            targetUrls.addAll(page.getHtml().$("img", "src").all());
             targetUrls = fixUrl(targetUrls);
 

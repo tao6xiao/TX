@@ -11,10 +11,11 @@
         <result column="imageLink" jdbcType="INTEGER" property="imageLink" />
         <result column="videoLink" jdbcType="INTEGER" property="videoLink" />
         <result column="enclosuLink" jdbcType="INTEGER" property="enclosuLink" />
+        <result column="othersLink" jdbcType="INTEGER" property="othersLink" />
         <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, checkId, siteId, allLink, webLink, imageLink, videoLink, enclosuLink, checkTime
+        id, checkId, siteId, allLink, webLink, imageLink, videoLink, enclosuLink, othersLink, checkTime
     </sql>
 
     <select id="getOneSiteLinkTypeBySiteId" resultMap="BaseResultMap">

@@ -22,16 +22,16 @@ public class WkAllStats {
     private Integer siteId;//网站编号
 
     @DBField
-    private Integer updateContent;//网站更新数
+    private Integer updateContent = 0;//网站更新数
 
     @DBField
-    private Integer avgSpeed;// 平均访问速度
+    private Integer avgSpeed = 0;// 平均访问速度
 
     @DBField
-    private Integer errorInfo;// 错别字，敏感词等个数
+    private Integer errorInfo = 0;// 错别字，敏感词等个数
 
     @DBField
-    private Integer invalidLink;// 失效链接个数
+    private Integer invalidLink = 0;// 失效链接个数
 
     @DBField
     private Date checkTime;
