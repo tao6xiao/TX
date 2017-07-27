@@ -59,6 +59,7 @@ public class CalcScoreProcessor implements MQListener {
 
         CalcScoreMsg calcScoreMsg = (CalcScoreMsg)msg;
         String key = calcScoreMsg.getSiteId() + "#" + calcScoreMsg.getCheckId();
+        log.info("receive calc msg " + key + ", type = " + calcScoreMsg.getScoreType());
         Integer count = scoreMsgCountMap.get(key);
         if (count != null) {
             count++;
