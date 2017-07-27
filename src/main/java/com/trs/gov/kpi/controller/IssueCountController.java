@@ -5,6 +5,8 @@ import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Role;
+import com.trs.gov.kpi.entity.outerapi.User;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -12,6 +14,7 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.UserApiService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import com.trs.gov.kpi.utils.TRSLogUserUtil;
@@ -38,7 +41,10 @@ public class IssueCountController {
     private AuthorityService authorityService;
 
     @Resource
-    SiteApiService siteApiService;
+    private SiteApiService siteApiService;
+
+    @Resource
+    private UserApiService userApiService;
 
     /**
      * 分类查询问题数量统计
@@ -59,11 +65,11 @@ public class IssueCountController {
     private String getSystemName(IssueCountRequest request) throws RemoteException {
         StringBuilder builder = new StringBuilder();
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
-        for(int i = 0; i < siteIds.length; i++){
+        for (int i = 0; i < siteIds.length; i++) {
             builder.append(siteApiService.getSiteById(siteIds[i], "").getSiteName());
             builder.append(",");
         }
-        if(builder.length() != 0) {
+        if (builder.length() != 0) {
             builder = builder.deleteCharAt(builder.lastIndexOf(","));
         }
         return builder.toString();
@@ -134,12 +140,19 @@ public class IssueCountController {
 
 
     private void checkAuthority(IssueCountRequest request) throws RemoteException, BizException {
-        String roleId = authorityService.getRoleByUser(ContextHelper.getLoginUser().getUserName());
-        if (Authority.PLATFORM_ROLE_ID.equals(roleId)) {
+        User user = userApiService.finUserByUserName(null, ContextHelper.getLoginUser().getUserName());
+        String roleType = Authority.SITE_ROLE_ID;
+        for (Role role : user.getRoles()) {
+            if (Authority.PLATFORM_ROLE_ID.equals(role.getObjType())) {
+                roleType = Authority.PLATFORM_ROLE_ID;
+                break;
+            }
+        }
+        if (Authority.PLATFORM_ROLE_ID.equals(roleType)) {
             if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
-        } else if (Authority.SITE_ROLE_ID.equals(roleId)) {
+        } else if (Authority.SITE_ROLE_ID.equals(roleType)) {
             String[] siteIds = request.getSiteIds().split(",");
             for (int i = 0; i < siteIds.length; i++) {
                 if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {

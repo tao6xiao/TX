@@ -21,6 +21,8 @@ public class User {
 
     private List<Map> groups;//所属组织
 
+    private List<Role> roles;//所属角色
+
 //            "USERID"    : 1,                // 用户ID
 //            "USERNAME"  : 1,                // 用户名
 //            "TRUENAME" : 1,         // 真实姓名
