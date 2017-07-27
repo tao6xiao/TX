@@ -80,7 +80,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
                 return;
             }
 
-            spider.linkCheck(3, siteId, baseUrl);
+            spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
 
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
