@@ -414,14 +414,14 @@
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.dutydept">
-            <disp-name>为栏目分配责任部门</disp-name>
-            <desc>绩效考核-->指标参数设置-->为栏目分配责任部门</desc>
+            <disp-name>设置或修改栏目的责任部门</disp-name>
+            <desc>绩效考核-->指标参数设置-->设置或修改栏目的责任部门</desc>
             <index>514</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.deldutydept">
-            <disp-name>删除责任部门</disp-name>
-            <desc>绩效考核-->指标参数设置-->删除责任部门</desc>
+            <disp-name>删除栏目的责任部门</disp-name>
+            <desc>绩效考核-->指标参数设置-->删除栏目的责任部门</desc>
             <index>515</index>
             <type>kpiweb.indexsetup</type>
         </operation>
