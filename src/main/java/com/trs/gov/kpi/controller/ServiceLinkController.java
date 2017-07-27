@@ -51,8 +51,9 @@ public class ServiceLinkController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(requestParam);
+        ApiPageData apiPageData = linkAvailabilityService.getServiceLinkList(requestParam);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询服务链接未解决问题列表", siteApiService.getSiteById(requestParam.getSiteId(), "").getSiteName()).info();
-        return linkAvailabilityService.getServiceLinkList(requestParam);
+        return apiPageData;
     }
 
 }

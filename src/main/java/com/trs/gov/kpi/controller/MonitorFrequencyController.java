@@ -60,8 +60,9 @@ public class MonitorFrequencyController {
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        List<MonitorFrequencyResponse> frequencyResponseList = monitorFrequencyService.queryBySiteId(siteId);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前站点的监测频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
-        return monitorFrequencyService.queryBySiteId(siteId);
+        return frequencyResponseList;
     }
 
     /**

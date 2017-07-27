@@ -95,8 +95,9 @@ public class IssueCountController {
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
+        List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中部门分类查询统计数量", getSystemName(request)).info();
-        return countService.deptCountSort(request);
+        return deptCountResponses;
     }
 
     /**
@@ -113,8 +114,9 @@ public class IssueCountController {
         if (request.getTypeId() > 5 || request.getTypeId() < 1) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        List<DeptCount> deptCountList = countService.getDeptCountByType(request);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中根据问题类型部门分类查询统计数量", getSystemName(request)).info();
-        return countService.getDeptCountByType(request);
+        return deptCountList;
     }
 
 
@@ -129,7 +131,9 @@ public class IssueCountController {
     public DeptInductionResponse[] deptInductionSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
-        return countService.deptInductionSort(request);
+        DeptInductionResponse[] inductionResponseArray = countService.deptInductionSort(request);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中部门分类归纳统计数量查询", getSystemName(request)).info();
+        return inductionResponseArray;
     }
 
 

@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
@@ -9,8 +10,11 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.ReportService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -43,7 +47,17 @@ public class ReportController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SiteApiService siteApiService;
 
+    /**
+     * 按时间节点查询报表列表
+     * @param param
+     * @return
+     * @throws RemoteException
+     * @throws ParseException
+     * @throws BizException
+     */
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -52,9 +66,20 @@ public class ReportController {
         }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getDay());
-        return reportService.selectReportList(param, true);
+        ApiPageData apiPageData = reportService.selectReportList(param, true);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return apiPageData;
     }
 
+    /**
+     * 按时间节点统计报表导出下载
+     * @param param
+     * @param response
+     * @return
+     * @throws ParseException
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
     public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
@@ -71,9 +96,18 @@ public class ReportController {
         String[] str = path.split("/");
 
         download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return null;
     }
 
+    /**
+     * 按时间区间查询报表列表
+     * @param param
+     * @return
+     * @throws RemoteException
+     * @throws ParseException
+     * @throws BizException
+     */
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -83,9 +117,19 @@ public class ReportController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
         ParamCheckUtil.checkDayTime(param.getEndDateTime());
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return reportService.selectReportList(param, false);
     }
 
+    /**
+     * 按时间区间统计报表导出下载
+     * @param param
+     * @param response
+     * @return
+     * @throws ParseException
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
     public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
@@ -102,6 +146,7 @@ public class ReportController {
         String[] str = path.split("/");
 
         download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
         return null;
     }
 

@@ -63,9 +63,10 @@ public class FrequencySetupController {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前站点频率设置", siteApiService.getSiteById(selectRequest.getSiteId(), "").getSiteName()).info();
         ParamCheckUtil.pagerCheck(selectRequest.getPageIndex(), selectRequest.getPageSize());
-        return frequencySetupService.getPageData(selectRequest);
+        ApiPageData apiPageData = frequencySetupService.getPageData(selectRequest);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前站点频率设置", siteApiService.getSiteById(selectRequest.getSiteId(), "").getSiteName()).info();
+        return apiPageData;
 
     }
 

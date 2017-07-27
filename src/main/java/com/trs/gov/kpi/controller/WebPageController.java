@@ -51,8 +51,9 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        int value = webPageService.selectReplySpeedCount(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "响应速度统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return webPageService.selectReplySpeedCount(param);
+        return value;
     }
 
     /**
@@ -69,10 +70,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = webPageService.selectReplySpeed(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "响应速度列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return webPageService.selectReplySpeed(param);
+        return apiPageData;
     }
 
+    /**
+     * 过大页面的统计查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/size/count", method = RequestMethod.GET)
     public int selectPageSpaceCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -80,9 +89,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectPageSpaceCount(param);
+        int value = webPageService.selectPageSpaceCount(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过大页面的统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return value;
     }
 
+    /**
+     * 过大页面列表查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/size", method = RequestMethod.GET)
     public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -90,9 +108,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectPageSpace(param);
+        ApiPageData apiPageData = webPageService.selectPageSpace(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过大页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return apiPageData;
     }
 
+    /**
+     * 过深页面统计查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/depth/count", method = RequestMethod.GET)
     public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -100,9 +127,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectPageDepthCount(param);
+        int value = webPageService.selectPageDepthCount(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过深页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return value;
     }
 
+    /**
+     * 过深页面列表查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/depth", method = RequestMethod.GET)
     public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -110,9 +146,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectPageDepth(param);
+        ApiPageData apiPageData = webPageService.selectPageDepth(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过深页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return apiPageData;
     }
 
+    /**
+     * 冗余代码统计查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/code/count", method = RequestMethod.GET)
     public int selectRepeatCodeCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -120,9 +165,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectRepeatCodeCount(param);
+        int value = webPageService.selectRepeatCodeCount(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "冗余代码统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return value;
     }
 
+    /**
+     * 冗余代码列表查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/code", method = RequestMethod.GET)
     public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -130,9 +184,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectRepeatCode(param);
+        ApiPageData apiPageData = webPageService.selectRepeatCode(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "冗余代码列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return apiPageData;
     }
 
+    /**
+     * 过长URL页面统计查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/length/count", method = RequestMethod.GET)
     public int selectUrlLengthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -140,9 +203,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectUrlLengthCount(param);
+        int value = webPageService.selectUrlLengthCount(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过长URL页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return value;
     }
 
+    /**
+     * 过长URL页面列表查询
+     * @param param
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/length", method = RequestMethod.GET)
     public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
@@ -150,9 +222,19 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        return webPageService.selectUrlLength(param);
+        ApiPageData apiPageData = webPageService.selectUrlLength(param);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过长URL页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        return apiPageData;
     }
 
+    /**
+     * 处理访问优化问题
+     * @param siteId
+     * @param ids
+     * @return
+     * @throws BizException
+     * @throws RemoteException
+     */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handlePageByIds(int siteId, Integer[] ids) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_HANDLE) && !authorityService.hasRight(ContextHelper.getLoginUser
@@ -160,9 +242,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.handlePageByIds(siteId, Arrays.asList(ids));
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "处理访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return null;
     }
 
+    /**
+     * 忽略访问优化问题
+     * @param siteId
+     * @param ids
+     * @return
+     * @throws RemoteException
+     * @throws BizException
+     */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignorePageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_IGNORE) && !authorityService.hasRight(ContextHelper.getLoginUser
@@ -170,9 +261,18 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.ignorePageByIds(siteId, Arrays.asList(ids));
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "忽略访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return null;
     }
 
+    /**
+     * 删除访问优化问题
+     * @param siteId
+     * @param ids
+     * @return
+     * @throws RemoteException
+     * @throws BizException
+     */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delPageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_DELETE) && !authorityService.hasRight(ContextHelper.getLoginUser
@@ -180,6 +280,7 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.delPageByIds(siteId, Arrays.asList(ids));
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.DELETE, "删除访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName()).info();
         return null;
     }
 }

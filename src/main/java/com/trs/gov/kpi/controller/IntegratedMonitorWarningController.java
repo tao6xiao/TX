@@ -47,7 +47,8 @@ public class IntegratedMonitorWarningController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = integratedMonitorWarningService.get(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询预警提醒的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return integratedMonitorWarningService.get(param);
+        return apiPageData;
     }
 }

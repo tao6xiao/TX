@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
@@ -9,6 +10,8 @@ import com.trs.gov.kpi.entity.requestdata.CheckTextRequest;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
 import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +33,7 @@ public class DetectorController {
     ContentCheckApiService contentCheckApiService;
 
     /**
-     * 获取栏目分类
+     *  CKM校对封装接口， 为采编中心编辑器智能校对提供的接口
      *
      * @return
      */
@@ -61,7 +64,7 @@ public class DetectorController {
             log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
             throw new RemoteException(checkResult.getMessage());
         }
-
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "执行ckm校对", "").info();
         return JSON.parseObject(checkResult.getResult());
     }
 
