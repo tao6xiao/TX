@@ -16,6 +16,7 @@ import com.trs.gov.kpi.entity.responsedata.LinkAvailabilityResponse;
 import com.trs.gov.kpi.scheduler.CKMScheduler;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
+import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -187,10 +188,7 @@ public class SpiderUtils {
 
             Integer chnlId = null;
             try {
-                Channel channel = siteApiService.findChannelByUrl("", request.getUrl().intern(), siteId);
-                if (channel != null) {
-                    chnlId = channel.getChannelId();
-                }
+               chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl().intern(), siteId);
             } catch (RemoteException e) {
                 log.error("", e);
             }

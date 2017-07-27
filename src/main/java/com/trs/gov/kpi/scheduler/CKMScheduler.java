@@ -8,11 +8,11 @@ import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
+import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
@@ -163,9 +163,8 @@ public class CKMScheduler implements SchedulerTask {
 
             Issue issue = new Issue();
             issue.setSiteId(siteId);
-            Channel channel = siteApiService.findChannelByUrl("", page.getUrl(), siteId);
-            if (channel != null) {
-                issue.setCustomer2(String.valueOf(channel.getChannelId()));
+            if(ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId) != null){
+                issue.setCustomer2(String.valueOf(ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId)));
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
