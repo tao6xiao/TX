@@ -612,7 +612,7 @@ public class SpiderUtils {
         this.siteId = siteId;
         this.baseUrl = baseUrl;
         this.baseHost = UrlUtils.getHost(this.baseUrl);
-        pageParentMap = new HashMap<>();
+        pageParentMap =  new ConcurrentHashMap<>();
         unavailableUrls = Collections.synchronizedSet(new HashSet<String>());
     }
 
@@ -672,29 +672,26 @@ public class SpiderUtils {
     /**
      * 检索首页是否可用
      *
-     * @param homePageUrls
+     * @param homePageUrl
      * @return
      */
-    public synchronized List<String> homePageCheck(String... homePageUrls) {
+    public synchronized List<String> homePageCheck(Integer siteId, String homePageUrl) {
 
         log.info("homePageCheck started!");
-        init(baseUrl, siteId);
-        for (String homePageUrl : homePageUrls) {
+        init(homePageUrl, siteId);
+        recordUnavailableUrlDownloader.download(new Request(homePageUrl), new Task() {
+            @Override
+            public String getUUID() {
 
-            recordUnavailableUrlDownloader.download(new Request(homePageUrl), new Task() {
-                @Override
-                public String getUUID() {
+                return UUID.randomUUID().toString();
+            }
 
-                    return UUID.randomUUID().toString();
-                }
+            @Override
+            public Site getSite() {
 
-                @Override
-                public Site getSite() {
-
-                    return site;
-                }
-            });
-        }
+                return site;
+            }
+        });
         log.info("homePageCheck completed!");
         return new LinkedList<>(unavailableUrls);
     }
