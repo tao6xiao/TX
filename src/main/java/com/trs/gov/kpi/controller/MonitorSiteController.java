@@ -61,8 +61,9 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName()).info();
-        return monitorSiteService.getMonitorSiteDealBySiteId(siteId);
+        return monitorSiteDeal;
     }
 
     /**

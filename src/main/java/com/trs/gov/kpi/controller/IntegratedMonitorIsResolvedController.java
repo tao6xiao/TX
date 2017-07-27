@@ -49,8 +49,9 @@ public class IntegratedMonitorIsResolvedController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取已解决的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
+        return apiPageData;
     }
 
     /**
@@ -68,7 +69,8 @@ public class IntegratedMonitorIsResolvedController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取已忽略的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);
+        return apiPageData;
     }
 }

@@ -111,8 +111,9 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        List<Statistics> list = infoUpdateService.getUpdateNotInTimeCountList(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取栏目信息更新不及时的统计信息", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoUpdateService.getUpdateNotInTimeCountList(param);
+        return list;
     }
 
     /**
@@ -134,8 +135,9 @@ public class InfoUpdateController extends IssueHandler {
             log.error("Invalid parameter: 参数siteId为null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        MonthUpdateResponse response = infoUpdateService.getNotInTimeCountMonth(siteId);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取更新不及时栏目的更新不及时总月数以及空栏目", siteApiService.getSiteById(siteId, "").getSiteName()).info();
-        return infoUpdateService.getNotInTimeCountMonth(siteId);
+        return response;
     }
 
 }

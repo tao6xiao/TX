@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -13,6 +14,8 @@ import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.ReportApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
+import com.trs.mlf.simplelog.SimpleLogServer;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +53,12 @@ public class DocReportController {
 
     private static final String PREX_EDIT_CENTER_REPORT = "editcenter_";
 
+    /**
+     * 本月新增文档分类型统计
+     * @return
+     * @throws RemoteException
+     * @throws BizException
+     */
     @RequestMapping(value = "/curmonth/bytype", method = RequestMethod.GET)
     @ResponseBody
     public List<DocTypeCounterResponse> getCurMonthCountByType() throws RemoteException, BizException {
@@ -63,6 +72,7 @@ public class DocReportController {
                 .build();
         String reportData = reportApiService.getReport(param);
         if (StringUtil.isEmpty(reportData)) {
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档分类型统计查询", "").info();
             return new ArrayList<>();
         } else {
             final ArrayList<DocTypeCounterResponse> responseList = new ArrayList<>();
@@ -71,10 +81,21 @@ public class DocReportController {
                 JSONObject data = objects.getJSONObject(index);
                 responseList.add(new DocTypeCounterResponse(data.getInteger("DocType"), data.getLong("Count")));
             }
+            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档分类型统计查询", "").info();
             return responseList;
         }
     }
 
+    /**
+     * 按部门统计稿件
+     * @param beginDateTime
+     * @param endDateTime
+     * @return
+     * @throws RemoteException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws BizException
+     */
     @RequestMapping(value = "/bydepartment", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getCounterByDep(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException, BizException {
@@ -87,10 +108,21 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按部门统计的稿件信息", "").info();
         return result;
 
     }
 
+    /**
+     * 按站点统计稿件
+     * @param beginDateTime
+     * @param endDateTime
+     * @return
+     * @throws RemoteException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws BizException
+     */
     @RequestMapping(value = "/bysite", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getCounterBySite(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException, BizException {
@@ -103,9 +135,20 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按站点统计的稿件信息", "").info();
         return result;
     }
 
+    /**
+     * 按个人统计稿件
+     * @param beginDateTime
+     * @param endDateTime
+     * @return
+     * @throws RemoteException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws BizException
+     */
     @RequestMapping(value = "/byuser", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getCounterByUser(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException, BizException {
@@ -118,9 +161,16 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按个人统计的稿件信息", "").info();
         return result;
     }
 
+    /**
+     * 本月每天发稿量统计
+     * @return
+     * @throws RemoteException
+     * @throws BizException
+     */
     @RequestMapping(value = "/curmonth/byday", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, String> getCurMonthCounterByDay() throws RemoteException, BizException {
@@ -144,9 +194,18 @@ public class DocReportController {
         String beginDay = DateUtil.toString(now.getTime());
         final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
         allMonthReport.putAll(reportData);
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询本月每天发稿量统计信息", "").info();
         return allMonthReport;
     }
 
+    /**
+     * 原稿，已发，上报，下达历史数据量统计查询
+     * @param month
+     * @return
+     * @throws RemoteException
+     * @throws ParseException
+     * @throws BizException
+     */
     @RequestMapping(value = "/multi/onemonth", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Long> getMultiOfOneMonth(String month) throws RemoteException, ParseException, BizException {
@@ -176,10 +235,16 @@ public class DocReportController {
         result.put("push", countMap(pushReportData));
         final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
         result.put("distribute", countMap(distributeReportData));
-
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "原稿，已发，上报，下达历史数据量统计查询", "").info();
         return result;
     }
 
+    /**
+     * 本月新增文档状态统计
+     * @return
+     * @throws RemoteException
+     * @throws BizException
+     */
     @RequestMapping(value = "/curmonth/bystatus", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Long> getCurMonthDocStatusReport() throws RemoteException, BizException {
@@ -196,7 +261,7 @@ public class DocReportController {
         result.put("daiqian", countMap(daiqianReportData));
         final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
         result.put("yifa", countMap(yifaReportData));
-
+        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档状态统计查询", "").info();
         return result;
     }
 

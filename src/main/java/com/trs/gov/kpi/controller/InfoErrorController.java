@@ -53,8 +53,9 @@ public class InfoErrorController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        List list = infoErrorService.getIssueCount(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询信息错误待解决和已解决问题数量", "查询信息错误待解决和已解决问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoErrorService.getIssueCount(param);
+        return list;
     }
 
     /**
@@ -70,8 +71,9 @@ public class InfoErrorController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        History history = infoErrorService.getIssueHistoryCount(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询信息错误历史记录", "查询信息错误历史记录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoErrorService.getIssueHistoryCount(param);
+        return history;
     }
 
     /**
@@ -88,8 +90,9 @@ public class InfoErrorController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = infoErrorService.getInfoErrorList(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询信息错误待解决问题列表", "查询信息错误待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoErrorService.getInfoErrorList(param);
+        return apiPageData;
     }
 
 }

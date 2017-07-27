@@ -83,8 +83,9 @@ public class DutyDeptController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = deptService.get(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询栏目和部门的关系", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return deptService.get(param);
+        return apiPageData;
     }
 
     /**

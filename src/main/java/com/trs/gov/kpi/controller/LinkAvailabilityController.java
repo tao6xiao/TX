@@ -104,8 +104,9 @@ public class LinkAvailabilityController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = linkAvailabilityService.getIssueList(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询链接可用性未解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return linkAvailabilityService.getIssueList(param);
+        return apiPageData;
     }
 
     /**
@@ -122,8 +123,9 @@ public class LinkAvailabilityController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "首页可用性校验", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return linkAvailabilityService.showIndexAvailability(param);
+        return indexPage;
     }
 
 }

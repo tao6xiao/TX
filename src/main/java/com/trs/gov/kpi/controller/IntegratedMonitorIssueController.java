@@ -47,8 +47,9 @@ public class IntegratedMonitorIssueController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
+        ApiPageData apiPageData = issueService.get(param);
         SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询所有未解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return issueService.get(param);
+        return apiPageData;
     }
 
 }
