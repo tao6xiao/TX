@@ -19,12 +19,10 @@ public class CommonMQ extends Thread {
 
     private ConcurrentLinkedQueue<IMQMsg> msgQueue = new ConcurrentLinkedQueue<>();
 
-    private Object msgWaiter = new Object();
-
     public void publishMsg(IMQMsg msg) {
-        msgQueue.add(msg);
-        synchronized (msgWaiter) {
-            msgWaiter.notifyAll();
+        synchronized (msgQueue) {
+            msgQueue.add(msg);
+            msgQueue.notifyAll();
         }
     }
 
@@ -37,31 +35,7 @@ public class CommonMQ extends Thread {
         super.run();
         while (true) {
             try {
-                List<IMQMsg> msgList = new ArrayList<>();
-                if (!msgQueue.isEmpty()) {
-                    synchronized (msgQueue) {
-                        while (!msgQueue.isEmpty()) {
-                            msgList.add(msgQueue.poll());
-                        }
-                        msgQueue.clear();
-                    }
-                } else {
-                    synchronized (msgWaiter) {
-                        if (msgQueue.isEmpty()) {
-                            try {
-                                msgWaiter.wait();
-                            } catch (InterruptedException e) {
-                                log.error("", e);
-                            }
-                        } else {
-                            while (!msgQueue.isEmpty()) {
-                                msgList.add(msgQueue.poll());
-                            }
-                            msgQueue.clear();
-                        }
-                    }
-                }
-
+                List<IMQMsg> msgList = getMsg();
                 for (IMQMsg msg : msgList) {
                     for (MQListener listener : listeners) {
                         try {
@@ -78,6 +52,27 @@ public class CommonMQ extends Thread {
                 }
             } catch (Exception e) {
                 log.error("", e);
+            }
+        }
+    }
+
+    private List<IMQMsg> getMsg() {
+        List<IMQMsg> msgList = new ArrayList<>();
+        while (true) {
+            synchronized (msgQueue) {
+                if (!msgQueue.isEmpty()) {
+                    while (!msgQueue.isEmpty()) {
+                        msgList.add(msgQueue.poll());
+                    }
+                    msgQueue.clear();
+                    return msgList;
+                } else {
+                    try {
+                        msgQueue.wait();
+                    } catch (InterruptedException e) {
+                        log.error("", e);
+                    }
+                }
             }
         }
     }
