@@ -204,7 +204,6 @@ public class CKMScheduler implements SchedulerTask {
                 "\t\t\t\t<h1><a href =\"src.html\" target =\"showframe\">源码定位</a></h1>\n" +
                 "\t\t\t\t<h1><a href =\"" + orignalUrl + "\" target =\"showframe\">原始页面</a></h1>\n" +
                 "\t\t\t\t<h1><a href =\"" + parentUrl + "\" target =\"showframe\">父页面</a></h1>\n" +
-                "\t\t\t\t<h1><a href=\"javascript:window.top.close();\">关闭</a></h1>\n" +
                 "\t\t\t</div>\n" +
                 "\t\t</div>\n" +
                 "\t</body>\n" +
