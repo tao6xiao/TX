@@ -32,4 +32,10 @@ public class PageInfoMsg implements IMQMsg {
     public String getType() {
         return MSG_TYPE;
     }
+
+    @Override
+    public String getCheckNo() {
+        return siteId + "#" + checkId;
+    }
+
 }

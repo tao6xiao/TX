@@ -77,6 +77,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         log.info("LinkAnalysisScheduler " + site.getSiteId() + " start...");
         try {
             checkId = wkIdService.getNewCheckId();
+            log.info("LinkAnalysisScheduler starting...., site[{}], checkid[{}], url[{}]", site.getSiteId(), checkId, site.getSiteIndexUrl());
 
             insertCheckTime();
 
@@ -105,11 +106,11 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             endMsg.setCheckId(checkId);
             endMsg.setSiteId(site.getSiteId());
             commonMQ.publishMsg(endMsg);
-            log.info("LinkAnalysisScheduler " + site.getSiteId() + " send end msg");
+            log.info("LinkAnalysisScheduler send end msg,  site[{}], checkid[{}], url[{}]", site.getSiteId(), checkId, site.getSiteIndexUrl());
         } catch (Exception e) {
-            log.error("check link:{}, siteId:{} availability error!", site.getSiteIndexUrl(), site.getSiteId(), e);
+            log.error("LinkAnalysisScheduler exception!  link:{}, siteId:{}, checkid:{}", site.getSiteIndexUrl(), site.getSiteId(), checkId, e);
         } finally {
-            log.info("LinkAnalysisScheduler " + site.getSiteId() + " end...");
+            log.info("LinkAnalysisScheduler end. site[{}], checkid[{}], url[{}]  ", site.getSiteId(), checkId, site.getSiteIndexUrl());
         }
     }
 

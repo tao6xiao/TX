@@ -3,12 +3,14 @@ package com.trs.gov.kpi.msgqueue;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Created by li.hao on 2017/7/11.
@@ -19,9 +21,21 @@ public class CommonMQ extends Thread {
 
     private Set<MQListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
+    private Map<Integer, ExecutorService> threadMap = new HashMap<>();
 
     private ConcurrentLinkedQueue<IMQMsg> msgQueue = new ConcurrentLinkedQueue<>();
+
+    public CommonMQ() {
+        for(int i = 0; i < 10; i++) {
+            final int index = i;
+            threadMap.put(i, Executors.newSingleThreadExecutor(new ThreadFactory() {
+                @Override
+                public Thread newThread(@NotNull Runnable r) {
+                    return new Thread(r, "CommonMQ-Thread-" + index);
+                }
+            }));
+        }
+    }
 
     public void publishMsg(IMQMsg msg) {
         synchronized (msgQueue) {
@@ -41,7 +55,10 @@ public class CommonMQ extends Thread {
             try {
                 List<IMQMsg> msgList = getMsg();
                 for (IMQMsg msg : msgList) {
-                    fixedThreadPool.submit(new Runnable() {
+
+                    final String checkNo = msg.getCheckNo();
+                    int no = checkNo.hashCode() % threadMap.size();
+                    threadMap.get(no).submit(new Runnable() {
                         @Override
                         public void run() {
                             for (MQListener listener : listeners) {
@@ -51,7 +68,7 @@ public class CommonMQ extends Thread {
                                     } else if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
                                         listener.onMessage(msg);
                                     }
-                                } catch (Exception e) {
+                                } catch (Throwable e) {
                                     // 一个消息监听器失败，不能影响其他监听器处理
                                     log.error("", e);
                                 }

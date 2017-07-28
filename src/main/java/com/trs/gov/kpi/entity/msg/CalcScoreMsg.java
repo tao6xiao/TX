@@ -21,4 +21,9 @@ public class CalcScoreMsg implements IMQMsg {
 
     private String scoreType;
 
+    @Override
+    public String getCheckNo() {
+        return siteId + "#" + checkId;
+    }
+
 }
