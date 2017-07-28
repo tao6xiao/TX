@@ -146,10 +146,10 @@ public class IssueCountController {
 
 
     private void checkAuthority(IssueCountRequest request) throws RemoteException, BizException {
-        if (!authorityService.hasRight("lala", null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
             String[] siteIds = request.getSiteIds().split(",");
             for (int i = 0; i < siteIds.length; i++) {
-                if (!authorityService.hasRight("lala", Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+                if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {
                     throw new BizException(Authority.NO_AUTHORITY);
                 }
             }
