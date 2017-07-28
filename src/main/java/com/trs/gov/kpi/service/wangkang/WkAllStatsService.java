@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service.wangkang;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedResponse;
 import com.trs.gov.kpi.entity.responsedata.WkUpdateContentResponse;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
@@ -30,7 +31,7 @@ public interface WkAllStatsService {
      *
      * @param wkAllStats
      */
-    void insertOrUpdateUpdateContentAndSpeed(WkAllStats wkAllStats);
+    void insertOrUpdateUpdateContentAndSpeed(WkAllStats wkAllStats) throws BizException;
 
     /**
      * 插入或者更新失效链接个数

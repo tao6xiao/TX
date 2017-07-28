@@ -9,6 +9,7 @@ import com.trs.gov.kpi.dao.WkCheckTimeMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.responsedata.WkAvgSpeedResponse;
 import com.trs.gov.kpi.entity.responsedata.WkUpdateContentResponse;
 import com.trs.gov.kpi.entity.wangkang.WkAllStats;
@@ -107,10 +108,13 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
     }
 
     @Override
-    public void insertOrUpdateUpdateContentAndSpeed(WkAllStats wkAllStats) {
+    public void insertOrUpdateUpdateContentAndSpeed(WkAllStats wkAllStats) throws BizException {
         final QueryFilter filter = getFilter(wkAllStats);
         if (commonMapper.count(filter) > 0) {
             DBUpdater updater = new DBUpdater(Table.WK_ALL_STATS.getTableName());
+            if (wkAllStats.getAvgSpeed() == null){
+                throw new BizException("AvgSpeed is null");
+            }
             updater.addField(WkAllStatsTableField.AVG_SPEED, wkAllStats.getAvgSpeed());
             updater.addField(WkAllStatsTableField.UPDATE_CONTENT, wkAllStats.getUpdateContent());
             updater.addField(WkAllStatsTableField.CHECK_TIME, new Date());
