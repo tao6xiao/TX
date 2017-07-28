@@ -143,7 +143,7 @@ public class CKMProcessWorker implements Runnable {
                         issue.setCheckTime(new Date());
                         issue.setLocationUrl("gov/wangkang/loc/" +  relativeDir.replace(File.separator, "/") + "/" + "index.html");
                         issue.setChnlName(getChnlName(content.getUrl()));
-                        issue.setDetailInfo(errorInfo);
+                        issue.setDetailInfo(getDisplayErrorWord(subIssueType, errorWord, correctWord));
                         if (StringUtil.isEmpty(content.getParentUrl())) {
                             issue.setParentUrl(content.getUrl());
                         } else {
