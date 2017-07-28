@@ -1,14 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.constant.WebpageTableField;
 import com.trs.gov.kpi.dao.WebPageMapper;
-import com.trs.gov.kpi.entity.PageDepth;
-import com.trs.gov.kpi.entity.PageSpace;
-import com.trs.gov.kpi.entity.ReplySpeed;
-import com.trs.gov.kpi.entity.UrlLength;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
@@ -19,13 +11,10 @@ import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by wangxuan on 2017/5/10.

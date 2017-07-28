@@ -29,9 +29,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by he.lang on 2017/5/24.
@@ -41,7 +39,11 @@ import java.util.List;
 @Scope("prototype")
 public class CKMScheduler implements SchedulerTask {
 
-    public static final String LINE_SP = System.getProperty("line.separator");
+    private static final String LINE_SP = System.getProperty("line.separator");
+
+    private static final String INDEX = "index";
+
+    private static final String HTML_SUF = "</html>";
 
     @Setter
     @Getter
@@ -156,7 +158,7 @@ public class CKMScheduler implements SchedulerTask {
 
             Issue issue = new Issue();
             issue.setSiteId(siteId);
-            if(ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId) != null){
+            if (ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId) != null) {
                 issue.setCustomer2(String.valueOf(ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId)));
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -184,7 +186,7 @@ public class CKMScheduler implements SchedulerTask {
                 "\t</frameset>\n" +
                 "\t<noframes><body>\n" +
                 "\t</body></noframes>\n" +
-                "</html>";
+                HTML_SUF;
         createFile(dir + File.separator + "index.html", htmlText);
     }
 
@@ -206,7 +208,7 @@ public class CKMScheduler implements SchedulerTask {
                 "\t\t\t</div>\n" +
                 "\t\t</div>\n" +
                 "\t</body>\n" +
-                "</html>";
+                HTML_SUF;
         createFile(dir + File.separator + "cont.html", htmlText);
     }
 
@@ -226,15 +228,21 @@ public class CKMScheduler implements SchedulerTask {
 
     private String generatePageLocHtmlText(PageCKMSpiderUtil.CKMPage page, Types.InfoErrorIssueType subIssueType, String errorInfo) {
 
-        if (StringUtil.isEmpty(page.getContent())) {
+        String result = generateBasePageLoc(page.getUrl(), page.getContent());
+
+        // 解析源码，找到错误位置，加上标记信息。
+        return addTips(errorInfo, subIssueType, result);
+    }
+
+    public static String generateBasePageLoc(String url, String content) {
+        if (StringUtil.isEmpty(content)) {
             return "<html><body><h1>快照内容已不存在！</h1></body></html>";
         }
-
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         // 给网站增加base标签
-        sb.append("<base href=\"" + page.getUrl() + "\" />");
+        sb.append("<base href=\"" + url + "\" />");
         sb.append(LINE_SP);
-        sb.append(page.getContent().intern());
+        sb.append(content.intern());
         // 在源码中增加定位用的脚本定义
         sb.append(LINE_SP);
         sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
@@ -244,76 +252,93 @@ public class CKMScheduler implements SchedulerTask {
         sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
         sb.append(LINE_SP);
         sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
-        // 解析源码，找到错误位置，加上标记信息。
-        String result = sb.toString();
-
-        return addTips(errorInfo, subIssueType, result);
+        return sb.toString();
     }
 
     private String addTips(String errorInfo, Types.InfoErrorIssueType subIssueType, String result) {
         String errorWord;
-        String correctWord = "";
-        String errorTip = "";
+        String correctWord;
         String tipsResult = result;
         String[] errorInfos = errorInfo.replaceAll("[\\{\\}\"]", "").split(",");
 
         for (String error : errorInfos) {
-            boolean isFound = true;
-            if (Types.InfoErrorIssueType.TYPOS.equals(subIssueType)) {
-                String[] info = error.split("：");
-                errorWord = info[0];
-                if (info.length > 1) {
-                    String[] correntInfo = info[1].split(":");
-                    correctWord = correntInfo[0];
-                }
-            } else {
-                String[] info = error.split(";");
-                errorWord = info[0];
-                if (info.length > 1) {
-                    String[] correntInfo = info[1].split(":");
-                    correctWord = correntInfo[0];
-                }
+            String[] words = getWords(error, subIssueType);
+            errorWord = words[0];
+            correctWord = words[1];
+            Map<String, Object> resultMap = addFirstTip(subIssueType, errorWord, correctWord, tipsResult);
+            if ((int) resultMap.get(INDEX) > -1) {
+                tipsResult = addOtherTips(resultMap, subIssueType, errorWord, correctWord);
             }
-            int left = 0;
-            int index = 0;
-            int right = 0;
-            while (true) {
-                right = tipsResult.indexOf('>', left);
-                left = tipsResult.indexOf('<', right);
-                if (left == -1) {
-                    isFound = false;
-                    break;
-                }
-                String subString = tipsResult.substring(right, left);
-                if (subString.contains(errorWord)) {
-                    index = right + subString.indexOf(errorWord);
-                    break;
-                }
+        }
+        return tipsResult;
+    }
+
+    //添加后续相同错误字词的提示
+    private String addOtherTips(Map<String, Object> resultMap, Types.InfoErrorIssueType subIssueType, String errorWord, String correctWord) {
+        int left = (int) resultMap.get(INDEX);
+        String tipsResult = (String) resultMap.get("content");
+        while (true) {
+            int right = tipsResult.indexOf('>', left);
+            left = tipsResult.indexOf('<', right);
+            if (left == -1) {
+                break;
             }
-            if (isFound) {
-                errorTip = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(subIssueType, errorWord, correctWord) + "\" msgtitle=\"定位\" style=\"border:2px red solid;" +
-                        "color:red;" +
-                        "\">" + errorWord + "</font>";
+            String subString = tipsResult.substring(right, left);
+            if (subString.contains(errorWord)) {
+                int index = right + subString.indexOf(errorWord);
+                String errorTip = "<font msg=\"" + getDisplayErrorWord(subIssueType, errorWord, correctWord) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
                 tipsResult = tipsResult.substring(0, index) + errorTip + tipsResult.substring(index + errorWord.length());
                 left = index + errorTip.length();
             }
-            while (true) {
-                right = tipsResult.indexOf('>', left);
-                left = tipsResult.indexOf('<', right);
-                if (left == -1) {
-                    break;
-                }
-                String subString = tipsResult.substring(right, left);
-                if (subString.contains(errorWord)) {
-                    index = right + subString.indexOf(errorWord);
-                    errorTip = "<font msg=\"" + getDisplayErrorWord(subIssueType, errorWord, correctWord) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
-                    tipsResult = tipsResult.substring(0, index) + errorTip + tipsResult.substring(index + errorWord.length());
-                    left = index + errorTip.length();
-                }
-            }
-
         }
         return tipsResult;
+    }
+
+    //添加第一个提示
+    private Map<String, Object> addFirstTip(Types.InfoErrorIssueType subIssueType, String errorWord, String correctWord, String tipsResult) {
+        int left = 0;
+        int index = 0;
+        String result = "";
+        while (index == 0) {
+            int right = tipsResult.indexOf('>', left);
+            left = tipsResult.indexOf('<', right);
+            if (left == -1) {
+                break;
+            }
+            String subString = tipsResult.substring(right, left);
+            if (subString.contains(errorWord)) {
+                index = right + subString.indexOf(errorWord);
+                String errorTip = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(subIssueType, errorWord, correctWord) +
+                        "\" msgtitle=\"定位\" style=\"border:2px red solid; color:red; \">" + errorWord + "</font>";
+                result = tipsResult.substring(0, index) + errorTip + tipsResult.substring(index + errorWord.length());
+                left = index + errorTip.length();
+            }
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put(INDEX, left);
+        resultMap.put("content", result);
+        return resultMap;
+    }
+
+    //获得错误字词和建议
+    private String[] getWords(String error, Types.InfoErrorIssueType subIssueType) {
+        String[] words = new String[2];
+        if (Types.InfoErrorIssueType.TYPOS.equals(subIssueType)) {
+            String[] info = error.split("：");
+            words[0] = info[0];
+            if (info.length > 1) {
+                String[] correctInfo = info[1].split(":");
+                words[1] = correctInfo[0];
+            }
+        } else {
+            String[] info = error.split(";");
+            words[0] = info[0];
+            if (info.length > 1) {
+                String[] correctInfo = info[1].split(":");
+                words[1] = correctInfo[0];
+            }
+        }
+        return words;
     }
 
 
@@ -347,14 +372,18 @@ public class CKMScheduler implements SchedulerTask {
     }
 
     private String generateSourceLocHtmlText(PageCKMSpiderUtil.CKMPage page, Types.InfoErrorIssueType subIssueType, String errorInfo) {
-
         if (StringUtil.isEmpty(page.getContent())) {
             return "<html><body><h1>快照内容已不存在！</h1></body></html>";
         }
+        String result = generateBasSourceLoc(page.getContent());
 
+        return addTips(errorInfo, subIssueType, result);
+    }
+
+    public static String generateBasSourceLoc(String content) {
         // 将html标签转义
-        String sourceEscape = StringEscapeUtils.escapeHtml4(page.getContent());
-        StringBuffer sb = new StringBuffer();
+        String sourceEscape = StringEscapeUtils.escapeHtml4(content);
+        StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
         sb.append(LINE_SP);
         sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
@@ -395,7 +424,7 @@ public class CKMScheduler implements SchedulerTask {
         sb.append(LINE_SP);
         sb.append("	</body>");
         sb.append(LINE_SP);
-        sb.append("</html>");
+        sb.append(HTML_SUF);
         sb.append(LINE_SP);
 
         // 在源码中增加定位用的脚本定义
@@ -408,9 +437,7 @@ public class CKMScheduler implements SchedulerTask {
         sb.append(LINE_SP);
         sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
 
-        String result = sb.toString();
-
-        return addTips(errorInfo, subIssueType, result);
+        return sb.toString();
     }
 
 

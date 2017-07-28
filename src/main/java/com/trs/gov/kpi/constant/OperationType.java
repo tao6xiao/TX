@@ -13,4 +13,8 @@ public class OperationType {
     public static final String UPDATE = "修改";
 
     public static final String REQUEST = "请求";
+	
+	private OperationType() {
+    }
+
 }
