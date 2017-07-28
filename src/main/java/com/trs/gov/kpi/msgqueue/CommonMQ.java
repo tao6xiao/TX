@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by li.hao on 2017/7/11.
@@ -16,6 +18,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CommonMQ extends Thread {
 
     private Set<MQListener> listeners = Collections.synchronizedSet(new HashSet<>());
+
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
     private ConcurrentLinkedQueue<IMQMsg> msgQueue = new ConcurrentLinkedQueue<>();
 
@@ -37,18 +41,23 @@ public class CommonMQ extends Thread {
             try {
                 List<IMQMsg> msgList = getMsg();
                 for (IMQMsg msg : msgList) {
-                    for (MQListener listener : listeners) {
-                        try {
-                            if (msg.getType().equals(listener.getType())) {
-                                listener.onMessage(msg);
-                            } else if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
-                                listener.onMessage(msg);
+                    fixedThreadPool.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (MQListener listener : listeners) {
+                                try {
+                                    if (msg.getType().equals(listener.getType())) {
+                                        listener.onMessage(msg);
+                                    } else if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
+                                        listener.onMessage(msg);
+                                    }
+                                } catch (Exception e) {
+                                    // 一个消息监听器失败，不能影响其他监听器处理
+                                    log.error("", e);
+                                }
                             }
-                        } catch (Exception e) {
-                            // 一个消息监听器失败，不能影响其他监听器处理
-                            log.error("", e);
                         }
-                    }
+                    });
                 }
             } catch (Exception e) {
                 log.error("", e);

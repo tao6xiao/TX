@@ -105,11 +105,11 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             endMsg.setCheckId(checkId);
             endMsg.setSiteId(site.getSiteId());
             commonMQ.publishMsg(endMsg);
-            log.info("LinkAnalysisScheduler " + siteId + " send end msg");
+            log.info("LinkAnalysisScheduler " + site.getSiteId() + " send end msg");
         } catch (Exception e) {
-            log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
+            log.error("check link:{}, siteId:{} availability error!", site.getSiteIndexUrl(), site.getSiteId(), e);
         } finally {
-            log.info("LinkAnalysisScheduler " + siteId + " end...");
+            log.info("LinkAnalysisScheduler " + site.getSiteId() + " end...");
         }
     }
 
