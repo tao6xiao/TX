@@ -71,6 +71,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
             // 检查结束
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
+            log.info("SpeedAndUpdateProcessor receive end msg");
             try {
                 Integer avgSpeed =  wkEveryLinkService.selectOnceCheckAvgSpeed(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
                 Integer count = getUpdateCount(checkEndMsg.getSiteId(), checkEndMsg.getCheckId());
@@ -90,12 +91,14 @@ public class SpeedAndUpdateProcessor implements MQListener {
             calcUpdateScoreMsg.setSiteId(checkEndMsg.getSiteId());
             calcUpdateScoreMsg.setScoreType("updateContent");
             commonMQ.publishMsg(calcUpdateScoreMsg);
+            log.info("SpeedAndUpdateProcessor send  updateContent calc score msg");
 
             CalcScoreMsg calcSpeedScoreMsg = new CalcScoreMsg();
             calcSpeedScoreMsg.setCheckId(checkEndMsg.getCheckId());
             calcSpeedScoreMsg.setSiteId(checkEndMsg.getSiteId());
             calcSpeedScoreMsg.setScoreType("avgSpeed");
             commonMQ.publishMsg(calcSpeedScoreMsg);
+            log.info("SpeedAndUpdateProcessor send  avgSpeed calc score msg");
         } else {
             PageInfoMsg speedMsg = (PageInfoMsg)msg;
             WkEveryLink wkEveryLink = new WkEveryLink();

@@ -72,6 +72,7 @@ public class CKMProcessor implements MQListener {
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
 
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
+            log.info("CKMProcessor receive end msg");
             try {
                 synchronized (threadPoolLocker) {
                     fixedThreadPool.shutdown();
@@ -84,6 +85,7 @@ public class CKMProcessor implements MQListener {
                             }
                         } catch (InterruptedException e) {
                             log.error("", e);
+                            break;
                         }
                     }
 
@@ -110,6 +112,7 @@ public class CKMProcessor implements MQListener {
             calcSpeedScoreMsg.setSiteId(checkEndMsg.getSiteId());
             calcSpeedScoreMsg.setScoreType("errorWords");
             commonMQ.publishMsg(calcSpeedScoreMsg);
+            log.info("CKMProcessor send errorWords calc score msg");
         } else {
             // 监听待检测的内容消息
             CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);

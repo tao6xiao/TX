@@ -138,6 +138,7 @@ public class CKMProcessWorker implements Runnable {
                         // 创建首页
                         createIndexHtml(absoluteDir);
 
+                        //错误信息入库
                         WkIssue issue = new WkIssue();
                         issue.setCheckId(content.getCheckId());
                         issue.setCheckTime(new Date());

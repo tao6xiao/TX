@@ -71,6 +71,7 @@ public class InvalidLinkProcessor implements MQListener {
 
         if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
+            log.info("InvalidLinkProcessor receive end msg");
             try {
                 WkAllStats wkAllStats = new WkAllStats();
                 wkAllStats.setSiteId(checkEndMsg.getSiteId());
@@ -92,6 +93,7 @@ public class InvalidLinkProcessor implements MQListener {
             calcSpeedScoreMsg.setSiteId(checkEndMsg.getSiteId());
             calcSpeedScoreMsg.setScoreType("invalidLink");
             commonMQ.publishMsg(calcSpeedScoreMsg);
+            log.info("InvalidLinkProcessor send  invalidLink calc score msg");
 
         } else {
             InvalidLinkMsg invalidLinkMsg = (InvalidLinkMsg)msg;
