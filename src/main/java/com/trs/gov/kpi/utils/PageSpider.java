@@ -115,7 +115,7 @@ public class PageSpider {
             }
 
             synchronized (pageContent) {
-                pageContent.put(page.getRequest().getUrl().intern(), page.getRawText());
+                pageContent.put(page.getRequest().getUrl().intern(), page.getRawText().intern());
             }
 
             //去掉外站链接
