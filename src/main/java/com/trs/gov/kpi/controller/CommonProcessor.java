@@ -4,6 +4,8 @@ import com.trs.gov.kpi.entity.ResponseTemplate;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.BizRuntimeException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.TRSLogUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.annotation.Aspect;
@@ -37,7 +39,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizException.class)
     @ResponseBody
     public ResponseTemplate handBizException(Exception ex) {
-
+        LogUtil.addSystemLog("", ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZEXCEPTION_MESSAGE : ex.getMessage(),
@@ -47,7 +49,7 @@ public class CommonProcessor {
     @ExceptionHandler(RemoteException.class)
     @ResponseBody
     public ResponseTemplate handRemoteException(Exception ex) {
-
+        LogUtil.addSystemLog("", ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? REMOTEEXCEPTION_MESSAGE : ex.getMessage(),
@@ -57,7 +59,7 @@ public class CommonProcessor {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseTemplate handCommonException(Exception ex) {
-
+        LogUtil.addSystemLog("", ex);
         log.error("", ex);
         return new ResponseTemplate(false, SYSTEMEXCEPTION_MESSAGE, null);
     }
@@ -65,7 +67,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizRuntimeException.class)
     @ResponseBody
     public ResponseTemplate handBizRuntimeException(Exception ex) {
-
+        LogUtil.addSystemLog("", ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZRUNTIMEEXCEPTION_MESSAGE : ex.getMessage(),

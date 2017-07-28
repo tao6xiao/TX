@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.utils.DBUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -69,6 +70,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
 
         } catch (RemoteException e){
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }finally {
             log.info("ServiceLinkScheduler " + siteId + " end...");
         }

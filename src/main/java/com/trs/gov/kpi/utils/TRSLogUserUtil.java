@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.BizRuntimeException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.User;
 import com.trs.gov.kpi.ids.ContextHelper;
@@ -19,9 +20,14 @@ import static com.trs.gov.kpi.ids.ContextHelper.CONTEXT_INDEX_IP;
  */
 @Slf4j
 public class TRSLogUserUtil {
+
+    public static void main(String[] args){
+        LogUtil.addSystemLog("信息错误", new BizException());
+    }
+
     private TRSLogUserUtil(){}
 
-    public static LogUser getLogUser() throws BizException, RemoteException {
+    public static LogUser getLogUser() throws BizException, RemoteException, BizRuntimeException {
         SSOUser localUser = ContextHelper.getLoginUser();
         if(localUser == null){
             log.error("当前用户未登录");

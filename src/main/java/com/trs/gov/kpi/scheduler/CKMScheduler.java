@@ -15,10 +15,7 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.CollectionUtil;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.PageCKMSpiderUtil;
-import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -107,6 +104,7 @@ public class CKMScheduler implements SchedulerTask {
             result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             log.error("failed to check content " + checkContent, e);
+            LogUtil.addSystemLog("failed to check content " + checkContent, e);
             return issueList;
         }
 
@@ -153,6 +151,7 @@ public class CKMScheduler implements SchedulerTask {
             } catch (IOException e) {
                 log.error("error content: " + errorContent);
                 log.error("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
+                LogUtil.addSystemLog("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
             }
 
             Issue issue = new Issue();
@@ -437,8 +436,9 @@ public class CKMScheduler implements SchedulerTask {
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
                 }
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
@@ -450,6 +450,7 @@ public class CKMScheduler implements SchedulerTask {
             insert(buildList(page, checkTypeList));
         } catch (RemoteException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
     }
 }

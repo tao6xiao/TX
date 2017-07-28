@@ -20,6 +20,7 @@ import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -107,6 +108,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             insertIssueAndWarning(siteTrees);
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
+            LogUtil.addSystemLog("check link:{"+baseUrl+"}, siteId:{"+siteId+"} info update error!", e);
         } finally {
             log.info("InfoUpdateCheckScheduler " + siteId + " end...");
         }
@@ -171,6 +173,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(chnl, parent);
             } catch (Exception e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
         }
 
@@ -231,6 +234,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(channel, parent);
             } catch (Exception e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
         }
     }
@@ -382,6 +386,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             return ids != null && !ids.isEmpty();
         } catch (RemoteException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
         // NOTE: 异常情况下，先暂时不判定为未更新，以免发生错误，等下次的检查的时候再判定
         return true;
@@ -526,6 +531,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             update.setChnlUrl(siteApiService.getChannelPublishUrl("", 0, channelId));
         } catch (Exception e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
 
         issueMapper.insert(DBUtil.toRow(update));
@@ -572,6 +578,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
         } catch (Exception e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
         DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
         if (chnlUrl != null) {

@@ -4,6 +4,7 @@ import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.impl.PerformanceService;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,7 @@ public class PerformanceScheduler implements SchedulerTask {
             performanceMapper.insert(performance);
         } catch (ParseException | RemoteException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
         log.info("PerformanceScheduler " + siteId + " end...");
     }

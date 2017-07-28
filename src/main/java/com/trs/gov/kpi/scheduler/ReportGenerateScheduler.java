@@ -11,6 +11,7 @@ import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +85,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             site = siteApiService.getSiteById(siteId, "");
         } catch (RemoteException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
         String title = "";
         if (site != null) {
@@ -243,6 +245,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             workbook.write(out);
         } catch (IOException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
         report.setPath(fileDir + fileName);
         report.setCrTime(new Date());

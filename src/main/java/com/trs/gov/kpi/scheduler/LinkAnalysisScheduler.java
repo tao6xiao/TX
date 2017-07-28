@@ -13,6 +13,7 @@ import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
@@ -84,6 +85,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
+            LogUtil.addSystemLog("check link:{"+baseUrl+"}, siteId:{"+siteId+"} availability error!", e);
         } finally {
             log.info("LinkAnalysisScheduler " + siteId + " end...");
         }

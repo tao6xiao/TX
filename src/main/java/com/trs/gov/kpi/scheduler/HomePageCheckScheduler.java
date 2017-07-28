@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
@@ -77,7 +78,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
                 issueMapper.insert(DBUtil.toRow(issue));
             }
         } catch (Throwable e) {
-          log.error("", e);
+            log.error("", e);
+            LogUtil.addSystemLog("", e);
         } finally {
             log.info("HomePageCheckScheduler " + siteId + " end...");
         }
