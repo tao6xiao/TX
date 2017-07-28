@@ -55,14 +55,16 @@ public class DocReportController {
 
     /**
      * 本月新增文档分类型统计
+     *
      * @return
      * @throws RemoteException
      * @throws BizException
      */
     @RequestMapping(value = "/curmonth/bytype", method = RequestMethod.GET)
     @ResponseBody
-    public List<DocTypeCounterResponse> getCurMonthCountByType() throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
+    public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ReportApiService.ReportApiParam param = ReportApiService.ReportApiParamBuilder.newBuilder()
@@ -88,6 +90,7 @@ public class DocReportController {
 
     /**
      * 按部门统计稿件
+     *
      * @param beginDateTime
      * @param endDateTime
      * @return
@@ -98,8 +101,10 @@ public class DocReportController {
      */
     @RequestMapping(value = "/bydepartment", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterByDep(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
+    public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
+            BizException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
@@ -115,6 +120,7 @@ public class DocReportController {
 
     /**
      * 按站点统计稿件
+     *
      * @param beginDateTime
      * @param endDateTime
      * @return
@@ -125,8 +131,10 @@ public class DocReportController {
      */
     @RequestMapping(value = "/bysite", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterBySite(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
+    public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
+            BizException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
@@ -141,6 +149,7 @@ public class DocReportController {
 
     /**
      * 按个人统计稿件
+     *
      * @param beginDateTime
      * @param endDateTime
      * @return
@@ -151,8 +160,10 @@ public class DocReportController {
      */
     @RequestMapping(value = "/byuser", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterByUser(String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
+    public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
+            BizException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports = getMultiReportList("user");
@@ -167,14 +178,16 @@ public class DocReportController {
 
     /**
      * 本月每天发稿量统计
+     *
      * @return
      * @throws RemoteException
      * @throws BizException
      */
     @RequestMapping(value = "/curmonth/byday", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, String> getCurMonthCounterByDay() throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
+    public Map<String, String> getCurMonthCounterByDay(Integer siteId) throws RemoteException, BizException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         Calendar now = Calendar.getInstance();// 当前起始日期
@@ -188,9 +201,9 @@ public class DocReportController {
         for (int index = 1; index <= curDay; index++) {
             allMonthReport.put(monthPrefix + String.format("-%02d", index), "0");
         }
-        now.add(Calendar.DAY_OF_MONTH,1);
+        now.add(Calendar.DAY_OF_MONTH, 1);
         String endDay = DateUtil.toString(now.getTime());
-        now.set(Calendar.DAY_OF_MONTH,1);
+        now.set(Calendar.DAY_OF_MONTH, 1);
         String beginDay = DateUtil.toString(now.getTime());
         final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
         allMonthReport.putAll(reportData);
@@ -200,6 +213,7 @@ public class DocReportController {
 
     /**
      * 原稿，已发，上报，下达历史数据量统计查询
+     *
      * @param month
      * @return
      * @throws RemoteException
@@ -208,8 +222,9 @@ public class DocReportController {
      */
     @RequestMapping(value = "/multi/onemonth", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Long> getMultiOfOneMonth(String month) throws RemoteException, ParseException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
+    public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, ParseException, BizException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         if (StringUtil.isEmpty(month)) {
@@ -241,14 +256,16 @@ public class DocReportController {
 
     /**
      * 本月新增文档状态统计
+     *
      * @return
      * @throws RemoteException
      * @throws BizException
      */
     @RequestMapping(value = "/curmonth/bystatus", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Long> getCurMonthDocStatusReport() throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
+    public Map<String, Long> getCurMonthDocStatusReport(Integer siteId) throws RemoteException, BizException {
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         String beginDay = DateUtil.curMonth();

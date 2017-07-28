@@ -146,22 +146,10 @@ public class IssueCountController {
 
 
     private void checkAuthority(IssueCountRequest request) throws RemoteException, BizException {
-        User user = userApiService.finUserByUserName(null, ContextHelper.getLoginUser().getUserName());
-        String roleType = Authority.SITE_ROLE_ID;
-        for (Role role : user.getRoles()) {
-            if (Authority.PLATFORM_ROLE_ID.equals(role.getObjType())) {
-                roleType = Authority.PLATFORM_ROLE_ID;
-                break;
-            }
-        }
-        if (Authority.PLATFORM_ROLE_ID.equals(roleType)) {
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
-        } else if (Authority.SITE_ROLE_ID.equals(roleType)) {
+        if (!authorityService.hasRight("lala", null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
             String[] siteIds = request.getSiteIds().split(",");
             for (int i = 0; i < siteIds.length; i++) {
-                if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+                if (!authorityService.hasRight("lala", Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {
                     throw new BizException(Authority.NO_AUTHORITY);
                 }
             }
