@@ -56,9 +56,8 @@ public class CommonMQ extends Thread {
                 List<IMQMsg> msgList = getMsg();
                 for (IMQMsg msg : msgList) {
 
-                    final String checkNo = msg.getCheckNo();
-                    int no = checkNo.hashCode() % threadMap.size();
-                    threadMap.get(no).submit(new Runnable() {
+                    int no = msg.getCheckId() % threadMap.size();
+                    threadMap.get(no).execute(new Runnable() {
                         @Override
                         public void run() {
                             for (MQListener listener : listeners) {

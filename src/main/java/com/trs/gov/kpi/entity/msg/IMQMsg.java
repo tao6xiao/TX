@@ -6,6 +6,6 @@ package com.trs.gov.kpi.entity.msg;
 public interface IMQMsg {
     String getType();
 
-    String getCheckNo();
+    int getCheckId();
 
 }

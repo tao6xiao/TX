@@ -74,23 +74,23 @@ public class CKMProcessor implements MQListener {
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
             log.info("CKMProcessor receive end msg");
             try {
-                synchronized (threadPoolLocker) {
-                    fixedThreadPool.shutdown();
-
-                    while (true){
-                        try {
-                            final boolean isTerminate = fixedThreadPool.awaitTermination(1, TimeUnit.SECONDS);
-                            if (isTerminate) {
-                                break;
-                            }
-                        } catch (InterruptedException e) {
-                            log.error("", e);
-                            break;
-                        }
-                    }
-
-                    fixedThreadPool = Executors.newFixedThreadPool(10);
-                }
+//                synchronized (threadPoolLocker) {
+//                    fixedThreadPool.shutdown();
+//
+//                    while (true){
+//                        try {
+//                            final boolean isTerminate = fixedThreadPool.awaitTermination(1, TimeUnit.SECONDS);
+//                            if (isTerminate) {
+//                                break;
+//                            }
+//                        } catch (InterruptedException e) {
+//                            log.error("", e);
+//                            break;
+//                        }
+//                    }
+//
+//                    fixedThreadPool = Executors.newFixedThreadPool(10);
+//                }
 
                 WkAllStats wkAllStats = new WkAllStats();
                 wkAllStats.setSiteId(checkEndMsg.getSiteId());
@@ -117,11 +117,12 @@ public class CKMProcessor implements MQListener {
             // 监听待检测的内容消息
             CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);
             worker.setContent((PageInfoMsg)msg);
-
-            // 把检测内容分配给检测线程
-            synchronized (threadPoolLocker) {
-                fixedThreadPool.execute(worker);
-            }
+            worker.run();
+//
+//            // 把检测内容分配给检测线程
+//            synchronized (threadPoolLocker) {
+//                fixedThreadPool.execute(worker);
+//            }
         }
     }
 

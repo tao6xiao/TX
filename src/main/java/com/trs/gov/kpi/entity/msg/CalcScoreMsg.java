@@ -15,15 +15,10 @@ public class CalcScoreMsg implements IMQMsg {
         return MSG_TYPE;
     }
 
-    private Integer siteId;
+    private int siteId;
 
-    private Integer checkId;
+    private int checkId;
 
     private String scoreType;
-
-    @Override
-    public String getCheckNo() {
-        return siteId + "#" + checkId;
-    }
 
 }
