@@ -376,11 +376,9 @@ public class SpiderUtils {
         }
 
         private String processSourceLocation(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent) {
-            StringBuffer sb = new StringBuffer();
-            sb.append(parentUrlContent.intern());
-            // 解析源码，找到断链标签，加上标记信息。
-            String result = sb.toString();
 
+            String result = parentUrlContent.intern();
+            // 解析源码，找到断链标签，加上标记信息。
             final Document parseDoc = Jsoup.parse(result, unavailableUrlAndParentUrl.getKey());
             Elements links = parseDoc.select("[href]");
             Elements media = parseDoc.select(SRC_ATTR);

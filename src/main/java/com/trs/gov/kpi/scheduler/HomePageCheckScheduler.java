@@ -76,8 +76,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
                 issue.setIssueTime(new Date());
                 issueMapper.insert(DBUtil.toRow(issue));
             }
-        } catch (Throwable e) {
-          log.error("", e);
+        } catch (Exception e) {
+            log.error("", e);
         } finally {
             log.info("HomePageCheckScheduler " + siteId + " end...");
         }
