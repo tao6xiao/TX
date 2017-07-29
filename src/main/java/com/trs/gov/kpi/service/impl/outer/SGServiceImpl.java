@@ -11,6 +11,7 @@ import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.service.outer.SGService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +115,7 @@ public class SGServiceImpl implements SGService {
             }
         } catch (Exception e) {
             log.error("getSGService failed ", e);
+            LogUtil.addSystemLog("getSGService failed ", e);
             throw new RemoteException(msg, e);
         }
     }

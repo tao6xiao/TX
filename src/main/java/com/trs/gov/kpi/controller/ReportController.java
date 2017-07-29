@@ -11,6 +11,7 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.ReportService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import com.trs.gov.kpi.utils.TRSLogUserUtil;
@@ -167,6 +168,7 @@ public class ReportController {
 
             } catch (Exception e) {
                 log.error(fileName + " download fail!", e);
+                LogUtil.addSystemLog(fileName + " download failed!", e);
             }
         }
     }

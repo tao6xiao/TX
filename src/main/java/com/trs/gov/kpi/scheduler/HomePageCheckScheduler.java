@@ -57,6 +57,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             final Site checkSite = siteApiService.getSiteById(siteId, null);
             if (checkSite == null) {
                 log.error("site[" + siteId + "] is not exsit!");
+                LogUtil.addSystemLog("site[" + siteId + "] is not exsit!");
                 return;
             }
 

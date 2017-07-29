@@ -21,7 +21,7 @@ public class LogUtil {
     }
 
     /**
-     * 获取日志堆栈信息
+     * 获取Throwable堆栈信息
      *
      * @param t
      * @return
@@ -40,17 +40,46 @@ public class LogUtil {
 
     /**
      * 添加系统日志
-     *
+     * @param message
      * @param ex
      */
     public static void addSystemLog(String message, Throwable ex) {
-        String desc = "Error information: " + message + "\n" + LogUtil.getStackTrace(ex);
+        String desc = "";
+        StringBuilder builder = new StringBuilder();
+        if(message != null && !"".equals(message.trim())){
+            builder.append("Error information: ");
+            builder.append(message);
+            builder.append("\n");
+        }
+        if(ex != null){
+            builder.append(getStackTrace(ex));
+        }
+        if(builder.length() != 0){
+            desc = builder.toString();
+        }
+        addLog(desc);
+    }
+
+    private static void addLog(String desc) {
         try {
             SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).system(OperationType.REQUEST, "请求失败", desc).error();
         } catch (BizException | RemoteException | BizRuntimeException e) {
             log.error("", e);
             SimpleLogServer.getInstance(new LogUser()).system(OperationType.REQUEST, "请求失败", desc).error();
-            SimpleLogServer.getInstance(new LogUser()).system(OperationType.REQUEST, "请求失败", "Error information: " + message + "\n" + LogUtil.getStackTrace(e)).error();
+            SimpleLogServer.getInstance(new LogUser()).system(OperationType.REQUEST, "请求失败", "Error information: " + desc + "\n" + LogUtil.getStackTrace(e)).error();
         }
+    }
+
+    /**
+     * 添加系统日志，无异常日志
+     *
+     * @param message
+     */
+    public static void addSystemLog(String message) {
+        String desc = "";
+        if(message != null && !"".equals(message.trim())){
+            desc = "Error information: " + message + "\n";
+        }
+        addLog(desc);
     }
 }

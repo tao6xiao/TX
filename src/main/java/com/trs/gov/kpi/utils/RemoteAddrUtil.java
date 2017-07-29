@@ -61,6 +61,7 @@ public class RemoteAddrUtil {
                     return false;
                 }
             } catch (Exception ex) {
+                LogUtil.addSystemLog("", ex);
                 return false;
             }
 
@@ -74,6 +75,7 @@ public class RemoteAddrUtil {
                     return false;
                 }
             } catch (Exception ex) {
+                LogUtil.addSystemLog("", ex);
                 return false;
             }
 
@@ -87,6 +89,7 @@ public class RemoteAddrUtil {
                     return false;
                 }
             } catch (Exception ex) {
+                LogUtil.addSystemLog("", ex);
                 return false;
             }
 
@@ -96,6 +99,7 @@ public class RemoteAddrUtil {
                     return false;
                 }
             } catch (Exception ex) {
+                LogUtil.addSystemLog("", ex);
                 return false;
             }
 

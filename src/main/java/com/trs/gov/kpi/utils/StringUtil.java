@@ -64,6 +64,7 @@ public class StringUtil {
             return URLEncoder.encode(value, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
             return value;
         }
     }

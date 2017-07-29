@@ -9,6 +9,7 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
         } catch (IOException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
             throw new RemoteException("获取发布文档ID失败！", e);
         }
 
@@ -84,6 +86,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             return responseManger("findDocumentById", response);
         } catch (IOException e) {
             log.error("failed to getDocument, error: ", e);
+            LogUtil.addSystemLog("failed to getDocument, error: ", e);
             throw new RemoteException("获取发布文档失败！", e);
         }
     }
@@ -128,6 +131,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             return responseManger("findDocumentByUrl", response);
         } catch (IOException e) {
             log.error("failed to findDocumentByUrl, error", e);
+            LogUtil.addSystemLog("failed to findDocumentByUrl, error", e);
             throw new RemoteException("通过url获取文档失败！", e);
         }
     }

@@ -183,6 +183,7 @@ public class SpiderUtils {
                 chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl().intern(), siteId);
             } catch (RemoteException e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
 
             if (!isUrlAvailable.get()) {
@@ -287,6 +288,7 @@ public class SpiderUtils {
                 }
             } catch (Exception e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
         }
 

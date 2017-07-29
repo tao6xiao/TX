@@ -78,7 +78,8 @@ public class CKMScheduler implements SchedulerTask {
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exsit!");
+            log.error("site[" + siteId + "] is not exist!");
+            LogUtil.addSystemLog("site[" + siteId + "] is not exist!");
             return;
         }
 
@@ -112,6 +113,7 @@ public class CKMScheduler implements SchedulerTask {
 
         if (!result.isOk()) {
             log.error("return error: " + result.getMessage());
+            LogUtil.addSystemLog("return error: " + result.getMessage());
             return issueList;
         }
 

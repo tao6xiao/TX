@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Dept;
 import com.trs.gov.kpi.service.outer.DeptApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -58,6 +59,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
             throw new RemoteException("获取部门失败！", e);
         }
     }
@@ -91,6 +93,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
             throw new RemoteException("获取部门集合失败！", e);
         }
     }

@@ -7,6 +7,7 @@ import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -63,6 +64,7 @@ public class AuthorityServiceImpl implements AuthorityService {
             }
         } catch (IOException e) {
             log.error("failed findRight", e);
+            LogUtil.addSystemLog("failed findRight", e);
             throw new RemoteException("查找指定oprkeys的权限失败！", e);
         }
     }

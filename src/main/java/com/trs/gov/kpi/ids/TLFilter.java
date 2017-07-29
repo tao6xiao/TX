@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.ids;
 
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.idm.client.actor.SSOUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -38,6 +39,7 @@ public class TLFilter implements Filter{
                 throw new BizException("当前用户处于未登录状态或者IDS服务器已停止");
             } catch (BizException e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
             HttpServletResponse resp = (HttpServletResponse) response;
             resp.sendError(HttpServletResponse.SC_BAD_GATEWAY);

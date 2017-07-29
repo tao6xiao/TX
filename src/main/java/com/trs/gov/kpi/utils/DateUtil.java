@@ -164,6 +164,7 @@ public class DateUtil {
                 calendar.setTime(toDate(param.getEndDateTime()));
             } catch (ParseException e) {
                 log.error("解析开始日期失败！", e);
+                LogUtil.addSystemLog("解析开始日期失败！", e);
             }
 
             if (Granularity.DAY.equals(param.getGranularity())) {
@@ -304,6 +305,7 @@ public class DateUtil {
             }
 
         } catch (ParseException e) {
+            LogUtil.addSystemLog("", e);
             return list;
         }
 

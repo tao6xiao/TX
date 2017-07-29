@@ -27,6 +27,7 @@ public class ResultCheckUtil {
             channel = siteApiService.getChannelById(channelId, null);
         } catch (RemoteException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
         return checkChannelName(channel);
     }
@@ -51,6 +52,7 @@ public class ResultCheckUtil {
             }
         } catch (RemoteException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
             return "站点[id=" + siteId + "]";
         }
     }
@@ -68,6 +70,7 @@ public class ResultCheckUtil {
             }
         } catch (RemoteException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
             return "部门[id=" + deptId + "]";
         }
     }

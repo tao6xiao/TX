@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
 import com.trs.gov.kpi.service.outer.InteractionService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +74,7 @@ public class InteractionServiceImpl implements InteractionService {
             }
         } catch (IOException e) {
             log.error("failed listGovmsgboxs", e);
+            LogUtil.addSystemLog("failed listGovmsgboxs", e);
             throw new RemoteException("获取咨询列表失败！", e);
         }
 
@@ -103,6 +105,7 @@ public class InteractionServiceImpl implements InteractionService {
             }
         } catch (IOException e) {
             log.error("failed countGovmsgboxs", e);
+            LogUtil.addSystemLog("failed countGovmsgboxs", e);
             throw new RemoteException("获取咨询统计失败！", e);
         }
     }
@@ -135,6 +138,7 @@ public class InteractionServiceImpl implements InteractionService {
             }
         } catch (IOException e) {
             log.error("failed countDetailGovmsgboxs", e);
+            LogUtil.addSystemLog("failed countDetailGovmsgboxs", e);
             throw new RemoteException("获取咨询统计历史记录失败！", e);
         }
     }

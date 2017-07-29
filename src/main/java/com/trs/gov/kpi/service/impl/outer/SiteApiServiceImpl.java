@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -64,6 +65,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("failed get site[id=" + siteId + "]", e);
+            LogUtil.addSystemLog("failed get site[id=" + siteId + "]", e);
             throw new RemoteException(FAIL_GET_SITE, e);
         }
     }
@@ -98,6 +100,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
             throw new RemoteException("获取子栏目失败！", e);
         }
     }
@@ -115,6 +118,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             return responseManager("findChannelById", response);
         } catch (IOException e) {
             log.error("failed getChannelById", e);
+            LogUtil.addSystemLog("failed getChannelById", e);
             throw new RemoteException("获取栏目失败！", e);
         }
     }
@@ -137,6 +141,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("failed to get channel publish url", e);
+            LogUtil.addSystemLog("failed to get channel publish url", e);
             throw new RemoteException("获取栏目发布地址失败！", e);
         }
     }
@@ -200,6 +205,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("failed findChnlIds", e);
+            LogUtil.addSystemLog("failed findChnlIds", e);
             throw new RemoteException("通过栏目名称获取栏目编号失败！", e);
         }
     }
@@ -222,6 +228,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             return responseManager("findChannelByUrl", response);
         } catch (IOException e) {
             log.error("failed findChannelByUrl", e);
+            LogUtil.addSystemLog("failed findChannelByUrl", e);
             throw new RemoteException("通过url获取栏目！", e);
         }
     }

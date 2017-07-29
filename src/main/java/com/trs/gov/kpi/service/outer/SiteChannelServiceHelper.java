@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.outer;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -49,6 +50,7 @@ public class SiteChannelServiceHelper {
                 }
             } catch (Exception e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
         }
 

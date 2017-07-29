@@ -14,6 +14,7 @@ import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +81,8 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
                 chnl.setChnlName(outerChannel.getChnlDesc());
                 chnlNamCache.put(outerChannel.getChannelId(), outerChannel.getChnlDesc());
             } catch (RemoteException e) {
-                log.error("failed to get channl id: " + channelGroup.getChnlId(), e);
+                log.error("failed to get channel by id: " + channelGroup.getChnlId(), e);
+                LogUtil.addSystemLog("failed to get channel by id: " + channelGroup.getChnlId(), e);
             }
         }
         return chnl;

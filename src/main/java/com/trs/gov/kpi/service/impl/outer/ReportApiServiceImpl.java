@@ -6,6 +6,7 @@ import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.service.outer.ReportApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +79,7 @@ public class ReportApiServiceImpl implements ReportApiService {
             }
         } catch (IOException e) {
             log.error("failed get report", e);
+            LogUtil.addSystemLog("failed get report", e);
             throw new RemoteException("获取统计数据失败！", e);
         }
     }

@@ -96,6 +96,7 @@ public class ParamCheckUtil {
                 sdf.parse(time);
             } catch (ParseException e) {
                 log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss");
+                LogUtil.addSystemLog("Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
@@ -109,6 +110,7 @@ public class ParamCheckUtil {
                 sdf.parse(time);
             } catch (ParseException e) {
                 log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd");
+                LogUtil.addSystemLog("Invalid parameter: 日期格式不满足 yyyy-MM-dd");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }

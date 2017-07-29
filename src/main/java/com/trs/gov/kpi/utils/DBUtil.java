@@ -66,6 +66,7 @@ public class DBUtil {
                 }
             } catch (IllegalAccessException e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
         }
 

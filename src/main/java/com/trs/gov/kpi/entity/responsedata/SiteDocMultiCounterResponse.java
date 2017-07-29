@@ -3,6 +3,7 @@ package com.trs.gov.kpi.entity.responsedata;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
@@ -43,6 +44,7 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
             }
         } catch (RemoteException e) {
             log.error("调用外部接口 getSiteById 失败", e);
+            LogUtil.addSystemLog("调用外部接口 getSiteById 失败", e);
         }
     }
 

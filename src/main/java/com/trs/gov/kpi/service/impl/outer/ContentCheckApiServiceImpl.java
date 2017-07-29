@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
@@ -74,6 +75,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                 throw new RemoteException("bad code: " + code);
             }
         } catch (IOException e) {
+            LogUtil.addSystemLog("", e);
             throw new RemoteException("fail to check!", e);
         } finally {
             if (httpClient != null) {
@@ -81,6 +83,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                     httpClient.close();
                 } catch (IOException e) {
                     log.error("", e);
+                    LogUtil.addSystemLog("", e);
                 }
             }
         }

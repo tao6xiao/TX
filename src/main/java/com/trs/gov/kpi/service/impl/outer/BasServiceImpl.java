@@ -17,6 +17,7 @@ import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -165,6 +166,7 @@ public class BasServiceImpl implements BasService {
             }
         } catch (Exception e) {
             log.error("getVisits failed ", e);
+            LogUtil.addSystemLog("getVisits failed ", e);
             throw new RemoteException("获取访问量失败！", e);
         }
         if (basPVResponse.getRecords() == null || basPVResponse.getRecords().isEmpty()) {
@@ -286,6 +288,7 @@ public class BasServiceImpl implements BasService {
             }
         } catch (Exception e) {
             log.error("getStayTime failed ", e);
+            LogUtil.addSystemLog("getStayTime failed ", e);
             throw new RemoteException("获取停留时间失败！", e);
         }
         if (summaryResponse.getRecords() == null || summaryResponse.getRecords().isEmpty()) {

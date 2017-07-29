@@ -13,6 +13,7 @@ import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -85,6 +86,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         } catch (SchedulerException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
     }
 
@@ -104,6 +106,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             }
         } catch (SchedulerException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
     }
 
@@ -143,6 +146,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         } catch (SchedulerException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
     }
 
@@ -392,6 +396,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
             log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
+            LogUtil.addSystemLog("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
         }
     }
 
@@ -452,11 +457,13 @@ public class SchedulerServiceImpl implements SchedulerService {
             }
         } catch (IOException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         } finally {
             try {
                 resourceAsStream.close();
             } catch (IOException e) {
                 log.error("", e);
+                LogUtil.addSystemLog("", e);
             }
         }
 
@@ -465,6 +472,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             FileUtils.writeStringToFile(new File(locationDir + File.separator + "style" + File.separator + "css.css"), sb.toString());
         } catch (IOException e) {
             log.error("", e);
+            LogUtil.addSystemLog("", e);
         }
     }
 }
