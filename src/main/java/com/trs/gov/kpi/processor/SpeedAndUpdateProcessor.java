@@ -1,11 +1,6 @@
 package com.trs.gov.kpi.processor;
 
-import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.dao.WkAllStatsMapper;
-import com.trs.gov.kpi.dao.WkCheckTimeMapper;
-import com.trs.gov.kpi.dao.WkScoreMapper;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.msg.CalcScoreMsg;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.msg.IMQMsg;
@@ -50,13 +45,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
     private WkScoreService wkScoreService;
 
     @Resource
-    private WkScoreMapper wkScoreMapper;
-
-    @Resource
     private CommonMQ commonMQ;
-
-    @Resource
-    private WkCheckTimeMapper wkCheckTimeMapper;
 
     private final String name = "SpeedAndUpdateProcessor";
 
@@ -160,14 +149,7 @@ public class SpeedAndUpdateProcessor implements MQListener {
          * 	D2(网站最近一周更新文章数N) 	=	100 ln(N/100+1)		N<250
          */
         double thisTime = new Date().getTime();
-
-        Integer lastCheckId = wkCheckTimeMapper.getLastCheckId(siteId, checkId);
-        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
-        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
-        filter.addCond(Constants.DB_FIELD_CHECK_ID, lastCheckId);
-        List<WkScore> wkScore = wkScoreMapper.select(filter);
-        double lastTime = wkScore.get(0).getCheckTime().getTime();
-
+        double lastTime = wkAllStatsMapper.getLastTimeUpdateContent(siteId).getTime();
         double days = ((thisTime - lastTime)/(1000 * 60 * 60 * 24));
 
         double updateContentD1 = Math.log(days / 10 + 1);

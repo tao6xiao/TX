@@ -28,5 +28,18 @@ public interface WkAllStatsMapper {
      */
     WkAllStats selectOnce(@Param("filter") QueryFilter filter);
 
+    /**
+     * 获取最近一周更新文章数
+     * @param beginTime
+     * @param endTime
+     * @param siteId
+     * @return
+     */
     int getOneWeekUpdateCount(@Param("beginTime") Date beginTime, @Param("endTime") Date endTime, @Param("siteId") Integer siteId);
+
+    /**
+     * 获取最近一次文章更新的时间
+     * @return
+     */
+    Date getLastTimeUpdateContent(Integer siteId);
 }
