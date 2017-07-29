@@ -12,11 +12,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * 用于获取异常信息的工具类
+ * 用于添加系统日志和获取异常信息的工具类
  * Created by he.lang on 2017/7/28.
  */
 @Slf4j
 public class LogUtil {
+    private static final String ERROR_PROMPT = "Error information: ";
+
     private LogUtil() {
     }
 
@@ -26,7 +28,7 @@ public class LogUtil {
      * @param t
      * @return
      */
-    public static String getStackTrace(Throwable t) {
+    private static String getStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
@@ -40,21 +42,24 @@ public class LogUtil {
 
     /**
      * 添加系统日志
+     *
      * @param message
      * @param ex
      */
     public static void addSystemLog(String message, Throwable ex) {
         String desc = "";
         StringBuilder builder = new StringBuilder();
-        if(message != null && !"".equals(message.trim())){
-            builder.append("Error information: ");
+        if((message != null && !"".equals(message.trim())) || ex != null){
+            builder.append(ERROR_PROMPT);
+        }
+        if (message != null && !"".equals(message.trim())) {
             builder.append(message);
             builder.append("\n");
         }
-        if(ex != null){
+        if (ex != null) {
             builder.append(getStackTrace(ex));
         }
-        if(builder.length() != 0){
+        if (builder.length() != 0) {
             desc = builder.toString();
         }
         addLog(desc);
@@ -66,7 +71,11 @@ public class LogUtil {
         } catch (BizException | RemoteException | BizRuntimeException e) {
             log.error("", e);
             SimpleLogServer.getInstance(new LogUser()).system(OperationType.REQUEST, "请求失败", desc).error();
-            SimpleLogServer.getInstance(new LogUser()).system(OperationType.REQUEST, "请求失败", "Error information: " + desc + "\n" + LogUtil.getStackTrace(e)).error();
+            if (e.getMessage() != null && !"".equals(e.getMessage().trim())) {
+                SimpleLogServer.getInstance(new LogUser()).system(OperationType.REQUEST, "请求失败", ERROR_PROMPT + e.getMessage() + getStackTrace(e)).error();
+            } else {
+                SimpleLogServer.getInstance(new LogUser()).system(OperationType.REQUEST, "请求失败", getStackTrace(e)).error();
+            }
         }
     }
 
@@ -77,8 +86,8 @@ public class LogUtil {
      */
     public static void addSystemLog(String message) {
         String desc = "";
-        if(message != null && !"".equals(message.trim())){
-            desc = "Error information: " + message + "\n";
+        if (message != null && !"".equals(message.trim())) {
+            desc = ERROR_PROMPT + message + "\n";
         }
         addLog(desc);
     }

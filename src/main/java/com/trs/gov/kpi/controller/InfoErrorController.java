@@ -37,9 +37,6 @@ public class InfoErrorController extends IssueHandler {
     @Resource
     private AuthorityService authorityService;
 
-    @Resource
-    SiteApiService siteApiService;
-
     /**
      * 查询待解决和已解决问题数量
      *

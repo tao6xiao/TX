@@ -5,7 +5,6 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.BizRuntimeException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.annotation.Aspect;

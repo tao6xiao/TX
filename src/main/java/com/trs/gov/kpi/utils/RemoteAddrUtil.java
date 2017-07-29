@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 public class RemoteAddrUtil {
+
+    private RemoteAddrUtil(){}
+
     public static String getRemoteAddr(HttpServletRequest req) {
         String addr = req.getHeader("Cdn-Src-Ip");// 首先处理CDN的情况.
         if (isIPAddress(addr)) {
@@ -47,7 +50,7 @@ public class RemoteAddrUtil {
         return req.getRemoteAddr();
     }
 
-    public final static boolean isIPAddress(String s) {
+    public static final boolean isIPAddress(String s) {
         if (s != null) {
             s = s.trim();
             int dot1 = s.indexOf('.');
