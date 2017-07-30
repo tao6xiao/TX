@@ -195,10 +195,16 @@ public class CKMProcessWorker implements Runnable {
             index = result.indexOf(errorWord, index + errorinfo.length());
         }
 
+        int count = 0;
         while (index != -1) {
+            count++;
             String errorinfo = "<font msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
             index = result.indexOf(errorWord, index + errorinfo.length());
+            if (count > 1000) {
+                log.error("wrong index: [{}], errorWord: {} content: {} ", index, errorWord, content.getContent().intern());
+                break;
+            }
         }
 
         return result;
@@ -296,7 +302,7 @@ public class CKMProcessWorker implements Runnable {
     private String generateSourceLocHtmlText(Types.InfoErrorIssueType type, String errorWord, String correct) {
 
         // 将html标签转义
-        String sourceEscape = StringEscapeUtils.escapeHtml4(content.getContent());
+        String sourceEscape = StringEscapeUtils.escapeHtml4(content.getContent().intern());
         StringBuffer sb = new StringBuffer();
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
         sb.append(LINE_SP);
@@ -361,10 +367,16 @@ public class CKMProcessWorker implements Runnable {
             index = result.indexOf(errorWord, index + errorinfo.length());
         }
 
+        int count = 0;
         while (index != -1) {
+            count++;
             String errorinfo = "<font msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
             index = result.indexOf(errorWord, index + errorinfo.length());
+            if (count > 1000) {
+                log.error("source loc wrong index: [{}], errorWord: {} content: {} ", index, errorWord, content.getContent().intern());
+                break;
+            }
         }
 
         return result;
