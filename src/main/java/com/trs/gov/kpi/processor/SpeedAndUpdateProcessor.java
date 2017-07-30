@@ -149,7 +149,11 @@ public class SpeedAndUpdateProcessor implements MQListener {
          * 	D2(网站最近一周更新文章数N) 	=	100 ln(N/100+1)		N<250
          */
         double thisTime = new Date().getTime();
-        double lastTime = wkAllStatsMapper.getLastTimeUpdateContent(siteId).getTime();
+        double lastTime = 0.0f;
+        Date lastDate = wkAllStatsMapper.getLastTimeUpdateContent(siteId);
+        if (lastDate != null) {
+            lastTime = lastDate.getTime();
+        }
         double days = ((thisTime - lastTime)/(1000 * 60 * 60 * 24));
 
         double updateContentD1 = Math.log(days / 10 + 1);
