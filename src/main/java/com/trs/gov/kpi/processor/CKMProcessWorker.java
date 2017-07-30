@@ -65,12 +65,14 @@ public class CKMProcessWorker implements Runnable {
     }
 
     private List<Issue> buildList() {
+        log.info("ckm begin check 1");
         List<Issue> issueList = new ArrayList<>();
         List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
 
         String cleanText = Jsoup.clean(content.getContent(), Whitelist.none());
         cleanText = cleanText.replaceAll("&nbsp", " ");
 
+        log.info("ckm begin check 2");
         ContentCheckResult result = null;
         try {
             result = contentCheckApiService.check(cleanText, CollectionUtil.join(checkTypeList, ";"));

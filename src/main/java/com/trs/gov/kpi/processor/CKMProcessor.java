@@ -69,6 +69,8 @@ public class CKMProcessor implements MQListener {
     @Override
     public void onMessage(IMQMsg msg) {
 
+        log.info("ckm receive msg: {}", msg.getType());
+
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
 
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
