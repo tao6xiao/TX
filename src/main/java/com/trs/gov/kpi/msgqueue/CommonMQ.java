@@ -55,8 +55,6 @@ public class CommonMQ extends Thread {
                     int no = msg.getCheckId() % threadMap.size();
                     if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
                         log.info("MQ receive end msg of checkid[{}], thread is shutdown: [{}], is terminate: [{}]", msg.getCheckId(), threadMap.get(no).isShutdown(), threadMap.get(no).isTerminated());
-                        ThreadPoolExecutor threadPool = (ThreadPoolExecutor)threadMap.get(no);
-                        log.info("thread active : {}, task count: {}", threadPool.getActiveCount(), threadPool.getTaskCount());
                     }
                     threadMap.get(no).execute(new Runnable() {
                         @Override
@@ -66,7 +64,7 @@ public class CommonMQ extends Thread {
                                 try {
                                     if (msg.getType().equals(listener.getType())) {
                                         listener.onMessage(msg);
-                                    } else if (msg.getType().endsWith(CheckEndMsg.MSG_TYPE)) {
+                                    } else if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
                                         listener.onMessage(msg);
                                     }
                                 } catch (Throwable e) {

@@ -117,7 +117,13 @@ public class CKMProcessor implements MQListener {
             // 监听待检测的内容消息
             CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);
             worker.setContent((PageInfoMsg)msg);
-            worker.run();
+            try {
+                worker.run();
+            } finally {
+                log.info(" ckm check msg[checkid={}] end", msg.getCheckId());
+            }
+
+
 //
 //            // 把检测内容分配给检测线程
 //            synchronized (threadPoolLocker) {
