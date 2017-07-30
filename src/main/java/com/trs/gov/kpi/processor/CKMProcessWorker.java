@@ -77,6 +77,8 @@ public class CKMProcessWorker implements Runnable {
         } catch (Exception e) {
             log.error("failed to check content of url [" + content.getUrl() + "]", e);
             return issueList;
+        } finally {
+            log.info("end contentCheckApiService.check");
         }
 
         if (!result.isOk()) {
@@ -85,6 +87,7 @@ public class CKMProcessWorker implements Runnable {
         }
 
         if (result.getResult() != null) {
+            log.info("to issueList begin");
             issueList = toIssueList(checkTypeList, result);
             log.info("to issueList end");
         }
@@ -121,18 +124,22 @@ public class CKMProcessWorker implements Runnable {
                     }
 
                     try {
+                        log.info(" ckm begin process ");
                         final String relativeDir = getRelativeDir(content.getSiteId(), content.getCheckId(), content.getUrl(), index, 1);
                         String absoluteDir = locationDir + File.separator + relativeDir;
                         createDir(absoluteDir);
 
                         // 网页定位
+                        log.info(" ckm begin loc page ");
                         String pageLocContent = generatePageLocHtmlText(subIssueType, errorWord, correctWord);
                         if (pageLocContent == null) {
+                            log.info(" ckm continue loc page ");
                             continue;
                         }
                         createPagePosHtml(absoluteDir, pageLocContent);
 
                         // 源码定位
+                        log.info(" ckm begin loc source ");
                         String srcLocContent = generateSourceLocHtmlText(subIssueType, errorWord, correctWord);
                         if (srcLocContent == null) {
                             continue;
@@ -140,6 +147,7 @@ public class CKMProcessWorker implements Runnable {
                         createSrcPosHtml(absoluteDir, srcLocContent);
 
                         // 创建头部导航页面
+                        log.info(" ckm create pages");
                         createContHtml(absoluteDir, content.getUrl(), content.getParentUrl());
 
                         // 创建首页
@@ -162,6 +170,7 @@ public class CKMProcessWorker implements Runnable {
                         issue.setTypeId(Types.WkSiteCheckType.CONTENT_ERROR.value);
                         issue.setSubTypeId(subIssueType.value);
 
+                        log.info(" ckm begin insert to db");
                         commonMapper.insert(DBUtil.toRow(issue));
                     } catch (IOException e) {
                         log.error("error content: " + errorContent);
