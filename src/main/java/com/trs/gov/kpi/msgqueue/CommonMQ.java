@@ -55,11 +55,14 @@ public class CommonMQ extends Thread {
             try {
                 List<IMQMsg> msgList = getMsg();
                 for (IMQMsg msg : msgList) {
-
+                    if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
+                        log.info("MQ receive end msg of checkid[{}]", msg.getCheckId());
+                    }
                     int no = msg.getCheckId() % threadMap.size();
                     threadMap.get(no).execute(new Runnable() {
                         @Override
                         public void run() {
+                            log.info("execute msg: msgtype[{}], checkid[{}]", msg.getType(), msg.getCheckId());
                             for (MQListener listener : listeners) {
                                 try {
                                     if (msg.getType().equals(listener.getType())) {
@@ -75,7 +78,7 @@ public class CommonMQ extends Thread {
                         }
                     });
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("", e);
             }
         }
