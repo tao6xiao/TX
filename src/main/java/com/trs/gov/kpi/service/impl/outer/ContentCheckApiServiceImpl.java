@@ -11,6 +11,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -38,8 +39,13 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
     public ContentCheckResult check(String text, String type) throws RemoteException {
         CloseableHttpClient httpClient = null;
         try {
+
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(10000).setConnectionRequestTimeout(10000)
+                    .setSocketTimeout(60000).build();
             httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(cmkUrl);
+            httpPost.setConfig(requestConfig);
             List<NameValuePair> parameters = new ArrayList<>();
             parameters.add(new BasicNameValuePair("text", text));
             parameters.add(new BasicNameValuePair("type", type));
