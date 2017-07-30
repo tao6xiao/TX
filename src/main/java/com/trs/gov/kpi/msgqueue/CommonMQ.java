@@ -7,10 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 /**
  * Created by li.hao on 2017/7/11.
@@ -55,10 +52,12 @@ public class CommonMQ extends Thread {
             try {
                 List<IMQMsg> msgList = getMsg();
                 for (IMQMsg msg : msgList) {
-                    if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
-                        log.info("MQ receive end msg of checkid[{}]", msg.getCheckId());
-                    }
                     int no = msg.getCheckId() % threadMap.size();
+                    if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
+                        log.info("MQ receive end msg of checkid[{}], thread is shutdown: [{}], is terminate: [{}]", msg.getCheckId(), threadMap.get(no).isShutdown(), threadMap.get(no).isTerminated());
+                        ThreadPoolExecutor threadPool = (ThreadPoolExecutor)threadMap.get(no);
+                        log.info("thread active : {}, task count: {}", threadPool.getActiveCount(), threadPool.getTaskCount());
+                    }
                     threadMap.get(no).execute(new Runnable() {
                         @Override
                         public void run() {
