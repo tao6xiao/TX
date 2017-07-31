@@ -117,9 +117,8 @@ public class CKMProcessWorker implements Runnable {
                     Map.Entry<String, Object> entry = entryIterator.next();
                     String errorInfo = entry.getKey();
 
-                    if (subIssueType == Types.InfoErrorIssueType.SENSITIVE_WORDS) {
-                        log.info("sensitive words: " + errorInfo);
-                    }
+
+
 
                     final String[] infos = errorInfo.split("：");
                     if (infos == null || infos.length > 2 || infos.length < 1) {
@@ -132,30 +131,25 @@ public class CKMProcessWorker implements Runnable {
                     }
 
                     try {
-//                        log.info(" ckm begin process ");
                         final String relativeDir = getRelativeDir(content.getSiteId(), content.getCheckId(), content.getUrl(), index, 1);
                         String absoluteDir = locationDir + File.separator + relativeDir;
                         createDir(absoluteDir);
 
                         // 网页定位
-//                        log.info(" ckm begin loc page ");
                         String pageLocContent = generatePageLocHtmlText(subIssueType, errorWord, correctWord);
                         if (pageLocContent == null) {
-//                            log.info(" ckm continue loc page ");
-                            continue;
+                            pageLocContent = "<html><body><h1>无快照页面</h1></body></html>";
                         }
                         createPagePosHtml(absoluteDir, pageLocContent);
 
                         // 源码定位
-//                        log.info(" ckm begin loc source ");
                         String srcLocContent = generateSourceLocHtmlText(subIssueType, errorWord, correctWord);
                         if (srcLocContent == null) {
-                            continue;
+                            srcLocContent = "<html><body><h1>无快照页面</h1></body></html>";
                         }
                         createSrcPosHtml(absoluteDir, srcLocContent);
 
                         // 创建头部导航页面
-//                        log.info(" ckm create pages");
                         createContHtml(absoluteDir, content.getUrl(), content.getParentUrl());
 
                         // 创建首页
@@ -212,7 +206,7 @@ public class CKMProcessWorker implements Runnable {
         int index = result.indexOf(errorWord, 0);
 
         if (index == -1) {
-            return null;
+            return result;
         } else {
             String errorinfo = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
@@ -384,7 +378,7 @@ public class CKMProcessWorker implements Runnable {
         String result = sb.toString();
         int index = result.indexOf(errorWord, 0);
         if (index == -1) {
-            return null;
+            return result;
         } else {
             String errorinfo = "<font trserrid=\"anchor\" msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());

@@ -68,32 +68,11 @@ public class CKMProcessor implements MQListener {
 
     @Override
     public void onMessage(IMQMsg msg) {
-
-        log.info("ckm receive msg: {}", msg.getType());
-
         if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
 
             CheckEndMsg checkEndMsg = (CheckEndMsg)msg;
             log.info("CKMProcessor receive end msg");
             try {
-//                synchronized (threadPoolLocker) {
-//                    fixedThreadPool.shutdown();
-//
-//                    while (true){
-//                        try {
-//                            final boolean isTerminate = fixedThreadPool.awaitTermination(1, TimeUnit.SECONDS);
-//                            if (isTerminate) {
-//                                break;
-//                            }
-//                        } catch (InterruptedException e) {
-//                            log.error("", e);
-//                            break;
-//                        }
-//                    }
-//
-//                    fixedThreadPool = Executors.newFixedThreadPool(10);
-//                }
-
                 WkAllStats wkAllStats = new WkAllStats();
                 wkAllStats.setSiteId(checkEndMsg.getSiteId());
                 wkAllStats.setCheckId(checkEndMsg.getCheckId());
@@ -119,18 +98,7 @@ public class CKMProcessor implements MQListener {
             // 监听待检测的内容消息
             CKMProcessWorker worker = appContext.getBean(CKMProcessWorker.class);
             worker.setContent((PageInfoMsg)msg);
-            try {
-                worker.run();
-            } finally {
-                log.info(" ckm check msg[checkid={}] end", msg.getCheckId());
-            }
-
-
-//
-//            // 把检测内容分配给检测线程
-//            synchronized (threadPoolLocker) {
-//                fixedThreadPool.execute(worker);
-//            }
+            worker.run();
         }
     }
 
