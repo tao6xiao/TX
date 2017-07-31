@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.outer;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.ChnlDoc;
 import com.trs.gov.kpi.entity.outerapi.Document;
 
 import java.text.ParseException;
@@ -51,6 +52,6 @@ public interface DocumentApiService extends OuterApiService {
      * @return
      * @throws RemoteException
      */
-    Document findDocumentByUrl(String userName, String url) throws RemoteException;
+    ChnlDoc findDocumentByUrl(String userName, String url) throws RemoteException;
 
 }

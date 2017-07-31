@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl.outer;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.ChnlDoc;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import org.junit.Test;
@@ -17,15 +18,15 @@ public class DocumentApiServiceImplTest {
     @Test
     public void findDocumentByUrl_null_String() throws Exception {
         MockDocumentApiService service = new MockDocumentApiService();
-        Document document = service.findDocumentByUrl("", "");
+        ChnlDoc document = service.findDocumentByUrl("", "");
         assertEquals(null, document);
     }
 
     @Test
     public void findDocumentByUrl() throws RemoteException {
         MockDocumentApiService service = new MockDocumentApiService();
-        Document document = service.findDocumentByUrl("", "www.test.com");
-        assertEquals(1, document.getChannelId());
+        ChnlDoc document = service.findDocumentByUrl("", "www.test.com");
+        assertEquals(1, document.getChnlId());
         assertEquals("test", document.getDocTitle());
     }
 
@@ -47,10 +48,10 @@ public class DocumentApiServiceImplTest {
         }
 
         @Override
-        public Document findDocumentByUrl(String userName, String url) throws RemoteException {
+        public ChnlDoc findDocumentByUrl(String userName, String url) throws RemoteException {
             if("www.test.com".equals(url)){
-                Document document = new Document();
-                document.setChannelId(1);
+                ChnlDoc document = new ChnlDoc();
+                document.setChnlId(1);
                 document.setDocTitle("test");
                 return document;
             }
