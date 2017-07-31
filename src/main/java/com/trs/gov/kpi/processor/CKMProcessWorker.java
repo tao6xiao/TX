@@ -98,16 +98,17 @@ public class CKMProcessWorker implements Runnable {
 
     private List<Issue> toIssueList(List<String> checkTypeList, ContentCheckResult result) {
         List<Issue> issueList = new ArrayList<>();
+        int index = 0;
         for (int i = 0; i < checkTypeList.size(); i++) {
             String checkType = checkTypeList.get(i);
             Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
             String errorContent = result.getResultOfType(subIssueType);
             if (!StringUtil.isEmpty(errorContent)) {
                 final Set<Map.Entry<String, Object>> entries = JSONObject.parseObject(errorContent).entrySet();
-                int index = 0;
                 Iterator<Map.Entry<String, Object>> entryIterator = entries.iterator();
                 int count = 0;
                 while (entryIterator.hasNext()) {
+                    index++;
                     count++;
                     if (count > 1000) {
                         log.error("to issueList error!");
