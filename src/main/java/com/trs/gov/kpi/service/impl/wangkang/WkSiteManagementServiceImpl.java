@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -109,6 +110,16 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
     public void changeSiteStatus(Integer siteId, Types.WkCheckStatus status) {
         DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
         updater.addField("checkStatus", status.value);
+
+        QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+        commonMapper.update(updater, filter);
+    }
+
+    @Override
+    public void updateCheckTime(int siteId, Date date) {
+        DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
+        updater.addField("checkTime", date);
 
         QueryFilter filter = new QueryFilter(Table.WK_SITEMANAGEMENT);
         filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);

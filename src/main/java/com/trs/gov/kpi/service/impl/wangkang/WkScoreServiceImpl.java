@@ -73,7 +73,7 @@ public class WkScoreServiceImpl implements WkScoreService {
     }
 
     @Override
-    public void calcTotalScore(Integer siteId, Integer checkId) {
+    public void calcTotalScore(Integer siteId, Integer checkId, Date date) {
         QueryFilter filter = new QueryFilter(Table.WK_SCORE);
         filter.addCond(WkScoreTableField.SITE_ID, siteId);
         filter.addCond(WkScoreTableField.CHECK_ID, checkId);
@@ -85,7 +85,7 @@ public class WkScoreServiceImpl implements WkScoreService {
         double totalD = score.getInvalidLink() * 0.4 + score.getContentError() * 0.2 + score.getOverSpeed() * 0.2 + score.getUpdateContent() * 0.2;
         double totalS = Double.valueOf(df.format(totalD));
         score.setTotal(totalS);
-        score.setCheckTime(new Date());
+        score.setCheckTime(date);
         DBUpdater updater = new DBUpdater(Table.WK_SCORE.getTableName());
         updater.addField(WkScoreTableField.TOTAL, score.getTotal());
         updater.addField(WkScoreTableField.CHECK_TIME, score.getCheckTime());

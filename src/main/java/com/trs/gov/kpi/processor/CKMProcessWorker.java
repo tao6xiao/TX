@@ -103,6 +103,11 @@ public class CKMProcessWorker implements Runnable {
                 for (Map.Entry<String, Object> entry : entries) {
                     index++;
                     String errorInfo = entry.getKey();
+
+                    if (subIssueType == Types.InfoErrorIssueType.SENSITIVE_WORDS) {
+                        log.info("sensitive words: " + errorInfo);
+                    }
+
                     final String[] infos = errorInfo.split("：");
                     if (infos == null || infos.length > 2 || infos.length < 1) {
                         continue;

@@ -56,6 +56,10 @@ public class CommonMQ extends Thread {
                 List<IMQMsg> msgList = getMsg();
                 for (IMQMsg msg : msgList) {
 
+                    if (msg.getType().equals(CheckEndMsg.MSG_TYPE)) {
+                        log.info(" receive end msg. checkid[{}]", msg.getCheckId());
+                    }
+
                     int no = msg.getCheckId() % threadMap.size();
                     threadMap.get(no).execute(new Runnable() {
                         @Override

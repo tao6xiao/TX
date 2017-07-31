@@ -60,5 +60,5 @@ public interface WkAllStatsService {
      * @param checkId
      * @return
      */
-    WkAllStats getLastTimeCheckBySiteIdAndCheckId(Integer siteId, Integer checkId);
+    WkAllStats updateLastStats(Integer siteId, Integer checkId);
 }

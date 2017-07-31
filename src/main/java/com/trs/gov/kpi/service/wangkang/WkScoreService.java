@@ -2,6 +2,8 @@ package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.entity.responsedata.WkOneSiteScoreResponse;
 import com.trs.gov.kpi.entity.wangkang.WkScore;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ public interface WkScoreService {
 
     void insertOrUpdateInvalidLink(WkScore score);
 
-    void calcTotalScore(Integer siteId, Integer checkId);
+    void calcTotalScore(Integer siteId, Integer checkId, Date date);
 
     List<WkOneSiteScoreResponse> getListBySiteId(Integer siteId, Integer checkId);
 

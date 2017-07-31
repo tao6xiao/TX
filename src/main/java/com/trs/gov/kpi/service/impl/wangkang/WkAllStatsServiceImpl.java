@@ -156,7 +156,7 @@ public class WkAllStatsServiceImpl implements WkAllStatsService {
     }
 
     @Override
-    public WkAllStats getLastTimeCheckBySiteIdAndCheckId(Integer siteId, Integer checkId) {
+    public WkAllStats updateLastStats(Integer siteId, Integer checkId) {
         QueryFilter filter = new QueryFilter(Table.WK_ALL_STATS);
         filter.addCond(WkAllStatsTableField.SITE_ID, siteId);
         filter.addCond(WkAllStatsTableField.CHECK_ID, checkId);

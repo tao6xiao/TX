@@ -6,6 +6,7 @@ import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -87,4 +88,11 @@ public interface WkSiteManagementService {
      */
     void changeSiteStatus(Integer siteId, Types.WkCheckStatus status);
 
+    /**
+     * 更新检查时间
+     *
+     * @param siteId
+     * @param date
+     */
+    void updateCheckTime(int siteId, Date date);
 }

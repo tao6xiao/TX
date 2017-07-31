@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
 
     @Override
     public ContentCheckResult check(String text, String type) throws RemoteException {
+        long beginTime = new Date().getTime();
         CloseableHttpClient httpClient = null;
         try {
             httpClient = HttpClients.createDefault();
@@ -49,6 +51,12 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
             String authorization = "Basic " + new String(base);
             httpPost.setHeader("Authorization", authorization);
             HttpResponse response = httpClient.execute(httpPost);
+            long endTime = new Date().getTime();
+
+            if (endTime - beginTime > 1000) {
+                log.info("ckm check time use: " + (endTime - beginTime));
+            }
+
             StatusLine statusLine = response.getStatusLine();
             int code = statusLine.getStatusCode();
             if (code == 200) {

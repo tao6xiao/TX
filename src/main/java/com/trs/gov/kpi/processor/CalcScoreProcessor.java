@@ -66,8 +66,9 @@ public class CalcScoreProcessor implements MQListener {
             if (count >= 4) {
                 // 算总分
                 log.info("==begin calc total score of site[" + calcScoreMsg.getSiteId() + "]");
+                Date date = new Date();
                 try {
-                    wkScoreService.calcTotalScore(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
+                    wkScoreService.calcTotalScore(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId(), date);
                 } catch (Exception e) {
                     log.error("", e);
                 } finally {
@@ -80,19 +81,20 @@ public class CalcScoreProcessor implements MQListener {
                 log.info("==begin change site status of site[" + calcScoreMsg.getSiteId() + "]");
                 try {
                     wkSiteManagementService.changeSiteStatus(calcScoreMsg.getSiteId(), Types.WkCheckStatus.DONE_CHECK);
+                    wkSiteManagementService.updateCheckTime(calcScoreMsg.getSiteId(), date);
                 } catch (Exception e) {
                     log.error("", e);
                 } finally {
                     log.info("==end change site status of site[" + calcScoreMsg.getSiteId() + "]");
                 }
 
-                log.info("==begin getLastTimeCheckBySiteIdAndCheckId of site[" + calcScoreMsg.getSiteId() + "]");
+                log.info("==begin updateLastStats of site[" + calcScoreMsg.getSiteId() + "]");
                 try {
-                    wkAllStatsService.getLastTimeCheckBySiteIdAndCheckId(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
+                    wkAllStatsService.updateLastStats(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
                 } catch (Exception e) {
                     log.error("", e);
                 } finally {
-                    log.info("==end getLastTimeCheckBySiteIdAndCheckId of site[" + calcScoreMsg.getSiteId() + "]");
+                    log.info("==end updateLastStats of site[" + calcScoreMsg.getSiteId() + "]");
                 }
                 scoreMsgCountMap.remove(key);
             } else {
