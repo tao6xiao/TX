@@ -6,6 +6,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
+import com.trs.gov.kpi.entity.outerapi.ChnlDoc;
 import com.trs.gov.kpi.entity.outerapi.Document;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -120,7 +121,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
     }
 
     @Override
-    public Document findDocumentByUrl(String userName, String url) throws RemoteException {
+    public ChnlDoc findDocumentByUrl(String userName, String url) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
             params.put("URL", url);
@@ -128,7 +129,16 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             Response response = client.newCall(
                     buildRequest("findDocumentByUrl", userName, params)).execute();
 
-            return responseManger("findDocumentByUrl", response);
+            if (response.isSuccessful()) {
+                ApiResult result = getValidResult(response, "获取文档");
+                if (result.getData() != null && !result.getData().trim().isEmpty()) {
+                    return JSON.parseObject(result.getData(), ChnlDoc.class);
+                }
+                return null;
+            } else {
+                log.error("failed to findDocumentByUrl, error: " + response);
+                throw new RemoteException("获取文档失败！");
+            }
         } catch (IOException e) {
             log.error("failed to findDocumentByUrl, error", e);
             LogUtil.addSystemLog("failed to findDocumentByUrl, error", e);

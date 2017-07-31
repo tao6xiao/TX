@@ -2,7 +2,7 @@ package com.trs.gov.kpi.service.outer;
 
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.outerapi.Document;
+import com.trs.gov.kpi.entity.outerapi.ChnlDoc;
 import com.trs.gov.kpi.utils.SpringContextUtil;
 
 /**
@@ -14,9 +14,9 @@ public class ChnlDocumentServiceHelper {
 
     public static Integer getChnlIdByUrl(String currUserName, String url, int siteId) throws RemoteException {
         DocumentApiService documentApiService = (DocumentApiService) SpringContextUtil.getBean(DocumentApiService.class);
-        Document document = documentApiService.findDocumentByUrl(currUserName, url);
-        if(document != null){
-            return document.getChannelId();
+        ChnlDoc chnlDoc = documentApiService.findDocumentByUrl(currUserName, url);
+        if(chnlDoc != null){
+            return chnlDoc.getChnlId();
         }else {
             SiteApiService siteApiService = (SiteApiService) SpringContextUtil.getBean(SiteApiService.class);
             Channel channel = siteApiService.findChannelByUrl(currUserName, url, siteId);
