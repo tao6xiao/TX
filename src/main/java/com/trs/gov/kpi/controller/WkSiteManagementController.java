@@ -63,7 +63,6 @@ public class WkSiteManagementController {
             log.error("Invalid parameter: 网站名或首页URL已存在！！！");
             throw new BizException(Constants.SITE_NAME_IS_EXIST);
         }else{
-                siteManagement.setCheckTime(new Date());
                 wkSiteManagementService.addWkSite(siteManagement);
             }
         return null;
