@@ -118,7 +118,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.setPager(pager);
         List<LinkAvailability> linkAvailabilitieList = issueMapper.selectLinkAvailability(queryFilter);
 
-        return new ApiPageData(pager, toResponseList(linkAvailabilitieList));
+        return new ApiPageData(pager, toResponseList(linkAvailabilitieList, Types.IssueType.LINK_AVAILABLE_ISSUE));
     }
 
     @Override
@@ -135,15 +135,19 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.setPager(pager);
         List<LinkAvailability> linkAvailabilitieList = issueMapper.selectLinkAvailability(queryFilter);
 
-        return new ApiPageData(pager, toResponseList(linkAvailabilitieList));
+        return new ApiPageData(pager, toResponseList(linkAvailabilitieList, Types.IssueType.SERVICE_LINK_AVAILABLE));
     }
 
-    private List<LinkAvailabilityResponse> toResponseList(List<LinkAvailability> linkAvailabilitieList) throws RemoteException {
+    private List<LinkAvailabilityResponse> toResponseList(List<LinkAvailability> linkAvailabilitieList, Types.IssueType issueType) throws RemoteException {
         List<LinkAvailabilityResponse> list = new ArrayList<>();
         for (LinkAvailability link : linkAvailabilitieList) {
             LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
             linkAvailabilityResponse.setId(link.getId());
-            linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).getName());
+            if (Types.IssueType.LINK_AVAILABLE_ISSUE.equals(issueType)) {
+                linkAvailabilityResponse.setIssueTypeName(Types.LinkAvailableIssueType.valueOf(link.getIssueTypeId()).getName());
+            } else {
+                linkAvailabilityResponse.setIssueTypeName(Types.ServiceLinkIssueType.valueOf(link.getIssueTypeId()).getName());
+            }
             linkAvailabilityResponse.setInvalidLink(link.getInvalidLink());
             linkAvailabilityResponse.setSnapshot(link.getSnapshot());
             linkAvailabilityResponse.setCheckTime(link.getCheckTime());
