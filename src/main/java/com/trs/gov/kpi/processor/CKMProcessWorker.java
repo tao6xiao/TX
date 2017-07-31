@@ -65,18 +65,22 @@ public class CKMProcessWorker implements Runnable {
     }
 
     private List<Issue> buildList() {
+//        log.info("ckm begin check 1");
         List<Issue> issueList = new ArrayList<>();
         List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
 
         String cleanText = Jsoup.clean(content.getContent(), Whitelist.none());
         cleanText = cleanText.replaceAll("&nbsp", " ");
 
+//        log.info("ckm begin check 2");
         ContentCheckResult result = null;
         try {
             result = contentCheckApiService.check(cleanText, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             log.error("failed to check content of url [" + content.getUrl() + "]", e);
             return issueList;
+        } finally {
+//            log.info("end contentCheckApiService.check");
         }
 
         if (!result.isOk()) {
@@ -85,23 +89,31 @@ public class CKMProcessWorker implements Runnable {
         }
 
         if (result.getResult() != null) {
+            log.info("to issueList begin");
             issueList = toIssueList(checkTypeList, result);
+            log.info("to issueList end");
         }
         return issueList;
     }
 
     private List<Issue> toIssueList(List<String> checkTypeList, ContentCheckResult result) {
         List<Issue> issueList = new ArrayList<>();
-        for (String checkType : checkTypeList) {
+        for (int i = 0; i < checkTypeList.size(); i++) {
+            String checkType = checkTypeList.get(i);
             Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
             String errorContent = result.getResultOfType(subIssueType);
-            if (StringUtil.isEmpty(errorContent)) {
-                continue;
-            } else {
+            if (!StringUtil.isEmpty(errorContent)) {
                 final Set<Map.Entry<String, Object>> entries = JSONObject.parseObject(errorContent).entrySet();
                 int index = 0;
-                for (Map.Entry<String, Object> entry : entries) {
-                    index++;
+                Iterator<Map.Entry<String, Object>> entryIterator = entries.iterator();
+                int count = 0;
+                while (entryIterator.hasNext()) {
+                    count++;
+                    if (count > 1000) {
+                        log.error("to issueList error!");
+                        break;
+                    }
+                    Map.Entry<String, Object> entry = entryIterator.next();
                     String errorInfo = entry.getKey();
 
                     if (subIssueType == Types.InfoErrorIssueType.SENSITIVE_WORDS) {
@@ -119,18 +131,22 @@ public class CKMProcessWorker implements Runnable {
                     }
 
                     try {
+//                        log.info(" ckm begin process ");
                         final String relativeDir = getRelativeDir(content.getSiteId(), content.getCheckId(), content.getUrl(), index, 1);
                         String absoluteDir = locationDir + File.separator + relativeDir;
                         createDir(absoluteDir);
 
                         // 网页定位
+//                        log.info(" ckm begin loc page ");
                         String pageLocContent = generatePageLocHtmlText(subIssueType, errorWord, correctWord);
                         if (pageLocContent == null) {
+//                            log.info(" ckm continue loc page ");
                             continue;
                         }
                         createPagePosHtml(absoluteDir, pageLocContent);
 
                         // 源码定位
+//                        log.info(" ckm begin loc source ");
                         String srcLocContent = generateSourceLocHtmlText(subIssueType, errorWord, correctWord);
                         if (srcLocContent == null) {
                             continue;
@@ -138,6 +154,7 @@ public class CKMProcessWorker implements Runnable {
                         createSrcPosHtml(absoluteDir, srcLocContent);
 
                         // 创建头部导航页面
+//                        log.info(" ckm create pages");
                         createContHtml(absoluteDir, content.getUrl(), content.getParentUrl());
 
                         // 创建首页
@@ -160,6 +177,7 @@ public class CKMProcessWorker implements Runnable {
                         issue.setTypeId(Types.WkSiteCheckType.CONTENT_ERROR.value);
                         issue.setSubTypeId(subIssueType.value);
 
+//                        log.info(" ckm begin insert to db");
                         commonMapper.insert(DBUtil.toRow(issue));
                     } catch (IOException e) {
                         log.error("error content: " + errorContent);
@@ -200,10 +218,16 @@ public class CKMProcessWorker implements Runnable {
             index = result.indexOf(errorWord, index + errorinfo.length());
         }
 
+        int count = 0;
         while (index != -1) {
+            count++;
             String errorinfo = "<font msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
             index = result.indexOf(errorWord, index + errorinfo.length());
+            if (count > 1000) {
+                log.error("wrong index: [{}], errorWord: {} content: {} ", index, errorWord, content.getContent().intern());
+                break;
+            }
         }
 
         return result;
@@ -301,7 +325,7 @@ public class CKMProcessWorker implements Runnable {
     private String generateSourceLocHtmlText(Types.InfoErrorIssueType type, String errorWord, String correct) {
 
         // 将html标签转义
-        String sourceEscape = StringEscapeUtils.escapeHtml4(content.getContent());
+        String sourceEscape = StringEscapeUtils.escapeHtml4(content.getContent().intern());
         StringBuffer sb = new StringBuffer();
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
         sb.append(LINE_SP);
@@ -366,10 +390,16 @@ public class CKMProcessWorker implements Runnable {
             index = result.indexOf(errorWord, index + errorinfo.length());
         }
 
+        int count = 0;
         while (index != -1) {
+            count++;
             String errorinfo = "<font msg=\"" + getDisplayErrorWord(type, errorWord, correct) + "\" style=\"border:2px red solid;color:red;\">" + errorWord + "</font>";
             result = result.substring(0, index) + errorinfo + result.substring(index + errorWord.length());
             index = result.indexOf(errorWord, index + errorinfo.length());
+            if (count > 1000) {
+                log.error("source loc wrong index: [{}], errorWord: {} content: {} ", index, errorWord, content.getContent().intern());
+                break;
+            }
         }
 
         return result;

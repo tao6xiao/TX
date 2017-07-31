@@ -13,6 +13,7 @@ import com.trs.gov.kpi.msgqueue.CommonMQ;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,10 +28,12 @@ import us.codecraft.webmagic.*;
 import us.codecraft.webmagic.downloader.Downloader;
 import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.selector.PlainText;
 import us.codecraft.webmagic.utils.UrlUtils;
 
 import java.io.IOException;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -327,14 +330,32 @@ public class PageSpider {
         }
 
         @Override
-        protected Page handleResponse(Request request, String charset, HttpResponse httpResponse, Task task) throws IOException {
+        protected String getContent(String charset, HttpResponse httpResponse) throws IOException {
             contentType.set(httpResponse.getEntity().getContentType().getValue());
             final Header[] headers = httpResponse.getHeaders("Content-Disposition");
             if (headers != null && headers.length >= 1) {
-                contentType.set(headers[0].getValue());
+                contentDisposition.set(headers[0].getValue());
             }
-            return super.handleResponse(request, charset, httpResponse, task);
+            EnumUrlType urlType = WebPageUtil.getUrlTypeByContentType(contentType.get(), contentDisposition.get());
+            if (urlType == EnumUrlType.HTML) {
+                if(charset == null) {
+                    byte[] contentBytes = IOUtils.toByteArray(httpResponse.getEntity().getContent());
+                    String htmlCharset = this.getHtmlCharset(httpResponse, contentBytes);
+                    if(htmlCharset != null) {
+                        return new String(contentBytes, htmlCharset);
+                    } else {
+                        log.warn("Charset autodetect failed, use {} as charset. Please specify charset in Site.setCharset()", Charset.defaultCharset());
+                        return new String(contentBytes);
+                    }
+                } else {
+                    return IOUtils.toString(httpResponse.getEntity().getContent(), charset);
+                }
+            } else {
+                httpResponse.getEntity().getContent().close();
+                return null;
+            }
         }
+
 
         @Override
         public void onSuccess(Request request) {
