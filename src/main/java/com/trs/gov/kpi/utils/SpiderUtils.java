@@ -198,6 +198,10 @@ public class SpiderUtils {
                     }
                 }
             } else {
+                EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
+                if(urlType != EnumUrlType.HTML){
+                    return result;
+                }
 
                 if (useTime > THRESHOLD_MAX_REPLY_SPEED) {
                     updateOrInsertSpeed(new ReplySpeed(Types.AnalysisType.REPLY_SPEED.value,
