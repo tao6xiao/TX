@@ -287,7 +287,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         for (MonitorSite site : allMonitorSites) {
             // 每个月1日凌晨0点执行一次
-            scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, "0 0 0 1 * ?");
+            scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, "0 0 0 2 * ?");
         }
     }
 
