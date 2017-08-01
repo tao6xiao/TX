@@ -87,8 +87,8 @@ public class BasServiceImpl implements BasService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
             HistoryDate historyDate = iterator.next();
-            //不返回当月的数据，因为当月还未结束
-            if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
+            //不返回当前周期的数据，因为当前周期还未结束
+            if (!iterator.hasNext()) {
                 return new History(new Date(), list);
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
@@ -119,19 +119,6 @@ public class BasServiceImpl implements BasService {
             }
         }
         return sum;
-    }
-
-    private boolean isFirstOfMonth(HistoryDate historyDate) throws ParseException {
-        boolean flag;
-        Calendar lastDate = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        lastDate.setTime(sdf.parse(historyDate.getEndDate()));
-        if (lastDate.get(Calendar.DAY_OF_MONTH) == 1) {//判断是否为当月第一天,如果为当月第一天，就说明上一个月已结束，具体查看DateUtil.splitDateByMonth分割日期的规则
-            flag = true;
-        } else {
-            flag = false;
-        }
-        return flag;
     }
 
     private Integer requestBasPV(String url, String beginDay, String endDay, String siteIndexPage) throws RemoteException {
@@ -204,8 +191,8 @@ public class BasServiceImpl implements BasService {
 
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
             HistoryDate historyDate = iterator.next();
-            //不返回当月的数据，因为当月还未结束
-            if (!iterator.hasNext() && !isFirstOfMonth(historyDate)) {
+            //不返回当前周期的数据，因为当前周期还未结束
+            if (!iterator.hasNext()) {
                 return new History(new Date(), list);
             }
             HistoryStatistics historyStatistics = new HistoryStatistics();
