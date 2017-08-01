@@ -94,7 +94,7 @@ public class BasServiceImpl implements BasService {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             historyStatistics.setTime(historyDate.getDate());
 
-            if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
+            if (Granularity.YEAR.equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
                 List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
                 historyStatistics.setValue(getVisitsSum(dates, url, siteIndexPage));
                 list.add(historyStatistics);
@@ -206,14 +206,18 @@ public class BasServiceImpl implements BasService {
                 params.put(MPIDS, mpId);
             }
 
-            if (Integer.valueOf(4).equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
+            if (Granularity.YEAR.equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
                 List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
                 historyStatistics.setValue(getTimeSum(dates, params));
                 list.add(historyStatistics);
                 continue;
             }
 
-            params.put(DAY, initTime(historyDate.getEndDate()));
+            if (Granularity.DAY.equals(basRequest.getGranularity())){//粒度为天时，查询的是当天的数据，需要传入开始时间
+                params.put(DAY, initTime(historyDate.getBeginDate()));
+            }else {
+                params.put(DAY, initTime(historyDate.getEndDate()));
+            }
             SiteSummary siteSummary = requestBasSummary(params);
 
             if (siteSummary != null) {
