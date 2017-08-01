@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by li.hao on 2017/7/11.
@@ -109,7 +108,7 @@ public class CKMProcessor implements MQListener {
      * @param checkId
      */
     private void compareLastCheckAndInsert(Integer siteId, Integer checkId) {
-
+        //上一次完成检查的数据的checkId
         Integer lastCheckid= wkAllStatsService.getLastCheckId(siteId, checkId);
         if (lastCheckid == null) {
             // 第一次检查

@@ -134,9 +134,14 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Override
     public void doCheckJobOnce(int siteId) {
-        int isDel = 0;
+        int isDel = Status.Delete.UN_DELETE.value;
         final SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId, isDel);
         doCheckJobNow(site);
+    }
+
+    @Override
+    public void terminateCheckJobOnce(int siteId) {
+        fixedThreadPool.shutdownNow();
     }
 
     @PostConstruct

@@ -29,4 +29,10 @@ public interface SchedulerService {
      */
     void doCheckJobOnce(int siteId);
 
+    /**
+     * 终止一次性检查任务
+     * @param siteId
+     */
+    void terminateCheckJobOnce(int siteId);
+
 }

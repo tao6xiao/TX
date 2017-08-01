@@ -305,7 +305,7 @@ public class InvalidLinkProcessor implements MQListener {
 
 
     private void compareLastCheckAndInsert(Integer siteId, Integer checkId) {
-
+        //上一次完成检查的数据的checkId
         Integer lastCheckid= wkAllStatsService.getLastCheckId(siteId, checkId);
         if (lastCheckid == null) {
             // 第一次检查

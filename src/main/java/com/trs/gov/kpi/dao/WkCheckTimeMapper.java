@@ -16,7 +16,7 @@ public interface WkCheckTimeMapper {
     List<WkCheckTime> select(@Param("filter") QueryFilter filter);
 
     /**
-     * 获取站点上一次检查的编号
+     * 获取站点上一次完成检查的编号
      * @param siteId
      * @return
      */

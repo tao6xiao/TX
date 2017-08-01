@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -147,13 +145,30 @@ public class WkSiteManagementController {
      * @return
      */
     @RequestMapping(value = "/site/check", method = RequestMethod.PUT)
-    public String deleteSiteBySiteIds(Integer siteId) throws BizException {
+    public String checkSiteBySiteId(Integer siteId) throws BizException {
         if (siteId == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
 
         schedulerService.doCheckJobOnce(siteId);
         change2WaitCheckStatus(siteId);
+        return null;
+    }
+
+    /**
+     * 停止检查
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "/site/check/stop", method = RequestMethod.PUT)
+    public String terminateCheckSiteBySiteId(Integer siteId) throws BizException {
+        if (siteId == null) {
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+
+        schedulerService.terminateCheckJobOnce(siteId);
+        changeTerminateCheckStatus(siteId);
         return null;
     }
 
@@ -169,6 +184,38 @@ public class WkSiteManagementController {
         filter.addCond(Constants.DB_FIELD_SITE_ID, siteId);
         filter.addCond("checkStatus", Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
         commonMapper.update(updater, filter);
+    }
+
+    /**
+     * 改变停止检查后的站点状态
+     * @param siteId
+     * @throws BizException
+     */
+    private void changeTerminateCheckStatus(Integer siteId) throws BizException {
+        if(siteId == null){
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
+        filter.addCond(WkScoreTableField.SITE_ID, siteId);
+
+        if(commonMapper.count(filter) > 0){//该站点之前有进行过算分操作（之前有检查过）
+            DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
+            updater.addField(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.DONE_CHECK.value);
+
+            QueryFilter filterTo = new QueryFilter(Table.WK_SITEMANAGEMENT);
+            filterTo.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+            filterTo.addCond(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.CONDUCT_CHECK.value);
+            commonMapper.update(updater, filterTo);
+        }else{
+            DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
+            updater.addField(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
+
+            QueryFilter filterTo = new QueryFilter(Table.WK_SITEMANAGEMENT);
+            filterTo.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+            filterTo.addCond(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.CONDUCT_CHECK.value);
+            commonMapper.update(updater, filterTo);
+        }
+
     }
 
 }

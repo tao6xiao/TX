@@ -75,6 +75,7 @@ public class CalcScoreProcessor implements MQListener {
                     log.info("==end calc total score of site[" + calcScoreMsg.getSiteId() + "]");
                 }
 
+                //修改检测时间和状态
                 updateCheckEndTime(calcScoreMsg.getSiteId(), calcScoreMsg.getCheckId());
 
                 // 修改站点检测状态
