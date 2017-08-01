@@ -141,7 +141,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Override
     public void terminateCheckJobOnce(int siteId) {
-        fixedThreadPool.shutdownNow();
+//        fixedThreadPool.shutdownNow();
     }
 
     @PostConstruct
