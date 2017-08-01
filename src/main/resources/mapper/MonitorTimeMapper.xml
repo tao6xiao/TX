@@ -3,7 +3,7 @@
 <mapper namespace="com.trs.gov.kpi.dao.ReportMapper">
 
 
-    <select id="getMonitorTime" resultType="TIMESTAMP">
+    <select id="getMonitorTime" resultType="Date">
         SELECT max(endTime)
         FROM monitortime
         WHERE siteId = #{siteId}
