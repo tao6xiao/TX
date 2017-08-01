@@ -341,12 +341,15 @@ public class DateUtil {
      * @return
      */
     private static String getLastDay(Calendar initCalender, Calendar endCalendar, SimpleDateFormat sdf, int unit) {
+        Calendar calendar = Calendar.getInstance();
         if (initCalender.getTime().before(endCalendar.getTime())) {
-            initCalender.add(unit, 1);//增加一天，让结束日期为下个月的第一天，避免查询时最后一天查不到的情况
-            return sdf.format(initCalender.getTime());
+            calendar.setTime(initCalender.getTime());
+            calendar.add(unit, 1);//增加一天，让结束日期为下个月的第一天，避免查询时最后一天查不到的情况
+            return sdf.format(calendar.getTime());
         } else {//结束日期在第一个周期内
-            endCalendar.add(unit, 1);
-            return sdf.format(endCalendar.getTime());
+            calendar.setTime(endCalendar.getTime());
+            calendar.add(unit, 1);
+            return sdf.format(calendar.getTime());
         }
     }
 

@@ -95,6 +95,14 @@ public class DateUtilTest {
         result = DateUtil.splitDate("2016-12-31 12:05:00", "2017-01-01 19:05:00", 4);
         assertEquals(2, result.size());
 
+        //正好一个周期
+        result = DateUtil.splitDate("2017-08-13 12:05:00", "2017-08-19 19:05:00", 2);
+        assertEquals(1, result.size());
+        result = DateUtil.splitDate("2017-08-01 12:05:00", "2017-08-31 19:05:00", 3);
+        assertEquals(1, result.size());
+        result = DateUtil.splitDate("2017-01-01 12:05:00", "2017-12-31 19:05:00", 4);
+        assertEquals(1, result.size());
+
     }
 
     @Test
