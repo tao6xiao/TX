@@ -11,8 +11,10 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.DeptApiService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
@@ -36,6 +38,12 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Resource
     private DeptApiService deptApiService;
+
+    @Resource
+    private MonitorTimeService monitorTimeService;
+
+    @Resource
+    private SiteApiService siteApiService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
@@ -97,7 +105,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new History(new Date(), list);
+        return new History(monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.LINK_AVAILABLE_ISSUE.value), list);
     }
 
     @Override
@@ -194,41 +202,27 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public boolean isIndexAvailable(PageDataRequestParam param) throws RemoteException {
-
-        String indexUrl = getIndexUrl(param);
-
-        QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-        queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
-        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        int flag = issueMapper.getIndexAvailability(queryFilter);
-
-        return flag <= 0;
-    }
-
-    @Override
-    public String getIndexUrl(PageDataRequestParam param) {
-        return issueMapper.getIndexUrl(param);
-    }
-
-    @Override
     public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
-        String indexUrl = getIndexUrl(param);
+        String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
+        Date endTime = monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
-        if (isIndexAvailable(param)) {
-            indexPage.setIndexAvailable(true);
-            indexPage.setMonitorTime(DateUtil.toString(new Date()));
-        } else {
+        indexPage.setMonitorTime(DateUtil.toString(endTime));
+        QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+        queryFilter.addCond(IssueTableField.SITE_ID, param.getSiteId());
+        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
+        queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
+        queryFilter.addCond(IssueTableField.ISSUE_TIME, monitorTimeService.getMonitorStartTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value)).setRangeBegin(true);
+        queryFilter.addCond(IssueTableField.ISSUE_TIME, endTime).setRangeEnd(true);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        int count = issueMapper.count(queryFilter);
+        if (count > 0) {
             indexPage.setIndexAvailable(false);
-
-            QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
-            queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
-            queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-            queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-            indexPage.setMonitorTime(DateUtil.toString(issueMapper.getMonitorTime(queryFilter)));
+        } else {
+            indexPage.setIndexAvailable(true);
         }
         return indexPage;
     }

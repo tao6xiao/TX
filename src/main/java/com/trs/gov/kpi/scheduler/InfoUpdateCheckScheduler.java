@@ -16,6 +16,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.MonitorSiteService;
+import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
@@ -68,10 +69,15 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     @Resource
     CommonMapper commonMapper;
 
-    @Getter @Setter
+    @Resource
+    private MonitorTimeService monitorTimeService;
+
+    @Getter
+    @Setter
     private Integer siteId;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private String baseUrl;
 
     @Setter
@@ -91,6 +97,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     public void run() {
 
         log.info("InfoUpdateCheckScheduler " + siteId + " start...");
+        Date startTime = new Date();
         try {
             List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
@@ -106,9 +113,16 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             }
 
             insertIssueAndWarning(siteTrees);
+            Date endTime = new Date();
+            MonitorTime monitorTime = new MonitorTime();
+            monitorTime.setSiteId(siteId);
+            monitorTime.setTypeId(Types.IssueType.INFO_UPDATE_ISSUE.value);
+            monitorTime.setStartTime(startTime);
+            monitorTime.setEndTime(endTime);
+            monitorTimeService.insertMonitorTime(monitorTime);
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
-            LogUtil.addSystemLog("check link:{"+baseUrl+"}, siteId:{"+siteId+"} info update error!", e);
+            LogUtil.addSystemLog("check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
         } finally {
             log.info("InfoUpdateCheckScheduler " + siteId + " end...");
         }
@@ -182,9 +196,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 递归添加子栏目
+     *
      * @param curChnl
      * @param parent
-     *
      * @throws RemoteException
      */
     private void recursiveBuildChannelTree(
@@ -362,7 +376,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             Date now = new Date();
             if (isPrevPeroidUpdated) {
                 // 上一个周期已经更新了，检查是否需要预警
-                Date beginWarningDate = DateUtil.addDay(DateUtil.toDate(checkingChannel.getBeginDateTime()), checkingChannel.getCheckDay()-checkingChannel.getWarningDay());
+                Date beginWarningDate = DateUtil.addDay(DateUtil.toDate(checkingChannel.getBeginDateTime()), checkingChannel.getCheckDay() - checkingChannel.getWarningDay());
                 if (now.compareTo(beginWarningDate) >= 0) {
                     checkingChannel.setWarning(true);
                 }
@@ -377,6 +391,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 检查一个栏目是否更新
+     *
      * @param channelId 栏目ID
      * @return
      */
@@ -436,6 +451,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 插入一个栏目的检测结果
+     *
      * @param node
      */
     private void insertOneCheckingChannel(SimpleTree.Node<CheckingChannel> node) {
@@ -464,6 +480,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 判定栏目是否设置了监测频率
+     *
      * @param channel
      * @return
      */
@@ -590,6 +607,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 递归判定子栏目是否已更新
+     *
      * @param parent
      * @return
      */

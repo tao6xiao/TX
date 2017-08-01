@@ -3,8 +3,10 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.MonitorTime;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
+import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -48,10 +50,14 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     SGService sgService;
 
+    @Resource
+    private MonitorTimeService monitorTimeService;
+
     @Override
     public void run() {
 
         log.info("ServiceLinkScheduler " + siteId + " start...");
+        Date startTime = new Date();
         try {
             for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
                 if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
@@ -67,11 +73,17 @@ public class ServiceLinkScheduler implements SchedulerTask {
                     issueMapper.insert(DBUtil.toRow(issue));
                 }
             }
-
-        } catch (RemoteException e){
+            Date endTime = new Date();
+            MonitorTime monitorTime = new MonitorTime();
+            monitorTime.setSiteId(siteId);
+            monitorTime.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+            monitorTime.setStartTime(startTime);
+            monitorTime.setEndTime(endTime);
+            monitorTimeService.insertMonitorTime(monitorTime);
+        } catch (RemoteException e) {
             log.error("", e);
             LogUtil.addSystemLog("", e);
-        }finally {
+        } finally {
             log.info("ServiceLinkScheduler " + siteId + " end...");
         }
     }

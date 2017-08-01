@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class IndexPage {
 
-    private boolean indexAvailable;
+    private Boolean indexAvailable;
 
     private String monitorTime;
 

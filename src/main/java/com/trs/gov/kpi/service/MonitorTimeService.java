@@ -10,13 +10,22 @@ import java.util.Date;
 public interface MonitorTimeService {
 
     /**
-     * 查询监测任务的结束时间
+     * 查询最近的监测任务的开始时间
      *
      * @param siteId
      * @param typeId
      * @return
      */
-    Date getMonitorTime(Integer siteId, Integer typeId);
+    Date getMonitorStartTime(Integer siteId, Integer typeId);
+
+    /**
+     * 查询最近的监测任务的结束时间
+     *
+     * @param siteId
+     * @param typeId
+     * @return
+     */
+    Date getMonitorEndTime(Integer siteId, Integer typeId);
 
     /**
      * 查询监测任务的执行时间

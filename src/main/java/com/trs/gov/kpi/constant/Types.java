@@ -14,7 +14,8 @@ public final class Types {
      */
     public enum IssueType {
         INVALID(-1, "未知问题"),
-        LINK_AVAILABLE_ISSUE(1, "可用性问题"),
+        HOMEPAGE_AVAILABLE_ISSUE(0, "首页可用性问题"),
+        LINK_AVAILABLE_ISSUE(1, "网站可用性问题"),
         INFO_UPDATE_ISSUE(2, "信息更新问题"),
         INFO_ERROR_ISSUE(3, "信息错误"),
         INFO_UPDATE_WARNING(51, "信息更新预警"),

@@ -14,6 +14,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoUpdateService;
+import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -52,6 +53,9 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     @Resource
     private DeptApiService deptApiService;
+
+    @Resource
+    private MonitorTimeService monitorTimeService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
@@ -107,7 +111,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         for (HistoryDate date : dateList) {
             HistoryStatistics historyStatistics = new HistoryStatistics();
             QueryFilter filter = new QueryFilter(Table.ISSUE);
-            filter.addCond(IssueTableField.SITE_ID,param.getSiteId());
+            filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
             filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
             filter.addCond(IssueTableField.ISSUE_TIME, date.getBeginDate()).setRangeBegin(true);
             filter.addCond(IssueTableField.ISSUE_TIME, date.getEndDate()).setRangeEnd(true);
@@ -116,7 +120,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new History(new Date(), list);
+        return new History(monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.INFO_UPDATE_ISSUE.value), list);
     }
 
     /**

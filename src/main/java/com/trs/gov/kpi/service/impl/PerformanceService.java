@@ -4,6 +4,7 @@ import com.trs.gov.kpi.constant.EnumIndexUpdateType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
@@ -75,7 +76,8 @@ public class PerformanceService {
         double interviewScore = 6.25;
 
         //网站可用情况
-        if (linkAvailabilityService.isIndexAvailable(param)) {
+        IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
+        if (indexPage.getIndexAvailable()) {
             int linkIssueCount = linkAvailabilityService.getUnhandledIssueCount(param);
             availabilityScore *= 1 - linkIssueCount * 0.001;
             if (availabilityScore < 0) {

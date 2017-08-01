@@ -1,9 +1,15 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.IssueTableField;
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.MonitorTime;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.outerapi.Site;
+import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -48,10 +54,14 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     private IssueMapper issueMapper;
 
+    @Resource
+    private MonitorTimeService monitorTimeService;
+
     @Override
     public void run() {
 
         log.info("HomePageCheckScheduler " + siteId + " start...");
+        Date startTime = new Date();
         try {
 
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -69,16 +79,33 @@ public class HomePageCheckScheduler implements SchedulerTask {
 
             List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
             if (unavailableUrls.contains(baseUrl)) {
-                Issue issue = new Issue();
-                issue.setSiteId(siteId);
-                issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-                issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-                issue.setDetail(baseUrl);
-                issue.setCustomer1(baseUrl);
-                issue.setIssueTime(new Date());
-                issueMapper.insert(DBUtil.toRow(issue));
+                QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+                queryFilter.addCond(IssueTableField.SITE_ID, siteId);
+                queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
+                queryFilter.addCond(IssueTableField.DETAIL, baseUrl);
+                queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+                queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+                int count = issueMapper.count(queryFilter);
+                if (count < 1) {
+                    Issue issue = new Issue();
+                    issue.setSiteId(siteId);
+                    issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
+                    issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                    issue.setDetail(baseUrl);
+                    issue.setCustomer1(baseUrl);
+                    issue.setIssueTime(new Date());
+                    issueMapper.insert(DBUtil.toRow(issue));
+                }
             }
-        } catch (Throwable e) {
+            Date endTime = new Date();
+            MonitorTime monitorTime = new MonitorTime();
+            monitorTime.setSiteId(siteId);
+            monitorTime.setTypeId(Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
+            monitorTime.setStartTime(startTime);
+            monitorTime.setEndTime(endTime);
+            monitorTimeService.insertMonitorTime(monitorTime);
+        } catch (Exception e) {
             log.error("", e);
             LogUtil.addSystemLog("", e);
         } finally {

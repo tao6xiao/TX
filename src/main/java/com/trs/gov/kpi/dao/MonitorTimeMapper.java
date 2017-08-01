@@ -13,15 +13,26 @@ import java.util.Date;
 public interface MonitorTimeMapper {
 
     /**
-     * 查询监测任务的结束时间
+     * 查询最近的监测任务的开始时间
+     *
      * @param siteId
      * @param typeId
      * @return
      */
-    Date getMonitorTime(@Param("siteId") Integer siteId,@Param("typeId") Integer typeId);
+    Date getMonitorStartTime(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId);
 
     /**
-     * 查询监测任务的执行时间
+     * 查询最近的监测任务的结束时间
+     *
+     * @param siteId
+     * @param typeId
+     * @return
+     */
+    Date getMonitorEndTime(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId);
+
+    /**
+     * 插入监测任务的执行时间
+     *
      * @param monitorTime
      */
     void insertMonitorTime(@Param("monitorTime") MonitorTime monitorTime);

@@ -38,26 +38,8 @@ public interface LinkAvailabilityService {
 
     /**
      * 判断链接不可用是否已存在
-     *
      */
     boolean existLinkAvailability(Integer siteId, String invalidLink);
-
-
-    /**
-     * 查询网站首页的有效性
-     *
-     * @param param
-     * @return
-     */
-    boolean isIndexAvailable(PageDataRequestParam param) throws RemoteException;
-
-    /**
-     * 获取网站首页
-     *
-     * @param param
-     * @return
-     */
-    String getIndexUrl(PageDataRequestParam param);
 
     /**
      * 获取网站首页的url及有效性

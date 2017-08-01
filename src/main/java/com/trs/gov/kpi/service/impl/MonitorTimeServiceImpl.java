@@ -18,12 +18,17 @@ public class MonitorTimeServiceImpl implements MonitorTimeService {
     private MonitorTimeMapper monitorTimeMapper;
 
     @Override
-    public Date getMonitorTime(Integer siteId, Integer typeId) {
-        return monitorTimeMapper.getMonitorTime(siteId,typeId);
+    public Date getMonitorStartTime(Integer siteId, Integer typeId) {
+        return monitorTimeMapper.getMonitorStartTime(siteId, typeId);
+    }
+
+    @Override
+    public Date getMonitorEndTime(Integer siteId, Integer typeId) {
+        return monitorTimeMapper.getMonitorEndTime(siteId, typeId);
     }
 
     @Override
     public void insertMonitorTime(MonitorTime monitorTime) {
-
+        monitorTimeMapper.insertMonitorTime(monitorTime);
     }
 }

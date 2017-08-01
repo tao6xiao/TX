@@ -1,8 +1,11 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.WebPageMapper;
+import com.trs.gov.kpi.entity.MonitorTime;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
+import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -15,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -40,6 +44,9 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     WebPageMapper webPageMapper;
 
+    @Resource
+    private MonitorTimeService monitorTimeService;
+
     @Setter
     @Getter
     private Integer siteId;
@@ -56,6 +63,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     public void run() {
 
         log.info("LinkAnalysisScheduler " + siteId + " start...");
+        Date startTime = new Date();
         try {
 
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -71,10 +79,16 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             }
 
             spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
-
+            Date endTime = new Date();
+            MonitorTime monitorTime = new MonitorTime();
+            monitorTime.setSiteId(siteId);
+            monitorTime.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+            monitorTime.setStartTime(startTime);
+            monitorTime.setEndTime(endTime);
+            monitorTimeService.insertMonitorTime(monitorTime);
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
-            LogUtil.addSystemLog("check link:{"+baseUrl+"}, siteId:{"+siteId+"} availability error!", e);
+            LogUtil.addSystemLog("check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
         } finally {
             log.info("LinkAnalysisScheduler " + siteId + " end...");
         }
