@@ -84,31 +84,26 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             wkAllSiteDetail.setSearchText(StringUtil.escape(wkAllSiteDetail.getSearchText()));
         }
         QueryFilter filter = QueryFilterHelper.toStatsWkFilter(wkAllSiteDetail);
-        List<WkSiteIndexStats> wkSiteIndexStatsesList = wkSiteIndexStatsMapper.select(filter);
 
-        QueryFilter isDelFilter = new QueryFilter(Table.WK_SITEMANAGEMENT);
-        isDelFilter.addCond(WkSiteTableField.IS_DEL, Status.Delete.DELETED.value);
-        List<SiteManagement> siteManagementList = wkSiteManagementMapper.selectIsDelSiteList(isDelFilter);
-        int count = 0;
-        if (!siteManagementList.isEmpty()){
-            for (SiteManagement siteManagement:siteManagementList) {
-                for (WkSiteIndexStats wkSiteIndexStats : wkSiteIndexStatsesList) {
-                    if(siteManagement.getSiteId().equals(wkSiteIndexStats.getSiteId())){
-                        count ++;
-                        break;
-                    }
-                }
-            }
+        QueryFilter unDelFilter = new QueryFilter(Table.WK_SITEMANAGEMENT);
+        unDelFilter.addCond(WkSiteTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        List<SiteManagement> siteManagementList = wkSiteManagementMapper.selectAllSiteList(unDelFilter);
+        List<Integer> siteIds = new ArrayList<>();
+        for (SiteManagement site : siteManagementList) {
+            siteIds.add(site.getSiteId());
         }
+
+        filter.addCond("siteId", siteIds);
+
         int siteIndexStatsCount = commonMapper.count(filter);
-        int itemCount = siteIndexStatsCount - count;
-        Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), itemCount);
+        Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), siteIndexStatsCount);
         filter.setPager(pager);
 
         List<WkSiteIndexStats> wkSiteIndexStatsesListTo = wkSiteIndexStatsMapper.select(filter);
 
         return new ApiPageData(pager, getWkIndexLinkIssueResponseByIssue(wkSiteIndexStatsesListTo));
-}
+    }
+
     private List<WkIndexLinkIssueResponse> getWkIndexLinkIssueResponseByIssue(List<WkSiteIndexStats> wkSiteIndexStatsesListTo){
         List<WkIndexLinkIssueResponse> wkIndexLinkIssueList = new ArrayList<>();
 
