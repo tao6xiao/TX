@@ -15,11 +15,4 @@
         WHERE siteId = #{siteId}
         AND typeId = #{typeId}
     </select>
-
-    <insert id="insertMonitorTime">
-        INSERT INTO monitortime
-        (siteId,typeId,startTime,endTime)
-        VALUES (#{monitorTime.siteId},#{monitorTime.typeId},#{monitorTime.startTime},#{monitorTime.endTime})
-    </insert>
-
 </mapper>
