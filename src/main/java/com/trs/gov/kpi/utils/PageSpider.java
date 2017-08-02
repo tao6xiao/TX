@@ -386,7 +386,7 @@ public class PageSpider {
             log.info("linkCheck completed, no URL has been checked!");
             return Collections.emptyList();
         }
-
+        //创建下载
         Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();
 
         List<Pair<String, String>> unavailableUrlAndParentUrls = new LinkedList<>();
@@ -401,6 +401,12 @@ public class PageSpider {
 
         log.info("linkCheck completed!");
         return unavailableUrlAndParentUrls;
+    }
+    //停止一次检查
+    public void terminateCheckJobOnce(){
+        Spider spider = Spider.create(kpiProcessor);
+        spider.stop();
+        spider.close();
     }
 
     private int calcDeep(String url, int minDeep, int deep) {

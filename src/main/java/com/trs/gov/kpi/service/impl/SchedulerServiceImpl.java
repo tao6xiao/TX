@@ -79,6 +79,8 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
+    @Resource
+    private LinkAnalysisScheduler linkAnalysisScheduler;
 
     @Override
     public void addCheckJob(int siteId, EnumCheckJobType checkType) throws BizException {
@@ -141,7 +143,16 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Override
     public void terminateCheckJobOnce(int siteId) {
-        fixedThreadPool.shutdownNow();
+//        int isDel = Status.Delete.UN_DELETE.value;
+//        final SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId, isDel);
+//        LinkAnalysisScheduler task = applicationContext.getBean(LinkAnalysisScheduler.class);
+//        if (task == null) {
+//            return;
+//        }
+//
+//        task.setSite(site);
+//        task.setTerminateCheck(true);
+//        fixedThreadPool.execute(task);
     }
 
     @PostConstruct

@@ -71,6 +71,9 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
     private int checkId;
 
+    @Setter
+    boolean terminateCheck = false;
+
     @Override
     public void run() {
 
@@ -86,6 +89,9 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             pageSpider.setSite(site);
             pageSpider.setCheckId(checkId);
 
+//            if(terminateCheck == true){
+//                pageSpider.terminateCheckJobOnce();
+//            }
             pageSpider.fetchAllPages(5, site.getSiteIndexUrl());
 
             final Map<Types.WkLinkIssueType, Integer> linkCountMap = pageSpider.getLinkCountMap();
@@ -99,16 +105,16 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             wkLinkType.setWebLink(linkCountMap.get(Types.WkLinkIssueType.LINK_DISCONNECT));
             wkLinkType.setOthersLink(linkCountMap.get(Types.WkLinkIssueType.OTHERS_DISCONNECT));
             wkLinkType.calcTotal();
-
             commonMapper.insert(DBUtil.toRow(wkLinkType));
 
             CheckEndMsg endMsg = new CheckEndMsg();
             endMsg.setCheckId(checkId);
             endMsg.setSiteId(site.getSiteId());
             commonMQ.publishMsg(endMsg);
+
             log.info("LinkAnalysisScheduler send end msg,  site[{}], checkid[{}], url[{}]", site.getSiteId(), checkId, site.getSiteIndexUrl());
         } catch (Exception e) {
-            log.error("LinkAnalysisScheduler exception!  link:{}, siteId:{}, checkid:{}", site.getSiteIndexUrl(), site.getSiteId(), checkId, e);
+             log.error("LinkAnalysisScheduler exception!  link:{}, siteId:{}, checkid:{}", site.getSiteIndexUrl(), site.getSiteId(), checkId, e);
         } finally {
             log.info("LinkAnalysisScheduler end. site[{}], checkid[{}], url[{}]  ", site.getSiteId(), checkId, site.getSiteIndexUrl());
         }
