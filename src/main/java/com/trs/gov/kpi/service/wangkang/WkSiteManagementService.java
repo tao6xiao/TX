@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.wangkang;
 
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -31,7 +32,7 @@ public interface WkSiteManagementService {
 
     /**
      * 根据名称查询网站数量
-     * 
+     *
      * @param siteName
      * @return
      */
@@ -46,7 +47,7 @@ public interface WkSiteManagementService {
     Integer getSiteCountByUrl(String siteIndexUrl, Integer isDel);
 
     /**
-     *  查询所有站点（支持分页、排序和模糊查询）
+     * 查询所有站点（支持分页、排序和模糊查询）
      *
      * @param wkAllSiteDetail
      * @return
@@ -78,12 +79,14 @@ public interface WkSiteManagementService {
 
     /**
      * 获取所有的站点
+     *
      * @return
      */
     List<SiteManagement> getAllSites();
 
     /**
      * 改变状态
+     *
      * @param status
      */
     void changeSiteStatus(Integer siteId, Types.WkCheckStatus status);
@@ -95,4 +98,13 @@ public interface WkSiteManagementService {
      * @param date
      */
     void updateCheckTime(int siteId, Date date);
+
+    /**
+     * 改变停止检查后的站点状态
+     *
+     * @param siteId
+     * @throws BizException
+     */
+    void changeTerminateCheckStatus(Integer siteId) throws BizException;
+
 }

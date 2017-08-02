@@ -30,7 +30,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -79,8 +81,8 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
-    @Resource
-    private LinkAnalysisScheduler linkAnalysisScheduler;
+    // 正在立即执行检查的任务，key：站点ID， value为任务
+    private Map<Integer, LinkAnalysisScheduler> doingTaskMap = new HashMap<>();
 
     @Override
     public void addCheckJob(int siteId, EnumCheckJobType checkType) throws BizException {
@@ -142,17 +144,13 @@ public class SchedulerServiceImpl implements SchedulerService {
     }
 
     @Override
-    public void terminateCheckJobOnce(int siteId) {
-//        int isDel = Status.Delete.UN_DELETE.value;
-//        final SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId, isDel);
-//        LinkAnalysisScheduler task = applicationContext.getBean(LinkAnalysisScheduler.class);
-//        if (task == null) {
-//            return;
-//        }
-//
-//        task.setSite(site);
-//        task.setTerminateCheck(true);
-//        fixedThreadPool.execute(task);
+    public void terminateCheckJobOnce(int siteId) throws BizException {
+        int isDel = Status.Delete.UN_DELETE.value;
+        final SiteManagement site = wkSiteManagementService.getSiteManagementBySiteId(siteId, isDel);
+        LinkAnalysisScheduler linkAnalysisScheduler = doingTaskMap.get(site.getSiteId());
+        if (linkAnalysisScheduler != null) {
+            linkAnalysisScheduler.stop();
+        }
     }
 
     @PostConstruct
@@ -577,6 +575,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         }
 
         task.setSite(site);
+        doingTaskMap.put(site.getSiteId(), task);
         fixedThreadPool.execute(task);
     }
 

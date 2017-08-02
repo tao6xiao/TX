@@ -3,6 +3,7 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.msg.CheckEndMsg;
 import com.trs.gov.kpi.entity.wangkang.SiteManagement;
 import com.trs.gov.kpi.entity.wangkang.WkCheckTime;
@@ -71,8 +72,16 @@ public class LinkAnalysisScheduler implements SchedulerTask {
 
     private int checkId;
 
-    @Setter
-    boolean terminateCheck = false;
+    boolean isStoped = false;
+
+    public void stop() throws BizException {
+        log.info("LinkAnalysisScheduler " + site.getSiteId() + " start stop...");
+        isStoped = true;
+        pageSpider.stop();
+        // 停止检查后修改状态（正在下载）
+        wkSiteManagementService.changeTerminateCheckStatus(site.getSiteId());
+        log.info("LinkAnalysisScheduler " + site.getSiteId() + "(downloading) status is change");
+    }
 
     @Override
     public void run() {
@@ -82,17 +91,39 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             checkId = wkIdService.getNewCheckId();
             log.info("LinkAnalysisScheduler starting...., site[{}], checkid[{}], url[{}]", site.getSiteId(), checkId, site.getSiteIndexUrl());
 
+            if (isStoped) {
+                log.info("LinkAnalysisScheduler " + site.getSiteId() + " stop end...");
+                return;
+            }
+
             insertCheckTime();
+
+            if (isStoped) {
+                log.info("LinkAnalysisScheduler " + site.getSiteId() + " stop end...");
+                return;
+            }
 
             wkSiteManagementService.changeSiteStatus(site.getSiteId(), Types.WkCheckStatus.CONDUCT_CHECK);
 
             pageSpider.setSite(site);
             pageSpider.setCheckId(checkId);
 
-//            if(terminateCheck == true){
-//                pageSpider.terminateCheckJobOnce();
-//            }
+            if (isStoped) {
+                log.info("LinkAnalysisScheduler " + site.getSiteId() + "(before download) stop end...");
+                // 停止检查后修改状态（开始下载前）
+                wkSiteManagementService.changeTerminateCheckStatus(site.getSiteId());
+                log.info("LinkAnalysisScheduler " + site.getSiteId() + "(before download) status is change");
+                return;
+            }
             pageSpider.fetchAllPages(5, site.getSiteIndexUrl());
+
+            if (isStoped) {
+                log.info("LinkAnalysisScheduler " + site.getSiteId() + "(download is done) stop end...");
+                // 停止检查后修改状态（下载完成）
+                wkSiteManagementService.changeTerminateCheckStatus(site.getSiteId());
+                log.info("LinkAnalysisScheduler " + site.getSiteId() + "(download is done) status is change");
+                return;
+            }
 
             final Map<Types.WkLinkIssueType, Integer> linkCountMap = pageSpider.getLinkCountMap();
             WkLinkType wkLinkType = new WkLinkType();

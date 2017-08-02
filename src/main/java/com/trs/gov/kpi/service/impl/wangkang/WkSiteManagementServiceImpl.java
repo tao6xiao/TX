@@ -7,6 +7,7 @@ import com.trs.gov.kpi.dao.WkSiteManagementMapper;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.WkAllSiteDetailRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -126,6 +127,33 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
         commonMapper.update(updater, filter);
     }
 
+    @Override
+    public void changeTerminateCheckStatus(Integer siteId) throws BizException {
+        if(siteId == null){
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        QueryFilter filter = new QueryFilter(Table.WK_SCORE);
+        filter.addCond(WkScoreTableField.SITE_ID, siteId);
+
+        if(commonMapper.count(filter) > 0){//该站点之前有进行过算分操作（之前有检查过）
+            DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
+            updater.addField(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.DONE_CHECK.value);
+
+            QueryFilter filterTo = new QueryFilter(Table.WK_SITEMANAGEMENT);
+            filterTo.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+            filterTo.addCond(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.CONDUCT_CHECK.value);
+            commonMapper.update(updater, filterTo);
+        }else{
+            DBUpdater updater = new DBUpdater(Table.WK_SITEMANAGEMENT.getTableName());
+            updater.addField(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.NOT_SUMBIT_CHECK.value);
+
+            QueryFilter filterTo = new QueryFilter(Table.WK_SITEMANAGEMENT);
+            filterTo.addCond(Constants.DB_FIELD_SITE_ID, siteId);
+            filterTo.addCond(WkSiteTableField.CHECK_STATUS, Types.WkCheckStatus.CONDUCT_CHECK.value);
+            commonMapper.update(updater, filterTo);
+        }
+    }
+
     private List<WkSiteManagementResponse> getWkSiteResponseBysiteManagementList(List<SiteManagement> siteManagementList){
         List<WkSiteManagementResponse> wkSiteResponseList = new ArrayList<>();
 
@@ -151,4 +179,5 @@ public class WkSiteManagementServiceImpl implements WkSiteManagementService {
         }
         return wkSiteResponseList;
     }
+
 }

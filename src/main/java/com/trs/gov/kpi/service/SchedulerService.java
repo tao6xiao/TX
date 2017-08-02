@@ -33,6 +33,6 @@ public interface SchedulerService {
      * 终止一次性检查任务
      * @param siteId
      */
-    void terminateCheckJobOnce(int siteId);
+    void terminateCheckJobOnce(int siteId) throws BizException;
 
 }

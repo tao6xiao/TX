@@ -95,10 +95,27 @@ public class PageSpider {
 
     private String homepageHost;
 
+    private Spider spider = null;
+
+    private boolean isTerminate = false;
+
+    public void stop() {
+        isTerminate = true;
+        if (spider != null) {
+            spider.stop();
+            spider.close();
+        }
+        log.info("LinkAnalysisScheduler " + siteManagement.getSiteId() + "(downloading) stop end ...");
+    }
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
         public void process(Page page) {
+
+            if (isTerminate) {
+                return;
+            }
 
             // 当页面已经完全跳转到外部去了，就不再处理了。
             String baseHost = UrlUtils.getHost(page.getUrl().get());
@@ -211,6 +228,10 @@ public class PageSpider {
 
         @Override
         public Page download(Request request, Task task) {
+
+            if (isTerminate) {
+                return null;
+            }
 
             isUrlAvailable.set(false);
             Date startDate = new Date();
@@ -387,7 +408,8 @@ public class PageSpider {
             return Collections.emptyList();
         }
         //创建下载
-        Spider.create(kpiProcessor).setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();
+        spider = Spider.create(kpiProcessor);
+        spider.setDownloader(recordUnavailableUrlDownloader).addUrl(baseUrl).thread(threadNum).run();
 
         List<Pair<String, String>> unavailableUrlAndParentUrls = new LinkedList<>();
         for (String unavailableUrl : unavailableUrls) {
@@ -401,12 +423,6 @@ public class PageSpider {
 
         log.info("linkCheck completed!");
         return unavailableUrlAndParentUrls;
-    }
-    //停止一次检查
-    public void terminateCheckJobOnce(){
-        Spider spider = Spider.create(kpiProcessor);
-        spider.stop();
-        spider.close();
     }
 
     private int calcDeep(String url, int minDeep, int deep) {
