@@ -91,4 +91,8 @@ public class LogUtil {
         }
         addLog(desc);
     }
+
+    public static void addInfoLog(String operationType, String type, String desc){
+        SimpleLogServer.getInstance(new LogUser()).system(operationType, type, desc).info();
+    }
 }

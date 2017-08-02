@@ -13,6 +13,12 @@ public class OperationType {
     public static final String UPDATE = "修改";
 
     public static final String REQUEST = "请求";
+
+    public static final String MONITOR = "监测";
+
+    public static final String MONITOR_START = "监测开始";
+
+    public static final String MONITOR_END = "监测结束";
 	
 	private OperationType() {
     }
