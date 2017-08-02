@@ -116,72 +116,83 @@ public class CKMProcessWorker implements Runnable {
                     }
                     Map.Entry<String, Object> entry = entryIterator.next();
                     String errorInfo = entry.getKey();
-
-
-
-
-                    final String[] infos = errorInfo.split("：");
-                    if (infos == null || infos.length > 2 || infos.length < 1) {
-                        continue;
-                    }
-                    String errorWord = infos[0];
-                    String correctWord = "";
-                    if (infos.length >= 2) {
-                        correctWord = infos[1];
-                    }
-
-                    try {
-                        final String relativeDir = getRelativeDir(content.getSiteId(), content.getCheckId(), content.getUrl(), index, 1);
-                        String absoluteDir = locationDir + File.separator + relativeDir;
-                        createDir(absoluteDir);
-
-                        // 网页定位
-                        String pageLocContent = generatePageLocHtmlText(subIssueType, errorWord, correctWord);
-                        if (pageLocContent == null) {
-                            pageLocContent = "<html><body><h1>无快照页面</h1></body></html>";
+                    if (subIssueType == Types.InfoErrorIssueType.SENSITIVE_WORDS) {
+                        log.info(errorInfo);
+                        String[] sensitiveWords = errorInfo.split(";");
+                        for (String sensitiveWord : sensitiveWords) {
+                            if (!StringUtil.isEmpty(sensitiveWord)) {
+                                createIssue(index, subIssueType, sensitiveWord, "", errorContent);
+                            }
+                            index++;
                         }
-                        createPagePosHtml(absoluteDir, pageLocContent);
-
-                        // 源码定位
-                        String srcLocContent = generateSourceLocHtmlText(subIssueType, errorWord, correctWord);
-                        if (srcLocContent == null) {
-                            srcLocContent = "<html><body><h1>无快照页面</h1></body></html>";
+                    } else {
+                        log.info(errorInfo);
+                        final String[] infos = errorInfo.split("：");
+                        if (infos == null || infos.length > 2 || infos.length < 1) {
+                            continue;
                         }
-                        createSrcPosHtml(absoluteDir, srcLocContent);
-
-                        // 创建头部导航页面
-                        createContHtml(absoluteDir, content.getUrl(), content.getParentUrl());
-
-                        // 创建首页
-                        createIndexHtml(absoluteDir);
-
-                        //错误信息入库
-                        WkIssue issue = new WkIssue();
-                        issue.setCheckId(content.getCheckId());
-                        issue.setCheckTime(new Date());
-                        issue.setLocationUrl("gov/wangkang/loc/" +  relativeDir.replace(File.separator, "/") + "/" + "index.html");
-                        issue.setChnlName(getChnlName(content.getUrl()));
-                        issue.setDetailInfo(getDisplayErrorWord(subIssueType, errorWord, correctWord));
-                        if (StringUtil.isEmpty(content.getParentUrl())) {
-                            issue.setParentUrl(content.getUrl());
-                        } else {
-                            issue.setParentUrl(content.getParentUrl());
+                        String errorWord = infos[0];
+                        String correctWord = "";
+                        if (infos.length >= 2) {
+                            correctWord = infos[1];
                         }
-                        issue.setUrl(content.getUrl());
-                        issue.setSiteId(content.getSiteId());
-                        issue.setTypeId(Types.WkSiteCheckType.CONTENT_ERROR.value);
-                        issue.setSubTypeId(subIssueType.value);
-
-//                        log.info(" ckm begin insert to db");
-                        commonMapper.insert(DBUtil.toRow(issue));
-                    } catch (IOException e) {
-                        log.error("error content: " + errorContent);
-                        log.error("failed to generate file of " + content.getUrl() + ", siteid[" + content.getSiteId() + "] , checkid[" + content.getCheckId() + "]", e);
+                        createIssue(index, subIssueType, errorWord, correctWord, errorContent);
                     }
                 }
             }
         }
         return issueList;
+    }
+
+    private void createIssue(int index, Types.InfoErrorIssueType subIssueType, String errorWord, String correctWord, String errorContent) {
+        try {
+            final String relativeDir = getRelativeDir(content.getSiteId(), content.getCheckId(), content.getUrl(), index, 1);
+            String absoluteDir = locationDir + File.separator + relativeDir;
+            createDir(absoluteDir);
+
+            // 网页定位
+            String pageLocContent = generatePageLocHtmlText(subIssueType, errorWord, correctWord);
+            if (pageLocContent == null) {
+                pageLocContent = "<html><body><h1>无快照页面</h1></body></html>";
+            }
+            createPagePosHtml(absoluteDir, pageLocContent);
+
+            // 源码定位
+            String srcLocContent = generateSourceLocHtmlText(subIssueType, errorWord, correctWord);
+            if (srcLocContent == null) {
+                srcLocContent = "<html><body><h1>无快照页面</h1></body></html>";
+            }
+            createSrcPosHtml(absoluteDir, srcLocContent);
+
+            // 创建头部导航页面
+            createContHtml(absoluteDir, content.getUrl(), content.getParentUrl());
+
+            // 创建首页
+            createIndexHtml(absoluteDir);
+
+            //错误信息入库
+            WkIssue issue = new WkIssue();
+            issue.setCheckId(content.getCheckId());
+            issue.setCheckTime(new Date());
+            issue.setLocationUrl("gov/wangkang/loc/" +  relativeDir.replace(File.separator, "/") + "/" + "index.html");
+            issue.setChnlName(getChnlName(content.getUrl()));
+            issue.setDetailInfo(getDisplayErrorWord(subIssueType, errorWord, correctWord));
+            if (StringUtil.isEmpty(content.getParentUrl())) {
+                issue.setParentUrl(content.getUrl());
+            } else {
+                issue.setParentUrl(content.getParentUrl());
+            }
+            issue.setUrl(content.getUrl());
+            issue.setSiteId(content.getSiteId());
+            issue.setTypeId(Types.WkSiteCheckType.CONTENT_ERROR.value);
+            issue.setSubTypeId(subIssueType.value);
+
+//                        log.info(" ckm begin insert to db");
+            commonMapper.insert(DBUtil.toRow(issue));
+        } catch (IOException e) {
+            log.error("error content: " + errorContent);
+            log.error("failed to generate file of " + content.getUrl() + ", siteid[" + content.getSiteId() + "] , checkid[" + content.getCheckId() + "]", e);
+        }
     }
 
     private String generatePageLocHtmlText(Types.InfoErrorIssueType type, String errorWord, String correct) {
