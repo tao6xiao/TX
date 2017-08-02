@@ -41,6 +41,10 @@ import java.util.Objects;
 @Component
 public class InvalidLinkProcessor implements MQListener {
 
+    private static final String LOC_TAG = "||||||";
+
+    private static final String DOUBLE_QUOTS = "&quot;";
+
     private final String name = "InvalidLinkProcessor";
 
     @Value("${wk.location.dir}")
@@ -226,8 +230,10 @@ public class InvalidLinkProcessor implements MQListener {
 
     private String generateSourceLocHtmlText(InvalidLinkMsg msg) {
 
+        final String processSource = processSourceLocation(msg.getParentUrl(), msg.getUrl(), msg.getParentContent().intern());
+
         // 将html标签转义
-        String sourceEscape = StringEscapeUtils.escapeHtml4(msg.getParentContent().intern());
+        String sourceEscape = StringEscapeUtils.escapeHtml4(processSource);
         StringBuffer sb = new StringBuffer();
         sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
         sb.append(CKMProcessWorker.LINE_SP);
@@ -283,23 +289,77 @@ public class InvalidLinkProcessor implements MQListener {
         sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
 
         String result = sb.toString();
-        int index = result.indexOf(msg.getUrl(), 0);
-        if (index == -1) {
-            return result;
+
+        int start = 0;
+        int end = 0;
+        int index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, start);
+        if (index >= 0) {
+
+            end = result.indexOf(LOC_TAG, index + DOUBLE_QUOTS.length() + LOC_TAG.length());
+            if (end >= 0) {
+                String sourceLinkText = result.substring(index + DOUBLE_QUOTS.length() + LOC_TAG.length(), end);
+                String msgStr = getMsgStr(msg.getErrorCode(), msg.getUrl());
+                String errorinfo = "<font trserrid=\"anchor\" msg=\"" + msgStr + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + sourceLinkText +
+                        "</font>";
+                result = result.substring(0, index + DOUBLE_QUOTS.length()) + errorinfo + result.substring(end + LOC_TAG.length());
+            }
         } else {
-            String msgStr = "状态：" + msg.getErrorCode() + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
-            String errorinfo = "<font trserrid=\"anchor\" msg=\"" + msgStr + "\" msgtitle=\"定位\" style=\"border:2px red solid;color:red;\">" + msg.getUrl() + "</font>";
-            result = result.substring(0, index) + errorinfo + result.substring(index + msg.getUrl().length());
-            index = result.indexOf(msg.getUrl(), index + errorinfo.length());
+            return null;
+        }
+        index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, index + DOUBLE_QUOTS.length());
+        while (index > 0) {
+            end = result.indexOf(LOC_TAG, index + DOUBLE_QUOTS.length() + LOC_TAG.length());
+            if (end >= 0) {
+                String sourceLinkText = result.substring(index + "&quot;".length() + LOC_TAG.length(), end);
+                String msgStr = getMsgStr(msg.getErrorCode(), msg.getUrl());
+                String errorinfo = "<font msg=\"" + msgStr + "\" style=\"border:2px red solid;color:red;\">" + sourceLinkText + "</font>";
+                result = result.substring(0, index + DOUBLE_QUOTS.length()) + errorinfo + result.substring(end + LOC_TAG.length());
+            }
+            index = result.indexOf(DOUBLE_QUOTS + LOC_TAG, index + DOUBLE_QUOTS.length());
         }
 
-        while (index != -1) {
-            String msgStr = "状态：" + msg.getErrorCode() + "  [<font color=red>" + getDisplayErrorWord(msg.getUrl()) + "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + msg.getUrl() + "'>" + msg.getUrl() + "</a>";
-            String errorinfo = "<font msg=\"" + msgStr + "\" style=\"border:2px red solid;color:red;\">" + msg.getUrl() + "</font>";
-            result = result.substring(0, index) + errorinfo + result.substring(index + msg.getUrl().length());
-            index = result.indexOf(msg.getUrl(), index + errorinfo.length());
+        return result;
+    }
+
+    private String getMsgStr(Integer pageStatusCode, String value) {
+        return "状态：" + pageStatusCode + "  [<font color=red>" + getDisplayErrorWord(value) +
+                "</font>]<br>地址：<br><a target=_blank style='color:#0000FF;font-size:12px' href='" + value + "'>" + value + "</a>";
+    }
+
+    private String processSourceLocation(String parentUrl, String invalidUrl, String parentUrlContent) {
+
+        String result = parentUrlContent.intern();
+        // 解析源码，找到断链标签，加上标记信息。
+        final Document parseDoc = Jsoup.parse(result, parentUrl);
+        Elements links = parseDoc.select("[href]");
+        Elements media = parseDoc.select("[src]");
+
+        // 处理a标签
+        for (int i = 0; i < links.size(); i++) {
+            Element link = links.get(i);
+            String relHref = link.attr("href");
+            String absHref = link.attr("abs:href");
+            if (StringUtil.isEmpty(absHref)) {
+                absHref = relHref;
+            }
+            if (absHref.equals(invalidUrl)) {
+                link.attr("href", LOC_TAG + relHref + LOC_TAG);
+            }
+        }
+        // 处理img标签
+        for (int i = 0; i < media.size(); i++) {
+            Element link = media.get(i);
+            String relHref = link.attr("src");
+            String absHref = link.attr("abs:src");
+            if (StringUtil.isEmpty(absHref)) {
+                absHref = relHref;
+            }
+            if (absHref.equals(invalidUrl)) {
+                link.attr("src", LOC_TAG + relHref + LOC_TAG);
+            }
         }
 
+        result = parseDoc.html();
         return result;
     }
 
