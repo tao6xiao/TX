@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl.wangkang;
 
 import com.trs.gov.kpi.constant.Status;
+import com.trs.gov.kpi.constant.WkSiteIndexStatsTableField;
 import com.trs.gov.kpi.constant.WkSiteTableField;
 import com.trs.gov.kpi.dao.*;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
@@ -93,7 +94,7 @@ public class WkAllSiteDetailServiceImpl implements WkAllSiteDetailService {
             siteIds.add(site.getSiteId());
         }
 
-        filter.addCond("siteId", siteIds);
+        filter.addCond(WkSiteIndexStatsTableField.SITE_ID, siteIds);
 
         int siteIndexStatsCount = commonMapper.count(filter);
         Pager pager = PageInfoDeal.buildResponsePager(wkAllSiteDetail.getPageIndex(), wkAllSiteDetail.getPageSize(), siteIndexStatsCount);
