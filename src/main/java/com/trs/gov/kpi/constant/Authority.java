@@ -120,5 +120,9 @@ public class Authority {
     public static final String KPIWEB_REPORT_SEARCH = "kpiweb.report.search";//查询
     public static final String KPIWEB_REPORT_EXPORT = "kpiweb.report.export";//导出
 
+    //问政互动
+    public static final String KPIWEB_NBHD = "kpiweb.nbhd";
+    public static final String KPIWEB_NBHD_SEARCH = "kpiweb.nbhd.search";//查询
+
 
 }
