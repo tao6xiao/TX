@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -58,7 +60,7 @@ public class PerformanceScheduler implements SchedulerTask {
             performanceMapper.insert(performance);
         } catch (ParseException | RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }
         log.info("PerformanceScheduler " + siteId + " end...");
     }

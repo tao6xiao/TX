@@ -10,9 +10,8 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -48,7 +47,7 @@ public class IntegratedMonitorWarningController extends IssueHandler {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = integratedMonitorWarningService.get(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询预警提醒的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询预警提醒的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 }

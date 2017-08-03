@@ -5,8 +5,6 @@ import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Role;
-import com.trs.gov.kpi.entity.outerapi.User;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -15,10 +13,9 @@ import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.UserApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,7 +56,7 @@ public class IssueCountController {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         List<Statistics> list = countService.countSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中分类查询问题数量统计", getSystemName(request)).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "问题统计中分类查询问题数量统计", getSystemName(request));
         return list;
     }
 
@@ -88,7 +85,7 @@ public class IssueCountController {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         History history = countService.historyCountSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中分类查询统计历史数量", getSystemName(request)).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "问题统计中分类查询统计历史数量", getSystemName(request));
         return history;
     }
 
@@ -104,7 +101,7 @@ public class IssueCountController {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中部门分类查询统计数量", getSystemName(request)).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "问题统计中部门分类查询统计数量", getSystemName(request));
         return deptCountResponses;
     }
 
@@ -123,7 +120,7 @@ public class IssueCountController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         List<DeptCount> deptCountList = countService.getDeptCountByType(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中根据问题类型部门分类查询统计数量", getSystemName(request)).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "问题统计中根据问题类型部门分类查询统计数量", getSystemName(request));
         return deptCountList;
     }
 
@@ -140,7 +137,7 @@ public class IssueCountController {
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         DeptInductionResponse[] inductionResponseArray = countService.deptInductionSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中部门分类归纳统计数量查询", getSystemName(request)).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "问题统计中部门分类归纳统计数量查询", getSystemName(request));
         return inductionResponseArray;
     }
 

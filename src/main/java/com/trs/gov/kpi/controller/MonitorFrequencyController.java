@@ -15,6 +15,7 @@ import com.trs.gov.kpi.service.MonitorFrequencyService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.TRSLogUserUtil;
 import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ public class MonitorFrequencyController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         List<MonitorFrequencyResponse> frequencyResponseList = monitorFrequencyService.queryBySiteId(siteId);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前站点的监测频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询当前站点的监测频率", siteApiService.getSiteById(siteId, "").getSiteName());
         return frequencyResponseList;
     }
 
@@ -107,10 +108,10 @@ public class MonitorFrequencyController {
         List<MonitorFrequency> monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
         if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
             monitorFrequencyService.addMonitorFrequencySetUp(freqSetUp);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加监测频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.ADD, "添加监测频率", siteApiService.getSiteById(siteId, "").getSiteName());
         } else {//siteId和typeId同时存在，修改对应站点的监测频率记录
             monitorFrequencyService.updateMonitorFrequencySetUp(freqSetUp);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改监测频率", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.UPDATE, "修改监测频率", siteApiService.getSiteById(siteId, "").getSiteName());
         }
         return null;
     }

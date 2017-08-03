@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Dept;
@@ -59,7 +61,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             throw new RemoteException("获取部门失败！", e);
         }
     }
@@ -93,7 +95,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             throw new RemoteException("获取部门集合失败！", e);
         }
     }

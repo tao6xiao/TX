@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.MonitorTime;
@@ -88,7 +90,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             monitorTimeService.insertMonitorTime(monitorTime);
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
-            LogUtil.addSystemLog("check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
+            LogUtil.addErrorLog(OperationType.MONITOR, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
         } finally {
             log.info("LinkAnalysisScheduler " + siteId + " end...");
         }

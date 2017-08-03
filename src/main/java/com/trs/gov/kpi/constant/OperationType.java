@@ -19,6 +19,10 @@ public class OperationType {
     public static final String MONITOR_START = "监测开始";
 
     public static final String MONITOR_END = "监测结束";
+
+    public static final String REMOTE = "接口调用";
+
+    public static final String TASK_SCHEDULE = "任务调度";
 	
 	private OperationType() {
     }

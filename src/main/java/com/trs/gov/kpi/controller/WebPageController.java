@@ -10,9 +10,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,7 +51,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         int value = webPageService.selectReplySpeedCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "响应速度统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "响应速度统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return value;
     }
 
@@ -71,7 +70,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = webPageService.selectReplySpeed(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "响应速度列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "响应速度列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -90,7 +89,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         int value = webPageService.selectPageSpaceCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过大页面的统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "过大页面的统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return value;
     }
 
@@ -109,7 +108,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = webPageService.selectPageSpace(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过大页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "过大页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -128,7 +127,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         int value = webPageService.selectPageDepthCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过深页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "过深页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return value;
     }
 
@@ -147,7 +146,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = webPageService.selectPageDepth(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过深页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "过深页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -166,7 +165,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         int value = webPageService.selectRepeatCodeCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "冗余代码统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "冗余代码统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return value;
     }
 
@@ -185,7 +184,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = webPageService.selectRepeatCode(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "冗余代码列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "冗余代码列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -204,7 +203,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         int value = webPageService.selectUrlLengthCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过长URL页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "过长URL页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return value;
     }
 
@@ -223,7 +222,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = webPageService.selectUrlLength(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "过长URL页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "过长URL页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -242,7 +241,7 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.handlePageByIds(siteId, Arrays.asList(ids));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "处理访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.UPDATE, "处理访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName());
         return null;
     }
 
@@ -261,7 +260,7 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.ignorePageByIds(siteId, Arrays.asList(ids));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "忽略访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.UPDATE, "忽略访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName());
         return null;
     }
 
@@ -280,7 +279,7 @@ public class WebPageController {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         webPageService.delPageByIds(siteId, Arrays.asList(ids));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.DELETE, "删除访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.DELETE, "删除访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName());
         return null;
     }
 }

@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.IssueIndicator;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.ReportMapper;
 import com.trs.gov.kpi.entity.Report;
@@ -85,7 +87,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             site = siteApiService.getSiteById(siteId, "");
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         }
         String title = "";
         if (site != null) {
@@ -245,7 +247,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             workbook.write(out);
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }
         report.setPath(fileDir + fileName);
         report.setCrTime(new Date());

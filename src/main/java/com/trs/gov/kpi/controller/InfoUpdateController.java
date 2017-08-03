@@ -15,9 +15,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,8 +54,9 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoUpdateService.getIssueCount(param);
+        List list = infoUpdateService.getIssueCount(param);
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        return list;
     }
 
     /**
@@ -72,8 +72,9 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoUpdateService.getIssueHistoryCount(param);
+        History history = infoUpdateService.getIssueHistoryCount(param);
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        return history;
     }
 
     /**
@@ -90,8 +91,9 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoUpdateService.get(param);
+        ApiPageData apiPageData = infoUpdateService.get(param);
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        return apiPageData;
     }
 
     /**
@@ -112,7 +114,7 @@ public class InfoUpdateController extends IssueHandler {
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = infoUpdateService.getUpdateNotInTimeCountList(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取栏目信息更新不及时的统计信息", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "获取栏目信息更新不及时的统计信息", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return list;
     }
 
@@ -136,7 +138,7 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         MonthUpdateResponse response = infoUpdateService.getNotInTimeCountMonth(siteId);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取更新不及时栏目的更新不及时总月数以及空栏目", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "获取更新不及时栏目的更新不及时总月数以及空栏目", siteApiService.getSiteById(siteId, "").getSiteName());
         return response;
     }
 

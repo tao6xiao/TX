@@ -11,9 +11,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -52,7 +51,7 @@ public class ServiceLinkController extends IssueHandler {
         }
         ParamCheckUtil.paramCheck(requestParam);
         ApiPageData apiPageData = linkAvailabilityService.getServiceLinkList(requestParam);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询服务链接未解决问题列表", siteApiService.getSiteById(requestParam.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询服务链接未解决问题列表", siteApiService.getSiteById(requestParam.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 

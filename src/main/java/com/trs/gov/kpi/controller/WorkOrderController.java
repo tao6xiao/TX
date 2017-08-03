@@ -10,9 +10,8 @@ import com.trs.gov.kpi.entity.responsedata.InfoUpdateOrderRes;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.IssueService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,7 +49,7 @@ public class WorkOrderController {
     public ApiPageData selectInfoUpdateOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(request);
         ApiPageData apiPageData = infoUpdateService.selectInfoUpdateOrder(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询更新监测数据列表（为工单模块提供）", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询更新监测数据列表（为工单模块提供）", "");
         return apiPageData;
     }
 
@@ -65,7 +64,7 @@ public class WorkOrderController {
     public InfoUpdateOrderRes getInfoUpdateOrderById(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(request);
         InfoUpdateOrderRes updateOrderRes = infoUpdateService.getInfoUpdateOrderById(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询单条更新频率问题（为工单模块提供）", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询单条更新频率问题（为工单模块提供）", "");
         return updateOrderRes;
     }
 
@@ -80,7 +79,7 @@ public class WorkOrderController {
     public ApiPageData selectInfoErrorOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(request);
         ApiPageData apiPageData = infoErrorService.selectInfoErrorOrder(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询敏感信息监测数据列表（为工单模块提供）", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询敏感信息监测数据列表（为工单模块提供）", "");
         return apiPageData;
     }
 
@@ -95,8 +94,7 @@ public class WorkOrderController {
     public InfoErrorOrderRes getInfoErrorOrderById(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         ParamCheckUtil.paramCheck(request);
         InfoErrorOrderRes errorOrderRes = infoErrorService.getInfoErrorOrderById(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询单条敏感信息监测问题（为工单模块提供）", "").info();
-
+        LogUtil.addOperationLog(OperationType.QUERY, "查询单条敏感信息监测问题（为工单模块提供）", "");
         return errorOrderRes;
     }
 
@@ -113,7 +111,7 @@ public class WorkOrderController {
             throw new BizException("参数不合法！");
         }
         issueService.updateOrderByIds(workOrderStatus, Arrays.asList(ids));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改问题工单处理状态（为工单模块提供）", "").info();
+        LogUtil.addOperationLog(OperationType.UPDATE, "修改问题工单处理状态（为工单模块提供）", "");
         return null;
     }
 }

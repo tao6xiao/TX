@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
@@ -85,7 +83,6 @@ public class CKMScheduler implements SchedulerTask {
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         if (checkSite == null) {
             log.error("site[" + siteId + "] is not exist!");
-            LogUtil.addSystemLog("site[" + siteId + "] is not exist!");
             return;
         }
 
@@ -120,13 +117,12 @@ public class CKMScheduler implements SchedulerTask {
             result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             log.error("failed to check content " + checkContent, e);
-            LogUtil.addSystemLog("failed to check content " + checkContent, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to check content " + checkContent, e);
             return issueList;
         }
 
         if (!result.isOk()) {
             log.error("return error: " + result.getMessage());
-            LogUtil.addSystemLog("return error: " + result.getMessage());
             return issueList;
         }
 
@@ -168,7 +164,7 @@ public class CKMScheduler implements SchedulerTask {
             } catch (IOException e) {
                 log.error("error content: " + errorContent);
                 log.error("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
-                LogUtil.addSystemLog("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
             }
 
             Issue issue = new Issue();
@@ -480,7 +476,7 @@ public class CKMScheduler implements SchedulerTask {
                 }
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
             }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
@@ -492,7 +488,7 @@ public class CKMScheduler implements SchedulerTask {
             insert(buildList(page, checkTypeList));
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         }
     }
 }

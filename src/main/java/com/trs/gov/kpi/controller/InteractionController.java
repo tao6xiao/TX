@@ -8,8 +8,7 @@ import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
 import com.trs.gov.kpi.service.outer.InteractionService;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
+import com.trs.gov.kpi.utils.LogUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,7 +35,7 @@ public class InteractionController {
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
     public NBHDStatisticsRes getGovMsgBoxesCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         NBHDStatisticsRes res = interactionService.getGovMsgBoxesCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询问政互动的信件列表", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的信件列表", "");
         return res;
     }
 
@@ -49,7 +48,7 @@ public class InteractionController {
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public NBHDHistoryRes getGovMsgHistoryCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         NBHDHistoryRes historyRes = interactionService.getGovMsgHistoryCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询问政互动的数量", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的数量", "");
         return historyRes;
     }
 
@@ -62,7 +61,7 @@ public class InteractionController {
     @RequestMapping(value = "/msg/unhandled", method = RequestMethod.GET)
     public NBHDPageDataResult getGovMsgBoxes(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         NBHDPageDataResult result = interactionService.getGovMsgBoxes(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询问政互动的数量的历史记录", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的数量的历史记录", "");
         return result;
     }
 

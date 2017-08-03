@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -11,10 +12,8 @@ import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
-import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,7 +50,7 @@ public class InfoErrorController extends IssueHandler {
         }
         ParamCheckUtil.paramCheck(param);
         List list = infoErrorService.getIssueCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询信息错误待解决和已解决问题数量", "查询信息错误待解决和已解决问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息错误待解决和已解决问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return list;
     }
 
@@ -69,7 +68,7 @@ public class InfoErrorController extends IssueHandler {
         }
         ParamCheckUtil.paramCheck(param);
         History history = infoErrorService.getIssueHistoryCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询信息错误历史记录", "查询信息错误历史记录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息错误历史记录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return history;
     }
 
@@ -88,7 +87,7 @@ public class InfoErrorController extends IssueHandler {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = infoErrorService.getInfoErrorList(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation("查询信息错误待解决问题列表", "查询信息错误待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息错误待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 

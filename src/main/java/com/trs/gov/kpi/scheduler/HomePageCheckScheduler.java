@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.MonitorTime;
@@ -67,7 +65,6 @@ public class HomePageCheckScheduler implements SchedulerTask {
             final Site checkSite = siteApiService.getSiteById(siteId, null);
             if (checkSite == null) {
                 log.error("site[" + siteId + "] is not exsit!");
-                LogUtil.addSystemLog("site[" + siteId + "] is not exsit!");
                 return;
             }
 
@@ -107,7 +104,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             monitorTimeService.insertMonitorTime(monitorTime);
         } catch (Exception e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         } finally {
             log.info("HomePageCheckScheduler " + siteId + " end...");
         }

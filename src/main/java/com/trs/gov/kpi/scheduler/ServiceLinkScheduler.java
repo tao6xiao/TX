@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
@@ -82,7 +84,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
             monitorTimeService.insertMonitorTime(monitorTime);
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         } finally {
             log.info("ServiceLinkScheduler " + siteId + " end...");
         }

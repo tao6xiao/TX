@@ -13,8 +13,7 @@ import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +61,7 @@ public class MonitorSiteController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName());
         return monitorSiteDeal;
     }
 
@@ -101,15 +100,14 @@ public class MonitorSiteController {
                 schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }
 
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.UPDATE, "修改监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName());
 
         } else {//检测站点表中不存在siteId对应记录，将插入记录
             monitorSiteService.addMonitorSite(monitorSiteDeal);
 
             // 触发监控
             schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.ADD, "添加监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName());
 
         }
         return null;

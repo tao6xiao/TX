@@ -9,9 +9,8 @@ import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.requestdata.CheckTextRequest;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,7 +63,7 @@ public class DetectorController {
             log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
             throw new RemoteException(checkResult.getMessage());
         }
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "执行ckm校对", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "执行ckm校对", "");
         return JSON.parseObject(checkResult.getResult());
     }
 

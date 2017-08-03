@@ -11,9 +11,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IntegratedMonitorService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,7 +52,7 @@ public class IntegratedMonitorController {
         }
         ParamCheckUtil.paramCheck(param);
         Double score = integratedMonitorService.getPerformance(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询当前的绩效指数得分", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询当前的绩效指数得分", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return score;
     }
 
@@ -71,7 +70,7 @@ public class IntegratedMonitorController {
         }
         ParamCheckUtil.paramCheck(param);
         List<HistoryStatistics> list = integratedMonitorService.getHistoryPerformance(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询绩效指数得分的历史记录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询绩效指数得分的历史记录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return list;
     }
 
@@ -89,7 +88,7 @@ public class IntegratedMonitorController {
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = integratedMonitorService.getAllIssueCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询所有问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询所有问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return list;
     }
 
@@ -107,7 +106,7 @@ public class IntegratedMonitorController {
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = integratedMonitorService.getUnhandledIssueCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询各类问题的待解决问题数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询各类问题的待解决问题数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return list;
     }
 
@@ -125,7 +124,7 @@ public class IntegratedMonitorController {
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = integratedMonitorService.getWarningCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询各类预警的待解决数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询各类预警的待解决数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return list;
     }
 

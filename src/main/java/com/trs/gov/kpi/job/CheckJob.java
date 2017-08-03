@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.job;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.scheduler.SchedulerTask;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -22,7 +24,7 @@ public class CheckJob implements Job {
             task.run();
         } catch (RemoteException e) {
             log.error("调用外部接口失败", e);
-            LogUtil.addSystemLog("调用外部接口失败", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口失败", e);
         }
     }
 }

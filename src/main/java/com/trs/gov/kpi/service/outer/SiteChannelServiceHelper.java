@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.service.outer;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +50,9 @@ public class SiteChannelServiceHelper {
                 if (publishDocIds == null || publishDocIds.isEmpty()) {
                     emptyChannels.add(channelId);
                 }
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
             }
         }
 

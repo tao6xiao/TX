@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.dao.FrequencySetupMapper;
@@ -122,7 +120,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             monitorTimeService.insertMonitorTime(monitorTime);
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
-            LogUtil.addSystemLog("check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
+            LogUtil.addErrorLog(OperationType.MONITOR, ErrorType.RUN_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
         } finally {
             log.info("InfoUpdateCheckScheduler " + siteId + " end...");
         }
@@ -187,7 +185,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(chnl, parent);
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             }
         }
 
@@ -248,7 +246,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(channel, parent);
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, "", e);
             }
         }
     }
@@ -401,7 +399,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             return ids != null && !ids.isEmpty();
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         }
         // NOTE: 异常情况下，先暂时不判定为未更新，以免发生错误，等下次的检查的时候再判定
         return true;
@@ -548,7 +546,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             update.setChnlUrl(siteApiService.getChannelPublishUrl("", 0, channelId));
         } catch (Exception e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }
 
         issueMapper.insert(DBUtil.toRow(update));
@@ -593,9 +591,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         String chnlUrl = null;
         try {
             chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         }
         DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
         if (chnlUrl != null) {

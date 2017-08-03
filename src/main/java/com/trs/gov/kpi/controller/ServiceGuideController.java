@@ -12,9 +12,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,7 +52,7 @@ public class ServiceGuideController {
         }
         ParamCheckUtil.paramCheck(param);
         SGStatistics sgStatistics = sgService.getSGCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询服务指南按类型统计的问题总数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询服务指南按类型统计的问题总数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return sgStatistics;
     }
 
@@ -72,7 +71,7 @@ public class ServiceGuideController {
         }
         ParamCheckUtil.paramCheck(param);
         History history = sgService.getSGHistoryCount(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询服务指南问题总数的历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询服务指南问题总数的历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return history;
     }
 
@@ -91,7 +90,7 @@ public class ServiceGuideController {
         }
         ParamCheckUtil.paramCheck(param);
         SGPageDataRes sgPageDataRes = sgService.getSGList(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询服务指南问题总数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询服务指南问题总数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return sgPageDataRes;
     }
 

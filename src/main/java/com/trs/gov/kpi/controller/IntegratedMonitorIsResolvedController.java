@@ -10,6 +10,7 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.TRSLogUserUtil;
 import com.trs.mlf.simplelog.SimpleLogServer;
@@ -50,7 +51,7 @@ public class IntegratedMonitorIsResolvedController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取已解决的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "获取已解决的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -70,7 +71,7 @@ public class IntegratedMonitorIsResolvedController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取已忽略的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "获取已忽略的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 }

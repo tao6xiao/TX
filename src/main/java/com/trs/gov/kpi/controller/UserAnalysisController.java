@@ -10,9 +10,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,7 +52,7 @@ public class UserAnalysisController {
         }
         check(basRequest);
         Integer value = basService.getVisits(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "访问量统计信息查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "访问量统计信息查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName());
         return value;
     }
 
@@ -73,7 +72,7 @@ public class UserAnalysisController {
         }
         check(basRequest);
         History history = basService.getHistoryVisits(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "访问量历史记录查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "访问量历史记录查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName());
         return history;
     }
 
@@ -92,7 +91,7 @@ public class UserAnalysisController {
         }
         check(basRequest);
         Integer value = basService.getStayTime(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "最近一个月次均停留时间查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "最近一个月次均停留时间查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName());
         return value;
     }
 
@@ -112,7 +111,7 @@ public class UserAnalysisController {
         }
         check(basRequest);
         History history = basService.getHistoryStayTime(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "停留时间历史记录查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "停留时间历史记录查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName());
         return history;
     }
 

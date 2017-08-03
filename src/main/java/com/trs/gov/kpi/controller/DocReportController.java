@@ -13,9 +13,8 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.ReportApiService;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -74,7 +73,7 @@ public class DocReportController {
                 .build();
         String reportData = reportApiService.getReport(param);
         if (StringUtil.isEmpty(reportData)) {
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档分类型统计查询", "").info();
+            LogUtil.addOperationLog(OperationType.QUERY, "本月新增文档分类型统计查询", "");
             return new ArrayList<>();
         } else {
             final ArrayList<DocTypeCounterResponse> responseList = new ArrayList<>();
@@ -83,7 +82,7 @@ public class DocReportController {
                 JSONObject data = objects.getJSONObject(index);
                 responseList.add(new DocTypeCounterResponse(data.getInteger("DocType"), data.getLong("Count")));
             }
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档分类型统计查询", "").info();
+            LogUtil.addOperationLog(OperationType.QUERY, "本月新增文档分类型统计查询", "");
             return responseList;
         }
     }
@@ -113,7 +112,7 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按部门统计的稿件信息", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询按部门统计的稿件信息", "");
         return result;
 
     }
@@ -143,7 +142,7 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按站点统计的稿件信息", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询按站点统计的稿件信息", "");
         return result;
     }
 
@@ -172,7 +171,7 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按个人统计的稿件信息", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询按个人统计的稿件信息", "");
         return result;
     }
 
@@ -207,7 +206,7 @@ public class DocReportController {
         String beginDay = DateUtil.toString(now.getTime());
         final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
         allMonthReport.putAll(reportData);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询本月每天发稿量统计信息", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询本月每天发稿量统计信息", "");
         return allMonthReport;
     }
 
@@ -250,7 +249,7 @@ public class DocReportController {
         result.put("push", countMap(pushReportData));
         final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
         result.put("distribute", countMap(distributeReportData));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "原稿，已发，上报，下达历史数据量统计查询", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "原稿，已发，上报，下达历史数据量统计查询", "");
         return result;
     }
 
@@ -278,7 +277,7 @@ public class DocReportController {
         result.put("daiqian", countMap(daiqianReportData));
         final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
         result.put("yifa", countMap(yifaReportData));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档状态统计查询", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "本月新增文档状态统计查询", "");
         return result;
     }
 

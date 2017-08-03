@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.Granularity;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.requestdata.DateRequest;
 import lombok.NonNull;
@@ -164,7 +166,7 @@ public class DateUtil {
                 calendar.setTime(toDate(param.getEndDateTime()));
             } catch (ParseException e) {
                 log.error("解析开始日期失败！", e);
-                LogUtil.addSystemLog("解析开始日期失败！", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "解析开始日期失败！", e);
             }
 
             if (Granularity.DAY.equals(param.getGranularity())) {
@@ -305,7 +307,7 @@ public class DateUtil {
             }
 
         } catch (ParseException e) {
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             return list;
         }
 

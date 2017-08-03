@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -14,8 +15,6 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -68,7 +67,7 @@ public class ReportController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getDay());
         ApiPageData apiPageData = reportService.selectReportList(param, true);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -97,7 +96,7 @@ public class ReportController {
         String[] str = path.split("/");
 
         download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间节点导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return null;
     }
 
@@ -118,7 +117,7 @@ public class ReportController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
         ParamCheckUtil.checkDayTime(param.getEndDateTime());
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return reportService.selectReportList(param, false);
     }
 
@@ -147,7 +146,7 @@ public class ReportController {
         String[] str = path.split("/");
 
         download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间区间导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return null;
     }
 
@@ -168,7 +167,7 @@ public class ReportController {
 
             } catch (Exception e) {
                 log.error(fileName + " download fail!", e);
-                LogUtil.addSystemLog(fileName + " download failed!", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, fileName + " download failed!", e);
             }
         }
     }

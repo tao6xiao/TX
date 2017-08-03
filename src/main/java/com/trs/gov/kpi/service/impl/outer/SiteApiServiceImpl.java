@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiPageData;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
@@ -65,7 +67,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("failed get site[id=" + siteId + "]", e);
-            LogUtil.addSystemLog("failed get site[id=" + siteId + "]", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed get site[id=" + siteId + "]", e);
             throw new RemoteException(FAIL_GET_SITE, e);
         }
     }
@@ -100,7 +102,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             throw new RemoteException("获取子栏目失败！", e);
         }
     }
@@ -118,7 +120,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             return responseManager("findChannelById", response);
         } catch (IOException e) {
             log.error("failed getChannelById", e);
-            LogUtil.addSystemLog("failed getChannelById", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed getChannelById", e);
             throw new RemoteException("获取栏目失败！", e);
         }
     }
@@ -141,7 +143,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("failed to get channel publish url", e);
-            LogUtil.addSystemLog("failed to get channel publish url", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to get channel publish url", e);
             throw new RemoteException("获取栏目发布地址失败！", e);
         }
     }
@@ -205,7 +207,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("failed findChnlIds", e);
-            LogUtil.addSystemLog("failed findChnlIds", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed findChnlIds", e);
             throw new RemoteException("通过栏目名称获取栏目编号失败！", e);
         }
     }
@@ -228,7 +230,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             return responseManager("findChannelByUrl", response);
         } catch (IOException e) {
             log.error("failed findChannelByUrl", e);
-            LogUtil.addSystemLog("failed findChannelByUrl", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed findChannelByUrl", e);
             throw new RemoteException("通过url获取栏目！", e);
         }
     }

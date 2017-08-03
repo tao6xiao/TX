@@ -12,6 +12,7 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.DutyDeptService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.TRSLogUserUtil;
 import com.trs.mlf.simplelog.SimpleLogServer;
@@ -58,13 +59,11 @@ public class DutyDeptController {
         }
         if (deptService.getByChnlId(deptRequest.getChnlId()) == null) {
             deptService.add(deptRequest);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.ADD, "添加栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName());
 
         } else {
             deptService.update(deptRequest);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName())
-                    .info();
-
+            LogUtil.addOperationLog(OperationType.UPDATE, "修改栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName());
         }
         return null;
     }
@@ -84,7 +83,7 @@ public class DutyDeptController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = deptService.get(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询栏目和部门的关系", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询栏目和部门的关系", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return apiPageData;
     }
 
@@ -109,7 +108,7 @@ public class DutyDeptController {
         }
         ParamCheckUtil.integerArrayParamCheck(chnlIds);
         deptService.delete(siteId, chnlIds);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.DELETE, "删除对于站点栏目下设置的部门", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.DELETE, "删除对于站点栏目下设置的部门", siteApiService.getSiteById(siteId, "").getSiteName());
         return null;
     }
 }
