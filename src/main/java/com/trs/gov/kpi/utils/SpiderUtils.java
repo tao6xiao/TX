@@ -165,6 +165,28 @@ public class SpiderUtils {
         }
     };
 
+    private Downloader homepageCheckDownloader = new HttpClientDownloader() {
+
+        ThreadLocal<Boolean> isUrlAvailable = new ThreadLocal<>();
+
+        @Override
+        public Page download(Request request, Task task) {
+
+            isUrlAvailable.set(false);
+            super.download(request, task);
+            if (!isUrlAvailable.get()) {
+                unavailableUrls.add(request.getUrl().intern());
+            }
+            return null;
+        }
+
+        @Override
+        public void onSuccess(Request request) {
+
+            isUrlAvailable.set(true);
+        }
+    };
+
     private Downloader recordUnavailableUrlDownloader = new HttpClientDownloader() {
 
         ThreadLocal<Boolean> isUrlAvailable = new ThreadLocal<>();
@@ -199,7 +221,7 @@ public class SpiderUtils {
                 }
             } else {
                 EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
-                if(urlType != EnumUrlType.HTML){
+                if (urlType != EnumUrlType.HTML) {
                     return result;
                 }
 
@@ -596,7 +618,7 @@ public class SpiderUtils {
 
         log.info("homePageCheck started!");
         init(homePageUrl, siteId);
-        recordUnavailableUrlDownloader.download(new Request(homePageUrl), new Task() {
+        homepageCheckDownloader.download(new Request(homePageUrl), new Task() {
             @Override
             public String getUUID() {
 
