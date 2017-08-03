@@ -439,6 +439,19 @@
             <type>kpiweb.report</type>
         </operation>
 
+        <operation name="kpiweb.nbhd.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->问政互动-->查询</desc>
+            <index>518</index>
+            <type>kpiweb.nbhd</type>
+        </operation>
+        <operation name="kpiweb.nbhd.export">
+            <disp-name>导出</disp-name>
+            <desc>绩效考核-->问政互动-->导出</desc>
+            <index>519</index>
+            <type>kpiweb.nbhd</type>
+        </operation>
+
     </extension>
 
 

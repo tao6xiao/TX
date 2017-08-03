@@ -8,9 +8,7 @@ import lombok.Data;
 @Data
 public class NBHDCount {
 
-    private int willTimeCount;
+    private int overTimeCount;// 回复不及时(过期)信件数量
 
-    private int overTimeCount;
-
-    private int commonCount;
+    private int commonCount;// 未过期信件数量
 }

@@ -102,7 +102,7 @@ public class BasServiceImpl implements BasService {
                 list.add(historyStatistics);
                 continue;
             }
-
+            subOneDay(historyDate);
             Integer pv = requestBasPV(url, initTime(historyDate.getBeginDate()), initTime(historyDate.getEndDate()), siteIndexPage);
             historyStatistics.setValue(pv);
 
@@ -114,13 +114,31 @@ public class BasServiceImpl implements BasService {
 
     private int getVisitsSum(List<HistoryDate> dates, String url, String siteIndexPage) throws ParseException, RemoteException {
         int sum = 0;
-        for (HistoryDate date : dates) {
+        for (Iterator<HistoryDate> iterator = dates.iterator(); iterator.hasNext(); ) {
+            HistoryDate date = iterator.next();
+            if (!iterator.hasNext()){
+                break;
+            }
+            subOneDay(date);
             Integer pv = requestBasPV(url, initTime(date.getBeginDate()), initTime(date.getEndDate()), siteIndexPage);
             if (pv != null) {
                 sum += pv;
             }
         }
         return sum;
+    }
+
+    /**
+     * DateUtil.splitDate方法是把结束日期往后加了一天，需要减去一天，与网脉统一
+     *
+     * @param date
+     */
+    private void subOneDay(HistoryDate date) throws ParseException {
+        Date end = DateUtil.toDayDate(date.getEndDate());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(end);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        date.setEndDate(DateUtil.toDayString(calendar.getTime()));
     }
 
     private Integer requestBasPV(String url, String beginDay, String endDay, String siteIndexPage) throws RemoteException {
@@ -215,9 +233,9 @@ public class BasServiceImpl implements BasService {
                 continue;
             }
 
-            if (Granularity.DAY.equals(basRequest.getGranularity())){//粒度为天时，查询的是当天的数据，需要传入开始时间
+            if (Granularity.DAY.equals(basRequest.getGranularity())) {//粒度为天时，查询的是当天的数据，需要传入开始时间
                 params.put(DAY, initTime(historyDate.getBeginDate()));
-            }else {
+            } else {
                 params.put(DAY, initTime(historyDate.getEndDate()));
             }
             SiteSummary siteSummary = requestBasSummary(params);
