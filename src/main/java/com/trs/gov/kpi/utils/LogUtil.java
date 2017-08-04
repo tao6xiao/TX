@@ -3,6 +3,9 @@ package com.trs.gov.kpi.utils;
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizRuntimeException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.mlf.simplelog.LogConstant;
 import com.trs.mlf.simplelog.LogUser;
 import com.trs.mlf.simplelog.SimpleLogServer;
@@ -130,5 +133,25 @@ public class LogUtil {
      */
     public static void addDebugLog(String operationType, String debugType, String desc) {
         SimpleLogServer.debug(MODULE_NAME, new LogUser(), operationType, debugType, desc);
+    }
+
+    /**
+     * 为记录日志获取站点名称
+     * @param service
+     * @param siteId
+     * @return
+     */
+    public static String getSiteNameForLog(SiteApiService service, Integer siteId) {
+        try {
+            final Site site = service.getSiteById(siteId, "");
+            if (site != null) {
+                return site.getSiteName();
+            } else {
+                return "site[" + siteId+ "]";
+            }
+        } catch (Throwable e) {
+            addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "查询站点失败", e);
+            return "site[" + siteId+ "]";
+        }
     }
 }

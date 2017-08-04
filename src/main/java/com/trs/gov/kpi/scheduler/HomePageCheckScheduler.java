@@ -103,11 +103,13 @@ public class HomePageCheckScheduler implements SchedulerTask {
             monitorTime.setStartTime(startTime);
             monitorTime.setEndTime(endTime);
             monitorTimeService.insertMonitorTime(monitorTime);
+            // TODO REVIEW LINWEI  性能日志的operationType有没有规范？要不然会冲突。 SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         } finally {
+            // TODO REVIEW LINWEI SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
             log.info(SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
         }

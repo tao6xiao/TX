@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.History;
@@ -51,12 +52,19 @@ public class InfoUpdateController extends IssueHandler {
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+            // TODO 添加操作失败的操作日志
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        List list = infoUpdateService.getIssueCount(param);
-        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        return list;
+
+        try {
+            List list = infoUpdateService.getIssueCount(param);
+            LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            return list;
+        } catch ( Throwable ex) {
+            // TODO 添加操作失败的操作日志
+            throw ex;
+        }
     }
 
     /**

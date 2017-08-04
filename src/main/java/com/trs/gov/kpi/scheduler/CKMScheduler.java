@@ -103,6 +103,7 @@ public class CKMScheduler implements SchedulerTask {
         monitorTimeService.insertMonitorTime(monitorTime);
         LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        // TODO REVIEW LINWEI 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
     }
 
