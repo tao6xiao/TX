@@ -101,6 +101,7 @@ public class SchedulerServiceImpl implements SchedulerService {
                     log.warn("failed delete job " + jobKey);
                 }
             }
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REMOVE_SCHEDULE, "移除调度任务，移除类型：" + checkType);
         } catch (SchedulerException e) {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
@@ -350,6 +351,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         scheduleJob(scheduler, jobType, site, simpleSchedule()
                 .withIntervalInSeconds(interval)
                 .repeatForever());
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务，任务类型:" + jobType);
     }
 
     /**

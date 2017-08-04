@@ -15,4 +15,6 @@ public class ErrorType {
     public static final String BIZ_EXCEPTION = "业务异常";
 
     public static final String TASK_SCHEDULE_FAILED = "任务调度失败";
+
+    private ErrorType(){}
 }
