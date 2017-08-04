@@ -95,6 +95,8 @@ public class SpiderUtils {
 
     private String baseHost;
 
+    int count = 0;
+
     private PageProcessor kpiProcessor = new PageProcessor() {
 
         @Override
@@ -308,12 +310,14 @@ public class SpiderUtils {
 
                     // 创建首页
                     CKMScheduler.createIndexHtml(absoluteDir);
+
                     linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
                 }
             } catch (Exception e) {
                 log.error("", e);
                 LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             }
+
         }
 
         private String generateSourceLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {

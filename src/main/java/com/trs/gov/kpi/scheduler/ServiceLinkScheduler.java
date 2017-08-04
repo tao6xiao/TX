@@ -53,6 +53,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     private MonitorRecordService monitorRecordService;
 
+    int count = 0;
+
     @Override
     public void run() {
 
@@ -72,15 +74,18 @@ public class ServiceLinkScheduler implements SchedulerTask {
                     issue.setIssueTime(nowTime);
                     issue.setCheckTime(nowTime);
                     issueMapper.insert(DBUtil.toRow(issue));
+                    count ++;
                 }
             }
             Date endTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
-            monitorRecord.setTaskStatus(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setEndTime(endTime);
+            monitorRecord.setResult(count);
             monitorRecordService.insertMonitorRecord(monitorRecord);
+
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.SERVICE_LINK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (RemoteException e) {
             log.error("", e);

@@ -55,6 +55,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     private MonitorRecordService monitorRecordService;
 
+    int isAvailable = 1;
+
     @Override
     public void run() {
 
@@ -94,15 +96,18 @@ public class HomePageCheckScheduler implements SchedulerTask {
                     issue.setCustomer1(baseUrl);
                     issue.setIssueTime(new Date());
                     issueMapper.insert(DBUtil.toRow(issue));
+                    isAvailable = 0;
                 }
             }
             Date endTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
-            monitorRecord.setTaskStatus(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setEndTime(endTime);
+            monitorRecord.setResult(isAvailable);
             monitorRecordService.insertMonitorRecord(monitorRecord);
+
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("", e);

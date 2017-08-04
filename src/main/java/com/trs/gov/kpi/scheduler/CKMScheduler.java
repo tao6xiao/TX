@@ -76,6 +76,8 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private MonitorRecordService monitorRecordService;
 
+    int count = 0;//错误总数记录
+
     @Override
     public void run() throws RemoteException {
         log.info(SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
@@ -99,10 +101,12 @@ public class CKMScheduler implements SchedulerTask {
         Date endTime = new Date();
         MonitorRecord monitorRecord = new MonitorRecord();
         monitorRecord.setSiteId(siteId);
-        monitorRecord.setTaskStatus(EnumCheckJobType.CHECK_CONTENT.value);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
         monitorRecord.setBeginTime(startTime);
         monitorRecord.setEndTime(endTime);
+        monitorRecord.setResult(count);
         monitorRecordService.insertMonitorRecord(monitorRecord);
+
         LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
@@ -478,6 +482,7 @@ public class CKMScheduler implements SchedulerTask {
                 List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
+                    count ++;
                 }
             } catch (RemoteException e) {
                 log.error("", e);

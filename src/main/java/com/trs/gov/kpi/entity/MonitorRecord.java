@@ -28,7 +28,7 @@ public class MonitorRecord {
     private  Integer taskStatus;//任务状态
 
     @DBField("result")
-    private String result;//执行结果
+    private Integer result;//执行结果
 
     @DBField("beginTime")
     private Date beginTime;//开始时间

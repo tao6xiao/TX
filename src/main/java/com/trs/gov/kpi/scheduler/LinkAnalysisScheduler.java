@@ -59,6 +59,9 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Getter
     private Boolean isTimeNode;
 
+    @Setter
+    int count = 0;
+
     @Override
     public void run() {
 
@@ -84,9 +87,10 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             Date endTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
-            monitorRecord.setTaskStatus(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setEndTime(endTime);
+            monitorRecord.setResult(1);
             monitorRecordService.insertMonitorRecord(monitorRecord);
 
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());

@@ -91,6 +91,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     // 缓存自查更新频率
     private DefaultUpdateFreq defaultUpdateFreq;
 
+    int count = 0;//更新数量记录
+
     @Override
     public void run() {
 
@@ -115,10 +117,12 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             Date endTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
-            monitorRecord.setTaskStatus(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setEndTime(endTime);
+            monitorRecord.setResult(count);
             monitorRecordService.insertMonitorRecord(monitorRecord);
+
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
@@ -552,6 +556,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }
 
+        count++;
         issueMapper.insert(DBUtil.toRow(update));
     }
 
@@ -603,6 +608,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             updater.addField(IssueTableField.DETAIL, chnlUrl);
         }
         updater.addField(IssueTableField.CHECK_TIME, new Date());
+        count++;
         commonMapper.update(updater, filter);
     }
 
