@@ -118,7 +118,11 @@ public class LogUtil {
      * @param timeUsed
      */
     public static void addElapseLog(String operationType, String desc, long timeUsed) {
-        SimpleLogServer.elapse(MODULE_NAME, new LogUser(), operationType, desc, timeUsed);
+        try {
+            SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
+        }catch (BizRuntimeException e){
+            SimpleLogServer.elapse(MODULE_NAME, new LogUser(), operationType, desc, timeUsed);
+        }
     }
 
     /**

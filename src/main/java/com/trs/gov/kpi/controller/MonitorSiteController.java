@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * Created by HLoach on 2017/5/11.
@@ -52,6 +53,7 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -61,7 +63,9 @@ public class MonitorSiteController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询监测站点设置信息", endTime.getTime()-startTime.getTime());
         return monitorSiteDeal;
     }
 

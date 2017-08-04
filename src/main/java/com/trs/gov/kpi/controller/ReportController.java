@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Created by ranwei on 2017/6/9.
@@ -60,6 +61,7 @@ public class ReportController {
      */
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -67,7 +69,9 @@ public class ReportController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getDay());
         ApiPageData apiPageData = reportService.selectReportList(param, true);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "按时间节点查询报表列表", endTime.getTime()-startTime.getTime());
         return apiPageData;
     }
 
@@ -110,6 +114,7 @@ public class ReportController {
      */
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -117,8 +122,11 @@ public class ReportController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
         ParamCheckUtil.checkDayTime(param.getEndDateTime());
+        ApiPageData apiPageData = reportService.selectReportList(param, false);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        return reportService.selectReportList(param, false);
+        LogUtil.addElapseLog(OperationType.QUERY, "按时间区间查询报表列表", endTime.getTime()-startTime.getTime());
+        return apiPageData;
     }
 
     /**

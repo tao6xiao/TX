@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,10 +54,13 @@ public class IssueCountController {
     @RequestMapping(value = "/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         List<Statistics> list = countService.countSort(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "问题统计中分类查询问题数量统计", getSystemName(request));
+        LogUtil.addElapseLog(OperationType.QUERY, "问题统计中分类查询问题数量统计", endTime.getTime()-startTime.getTime());
         return list;
     }
 
@@ -82,10 +86,13 @@ public class IssueCountController {
     @RequestMapping(value = "/count/history", method = RequestMethod.GET)
     @ResponseBody
     public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         History history = countService.historyCountSort(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "问题统计中分类查询统计历史数量", getSystemName(request));
+        LogUtil.addElapseLog(OperationType.QUERY, "问题统计中分类查询统计历史数量", endTime.getTime()-startTime.getTime());
         return history;
     }
 
@@ -98,10 +105,13 @@ public class IssueCountController {
     @RequestMapping(value = "/bydept/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "问题统计中部门分类查询统计数量", getSystemName(request));
+        LogUtil.addElapseLog(OperationType.QUERY, "问题统计中部门分类查询统计数量", endTime.getTime()-startTime.getTime());
         return deptCountResponses;
     }
 
@@ -114,13 +124,16 @@ public class IssueCountController {
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCount> getDeptIssueCountByType(@ModelAttribute IssueCountByTypeRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         if (request.getTypeId() > 5 || request.getTypeId() < 1) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         List<DeptCount> deptCountList = countService.getDeptCountByType(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "问题统计中根据问题类型部门分类查询统计数量", getSystemName(request));
+        LogUtil.addElapseLog(OperationType.QUERY, "问题统计中根据问题类型部门分类查询统计数量", endTime.getTime()-startTime.getTime());
         return deptCountList;
     }
 
@@ -134,10 +147,13 @@ public class IssueCountController {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     @ResponseBody
     public DeptInductionResponse[] deptInductionSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         checkAuthority(request);
         ParamCheckUtil.paramCheck(request);
         DeptInductionResponse[] inductionResponseArray = countService.deptInductionSort(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "问题统计中部门分类归纳统计数量查询", getSystemName(request));
+        LogUtil.addElapseLog(OperationType.QUERY, "问题统计中部门分类归纳统计数量查询", endTime.getTime()-startTime.getTime());
         return inductionResponseArray;
     }
 

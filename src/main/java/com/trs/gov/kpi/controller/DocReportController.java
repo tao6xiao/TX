@@ -62,6 +62,7 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/bytype", method = RequestMethod.GET)
     @ResponseBody
     public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -73,7 +74,9 @@ public class DocReportController {
                 .build();
         String reportData = reportApiService.getReport(param);
         if (StringUtil.isEmpty(reportData)) {
+            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, "本月新增文档分类型统计查询", "");
+            LogUtil.addElapseLog(OperationType.QUERY, "本月新增文档分类型统计查询", endTime.getTime()-startTime.getTime());
             return new ArrayList<>();
         } else {
             final ArrayList<DocTypeCounterResponse> responseList = new ArrayList<>();
@@ -82,7 +85,9 @@ public class DocReportController {
                 JSONObject data = objects.getJSONObject(index);
                 responseList.add(new DocTypeCounterResponse(data.getInteger("DocType"), data.getLong("Count")));
             }
+            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, "本月新增文档分类型统计查询", "");
+            LogUtil.addElapseLog(OperationType.QUERY, "本月新增文档分类型统计查询", endTime.getTime()-startTime.getTime());
             return responseList;
         }
     }
@@ -102,6 +107,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
             BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -112,7 +118,9 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询按部门统计的稿件信息", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询按部门统计的稿件信息", endTime.getTime()-startTime.getTime());
         return result;
 
     }
@@ -132,6 +140,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
             BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -142,7 +151,9 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询按站点统计的稿件信息", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询按站点统计的稿件信息", endTime.getTime()-startTime.getTime());
         return result;
     }
 
@@ -161,6 +172,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
             BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -171,7 +183,9 @@ public class DocReportController {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询按个人统计的稿件信息", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询按个人统计的稿件信息", endTime.getTime()-startTime.getTime());
         return result;
     }
 
@@ -185,6 +199,7 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/byday", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, String> getCurMonthCounterByDay(Integer siteId) throws RemoteException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -206,7 +221,9 @@ public class DocReportController {
         String beginDay = DateUtil.toString(now.getTime());
         final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
         allMonthReport.putAll(reportData);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询本月每天发稿量统计信息", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询本月每天发稿量统计信息", endTime.getTime()-startTime.getTime());
         return allMonthReport;
     }
 
@@ -222,6 +239,7 @@ public class DocReportController {
     @RequestMapping(value = "/multi/onemonth", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, ParseException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -249,7 +267,9 @@ public class DocReportController {
         result.put("push", countMap(pushReportData));
         final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
         result.put("distribute", countMap(distributeReportData));
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "原稿，已发，上报，下达历史数据量统计查询", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "原稿，已发，上报，下达历史数据量统计查询", endTime.getTime()-startTime.getTime());
         return result;
     }
 
@@ -263,6 +283,7 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/bystatus", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Long> getCurMonthDocStatusReport(Integer siteId) throws RemoteException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -277,7 +298,10 @@ public class DocReportController {
         result.put("daiqian", countMap(daiqianReportData));
         final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
         result.put("yifa", countMap(yifaReportData));
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "本月新增文档状态统计查询", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "本月新增文档状态统计查询", endTime.getTime()-startTime.getTime());
+
         return result;
     }
 

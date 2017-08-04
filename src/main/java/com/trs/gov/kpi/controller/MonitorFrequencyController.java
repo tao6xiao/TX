@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,6 +55,7 @@ public class MonitorFrequencyController {
     @RequestMapping(value = "/checkfreq", method = RequestMethod.GET)
     @ResponseBody
     public List<MonitorFrequencyResponse> queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -62,7 +64,9 @@ public class MonitorFrequencyController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         List<MonitorFrequencyResponse> frequencyResponseList = monitorFrequencyService.queryBySiteId(siteId);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询当前站点的监测频率", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询当前站点的监测频率", endTime.getTime()-startTime.getTime());
         return frequencyResponseList;
     }
 
