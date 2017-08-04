@@ -47,14 +47,14 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
 
         QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE
-                .value, Types.IssueType.INFO_UPDATE_WARNING.value, Types.IssueType.RESPOND_WARNING.value));
+                .value, Types.IssueType.INFO_UPDATE_WARNING.value, Types.IssueType.RESPOND_WARNING.value, Types.IssueType.SERVICE_LINK_AVAILABLE));
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Arrays.asList(Status.Resolve.IGNORED.value, Status.Resolve.RESOLVED.value));
 
         int handledCount = issueMapper.count(queryFilter);
 
         queryFilter = QueryFilterHelper.toFilter(param);
         queryFilter.addCond(IssueTableField.TYPE_ID, Arrays.asList(Types.IssueType.LINK_AVAILABLE_ISSUE.value, Types.IssueType.INFO_ERROR_ISSUE.value, Types.IssueType.INFO_UPDATE_ISSUE
-                .value));
+                .value, Types.IssueType.SERVICE_LINK_AVAILABLE));
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED);
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         int unhandledCount = issueMapper.count(queryFilter);
@@ -197,6 +197,17 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
         list.add(typosStatistics);
         list.add(sensitiveWordsStatistics);
 
+        //查询失效服务链接数量
+        queryFilter = QueryFilterHelper.toFilter(param);
+        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.ServiceLinkIssueType.INVALID_LINK.value);
+        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        int invalidServiceLinkCount = issueMapper.count(queryFilter);
+        Statistics invalidServiceLinkStatistics = new Statistics();
+        invalidServiceLinkStatistics.setCount(invalidServiceLinkCount);
+        invalidServiceLinkStatistics.setType(Types.ServiceLinkIssueType.INVALID_LINK.value);
+        invalidServiceLinkStatistics.setName(Types.ServiceLinkIssueType.INVALID_LINK.getName());
+        list.add(invalidServiceLinkStatistics);
 
         return list;
     }
