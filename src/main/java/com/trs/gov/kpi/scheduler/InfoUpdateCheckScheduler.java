@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.IssueTableField;
 import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.constant.Types;
@@ -15,8 +16,8 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.MonitorSiteService;
-import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
@@ -70,7 +71,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     CommonMapper commonMapper;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Getter
     @Setter
@@ -111,15 +112,15 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                     checkChannelTreeUpdate(child);
                 }
             }
-
             insertIssueAndWarning(siteTrees);
+
             Date endTime = new Date();
-            MonitorTime monitorTime = new MonitorTime();
-            monitorTime.setSiteId(siteId);
-            monitorTime.setTypeId(Types.IssueType.INFO_UPDATE_ISSUE.value);
-            monitorTime.setStartTime(startTime);
-            monitorTime.setEndTime(endTime);
-            monitorTimeService.insertMonitorTime(monitorTime);
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskStatus(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setEndTime(endTime);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
             LogUtil.addSystemLog("check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);

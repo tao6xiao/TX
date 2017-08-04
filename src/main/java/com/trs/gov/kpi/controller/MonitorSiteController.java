@@ -114,4 +114,36 @@ public class MonitorSiteController {
         }
         return null;
     }
+
+    /**
+     * 网站手动监测
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "/manual/check", method = RequestMethod.PUT)
+    @ResponseBody
+    public void manualMonitoring(Integer siteId, Integer checkJobValue) throws BizException, RemoteException {
+        if (siteId == null && checkJobValue == null) {
+            log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        EnumCheckJobType checkJobType = null;
+        switch (checkJobValue){
+            case (1):
+                checkJobType = EnumCheckJobType.CHECK_HOME_PAGE;
+                break;
+            case (2):
+                checkJobType = EnumCheckJobType.CHECK_LINK;
+                break;
+            case (3):
+                checkJobType = EnumCheckJobType.CHECK_CONTENT;
+                break;
+            case (4):
+                checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
+                break;
+            default:
+        }
+        schedulerService.doCheckJobOnce(siteId, checkJobType);
+    }
 }
