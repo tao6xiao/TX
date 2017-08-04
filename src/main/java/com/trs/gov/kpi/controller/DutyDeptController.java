@@ -14,8 +14,6 @@ import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 

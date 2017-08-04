@@ -3,6 +3,7 @@ package com.trs.gov.kpi.constant;
 /**
  * Created by he.lang on 2017/7/26.
  */
+// TODO REVIEW LINWEI 如果只是常量，可以用interface，更为好一些
 public class OperationType {
     public static final String QUERY = "查询";
 
