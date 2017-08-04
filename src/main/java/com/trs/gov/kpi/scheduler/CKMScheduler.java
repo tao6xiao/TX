@@ -77,12 +77,13 @@ public class CKMScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
-        log.info("CKMScheduler " + siteId + " start...");
+        log.info(SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
         Date startTime = new Date();
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exist!");
+            log.warn("site[" + siteId + "] is not exist!");
             return;
         }
 
@@ -93,7 +94,6 @@ public class CKMScheduler implements SchedulerTask {
         }
 
         spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
-        log.info("CKMScheduler " + siteId + " end...");
         Date endTime = new Date();
         MonitorTime monitorTime = new MonitorTime();
         monitorTime.setSiteId(siteId);
@@ -101,6 +101,9 @@ public class CKMScheduler implements SchedulerTask {
         monitorTime.setStartTime(startTime);
         monitorTime.setEndTime(endTime);
         monitorTimeService.insertMonitorTime(monitorTime);
+        LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
+        log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
     }
 
 

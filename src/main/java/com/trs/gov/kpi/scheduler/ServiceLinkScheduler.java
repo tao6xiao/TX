@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.ErrorType;
-import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.MonitorTime;
@@ -58,7 +56,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info("ServiceLinkScheduler " + siteId + " start...");
+        log.info(SchedulerType.schedulerStart(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
         Date startTime = new Date();
         try {
             for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
@@ -82,11 +81,13 @@ public class ServiceLinkScheduler implements SchedulerTask {
             monitorTime.setStartTime(startTime);
             monitorTime.setEndTime(endTime);
             monitorTimeService.insertMonitorTime(monitorTime);
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.SERVICE_LINK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (RemoteException e) {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         } finally {
-            log.info("ServiceLinkScheduler " + siteId + " end...");
+            log.info(SchedulerType.schedulerEnd(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
         }
     }
 
