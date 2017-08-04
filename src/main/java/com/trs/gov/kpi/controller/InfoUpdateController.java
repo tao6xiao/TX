@@ -39,9 +39,6 @@ public class InfoUpdateController extends IssueHandler {
     @Resource
     private AuthorityService authorityService;
 
-    @Resource
-    SiteApiService siteApiService;
-
     /**
      * 查询已解决、预警和更新不及时的数量
      *

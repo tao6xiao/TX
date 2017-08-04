@@ -143,7 +143,7 @@ public class WebPageController {
         int value = webPageService.selectPageDepthCount(param);
         Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "过深页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "过大页面列表查询", endTime.getTime()-startTime.getTime());
+        LogUtil.addElapseLog(OperationType.QUERY, "过深页面统计查询", endTime.getTime()-startTime.getTime());
         return value;
     }
 
@@ -163,7 +163,7 @@ public class WebPageController {
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = webPageService.selectPageDepth(param);
-        Date endTime = new Date();;
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "过深页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         LogUtil.addElapseLog(OperationType.QUERY, "过深页面列表查询", endTime.getTime()-startTime.getTime());
         return apiPageData;

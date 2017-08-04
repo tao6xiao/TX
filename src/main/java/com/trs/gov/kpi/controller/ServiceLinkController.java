@@ -34,9 +34,6 @@ public class ServiceLinkController extends IssueHandler {
     @Resource
     private AuthorityService authorityService;
 
-    @Resource
-    SiteApiService siteApiService;
-
     /**
      * 查询服务链接未解决问题列表
      *
