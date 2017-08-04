@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.entity.responsedata;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -44,7 +46,7 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
             }
         } catch (RemoteException e) {
             log.error("调用外部接口 getSiteById 失败", e);
-            LogUtil.addSystemLog("调用外部接口 getSiteById 失败", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口 getSiteById 失败", e);
         }
     }
 

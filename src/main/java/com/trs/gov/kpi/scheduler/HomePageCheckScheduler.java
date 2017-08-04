@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.EnumCheckJobType;
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.MonitorRecord;
@@ -61,14 +58,14 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info("HomePageCheckScheduler " + siteId + " start...");
+        log.info(SchedulerType.schedulerStart(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
         Date startTime = new Date();
         try {
 
             final Site checkSite = siteApiService.getSiteById(siteId, null);
             if (checkSite == null) {
                 log.error("site[" + siteId + "] is not exsit!");
-                LogUtil.addSystemLog("site[" + siteId + "] is not exsit!");
                 return;
             }
 
@@ -99,7 +96,6 @@ public class HomePageCheckScheduler implements SchedulerTask {
                     issueMapper.insert(DBUtil.toRow(issue));
                 }
             }
-
             Date endTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
@@ -107,11 +103,13 @@ public class HomePageCheckScheduler implements SchedulerTask {
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setEndTime(endTime);
             monitorRecordService.insertMonitorRecord(monitorRecord);
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         } finally {
-            log.info("HomePageCheckScheduler " + siteId + " end...");
+            log.info(SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
         }
 
     }

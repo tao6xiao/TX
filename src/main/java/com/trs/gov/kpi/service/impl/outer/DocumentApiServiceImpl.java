@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.ChnlDoc;
@@ -68,7 +70,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             throw new RemoteException("获取发布文档ID失败！", e);
         }
 
@@ -87,7 +89,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             return responseManger("findDocumentById", response);
         } catch (IOException e) {
             log.error("failed to getDocument, error: ", e);
-            LogUtil.addSystemLog("failed to getDocument, error: ", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to getDocument, error: ", e);
             throw new RemoteException("获取发布文档失败！", e);
         }
     }
@@ -141,7 +143,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
         } catch (IOException e) {
             log.error("failed to findDocumentByUrl, error", e);
-            LogUtil.addSystemLog("failed to findDocumentByUrl, error", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to findDocumentByUrl, error", e);
             throw new RemoteException("通过url获取文档失败！", e);
         }
     }

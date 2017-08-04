@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.ids;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.RemoteAddrUtil;
 import com.trs.idm.client.actor.ActorException;
@@ -32,7 +34,7 @@ public class IDSActor extends StdHttpSessionBasedActor{
         try {
             return session.getAttribute(LOGIN_FLAG) != null;
         } catch (IllegalStateException e) {
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             return false;
         }
     }

@@ -1,6 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.EnumCheckJobType;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.outerapi.Site;
@@ -62,7 +62,8 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Override
     public void run() {
 
-        log.info("LinkAnalysisScheduler " + siteId + " start...");
+        log.info(SchedulerType.schedulerStart(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
         Date startTime = new Date();
         try {
 
@@ -73,7 +74,6 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             }
 
             baseUrl = checkSite.getWebHttp();
-//            baseUrl = "http://govtest.dev3.trs.org.cn/pub/sdzc/index.html";
             if (StringUtil.isEmpty(baseUrl)) {
                 log.warn("site[" + siteId + "]'s web http is empty!");
                 return;
@@ -88,11 +88,15 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setEndTime(endTime);
             monitorRecordService.insertMonitorRecord(monitorRecord);
+
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
-            LogUtil.addSystemLog("check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
         } finally {
-            log.info("LinkAnalysisScheduler " + siteId + " end...");
+            log.info(SchedulerType.schedulerEnd(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+
         }
     }
 

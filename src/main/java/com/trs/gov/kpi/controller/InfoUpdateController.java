@@ -15,14 +15,14 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,13 +50,17 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoUpdateService.getIssueCount(param);
+        List list = infoUpdateService.getIssueCount(param);
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", endTime.getTime()-startTime.getTime());
+        return list;
     }
 
     /**
@@ -67,13 +71,17 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoUpdateService.getIssueHistoryCount(param);
+        History history = infoUpdateService.getIssueHistoryCount(param);
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询信息更新历史纪录", endTime.getTime()-startTime.getTime());
+        return history;
     }
 
     /**
@@ -85,13 +93,17 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询信息更新待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return infoUpdateService.get(param);
+        ApiPageData apiPageData = infoUpdateService.get(param);
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新待解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询信息更新待解决问题列表", endTime.getTime()-startTime.getTime());
+        return apiPageData;
     }
 
     /**
@@ -106,13 +118,16 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = infoUpdateService.getUpdateNotInTimeCountList(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取栏目信息更新不及时的统计信息", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "获取栏目信息更新不及时的统计信息", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "获取栏目信息更新不及时的统计信息", endTime.getTime()-startTime.getTime());
         return list;
     }
 
@@ -127,6 +142,7 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/month/count", method = RequestMethod.GET)
     @ResponseBody
     public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -136,7 +152,9 @@ public class InfoUpdateController extends IssueHandler {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         MonthUpdateResponse response = infoUpdateService.getNotInTimeCountMonth(siteId);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "获取更新不及时栏目的更新不及时总月数以及空栏目", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "获取更新不及时栏目的更新不及时总月数以及空栏目", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "获取更新不及时栏目的更新不及时总月数以及空栏目", endTime.getTime()-startTime.getTime());
         return response;
     }
 

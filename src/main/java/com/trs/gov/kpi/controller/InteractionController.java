@@ -11,14 +11,14 @@ import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.InteractionService;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
+import com.trs.gov.kpi.utils.LogUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +45,7 @@ public class InteractionController {
     public NBHDStatisticsRes getGovMsgBoxesCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
 //        checkAuthority(param);
         NBHDStatisticsRes res = interactionService.getGovMsgBoxesCount(param);
-//        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询问政互动的数量", "").info();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的信件列表", "");
         return res;
     }
 
@@ -58,9 +58,12 @@ public class InteractionController {
      */
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public List<HistoryStatistics> getGovMsgHistoryCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
+        Date startTime = new Date();
 //        checkAuthority(param);
         List<HistoryStatistics> historyStatisticsList = interactionService.getGovMsgHistoryCount(param);
-//        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询问政互动的数量的历史记录", "").info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的数量", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询问政互动的数量", endTime.getTime()-startTime.getTime());
         return historyStatisticsList;
     }
 
@@ -73,9 +76,12 @@ public class InteractionController {
      */
     @RequestMapping(value = "/msg/unhandled", method = RequestMethod.GET)
     public NBHDPageDataResult getGovMsgBoxes(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
+        Date startTime = new Date();
 //        checkAuthority(param);
         NBHDPageDataResult result = interactionService.getGovMsgBoxes(param);
-//        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询问政互动的信件列表", "").info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的数量的历史记录", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询问政互动的数量的历史记录", endTime.getTime()-startTime.getTime());
         return result;
     }
 

@@ -15,14 +15,14 @@ import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,6 +57,7 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -70,7 +71,9 @@ public class FrequencyPresetController {
         Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
         List<FrequencyPresetResponse> responseList = frequencyPresetService.getPageDataBySiteId(
                 siteId, pager.getCurrPage() - 1, pager.getPageSize());
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询更新频率及预警初设数据", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "查询更新频率及预警初设数据", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询更新频率及预警初设数据", endTime.getTime()-startTime.getTime());
         return new ApiPageData(pager, responseList);
     }
 
@@ -97,7 +100,7 @@ public class FrequencyPresetController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         int num = frequencyPresetService.addFrequencyPreset(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加预设记录", siteApiService.getSiteById(request.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.ADD, "添加预设记录", siteApiService.getSiteById(request.getSiteId(), "").getSiteName());
         if (num == 0) {
             log.error("向站点siteId" + request.getSiteId() + "添加的预设记录已经存在");
             throw new BizException("添加的预设记录已经存在");
@@ -129,7 +132,7 @@ public class FrequencyPresetController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         int num = frequencyPresetService.updateBySiteIdAndId(preset);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改预设记录", siteApiService.getSiteById(preset.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.UPDATE, "修改预设记录", siteApiService.getSiteById(preset.getSiteId(), "").getSiteName());
         if (num == 0) {
             log.error("在站点siteId" + preset.getSiteId() + "修改的预设记录已经存在");
             throw new BizException("修改的预设记录已经存在");
@@ -158,7 +161,7 @@ public class FrequencyPresetController {
         }
         if (!frequencySetupService.isPresetFeqUsed(siteId, id)) {
             frequencyPresetService.deleteBySiteIdAndId(siteId, id);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.DELETE, "删除预设记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.DELETE, "删除预设记录", siteApiService.getSiteById(siteId, "").getSiteName());
         } else {
             log.error("Invalid parameter:  当前参数siteId和id下的记录已经被某一栏目所使用，无法删除");
             throw new BizException("当前预设记录已经被某一栏目所使用，无法删除");

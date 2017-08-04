@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.IssueIndicator;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.ReportMapper;
 import com.trs.gov.kpi.entity.Report;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -70,8 +69,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
-        log.info("ReportGenerateScheduler " + siteId + " start...");
-
+        log.info(SchedulerType.schedulerStart(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
+        Date startTime = new Date();
         IssueCountRequest request = new IssueCountRequest();
         request.setSiteIds(Integer.toString(siteId));
         Report report = new Report();
@@ -85,7 +85,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             site = siteApiService.getSiteById(siteId, "");
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         }
         String title = "";
         if (site != null) {
@@ -245,13 +245,16 @@ public class ReportGenerateScheduler implements SchedulerTask {
             workbook.write(out);
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }
         report.setPath(fileDir + fileName);
         report.setCrTime(new Date());
         //入库
         reportMapper.insert(report);
-        log.info("ReportGenerateScheduler " + siteId + " end...");
+        Date endTime = new Date();
+        LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.PERFORMANCE_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
+        log.info(SchedulerType.schedulerEnd(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerStart(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
     }
 
     private void addTitle(Sheet sheet, CellStyle style, String title) {

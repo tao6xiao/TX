@@ -1,5 +1,9 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.DebugType;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.constant.SchedulerType;
 import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -45,8 +49,10 @@ public class PerformanceScheduler implements SchedulerTask {
 
     @Override
     public void run() {
-        log.info("PerformanceScheduler " + siteId + " start...");
+        log.info(SchedulerType.schedulerStart(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
         try {
+            Date startTime = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应
@@ -56,11 +62,15 @@ public class PerformanceScheduler implements SchedulerTask {
             performance.setIndex(score);
             performance.setCheckTime(calendar.getTime());
             performanceMapper.insert(performance);
+            Date endTime = new Date();
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.PERFORMANCE_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (ParseException | RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+        }finally {
+            log.info(SchedulerType.schedulerEnd(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
         }
-        log.info("PerformanceScheduler " + siteId + " end...");
     }
 
 }

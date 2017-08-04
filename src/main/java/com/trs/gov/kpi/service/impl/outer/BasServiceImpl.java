@@ -2,7 +2,9 @@ package com.trs.gov.kpi.service.impl.outer;
 
 import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.*;
+import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.Granularity;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -171,7 +173,7 @@ public class BasServiceImpl implements BasService {
             }
         } catch (Exception e) {
             log.error("getVisits failed ", e);
-            LogUtil.addSystemLog("getVisits failed ", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getVisits failed ", e);
             throw new RemoteException("获取访问量失败！", e);
         }
         if (basPVResponse.getRecords() == null || basPVResponse.getRecords().isEmpty()) {
@@ -297,7 +299,7 @@ public class BasServiceImpl implements BasService {
             }
         } catch (Exception e) {
             log.error("getStayTime failed ", e);
-            LogUtil.addSystemLog("getStayTime failed ", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getStayTime failed ", e);
             throw new RemoteException("获取停留时间失败！", e);
         }
         if (summaryResponse.getRecords() == null || summaryResponse.getRecords().isEmpty()) {

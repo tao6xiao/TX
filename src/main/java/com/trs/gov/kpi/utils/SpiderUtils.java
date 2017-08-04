@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.constant.EnumUrlType;
-import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
@@ -205,7 +203,7 @@ public class SpiderUtils {
                 chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl().intern(), siteId);
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
             }
 
             if (!isUrlAvailable.get()) {
@@ -314,7 +312,7 @@ public class SpiderUtils {
                 }
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             }
         }
 

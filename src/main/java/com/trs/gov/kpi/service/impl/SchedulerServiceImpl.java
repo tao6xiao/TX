@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.service.impl;
 
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.EnumCheckJobType;
-import com.trs.gov.kpi.constant.FreqUnit;
-import com.trs.gov.kpi.constant.FrequencyType;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
@@ -85,7 +82,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         } catch (SchedulerException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
         }
     }
 
@@ -103,9 +100,10 @@ public class SchedulerServiceImpl implements SchedulerService {
                     log.warn("failed delete job " + jobKey);
                 }
             }
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REMOVE_SCHEDULE, "移除调度任务，移除类型：" + checkType);
         } catch (SchedulerException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
         }
     }
 
@@ -169,7 +167,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         } catch (SchedulerException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
         }
     }
 
@@ -376,6 +374,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         scheduleJob(scheduler, jobType, site, simpleSchedule()
                 .withIntervalInSeconds(interval)
                 .repeatForever());
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务，任务类型:" + jobType);
     }
 
     /**
@@ -419,7 +418,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException e) {
             log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
-            LogUtil.addSystemLog("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
         }
     }
 
@@ -497,13 +496,13 @@ public class SchedulerServiceImpl implements SchedulerService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         } finally {
             try {
                 resourceAsStream.close();
             } catch (IOException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             }
         }
 
@@ -512,7 +511,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             FileUtils.writeStringToFile(new File(locationDir + File.separator + "style" + File.separator + "css.css"), sb.toString());
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }
     }
 }

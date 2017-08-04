@@ -1,9 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.EnumCheckJobType;
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
@@ -80,13 +78,13 @@ public class CKMScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
-        log.info("CKMScheduler " + siteId + " start...");
+        log.info(SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
         Date startTime = new Date();
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exist!");
-            LogUtil.addSystemLog("site[" + siteId + "] is not exist!");
+            log.warn("site[" + siteId + "] is not exist!");
             return;
         }
 
@@ -97,7 +95,6 @@ public class CKMScheduler implements SchedulerTask {
         }
 
         spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
-        log.info("CKMScheduler " + siteId + " end...");
 
         Date endTime = new Date();
         MonitorRecord monitorRecord = new MonitorRecord();
@@ -106,6 +103,9 @@ public class CKMScheduler implements SchedulerTask {
         monitorRecord.setBeginTime(startTime);
         monitorRecord.setEndTime(endTime);
         monitorRecordService.insertMonitorRecord(monitorRecord);
+        LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
+        log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
     }
 
 
@@ -122,13 +122,12 @@ public class CKMScheduler implements SchedulerTask {
             result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             log.error("failed to check content " + checkContent, e);
-            LogUtil.addSystemLog("failed to check content " + checkContent, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to check content " + checkContent, e);
             return issueList;
         }
 
         if (!result.isOk()) {
             log.error("return error: " + result.getMessage());
-            LogUtil.addSystemLog("return error: " + result.getMessage());
             return issueList;
         }
 
@@ -170,7 +169,7 @@ public class CKMScheduler implements SchedulerTask {
             } catch (IOException e) {
                 log.error("error content: " + errorContent);
                 log.error("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
-                LogUtil.addSystemLog("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
             }
 
             Issue issue = new Issue();
@@ -482,7 +481,7 @@ public class CKMScheduler implements SchedulerTask {
                 }
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
             }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
@@ -494,7 +493,7 @@ public class CKMScheduler implements SchedulerTask {
             insert(buildList(page, checkTypeList));
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         }
     }
 }

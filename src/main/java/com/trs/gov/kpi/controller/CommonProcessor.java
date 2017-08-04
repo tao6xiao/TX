@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.ResponseTemplate;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.BizRuntimeException;
@@ -38,7 +40,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizException.class)
     @ResponseBody
     public ResponseTemplate handBizException(Exception ex) {
-        LogUtil.addSystemLog("", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZEXCEPTION_MESSAGE : ex.getMessage(),
@@ -48,7 +50,7 @@ public class CommonProcessor {
     @ExceptionHandler(RemoteException.class)
     @ResponseBody
     public ResponseTemplate handRemoteException(Exception ex) {
-        LogUtil.addSystemLog("", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? REMOTEEXCEPTION_MESSAGE : ex.getMessage(),
@@ -58,7 +60,7 @@ public class CommonProcessor {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseTemplate handCommonException(Exception ex) {
-        LogUtil.addSystemLog("", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
         log.error("", ex);
         return new ResponseTemplate(false, SYSTEMEXCEPTION_MESSAGE, null);
     }
@@ -66,7 +68,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizRuntimeException.class)
     @ResponseBody
     public ResponseTemplate handBizRuntimeException(Exception ex) {
-        LogUtil.addSystemLog("", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZRUNTIMEEXCEPTION_MESSAGE : ex.getMessage(),

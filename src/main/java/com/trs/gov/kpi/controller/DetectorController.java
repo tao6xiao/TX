@@ -9,14 +9,14 @@ import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.requestdata.CheckTextRequest;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.utils.CollectionUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +40,7 @@ public class DetectorController {
     @RequestMapping(value = "/check/text", method = RequestMethod.POST)
     @ResponseBody
     public Object checkText(@RequestBody CheckTextRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
 
         if (request.getCheckType() == null || request.getCheckType().length == 0) {
             log.error("check type is empty!");
@@ -64,7 +65,9 @@ public class DetectorController {
             log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
             throw new RemoteException(checkResult.getMessage());
         }
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "执行ckm校对", "").info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "执行ckm校对", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "执行ckm校对", endTime.getTime()-startTime.getTime());
         return JSON.parseObject(checkResult.getResult());
     }
 

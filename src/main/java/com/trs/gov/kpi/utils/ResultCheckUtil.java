@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Dept;
@@ -27,7 +29,7 @@ public class ResultCheckUtil {
             channel = siteApiService.getChannelById(channelId, null);
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         }
         return checkChannelName(channel);
     }
@@ -52,7 +54,7 @@ public class ResultCheckUtil {
             }
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
             return "站点[id=" + siteId + "]";
         }
     }
@@ -70,7 +72,7 @@ public class ResultCheckUtil {
             }
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
             return "部门[id=" + deptId + "]";
         }
     }

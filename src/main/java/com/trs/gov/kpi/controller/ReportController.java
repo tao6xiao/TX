@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -14,8 +15,6 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * Created by ranwei on 2017/6/9.
@@ -61,6 +61,7 @@ public class ReportController {
      */
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -68,7 +69,9 @@ public class ReportController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getDay());
         ApiPageData apiPageData = reportService.selectReportList(param, true);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "按时间节点查询报表列表", endTime.getTime()-startTime.getTime());
         return apiPageData;
     }
 
@@ -97,7 +100,7 @@ public class ReportController {
         String[] str = path.split("/");
 
         download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间节点导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return null;
     }
 
@@ -111,6 +114,7 @@ public class ReportController {
      */
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -118,8 +122,11 @@ public class ReportController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
         ParamCheckUtil.checkDayTime(param.getEndDateTime());
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return reportService.selectReportList(param, false);
+        ApiPageData apiPageData = reportService.selectReportList(param, false);
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "按时间区间查询报表列表", endTime.getTime()-startTime.getTime());
+        return apiPageData;
     }
 
     /**
@@ -147,7 +154,7 @@ public class ReportController {
         String[] str = path.split("/");
 
         download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
+        LogUtil.addOperationLog(OperationType.QUERY, "按时间区间导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
         return null;
     }
 
@@ -168,7 +175,7 @@ public class ReportController {
 
             } catch (Exception e) {
                 log.error(fileName + " download fail!", e);
-                LogUtil.addSystemLog(fileName + " download failed!", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, fileName + " download failed!", e);
             }
         }
     }

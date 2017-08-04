@@ -10,13 +10,13 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * 按需更新的自查提醒Controller
@@ -45,6 +45,7 @@ public class DefaultUpdateFreqController {
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.GET)
     @ResponseBody
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -58,7 +59,9 @@ public class DefaultUpdateFreqController {
         if (defaultUpdateFreq != null) {
             value = defaultUpdateFreq.getValue();
         }
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "通过siteId查询对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "通过siteId查询对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "通过siteId查询对应自查提醒记录", endTime.getTime()-startTime.getTime());
         return value;
     }
 
@@ -84,10 +87,10 @@ public class DefaultUpdateFreqController {
         DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
         if (defaultUpdateFreqCheck == null) {//不存在对应siteId的自查提醒记录，需要新增记录
             defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "插入自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.ADD, "插入自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName());
         } else {//存在当前siteId对应自查提醒记录，修改记录
             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
+            LogUtil.addOperationLog(OperationType.UPDATE, "修改对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName());
         }
         return null;
     }

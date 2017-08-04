@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
@@ -115,7 +117,7 @@ public class SGServiceImpl implements SGService {
             }
         } catch (Exception e) {
             log.error("getSGService failed ", e);
-            LogUtil.addSystemLog("getSGService failed ", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getSGService failed ", e);
             throw new RemoteException(msg, e);
         }
     }
