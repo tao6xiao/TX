@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * 栏目更新频率Controller
@@ -54,6 +55,7 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@ModelAttribute FrequencySetupSelectRequest selectRequest) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), selectRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight
                 (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -64,7 +66,9 @@ public class FrequencySetupController {
         }
         ParamCheckUtil.pagerCheck(selectRequest.getPageIndex(), selectRequest.getPageSize());
         ApiPageData apiPageData = frequencySetupService.getPageData(selectRequest);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询当前站点频率设置", siteApiService.getSiteById(selectRequest.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询当前站点频率设置", endTime.getTime()-startTime.getTime());
         return apiPageData;
 
     }

@@ -14,12 +14,11 @@ import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * 设置->为栏目设置部门
@@ -60,7 +59,6 @@ public class DutyDeptController {
         if (deptService.getByChnlId(deptRequest.getChnlId()) == null) {
             deptService.add(deptRequest);
             LogUtil.addOperationLog(OperationType.ADD, "添加栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName());
-
         } else {
             deptService.update(deptRequest);
             LogUtil.addOperationLog(OperationType.UPDATE, "修改栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName());
@@ -77,13 +75,16 @@ public class DutyDeptController {
     @RequestMapping(value = "/dept", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData get(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = deptService.get(param);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询栏目和部门的关系", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询栏目和部门的关系", endTime.getTime()-startTime.getTime());
         return apiPageData;
     }
 

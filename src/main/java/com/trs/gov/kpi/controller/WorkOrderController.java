@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Created by ranwei on 2017/6/7.
@@ -47,9 +48,12 @@ public class WorkOrderController {
      */
     @RequestMapping(value = "/channel/update", method = RequestMethod.GET)
     public ApiPageData selectInfoUpdateOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         ParamCheckUtil.paramCheck(request);
         ApiPageData apiPageData = infoUpdateService.selectInfoUpdateOrder(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询更新监测数据列表（为工单模块提供）", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询更新监测数据列表（为工单模块提供）", endTime.getTime()-startTime.getTime());
         return apiPageData;
     }
 
@@ -62,9 +66,12 @@ public class WorkOrderController {
      */
     @RequestMapping(value = "/channel/update/single", method = RequestMethod.GET)
     public InfoUpdateOrderRes getInfoUpdateOrderById(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         ParamCheckUtil.paramCheck(request);
         InfoUpdateOrderRes updateOrderRes = infoUpdateService.getInfoUpdateOrderById(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询单条更新频率问题（为工单模块提供）", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询单条更新频率问题（为工单模块提供）", endTime.getTime()-startTime.getTime());
         return updateOrderRes;
     }
 
@@ -77,9 +84,12 @@ public class WorkOrderController {
      */
     @RequestMapping(value = "/document/error", method = RequestMethod.GET)
     public ApiPageData selectInfoErrorOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         ParamCheckUtil.paramCheck(request);
         ApiPageData apiPageData = infoErrorService.selectInfoErrorOrder(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询敏感信息监测数据列表（为工单模块提供）", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询敏感信息监测数据列表（为工单模块提供）", endTime.getTime()-startTime.getTime());
         return apiPageData;
     }
 
@@ -92,9 +102,12 @@ public class WorkOrderController {
      */
     @RequestMapping(value = "/document/error/single", method = RequestMethod.GET)
     public InfoErrorOrderRes getInfoErrorOrderById(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
         ParamCheckUtil.paramCheck(request);
         InfoErrorOrderRes errorOrderRes = infoErrorService.getInfoErrorOrderById(request);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询单条敏感信息监测问题（为工单模块提供）", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "查询单条敏感信息监测问题（为工单模块提供）", endTime.getTime()-startTime.getTime());
         return errorOrderRes;
     }
 
@@ -106,7 +119,7 @@ public class WorkOrderController {
      * @throws BizException
      */
     @RequestMapping(value = "/workorder", method = RequestMethod.POST)
-    public String updateOrderByIds(Integer workOrderStatus, Integer[] ids) throws BizException, RemoteException {
+    public String updateOrderByIds(Integer workOrderStatus, Integer[] ids) throws BizException {
         if (workOrderStatus == null) {
             throw new BizException("参数不合法！");
         }

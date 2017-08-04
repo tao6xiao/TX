@@ -3,10 +3,10 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.MonitorTime;
+import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -51,7 +51,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
     SGService sgService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Override
     public void run() {
@@ -75,12 +75,12 @@ public class ServiceLinkScheduler implements SchedulerTask {
                 }
             }
             Date endTime = new Date();
-            MonitorTime monitorTime = new MonitorTime();
-            monitorTime.setSiteId(siteId);
-            monitorTime.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-            monitorTime.setStartTime(startTime);
-            monitorTime.setEndTime(endTime);
-            monitorTimeService.insertMonitorTime(monitorTime);
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskStatus(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setEndTime(endTime);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.SERVICE_LINK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (RemoteException e) {
             log.error("", e);

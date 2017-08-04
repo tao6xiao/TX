@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * 综合实时监测：预警提醒Controller
@@ -41,13 +42,16 @@ public class IntegratedMonitorWarningController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_WARNING_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_WARNING_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         ApiPageData apiPageData = integratedMonitorWarningService.get(param);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询预警提醒的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询预警提醒的分页数据", endTime.getTime()-startTime.getTime());
         return apiPageData;
     }
 }

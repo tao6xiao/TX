@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,6 +40,7 @@ public class DetectorController {
     @RequestMapping(value = "/check/text", method = RequestMethod.POST)
     @ResponseBody
     public Object checkText(@RequestBody CheckTextRequest request) throws BizException, RemoteException {
+        Date startTime = new Date();
 
         if (request.getCheckType() == null || request.getCheckType().length == 0) {
             log.error("check type is empty!");
@@ -63,7 +65,9 @@ public class DetectorController {
             log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
             throw new RemoteException(checkResult.getMessage());
         }
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "执行ckm校对", "");
+        LogUtil.addElapseLog(OperationType.QUERY, "执行ckm校对", endTime.getTime()-startTime.getTime());
         return JSON.parseObject(checkResult.getResult());
     }
 

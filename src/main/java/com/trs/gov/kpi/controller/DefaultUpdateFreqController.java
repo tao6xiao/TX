@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * 按需更新的自查提醒Controller
@@ -44,6 +45,7 @@ public class DefaultUpdateFreqController {
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.GET)
     @ResponseBody
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -57,7 +59,9 @@ public class DefaultUpdateFreqController {
         if (defaultUpdateFreq != null) {
             value = defaultUpdateFreq.getValue();
         }
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "通过siteId查询对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "通过siteId查询对应自查提醒记录", endTime.getTime()-startTime.getTime());
         return value;
     }
 

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,13 +47,16 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/index/now", method = RequestMethod.GET)
     public Double getPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         Double score = integratedMonitorService.getPerformance(param);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询当前的绩效指数得分", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询当前的绩效指数得分", endTime.getTime()-startTime.getTime());
         return score;
     }
 
@@ -64,13 +68,16 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/index/history", method = RequestMethod.GET)
     public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         List<HistoryStatistics> list = integratedMonitorService.getHistoryPerformance(param);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询绩效指数得分的历史记录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询绩效指数得分的历史记录", endTime.getTime()-startTime.getTime());
         return list;
     }
 
@@ -82,13 +89,16 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/issue/all/count", method = RequestMethod.GET)
     public List<Statistics> getAllIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = integratedMonitorService.getAllIssueCount(param);
-        LogUtil.addOperationLog(OperationType.QUERY, "查询所有问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        Date endTime = new Date();
+        LogUtil.addOperationLog(OperationType.QUERY, "首页查询所有问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "首页查询所有问题数量", endTime.getTime()-startTime.getTime());
         return list;
     }
 
@@ -100,13 +110,16 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/issue/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = integratedMonitorService.getUnhandledIssueCount(param);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询各类问题的待解决问题数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询各类问题的待解决问题数", endTime.getTime()-startTime.getTime());
         return list;
     }
 
@@ -118,13 +131,16 @@ public class IntegratedMonitorController {
      */
     @RequestMapping(value = "/issue/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_MONITOR_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITOR_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
         List<Statistics> list = integratedMonitorService.getWarningCount(param);
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询各类预警的待解决数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询各类预警的待解决数", endTime.getTime()-startTime.getTime());
         return list;
     }
 

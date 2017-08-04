@@ -18,12 +18,11 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,6 +57,7 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -71,7 +71,9 @@ public class FrequencyPresetController {
         Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
         List<FrequencyPresetResponse> responseList = frequencyPresetService.getPageDataBySiteId(
                 siteId, pager.getCurrPage() - 1, pager.getPageSize());
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询更新频率及预警初设数据", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询更新频率及预警初设数据", endTime.getTime()-startTime.getTime());
         return new ApiPageData(pager, responseList);
     }
 

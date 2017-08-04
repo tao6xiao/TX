@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,12 +50,15 @@ public class ChnlGroupController {
     @RequestMapping(value = "/chnlgroups", method = RequestMethod.GET)
     @ResponseBody
     public ChnlGroupsResponse[] getChnlGroups(@RequestParam("siteId") Integer siteId) throws RemoteException, BizException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ChnlGroupsResponse[] groupsResponseArray = chnlGroupService.getChnlGroupsResponseDetailArray();
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询栏目分类", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询栏目分类", endTime.getTime()-startTime.getTime());
         return groupsResponseArray;
     }
 
@@ -72,6 +76,7 @@ public class ChnlGroupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, Integer pageSize, Integer pageIndex) throws BizException,
             RemoteException {
+        Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
             throw new BizException(Authority.NO_AUTHORITY);
@@ -84,7 +89,9 @@ public class ChnlGroupController {
         int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
         Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
         List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, pager.getCurrPage() - 1, pager.getPageSize());
+        Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询站点和根栏目分类下的数据", siteApiService.getSiteById(siteId, "").getSiteName());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询站点和根栏目分类下的数据", endTime.getTime()-startTime.getTime());
         return new ApiPageData(pager, chnlGroupChnlsResponseList);
     }
 
