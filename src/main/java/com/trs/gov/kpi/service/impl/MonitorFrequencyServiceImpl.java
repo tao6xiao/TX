@@ -119,14 +119,5 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
                 schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_CONTENT);
             }
         }
-        //注册绩效指数计算调度器
-        schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
-        schedulerService.addCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
-        //注册报表按节点生成调度器
-        schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
-        schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
-        //注册报表按区间生成调度器
-        schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
-        schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
     }
 }
