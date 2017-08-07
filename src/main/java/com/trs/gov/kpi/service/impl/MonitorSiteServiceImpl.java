@@ -1,10 +1,13 @@
 package com.trs.gov.kpi.service.impl;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.dao.MonitorSiteMapper;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.MonitorSiteService;
+import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.outer.UserApiService;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,9 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     @Resource
     UserApiService userApiService;
 
+    @Resource
+    private SchedulerService schedulerService;
+
     @Override
     public MonitorSiteDeal getMonitorSiteDealBySiteId(Integer siteId) throws RemoteException {
         MonitorSite monitorSite = monitorSiteMapper.selectByPrimaryKey(siteId);
@@ -38,8 +44,18 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     }
 
     @Override
-    public int addMonitorSite(MonitorSiteDeal monitorSiteDeal) {
+    public int addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException {
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
+        Integer siteId = monitorSiteDeal.getSiteId();
+        //保存站点信息时，注册报表等调度任务
+        schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
+        schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
+        schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
+        schedulerService.removeCheckJob(siteId, EnumCheckJobType.SERVICE_LINK);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.SERVICE_LINK);
         return monitorSiteMapper.insert(monitorSite);
     }
 

@@ -38,6 +38,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
 @Service
 public class SchedulerServiceImpl implements SchedulerService {
 
+    private static final String FIRST_DAY_OF_MONTH = "0 0 0 1 * ?";
+
     @Value("${issue.location.dir}")
     private String locationDir;
 
@@ -76,6 +78,18 @@ public class SchedulerServiceImpl implements SchedulerService {
                     break;
                 case CHECK_LINK:
                     scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
+                    break;
+                case CALCULATE_PERFORMANCE:
+                    scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, FIRST_DAY_OF_MONTH);
+                    break;
+                case TIMENODE_REPORT_GENERATE:
+                    scheduleJob(scheduler, EnumCheckJobType.TIMENODE_REPORT_GENERATE, site, "0 0 0 * * ?");
+                    break;
+                case TIMEINTERVAL_REPORT_GENERATE:
+                    scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, FIRST_DAY_OF_MONTH);
+                    break;
+                case SERVICE_LINK:
+                    scheduleJob(scheduler, EnumCheckJobType.SERVICE_LINK, site, DateUtil.SECOND_ONE_DAY);
                     break;
                 default:
             }
@@ -256,7 +270,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         for (MonitorSite site : allMonitorSites) {
             // 每个月1日凌晨0点执行一次
             // TODO REVIEW LINWEI 这个地方没有记录日志
-            scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, "0 0 0 1 * ?");
+            scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, FIRST_DAY_OF_MONTH);
         }
     }
 
@@ -309,7 +323,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         for (MonitorSite site : allMonitorSites) {
             // 每个月1日凌晨0点执行一次
-            scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, "0 0 0 2 * ?");
+            scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, FIRST_DAY_OF_MONTH);
         }
     }
 
@@ -433,7 +447,7 @@ public class SchedulerServiceImpl implements SchedulerService {
     private void doCheckJobNow(Integer siteId, EnumCheckJobType checkJobType) throws RemoteException {
 
         SchedulerTask task = newTask(checkJobType);
-        if(task == null){
+        if (task == null) {
             return;
         }
         task.setSiteId(siteId);
