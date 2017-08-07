@@ -96,4 +96,20 @@ public class Status {
             }
         }
     }
+
+    public enum MonitorStatusType {
+
+        DOING(1, "正在监测"),
+        DONE(2, "监测完成");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorStatusType(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+    }
 }

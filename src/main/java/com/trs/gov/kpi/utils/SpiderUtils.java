@@ -14,7 +14,7 @@ import com.trs.gov.kpi.scheduler.CKMScheduler;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
-import com.trs.gov.kpi.service.outer.SiteApiService;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,9 +57,6 @@ public class SpiderUtils {
     private String locationDir;
 
     @Resource
-    private SiteApiService siteApiService;
-
-    @Resource
     private WebPageService webPageService;
 
     @Resource
@@ -95,6 +92,7 @@ public class SpiderUtils {
 
     private String baseHost;
 
+    @Getter
     int count = 0;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
@@ -312,6 +310,7 @@ public class SpiderUtils {
                     CKMScheduler.createIndexHtml(absoluteDir);
 
                     linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+                    count++;
                 }
             } catch (Exception e) {
                 log.error("", e);
@@ -487,8 +486,10 @@ public class SpiderUtils {
             if (pageSpaceList.isEmpty()) {
                 replySpeedTo.setSiteId(siteId);
                 webPageService.insertReplyspeed(replySpeedTo);
+                count++;
             } else {
                 webPageMapper.updateReplySpeed(replySpeedTo);
+                count++;
             }
         }
 
@@ -504,8 +505,10 @@ public class SpiderUtils {
             if (pageSpaceList.isEmpty()) {
                 pageSpaceTo.setSiteId(siteId);
                 webPageService.insertPageSpace(pageSpaceTo);
+                count++;
             } else {
                 webPageMapper.updatePageSpace(pageSpaceTo);
+                count++;
             }
         }
 
@@ -521,8 +524,10 @@ public class SpiderUtils {
             if (urlLenghtList.isEmpty()) {
                 urlLenghtTo.setSiteId(siteId);
                 webPageService.insertUrlLength(urlLenghtTo);
+                count++;
             } else {
                 webPageMapper.updateUrlLength(urlLenghtTo);
+                count++;
             }
         }
 
@@ -538,8 +543,10 @@ public class SpiderUtils {
             if (pageDepthList.isEmpty()) {
                 pageDepthTo.setSiteId(siteId);
                 webPageService.insertPageDepth(pageDepthTo);
+                count++;
             } else {
                 webPageMapper.updatePageDepth(pageDepthTo);
+                count++;
             }
         }
     };

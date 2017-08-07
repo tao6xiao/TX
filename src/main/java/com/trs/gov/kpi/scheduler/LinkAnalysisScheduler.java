@@ -1,8 +1,12 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.MonitorRecord;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.MonitorRecordService;
@@ -47,6 +51,9 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Resource
     private MonitorRecordService monitorRecordService;
 
+    @Resource
+    private CommonMapper commonMapper;
+
     @Setter
     @Getter
     private Integer siteId;
@@ -60,14 +67,23 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     private Boolean isTimeNode;
 
     @Setter
-    int count = 0;
+    Integer count = 0;
 
     @Override
     public void run() {
 
         log.info(SchedulerType.schedulerStart(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+
+        //监测开始(添加基本信息)
         Date startTime = new Date();
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_LINK.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
+
         try {
 
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -84,14 +100,18 @@ public class LinkAnalysisScheduler implements SchedulerTask{
 
             spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
 
+            //监测完成(修改结果、结束时间、状态)
             Date endTime = new Date();
-            MonitorRecord monitorRecord = new MonitorRecord();
-            monitorRecord.setSiteId(siteId);
-            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
-            monitorRecord.setBeginTime(startTime);
-            monitorRecord.setEndTime(endTime);
-            monitorRecord.setResult(1);
-            monitorRecordService.insertMonitorRecord(monitorRecord);
+            QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+            filter.addCond(MonitorRecordTableField.SITEID, siteId);
+            filter.addCond(MonitorRecordTableField.TASKID, EnumCheckJobType.CHECK_LINK.value);
+            filter.addCond(MonitorRecordTableField.BEGINTIME,startTime);
+
+            DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+            updater.addField(MonitorRecordTableField.RESULT,spider.getCount());
+            updater.addField(MonitorRecordTableField.ENDTIME, endTime);
+            updater.addField(MonitorRecordTableField.TASKSTATUS, Status.MonitorStatusType.DONE.value);
+            commonMapper.update(updater, filter);
 
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
