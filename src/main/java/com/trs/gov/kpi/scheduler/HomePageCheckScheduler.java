@@ -60,8 +60,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info(SchedulerType.schedulerStart(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
         Date startTime = new Date();
         try {
 
@@ -113,9 +113,9 @@ public class HomePageCheckScheduler implements SchedulerTask {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         } finally {
-            // TODO REVIEW LINWEI SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
-            log.info(SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+            // TODO REVIEW LINWEI SchedulerType.endScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
+            log.info(SchedulerType.endScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
         }
 
     }

@@ -65,8 +65,8 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Override
     public void run() {
 
-        log.info(SchedulerType.schedulerStart(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
         Date startTime = new Date();
         try {
 
@@ -98,8 +98,8 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
         } finally {
-            log.info(SchedulerType.schedulerEnd(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+            log.info(SchedulerType.endScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
 
         }
     }

@@ -69,8 +69,8 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
-        log.info(SchedulerType.schedulerStart(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
         Date startTime = new Date();
         IssueCountRequest request = new IssueCountRequest();
         request.setSiteIds(Integer.toString(siteId));
@@ -253,8 +253,8 @@ public class ReportGenerateScheduler implements SchedulerTask {
         reportMapper.insert(report);
         Date endTime = new Date();
         LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.PERFORMANCE_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
-        log.info(SchedulerType.schedulerEnd(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerStart(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
+        log.info(SchedulerType.endScheduler(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.startScheduler(SchedulerType.REPORT_GENERATE_SCHEDULER, siteId));
     }
 
     private void addTitle(Sheet sheet, CellStyle style, String title) {

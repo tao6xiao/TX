@@ -53,6 +53,7 @@ public class ChnlGroupController {
         Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+//            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId), LogUtil.getSiteNameForLog(siteApiService, siteId));
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ChnlGroupsResponse[] groupsResponseArray = chnlGroupService.getChnlGroupsResponseDetailArray();

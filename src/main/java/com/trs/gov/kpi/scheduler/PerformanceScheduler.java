@@ -49,8 +49,8 @@ public class PerformanceScheduler implements SchedulerTask {
 
     @Override
     public void run() {
-        log.info(SchedulerType.schedulerStart(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
         try {
             Date startTime = new Date();
             Calendar calendar = Calendar.getInstance();
@@ -68,8 +68,8 @@ public class PerformanceScheduler implements SchedulerTask {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }finally {
-            log.info(SchedulerType.schedulerEnd(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
+            log.info(SchedulerType.endScheduler(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.PERFORMANCE_SCHEDULER, siteId));
         }
     }
 

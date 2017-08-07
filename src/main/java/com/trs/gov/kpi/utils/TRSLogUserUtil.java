@@ -3,9 +3,11 @@ package com.trs.gov.kpi.utils;
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.BizRuntimeException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.User;
 import com.trs.gov.kpi.ids.ContextHelper;
+import com.trs.gov.kpi.service.impl.outer.SiteApiServiceImpl;
 import com.trs.gov.kpi.service.outer.UserApiService;
 import com.trs.idm.client.actor.SSOUser;
 import com.trs.mlf.simplelog.LogUser;
@@ -23,14 +25,22 @@ import static com.trs.gov.kpi.ids.ContextHelper.CONTEXT_INDEX_IP;
 @Slf4j
 public class TRSLogUserUtil {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "信息错误", new BizException());
+        LogUtil.addOperationLog(OperationType.QUERY, "查询栏目", LogUtil.getSiteNameForLog(new SiteApiServiceImpl(), 1));
     }
 
-    private TRSLogUserUtil(){}
+    private TRSLogUserUtil() {
+    }
 
     public static LogUser getLogUser() {
-        SSOUser localUser = ContextHelper.getLoginUser();
+        SSOUser localUser = null;
+        try {
+            localUser = ContextHelper.getLoginUser();
+        }catch (BizRuntimeException e){
+            SimpleLogServer.error(LogUtil.MODULE_NAME, new LogUser(), OperationType.REQUEST, ErrorType.RUN_FAILED, e.getMessage(), e);
+            return new LogUser();
+        }
         UserApiService userApiService = (UserApiService) SpringContextUtil.getBean(UserApiService.class);
         User user = null;
         try {
@@ -40,16 +50,16 @@ public class TRSLogUserUtil {
             SimpleLogServer.error(LogUtil.MODULE_NAME, new LogUser(), OperationType.QUERY, ErrorType.REMOTE_FAILED, e.getMessage(), e);
             return new LogUser();
         }
-        if(user == null){
+        if (user == null) {
             log.error("当前用户未在采编中心找到");
             SimpleLogServer.error(LogUtil.MODULE_NAME, new LogUser(), OperationType.QUERY, ErrorType.REMOTE_FAILED, "", new BizException("当前用户未在采编中心找到"));
             return new LogUser(localUser.getUserName(), "", "");
         }
         StringBuilder buffer = new StringBuilder();
-        if(user.getGroups() != null && !user.getGroups().isEmpty()){
-            for(int i= 0; i < user.getGroups().size(); i++){
+        if (user.getGroups() != null && !user.getGroups().isEmpty()) {
+            for (int i = 0; i < user.getGroups().size(); i++) {
                 Map map = user.getGroups().get(i);
-                if(map.get("GNAME") == null){
+                if (map.get("GNAME") == null) {
                     continue;
                 }
                 buffer.append(map.get("GNAME"));
@@ -57,7 +67,7 @@ public class TRSLogUserUtil {
             }
         }
         String groupNames = "";
-        if(buffer.length() != 0){
+        if (buffer.length() != 0) {
             groupNames = buffer.deleteCharAt(buffer.lastIndexOf(",")).toString();
         }
         String logIp = ContextHelper.getArg(CONTEXT_INDEX_IP).toString();

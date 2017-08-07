@@ -80,8 +80,8 @@ public class CKMScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
-        log.info(SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
         Date startTime = new Date();
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -108,9 +108,9 @@ public class CKMScheduler implements SchedulerTask {
         monitorRecordService.insertMonitorRecord(monitorRecord);
 
         LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
-        log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        log.info(SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
         // TODO REVIEW LINWEI 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
     }
 
 

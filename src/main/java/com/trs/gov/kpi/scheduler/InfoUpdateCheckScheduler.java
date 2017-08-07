@@ -96,8 +96,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info(SchedulerType.schedulerStart(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
         Date startTime = new Date();
         try {
             List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
@@ -128,8 +128,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.RUN_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
         } finally {
-            log.info(SchedulerType.schedulerEnd(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+            log.info(SchedulerType.endScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
         }
     }
 

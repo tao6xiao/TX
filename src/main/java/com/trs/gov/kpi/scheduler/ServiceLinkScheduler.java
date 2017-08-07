@@ -58,8 +58,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info(SchedulerType.schedulerStart(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
         Date startTime = new Date();
         try {
             for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
@@ -91,8 +91,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         } finally {
-            log.info(SchedulerType.schedulerEnd(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
+            log.info(SchedulerType.endScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
         }
     }
 
