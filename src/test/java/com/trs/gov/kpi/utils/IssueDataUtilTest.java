@@ -24,15 +24,15 @@ public class IssueDataUtilTest {
         issueList.add(issue1);
 
         Issue issue2 = new Issue();
-        issue2.setTypeId(1);
-        issue2.setSubTypeId(11);
+        issue2.setTypeId(4);
+        issue2.setSubTypeId(41);
         issueList.add(issue2);
 
         List<Issue> list = IssueDataUtil.getIssueListToSetSubTypeName(issueList);
 
         assertEquals(null, list.get(0).getSubTypeName());
         assertEquals(null, list.get(1).getSubTypeName());
-        assertEquals("链接失效", list.get(2).getSubTypeName());
+        assertEquals("服务链接失效", list.get(2).getSubTypeName());
     }
 
 }

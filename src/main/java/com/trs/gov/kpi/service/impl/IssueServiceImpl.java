@@ -82,7 +82,6 @@ public class IssueServiceImpl implements IssueService {
                 Types.IssueType.INFO_ERROR_ISSUE, Types.IssueType.SERVICE_LINK_AVAILABLE);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        // TODO: 2017/8/4 数据库问题编号设计暂未修改 
         filter.addCond(IssueTableField.TYPE_ID, 1).setRangeBegin(true);
         filter.addCond(IssueTableField.TYPE_ID, 50).setRangeEnd(true);
 

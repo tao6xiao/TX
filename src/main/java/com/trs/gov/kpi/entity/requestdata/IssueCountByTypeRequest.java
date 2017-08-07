@@ -17,9 +17,8 @@ public class IssueCountByTypeRequest extends IssueCountRequest {
     // 信息错误
     public static final int TYPE_INFO_ERROR = 3;
 
-    // TODO: 2017/8/4 服务链接可用性数据库设计暂未确定
     //服务链接可用性
-    //public static final int TYPE_SERVICE_LINK_AVAILABLE = 4;
+    public static final int TYPE_SERVICE_LINK_AVAILABLE = 4;
 
     private int typeId;
 
