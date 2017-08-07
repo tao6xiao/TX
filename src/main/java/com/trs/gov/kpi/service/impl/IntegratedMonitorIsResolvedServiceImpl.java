@@ -45,7 +45,7 @@ public class IntegratedMonitorIsResolvedServiceImpl implements IntegratedMonitor
         }
 
         QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.LINK_AVAILABLE_ISSUE, Types.IssueType.INFO_ERROR_ISSUE, Types.IssueType
-                .INFO_UPDATE_WARNING, Types.IssueType.RESPOND_WARNING);
+                .INFO_UPDATE_WARNING, Types.IssueType.RESPOND_WARNING, Types.IssueType.SERVICE_LINK_AVAILABLE);
         if (isResolved) {
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.RESOLVED.value);
         } else {

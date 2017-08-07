@@ -18,9 +18,9 @@ public final class Types {
         LINK_AVAILABLE_ISSUE(1, "网站可用性问题"),
         INFO_UPDATE_ISSUE(2, "信息更新问题"),
         INFO_ERROR_ISSUE(3, "信息错误"),
+        SERVICE_LINK_AVAILABLE(4, "服务链接"),
         INFO_UPDATE_WARNING(51, "信息更新预警"),
-        RESPOND_WARNING(52, "互动回应预警"),
-        SERVICE_LINK_AVAILABLE(101, "服务链接");
+        RESPOND_WARNING(52, "互动回应预警");
 
         public final int value;
 
@@ -110,7 +110,7 @@ public final class Types {
      */
     public enum ServiceLinkIssueType {
         INVALID(-1, "未知问题"),
-        INVALID_LINK(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 1, "链接失效");
+        INVALID_LINK(IssueType.SERVICE_LINK_AVAILABLE.value * 10 + 1, "服务链接失效");
 
         public final int value;
 
@@ -414,6 +414,8 @@ public final class Types {
                 return InfoUpdateWarningType.valueOf(subType).name;
             case RESPOND_WARNING:
                 return RespondWarningType.valueOf(subType).name;
+            case SERVICE_LINK_AVAILABLE:
+                return ServiceLinkIssueType.valueOf(subType).name;
             default:
                 return "未知问题";
         }

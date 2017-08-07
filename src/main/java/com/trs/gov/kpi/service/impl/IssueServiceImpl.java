@@ -78,7 +78,8 @@ public class IssueServiceImpl implements IssueService {
             param.setSearchText(StringUtil.escape(param.getSearchText()));
         }
 
-        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.LINK_AVAILABLE_ISSUE, Types.IssueType.INFO_ERROR_ISSUE);
+        QueryFilter filter = QueryFilterHelper.toFilter(param, Types.IssueType.INFO_UPDATE_ISSUE, Types.IssueType.LINK_AVAILABLE_ISSUE,
+                Types.IssueType.INFO_ERROR_ISSUE, Types.IssueType.SERVICE_LINK_AVAILABLE);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addCond(IssueTableField.TYPE_ID, 1).setRangeBegin(true);

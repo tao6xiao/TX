@@ -18,7 +18,8 @@ public enum Table {
             "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel")),
     FREQ_SETUP("frequencysetup", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "presetFeqId", Constants.DB_FIELD_CHNL_ID, "setTime", "isOpen")),
     REPORT("report", Arrays.asList("id", "siteId", "title", "reportTime", "crTime", "type", "path")),
-    DUTY_DEPT("dutydept", Arrays.asList(Constants.DB_FIELD_CHNL_ID, "siteId", "deptId", "contain"));
+    DUTY_DEPT("dutydept", Arrays.asList(Constants.DB_FIELD_CHNL_ID, "siteId", "deptId", "contain")),
+    MONITOR_RECORD("monitorrecord",Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "taskId", "taskStatus", "result", "beginTime", "endTime"));
 
 
     // 表名
