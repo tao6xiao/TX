@@ -115,4 +115,5 @@ public interface SiteApiService extends OuterApiService {
      * @throws RemoteException
      */
     Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException;
+
 }

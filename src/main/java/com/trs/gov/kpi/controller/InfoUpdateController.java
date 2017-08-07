@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.History;
@@ -14,7 +15,6 @@ import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
-import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +39,6 @@ public class InfoUpdateController extends IssueHandler {
     @Resource
     private AuthorityService authorityService;
 
-    @Resource
-    SiteApiService siteApiService;
-
     /**
      * 查询已解决、预警和更新不及时的数量
      *
@@ -53,14 +50,21 @@ public class InfoUpdateController extends IssueHandler {
         Date startTime = new Date();
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INFOUPDATE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INFOUPDATE_SEARCH)) {
+            // TODO 添加操作失败的操作日志
             throw new BizException(Authority.NO_AUTHORITY);
         }
         ParamCheckUtil.paramCheck(param);
-        List list = infoUpdateService.getIssueCount(param);
+
+        try {
+            List list = infoUpdateService.getIssueCount(param);
         Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
+            LogUtil.addOperationLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
         LogUtil.addElapseLog(OperationType.QUERY, "查询信息更新已解决、预警和更新不及时的数量", endTime.getTime()-startTime.getTime());
-        return list;
+            return list;
+        } catch ( Throwable ex) {
+            // TODO 添加操作失败的操作日志
+            throw ex;
+        }
     }
 
     /**

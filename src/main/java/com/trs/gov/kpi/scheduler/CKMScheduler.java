@@ -1,16 +1,17 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.MonitorTime;
+import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
@@ -73,7 +74,9 @@ public class CKMScheduler implements SchedulerTask {
     SiteApiService siteApiService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
+
+    int count = 0;//错误总数记录
 
     @Override
     public void run() throws RemoteException {
@@ -94,15 +97,19 @@ public class CKMScheduler implements SchedulerTask {
         }
 
         spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
+
         Date endTime = new Date();
-        MonitorTime monitorTime = new MonitorTime();
-        monitorTime.setSiteId(siteId);
-        monitorTime.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
-        monitorTime.setStartTime(startTime);
-        monitorTime.setEndTime(endTime);
-        monitorTimeService.insertMonitorTime(monitorTime);
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setEndTime(endTime);
+        monitorRecord.setResult(count);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
+
         LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        // TODO REVIEW LINWEI 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
     }
 
@@ -476,6 +483,7 @@ public class CKMScheduler implements SchedulerTask {
                 List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
+                    count ++;
                 }
             } catch (RemoteException e) {
                 log.error("", e);

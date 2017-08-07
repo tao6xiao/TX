@@ -3,11 +3,11 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.MonitorTime;
+import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.outerapi.Site;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -53,7 +53,9 @@ public class HomePageCheckScheduler implements SchedulerTask {
     private IssueMapper issueMapper;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
+
+    int isAvailable = 1;
 
     @Override
     public void run() {
@@ -94,20 +96,24 @@ public class HomePageCheckScheduler implements SchedulerTask {
                     issue.setCustomer1(baseUrl);
                     issue.setIssueTime(new Date());
                     issueMapper.insert(DBUtil.toRow(issue));
+                    isAvailable = 0;
                 }
             }
             Date endTime = new Date();
-            MonitorTime monitorTime = new MonitorTime();
-            monitorTime.setSiteId(siteId);
-            monitorTime.setTypeId(Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
-            monitorTime.setStartTime(startTime);
-            monitorTime.setEndTime(endTime);
-            monitorTimeService.insertMonitorTime(monitorTime);
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setEndTime(endTime);
+            monitorRecord.setResult(isAvailable);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
+            // TODO REVIEW LINWEI  性能日志的operationType有没有规范？要不然会冲突。 SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         } finally {
+            // TODO REVIEW LINWEI SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
             log.info(SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
         }

@@ -78,7 +78,7 @@ public class ServiceGuideController {
         History history = sgService.getSGHistoryCount(param);
         Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询服务指南问题总数的历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询服务指南按类型统计的问题总数", endTime.getTime()-startTime.getTime());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询服务指南问题总数的历史纪录", endTime.getTime()-startTime.getTime());
         return history;
     }
 

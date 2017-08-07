@@ -5,6 +5,7 @@ import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.job.CheckJob;
 import com.trs.gov.kpi.scheduler.*;
 import com.trs.gov.kpi.service.MonitorSiteService;
@@ -52,14 +53,12 @@ public class SchedulerServiceImpl implements SchedulerService {
     @Resource
     ApplicationContext applicationContext;
 
-
     @Override
     public void addCheckJob(int siteId, EnumCheckJobType checkType) throws BizException {
 
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            final MonitorSite site = monitorSiteService.getMonitorSiteBySiteId
-                    (siteId);
+            final MonitorSite site = monitorSiteService.getMonitorSiteBySiteId(siteId);
             if (site == null) {
                 log.error("Invalid parameter: 当前站点不是监测中的站点");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -105,6 +104,30 @@ public class SchedulerServiceImpl implements SchedulerService {
         } catch (SchedulerException e) {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
+        }
+    }
+
+    @Override
+    public void doCheckJobOnce(int siteId, EnumCheckJobType checkJobType) throws BizException, RemoteException {
+        MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
+        if (monitorSite == null) {
+            log.error("Invalid parameter: 当前站点不是监测中的站点");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+        switch (checkJobType) {
+            case CHECK_HOME_PAGE://首页可用性检测
+                doCheckJobNow(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+                break;
+            case CHECK_CONTENT://内容检测
+                doCheckJobNow(siteId, EnumCheckJobType.CHECK_CONTENT);
+                break;
+            case CHECK_INFO_UPDATE://信息更新检测
+                doCheckJobNow(siteId, EnumCheckJobType.CHECK_INFO_UPDATE);
+                break;
+            case CHECK_LINK://链接可用性检测
+                doCheckJobNow(siteId, EnumCheckJobType.CHECK_LINK);
+                break;
+            default:
         }
     }
 
@@ -232,6 +255,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         for (MonitorSite site : allMonitorSites) {
             // 每个月1日凌晨0点执行一次
+            // TODO REVIEW LINWEI 这个地方没有记录日志
             scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, "0 0 0 1 * ?");
         }
     }
@@ -397,6 +421,23 @@ public class SchedulerServiceImpl implements SchedulerService {
             log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
         }
+    }
+
+    /**
+     * 执行立即检测
+     *
+     * @param siteId
+     * @param checkJobType
+     * @throws RemoteException
+     */
+    private void doCheckJobNow(Integer siteId, EnumCheckJobType checkJobType) throws RemoteException {
+
+        SchedulerTask task = newTask(checkJobType);
+        if(task == null){
+            return;
+        }
+        task.setSiteId(siteId);
+        task.run();
     }
 
     private String getJobName(int siteId, EnumCheckJobType checkType) {

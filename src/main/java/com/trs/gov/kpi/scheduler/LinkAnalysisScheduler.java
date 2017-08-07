@@ -2,10 +2,10 @@ package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.WebPageMapper;
-import com.trs.gov.kpi.entity.MonitorTime;
+import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -27,7 +27,7 @@ import java.util.Date;
 @Slf4j
 @Component
 @Scope("prototype")
-public class LinkAnalysisScheduler implements SchedulerTask {
+public class LinkAnalysisScheduler implements SchedulerTask{
 
     @Resource
     LinkAvailabilityService linkAvailabilityService;
@@ -45,7 +45,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     WebPageMapper webPageMapper;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Setter
     @Getter
@@ -58,6 +58,9 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Setter
     @Getter
     private Boolean isTimeNode;
+
+    @Setter
+    int count = 0;
 
     @Override
     public void run() {
@@ -80,13 +83,16 @@ public class LinkAnalysisScheduler implements SchedulerTask {
             }
 
             spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
+
             Date endTime = new Date();
-            MonitorTime monitorTime = new MonitorTime();
-            monitorTime.setSiteId(siteId);
-            monitorTime.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-            monitorTime.setStartTime(startTime);
-            monitorTime.setEndTime(endTime);
-            monitorTimeService.insertMonitorTime(monitorTime);
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setEndTime(endTime);
+            monitorRecord.setResult(1);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
+
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);

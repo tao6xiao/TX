@@ -10,7 +10,6 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
-import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,9 +32,6 @@ public class ServiceLinkController extends IssueHandler {
 
     @Resource
     private AuthorityService authorityService;
-
-    @Resource
-    SiteApiService siteApiService;
 
     /**
      * 查询服务链接未解决问题列表
