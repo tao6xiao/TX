@@ -309,10 +309,9 @@ public class IssueCountServiceImpl implements IssueCountService {
             case IssueCountByTypeRequest.TYPE_INFO_ERROR:
                 filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
                 break;
-            // TODO: 2017/8/4 服务链接可用性
-//            case IssueCountByTypeRequest.TYPE_SERVICE_LINK_AVAILABLE:
-//                filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE);
-//                break;
+            case IssueCountByTypeRequest.TYPE_SERVICE_LINK_AVAILABLE:
+                filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE.value);
+                break;
             // TODO 在线服务和互动问题等待数据联调
             default:
                 filter.addCond(IssueTableField.TYPE_ID, -1);
