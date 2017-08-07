@@ -83,6 +83,7 @@ public class MonitorSiteController {
                 .hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_UPDATEADMIN)) {
             throw new BizException(Authority.NO_AUTHORITY);
         }
+        //TODO REVIEW RANWEI 参数校验逻辑需要修改，缺少错误日志
         if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getGuarderId() == null) {
             log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId、四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -96,7 +97,7 @@ public class MonitorSiteController {
         MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
         if (monitorSite != null) {//检测站点表中存在siteId对应记录，将修改记录
             monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
-
+            //TODO REVIEW RANWEI controller层只进行权限校验和参数校验等，下面代码应当放入service层
             if (monitorSite.getIndexUrl() != null && !monitorSite.getIndexUrl().trim().isEmpty()) {
                 schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }
