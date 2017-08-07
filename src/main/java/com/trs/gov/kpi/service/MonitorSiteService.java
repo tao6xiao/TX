@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public interface MonitorSiteService {
      * @param monitorSiteDeal
      * @return
      */
-    int addMonitorSite(MonitorSiteDeal monitorSiteDeal);
+    int addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException;
 
     /**
      * 通过siteId更新MonitorSite对应记录
