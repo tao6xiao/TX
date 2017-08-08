@@ -66,9 +66,6 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Getter
     private Boolean isTimeNode;
 
-    @Setter
-    Integer count = 0;
-
     @Override
     public void run() {
 

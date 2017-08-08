@@ -91,7 +91,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     // 缓存自查更新频率
     private DefaultUpdateFreq defaultUpdateFreq;
 
-    int count = 0;//更新数量记录
+    //信息(栏目)更新数量计数
+    int count = 0;
 
     @Override
     public void run() {

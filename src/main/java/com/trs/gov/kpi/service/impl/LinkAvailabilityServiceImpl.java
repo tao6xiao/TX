@@ -11,7 +11,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -40,7 +40,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     private DeptApiService deptApiService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Resource
     private SiteApiService siteApiService;
@@ -105,7 +105,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new History(monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.LINK_AVAILABLE_ISSUE.value), list);
+        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.IssueType.LINK_AVAILABLE_ISSUE.value), list);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
-        Date endTime = monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
+        Date endTime = monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
         indexPage.setMonitorTime(DateUtil.toString(endTime));
@@ -214,7 +214,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
         queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
         queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
-        queryFilter.addCond(IssueTableField.ISSUE_TIME, monitorTimeService.getMonitorStartTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value)).setRangeBegin(true);
+        queryFilter.addCond(IssueTableField.ISSUE_TIME, monitorRecordService.getMonitorStartTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value)).setRangeBegin(true);
         queryFilter.addCond(IssueTableField.ISSUE_TIME, endTime).setRangeEnd(true);
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
