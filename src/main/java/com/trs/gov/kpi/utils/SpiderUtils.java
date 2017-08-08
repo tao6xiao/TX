@@ -92,6 +92,7 @@ public class SpiderUtils {
 
     private String baseHost;
 
+    //失效链接计数
     @Getter
     int count = 0;
 
@@ -486,10 +487,8 @@ public class SpiderUtils {
             if (pageSpaceList.isEmpty()) {
                 replySpeedTo.setSiteId(siteId);
                 webPageService.insertReplyspeed(replySpeedTo);
-                count++;
             } else {
                 webPageMapper.updateReplySpeed(replySpeedTo);
-                count++;
             }
         }
 
@@ -505,10 +504,8 @@ public class SpiderUtils {
             if (pageSpaceList.isEmpty()) {
                 pageSpaceTo.setSiteId(siteId);
                 webPageService.insertPageSpace(pageSpaceTo);
-                count++;
             } else {
                 webPageMapper.updatePageSpace(pageSpaceTo);
-                count++;
             }
         }
 
@@ -524,10 +521,8 @@ public class SpiderUtils {
             if (urlLenghtList.isEmpty()) {
                 urlLenghtTo.setSiteId(siteId);
                 webPageService.insertUrlLength(urlLenghtTo);
-                count++;
             } else {
                 webPageMapper.updateUrlLength(urlLenghtTo);
-                count++;
             }
         }
 
@@ -543,10 +538,8 @@ public class SpiderUtils {
             if (pageDepthList.isEmpty()) {
                 pageDepthTo.setSiteId(siteId);
                 webPageService.insertPageDepth(pageDepthTo);
-                count++;
             } else {
                 webPageMapper.updatePageDepth(pageDepthTo);
-                count++;
             }
         }
     };

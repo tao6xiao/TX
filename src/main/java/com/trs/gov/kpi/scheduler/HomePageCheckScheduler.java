@@ -60,6 +60,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    //首页可用性(状态记录；0可用，1不可用)
     int isAvailable = 0;
 
     @Override

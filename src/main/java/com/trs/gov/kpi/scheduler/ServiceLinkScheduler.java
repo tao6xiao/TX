@@ -60,6 +60,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    //失效的服务链接计数
     int count = 0;
 
     @Override

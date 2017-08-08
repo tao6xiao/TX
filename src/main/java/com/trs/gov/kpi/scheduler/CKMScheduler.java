@@ -82,7 +82,8 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-    int count = 0;//错误总数记录
+    //错误信息计数
+    int count = 0;
 
     @Override
     public void run() throws RemoteException {
