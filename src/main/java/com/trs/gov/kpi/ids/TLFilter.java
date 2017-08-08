@@ -2,9 +2,9 @@ package com.trs.gov.kpi.ids;
 
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.idm.client.actor.SSOUser;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.*;
@@ -30,7 +30,7 @@ public class TLFilter implements Filter{
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         if(req.getSession().getAttribute(IDSActor.LOGIN_FLAG) != null) {
-            ContextHelper.initContext((SSOUser) req.getSession().getAttribute(IDSActor.LOGIN_FLAG));
+            ContextHelper.initContext((LocalUser) req.getSession().getAttribute(IDSActor.LOGIN_FLAG));
             chain.doFilter(request, response);
         }else {
             log.error("Invalid user: The current user in the logout state or IDS server is stopped");

@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.DutyDept;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.DutyDeptRequest;
@@ -48,20 +49,38 @@ public class DutyDeptController {
     @RequestMapping(value = "/dept", method = RequestMethod.POST)
     @ResponseBody
     public String set(@ModelAttribute DutyDeptRequest deptRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), deptRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_DUTYDEPT) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DUTYDEPT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (deptRequest.getSiteId() == null || deptRequest.getChnlId() == null || deptRequest.getDeptId() == null || deptRequest.getContain() == null) {
             log.error("Invalid parameter: 传入的参数siteId、chnlId、deptId、contain中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        if (deptService.getByChnlId(deptRequest.getChnlId()) == null) {
-            deptService.add(deptRequest);
-            LogUtil.addOperationLog(OperationType.ADD, "添加栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName());
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), deptRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_DUTYDEPT) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DUTYDEPT)) {
+            LogUtil.addOperationLog(OperationType.ADD + OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("添加或修改栏目和部门的关系"), LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        DutyDept dutyDept = null;
+        try {
+            dutyDept = deptService.getByChnlId(deptRequest.getChnlId());
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("通过栏目id[" + deptRequest.getChnlId() + "]查询部门"), LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
+            throw e;
+        }
+        if (dutyDept == null) {
+            try {
+                deptService.add(deptRequest);
+                LogUtil.addOperationLog(OperationType.ADD, "添加栏目和部门的关系", LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
+            } catch (Exception e) {
+                LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("添加栏目和部门的关系"), LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
+                throw e;
+            }
         } else {
-            deptService.update(deptRequest);
-            LogUtil.addOperationLog(OperationType.UPDATE, "修改栏目和部门的关系", siteApiService.getSiteById(deptRequest.getSiteId(), "").getSiteName());
+            try {
+                deptService.update(deptRequest);
+                LogUtil.addOperationLog(OperationType.UPDATE, "修改栏目和部门的关系", LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
+            } catch (Exception e) {
+                LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("修改栏目和部门的关系"), LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
+                throw e;
+            }
         }
         return null;
     }
@@ -76,16 +95,23 @@ public class DutyDeptController {
     @ResponseBody
     public ApiPageData get(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
+        ParamCheckUtil.paramCheck(param);
+        String logDesc = "查询栏目和部门的关系";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = deptService.get(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询栏目和部门的关系", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询栏目和部门的关系", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+        try {
+            ApiPageData apiPageData = deptService.get(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
+            return apiPageData;
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
     /**
@@ -99,17 +125,24 @@ public class DutyDeptController {
     @RequestMapping(value = "/dept", method = RequestMethod.DELETE)
     @ResponseBody
     public String delete(Integer siteId, Integer[] chnlIds) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (siteId == null || chnlIds == null || chnlIds.length == 0) {
             log.error("Invalid parameter: 参数siteId存在null值或者数组chnlIds为null");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        ParamCheckUtil.integerArrayParamCheck(chnlIds);
-        deptService.delete(siteId, chnlIds);
-        LogUtil.addOperationLog(OperationType.DELETE, "删除对于站点栏目下设置的部门", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+        String logDesc = "删除对于站点栏目下设置的部门";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT)) {
+            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        try {
+            ParamCheckUtil.integerArrayParamCheck(chnlIds);
+            deptService.delete(siteId, chnlIds);
+            LogUtil.addOperationLog(OperationType.DELETE, logDesc, siteApiService.getSiteById(siteId, "").getSiteName());
+            return null;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
+        }
     }
 }

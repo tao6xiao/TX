@@ -2,6 +2,7 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.BizRuntimeException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -9,7 +10,6 @@ import com.trs.gov.kpi.entity.outerapi.User;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.impl.outer.SiteApiServiceImpl;
 import com.trs.gov.kpi.service.outer.UserApiService;
-import com.trs.idm.client.actor.SSOUser;
 import com.trs.mlf.simplelog.LogUser;
 import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class TRSLogUserUtil {
     }
 
     public static LogUser getLogUser() {
-        SSOUser localUser = null;
+        LocalUser localUser = null;
         try {
             localUser = ContextHelper.getLoginUser();
         }catch (BizRuntimeException e){
