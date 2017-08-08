@@ -6,16 +6,15 @@ import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.Granularity;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.HistoryDate;
-import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.outerapi.bas.BasPVResponse;
 import com.trs.gov.kpi.entity.outerapi.bas.SiteSummary;
 import com.trs.gov.kpi.entity.outerapi.bas.SummaryResponse;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
 import com.trs.gov.kpi.entity.responsedata.History;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
@@ -42,9 +41,6 @@ public class BasServiceImpl implements BasService {
     private String basServiceUrl;
 
     @Resource
-    private MonitorSiteService monitorSiteService;
-
-    @Resource
     private SiteApiService siteApiService;
 
     private static final String MPIDS = "mpIds";
@@ -52,10 +48,10 @@ public class BasServiceImpl implements BasService {
 
     @Override
     public Integer getVisits(BasRequest basRequest) throws RemoteException, ParseException {
-        MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId());
+        Site site = siteApiService.getSiteById(basRequest.getSiteId(), null);
         String siteIndexPage = "";
-        if (monitorSiteDeal != null) {
-            siteIndexPage = monitorSiteDeal.getIndexUrl();
+        if (site != null) {
+            siteIndexPage = site.getWebHttp();
         }
         String beginDay = initTime(getPreviousMonthDate());
         String endDay = initTime(DateUtil.toString(new Date()));
@@ -76,10 +72,10 @@ public class BasServiceImpl implements BasService {
 
     @Override
     public History getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
-        MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(basRequest.getSiteId());
+        Site site = siteApiService.getSiteById(basRequest.getSiteId(), null);
         String siteIndexPage = "";
-        if (monitorSiteDeal != null) {
-            siteIndexPage = monitorSiteDeal.getIndexUrl();
+        if (site != null) {
+            siteIndexPage = site.getWebHttp();
         }
         String url = basServiceUrl + "/api/retrieveWebUV";
 
@@ -89,19 +85,8 @@ public class BasServiceImpl implements BasService {
         List<HistoryStatistics> list = new ArrayList<>();
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
             HistoryDate historyDate = iterator.next();
-            //不返回当前周期的数据，因为当前周期还未结束
-            if (!iterator.hasNext()) {
-                return new History(new Date(), list);
-            }
             HistoryStatistics historyStatistics = new HistoryStatistics();
             historyStatistics.setTime(historyDate.getDate());
-
-            if (Granularity.YEAR.equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
-                List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
-                historyStatistics.setValue(getVisitsSum(dates, url, siteIndexPage));
-                list.add(historyStatistics);
-                continue;
-            }
             subOneDay(historyDate);
             Integer pv = requestBasPV(url, initTime(historyDate.getBeginDate()), initTime(historyDate.getEndDate()), siteIndexPage);
             historyStatistics.setValue(pv);
@@ -110,22 +95,6 @@ public class BasServiceImpl implements BasService {
         }
 
         return new History(new Date(), list);
-    }
-
-    private int getVisitsSum(List<HistoryDate> dates, String url, String siteIndexPage) throws ParseException, RemoteException {
-        int sum = 0;
-        for (Iterator<HistoryDate> iterator = dates.iterator(); iterator.hasNext(); ) {
-            HistoryDate date = iterator.next();
-            if (!iterator.hasNext()){
-                break;
-            }
-            subOneDay(date);
-            Integer pv = requestBasPV(url, initTime(date.getBeginDate()), initTime(date.getEndDate()), siteIndexPage);
-            if (pv != null) {
-                sum += pv;
-            }
-        }
-        return sum;
     }
 
     /**
@@ -209,35 +178,51 @@ public class BasServiceImpl implements BasService {
         List<HistoryDate> dateList = DateUtil.splitDate(basRequest.getBeginDateTime(), basRequest.getEndDateTime(), basRequest.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
 
+        String mpId = siteApiService.getSiteById(basRequest.getSiteId(), null).getMpId();
+        if (StringUtil.isEmpty(mpId)) {
+            throw new BizException("当前站点没有对应的mpId，无法获取数据！");
+        }
+
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
             HistoryDate historyDate = iterator.next();
-            //不返回当前周期的数据，因为当前周期还未结束
-            if (!iterator.hasNext()) {
-                return new History(new Date(), list);
-            }
-            HistoryStatistics historyStatistics = new HistoryStatistics();
-            historyStatistics.setTime(historyDate.getDate());
-
+            subOneDay(historyDate);
             Map<String, String> params = new HashMap<>();
-            String mpId = siteApiService.getSiteById(basRequest.getSiteId(), null).getMpId();
-            if (StringUtil.isEmpty(mpId)) {
-                throw new BizException("当前站点没有对应的mpId，无法获取数据！");
-            } else {
-                params.put(MPIDS, mpId);
-            }
-
-            if (Granularity.YEAR.equals(basRequest.getGranularity())) {//粒度为年时，需要逐月请求并累加,单独处理
-                List<HistoryDate> dates = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), null);
-                historyStatistics.setValue(getTimeSum(dates, params));
-                list.add(historyStatistics);
-                continue;
-            }
-
+            params.put(MPIDS, mpId);
             if (Granularity.DAY.equals(basRequest.getGranularity())) {//粒度为天时，查询的是当天的数据，需要传入开始时间
                 params.put(DAY, initTime(historyDate.getBeginDate()));
             } else {
                 params.put(DAY, initTime(historyDate.getEndDate()));
             }
+            HistoryStatistics historyStatistics = new HistoryStatistics();
+            historyStatistics.setTime(historyDate.getDate());
+            //查询最后一个周期数据时 需要逐天累加
+            if (!iterator.hasNext() && basRequest.getGranularity() != Granularity.DAY) {
+                int sum = 0;
+                int count = 0;
+                //当天的数据查不到，需要去除
+                subOneDay(historyDate);
+                dateList = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), Granularity.DAY);
+                for (HistoryDate date : dateList) {
+                    params = new HashMap<>();
+                    params.put(MPIDS, mpId);
+                    params.put(DAY, initTime(date.getBeginDate()));
+                    SiteSummary siteSummary = requestBasSummary(params);
+                    if (siteSummary != null) {
+                        sum += getVisitsByGranularity(Granularity.DAY, siteSummary);
+                    } else {
+                        sum += 0;
+                    }
+                    count++;
+                }
+                if (count == 0) {
+                    historyStatistics.setValue(0);
+                } else {
+                    historyStatistics.setValue(sum / count);
+                }
+                list.add(historyStatistics);
+                return new History(new Date(), list);
+            }
+
             SiteSummary siteSummary = requestBasSummary(params);
 
             if (siteSummary != null) {
@@ -245,22 +230,9 @@ public class BasServiceImpl implements BasService {
             } else {
                 historyStatistics.setValue(0);
             }
-
             list.add(historyStatistics);
         }
         return new History(new Date(), list);
-    }
-
-    private int getTimeSum(List<HistoryDate> dates, Map<String, String> params) throws ParseException, RemoteException {
-        int sum = 0;
-        for (HistoryDate date : dates) {
-            params.put(DAY, initTime(date.getEndDate()));
-            SiteSummary siteSummary = requestBasSummary(params);
-            if (siteSummary != null) {
-                sum += siteSummary.getAvgDuration30();
-            }
-        }
-        return sum;
     }
 
     /**
