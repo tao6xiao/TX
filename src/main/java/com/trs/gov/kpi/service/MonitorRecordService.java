@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorRecord;
+import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
+import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
 import java.util.Date;
 
@@ -33,4 +35,11 @@ public interface MonitorRecordService {
      * @return
      */
     Date getMonitorEndTime(Integer siteId, Integer typeId);
+
+    /**
+     * 查询日志监测列表
+     * @param param
+     * @return
+     */
+    ApiPageData selectMonitorRecordList(ReportRequestParam param);
 }

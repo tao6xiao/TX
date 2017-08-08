@@ -1,0 +1,23 @@
+package com.trs.gov.kpi.entity.responsedata;
+
+import lombok.Data;
+
+import java.util.Date;
+
+/**
+ * Created by li.hao on 2017/8/8.
+ */
+@Data
+public class MonitorRecordResponse {
+
+
+    private String  taskName;//任务类型名称
+
+    private  String  taskStatusName;//任务状态名称
+
+    private Integer result;//执行结果
+
+    private Date beginTime;//开始时间
+
+    private Date endTime;//结束时间
+}

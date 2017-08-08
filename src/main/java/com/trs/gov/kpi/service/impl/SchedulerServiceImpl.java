@@ -413,7 +413,6 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         // 真正的执行任务
         task.setSiteId(site.getSiteId());
-//        task.setBaseUrl(site.getIndexUrl());
         if (jobType == EnumCheckJobType.TIMENODE_REPORT_GENERATE) {
             task.setIsTimeNode(true);
         } else if (jobType == EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE) {

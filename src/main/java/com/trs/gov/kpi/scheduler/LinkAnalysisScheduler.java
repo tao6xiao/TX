@@ -100,14 +100,14 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             //监测完成(修改结果、结束时间、状态)
             Date endTime = new Date();
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-            filter.addCond(MonitorRecordTableField.SITEID, siteId);
-            filter.addCond(MonitorRecordTableField.TASKID, EnumCheckJobType.CHECK_LINK.value);
-            filter.addCond(MonitorRecordTableField.BEGINTIME,startTime);
+            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_LINK.value);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
             updater.addField(MonitorRecordTableField.RESULT,spider.getCount());
-            updater.addField(MonitorRecordTableField.ENDTIME, endTime);
-            updater.addField(MonitorRecordTableField.TASKSTATUS, Status.MonitorStatusType.DONE.value);
+            updater.addField(MonitorRecordTableField.END_TIME, endTime);
+            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());

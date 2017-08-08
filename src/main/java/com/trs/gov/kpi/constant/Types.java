@@ -458,4 +458,44 @@ public final class Types {
 
     }
 
+    /**
+     * 日志监测_任务类型
+     */
+    public enum MonitorRecordNameType {
+        INVALID(-1, "未知类型"),
+        TASK_CHECK_HOME_PAGE(1, "首页可用性监测任务"),
+        TASK_CHECK_LINK(2, "全站失效链接监测任务"),
+        TASK_CHECK_CONTENT(3, "信息错误监测任务"),
+        TASK_CHECK_INFO_UPDATE(4, "栏目更新监测任务"),
+        TASK_CALCULATE_PERFORMANCE(5, "绩效指数计算后台任务"),
+        TASK_TIMENODE_REPORT_GENERATE(6, "按时间节点生成报表的后台任务"),
+        TASK_TIMEINTERVAL_REPORT_GENERATE(7, "按时间区间生成报表的后台任务"),
+        TASK_SERVICE_LINK(8, "服务连接监测任务");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorRecordNameType(int value, String name) {
+
+            this.value = value;
+            this.name = name;
+        }
+
+        public static MonitorRecordNameType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            MonitorRecordNameType[] types = MonitorRecordNameType.values();
+            for (MonitorRecordNameType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+
+    }
+
 }
