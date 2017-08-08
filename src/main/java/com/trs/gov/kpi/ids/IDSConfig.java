@@ -8,11 +8,12 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Created by he.lang on 2017/6/29.
  */
-//@Configuration
+@Configuration
 public class IDSConfig {
     /*FilterRegistrationBean 用来配置urlpattern 来确定哪些路径触发filter */
     @Bean

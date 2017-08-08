@@ -6,8 +6,11 @@ import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,9 +18,9 @@ import java.io.IOException;
 /**
  * Created by he.lang on 2017/7/14.
  */
-//@Component
-//@WebFilter(filterName = "TLFilter", urlPatterns = "/*")
-//@Order(Integer.MAX_VALUE)
+@Component
+@WebFilter(filterName = "TLFilter", urlPatterns = "/*")
+@Order(Integer.MAX_VALUE)
 @Slf4j
 public class TLFilter implements Filter{
 
