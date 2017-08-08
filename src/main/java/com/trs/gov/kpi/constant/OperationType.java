@@ -19,4 +19,7 @@ public class OperationType {
     public static final String REMOTE = "接口调用";
 
     public static final String TASK_SCHEDULE = "任务调度";
+
+    private OperationType() {
+    }
 }

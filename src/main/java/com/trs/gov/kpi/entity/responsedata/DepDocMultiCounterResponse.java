@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
@@ -19,7 +18,7 @@ import java.util.Objects;
 @Component
 @Scope("prototype")
 @Slf4j
-public class DepDocMultiCounterResponse extends DocMultiCounterResponse{
+public class DepDocMultiCounterResponse extends DocMultiCounterResponse {
 
     // 部门
     @Getter
@@ -35,12 +34,12 @@ public class DepDocMultiCounterResponse extends DocMultiCounterResponse{
     public void setDepartmentId(Long id) {
         this.departmentId = id;
         try {
-            if(deptApiService.findDeptById("", Math.toIntExact(id)) != null) {
+            if (deptApiService.findDeptById("", Math.toIntExact(id)) != null) {
                 this.departmentName = deptApiService.findDeptById("", Math.toIntExact(id)).getGName();
             }
         } catch (RemoteException e) {
-            log.error("调用外部接口 findDeptById 失败",e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED,"调用外部接口 findDeptById 失败", e);
+            log.error("调用外部接口 findDeptById 失败", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口 findDeptById 失败", e);
         }
     }
 
