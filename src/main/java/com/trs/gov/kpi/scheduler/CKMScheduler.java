@@ -2,11 +2,14 @@ package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.MonitorRecord;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
@@ -76,13 +79,24 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private MonitorRecordService monitorRecordService;
 
+    @Resource
+    private CommonMapper commonMapper;
+
     int count = 0;//错误总数记录
 
     @Override
     public void run() throws RemoteException {
-        log.info(SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
+
+        //监测开始(添加基本信息)
         Date startTime = new Date();
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         if (checkSite == null) {
@@ -98,19 +112,23 @@ public class CKMScheduler implements SchedulerTask {
 
         spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
+        //监测完成(修改结果、结束时间、状态)
         Date endTime = new Date();
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setEndTime(endTime);
-        monitorRecord.setResult(count);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITEID, siteId);
+        filter.addCond(MonitorRecordTableField.TASKID, EnumCheckJobType.CHECK_CONTENT.value);
+        filter.addCond(MonitorRecordTableField.BEGINTIME,startTime);
+
+        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+        updater.addField(MonitorRecordTableField.RESULT,count);
+        updater.addField(MonitorRecordTableField.ENDTIME, endTime);
+        updater.addField(MonitorRecordTableField.TASKSTATUS, Status.MonitorStatusType.DONE.value);
+        commonMapper.update(updater, filter);
 
         LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
-        log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        log.info(SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
         // TODO REVIEW LINWEI 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
     }
 
 

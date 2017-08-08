@@ -6,8 +6,8 @@
  */
 package com.trs.gov.kpi.ids;
 
+import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.entity.exception.BizRuntimeException;
-import com.trs.idm.client.actor.SSOUser;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -45,7 +45,7 @@ public class ContextHelper {
     /**
      * 初始化时，同时初始化登录用户参数
      */
-    public static void initContext(SSOUser loginUser) {
+    public static void initContext(LocalUser loginUser) {
         setLoginUser(loginUser);
         setArg(CONTEXT_INDEX_IP, loginUser.getLastLoginIP());//添加ip记录
     } // END of initContext
@@ -56,8 +56,8 @@ public class ContextHelper {
      *
      * @return 当共享参数存在时，直接返回ContextTL的loginUser（当前登录用户）；当共享参数不存在时，返回空（NULL）
      */
-    public static SSOUser getLoginUser() {
-        SSOUser loginUser = (SSOUser) BaseContextHelper.getArg(ARG_INDEX_USER);
+    public static LocalUser getLoginUser() {
+        LocalUser loginUser = (LocalUser) BaseContextHelper.getArg(ARG_INDEX_USER);
         if (loginUser == null) {
             log.info("");
             throw new BizRuntimeException("fatal error:no current user in threadlocal,iniContext please!");
@@ -70,7 +70,7 @@ public class ContextHelper {
      *
      * @param currUser 登录用户
      */
-    public static void setLoginUser(SSOUser currUser) {
+    public static void setLoginUser(LocalUser currUser) {
         BaseContextHelper.setArg(ARG_INDEX_USER, currUser);
     } // END of setLoginUser
 

@@ -33,7 +33,7 @@ public class DetectorController {
     ContentCheckApiService contentCheckApiService;
 
     /**
-     *  CKM校对封装接口， 为采编中心编辑器智能校对提供的接口
+     * CKM校对封装接口， 为采编中心编辑器智能校对提供的接口
      *
      * @return
      */
@@ -41,14 +41,16 @@ public class DetectorController {
     @ResponseBody
     public Object checkText(@RequestBody CheckTextRequest request) throws BizException, RemoteException {
         Date startTime = new Date();
-
+        String logDesc = "执行ckm校对";
         if (request.getCheckType() == null || request.getCheckType().length == 0) {
             log.error("check type is empty!");
+            LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check type is empty!", "");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
 
         if (StringUtil.isEmpty(request.getCheckContent())) {
             log.error("check content is empty!");
+            LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check content is empty!", "");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
 
@@ -56,19 +58,25 @@ public class DetectorController {
         for (String type : request.getCheckType()) {
             if (!checkTypeList.contains(type)) {
                 log.error("invalid check type: " + type);
+                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", invalid check type: " + type, "");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
-
-        final ContentCheckResult checkResult = contentCheckApiService.check(request.getCheckContent(), CollectionUtil.join(Arrays.asList(request.getCheckType()), ";"));
-        if (!checkResult.isOk()) {
-            log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
-            throw new RemoteException(checkResult.getMessage());
+        try {
+            final ContentCheckResult checkResult = contentCheckApiService.check(request.getCheckContent(), CollectionUtil.join(Arrays.asList(request.getCheckType()), ";"));
+            if (!checkResult.isOk()) {
+                log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
+                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + "check return error: " + checkResult.getMessage() + ", content is " + request, "");
+                throw new RemoteException(checkResult.getMessage());
+            }
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, "");
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc, endTime.getTime() - startTime.getTime());
+            return JSON.parseObject(checkResult.getResult());
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), "");
+            throw e;
         }
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "执行ckm校对", "");
-        LogUtil.addElapseLog(OperationType.QUERY, "执行ckm校对", endTime.getTime()-startTime.getTime());
-        return JSON.parseObject(checkResult.getResult());
     }
 
 }

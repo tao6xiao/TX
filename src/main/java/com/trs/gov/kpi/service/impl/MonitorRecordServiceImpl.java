@@ -19,6 +19,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
 
     @Override
     public void insertMonitorRecord(MonitorRecord monitorRecord) {
+
         commonMapper.insert(DBUtil.toRow(monitorRecord));
     }
 }

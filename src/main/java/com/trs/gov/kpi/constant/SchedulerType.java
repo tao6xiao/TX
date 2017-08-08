@@ -22,12 +22,11 @@ public class SchedulerType {
 
     private SchedulerType(){}
 
-    // TODO review linwei 函数命名， 动词+名词
-    public static String schedulerStart(String schedulerType, Integer siteId){
+    public static String startScheduler(String schedulerType, Integer siteId){
         return schedulerType + siteId + " start...";
     }
 
-    public static String schedulerEnd(String schedulerType, Integer siteId){
+    public static String endScheduler(String schedulerType, Integer siteId){
         return schedulerType + siteId + " end...";
     }
 }
