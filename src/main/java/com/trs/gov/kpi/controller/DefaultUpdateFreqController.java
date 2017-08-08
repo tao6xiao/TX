@@ -46,23 +46,30 @@ public class DefaultUpdateFreqController {
     @ResponseBody
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
         Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (siteId == null) {
             log.error("Invalid parameter:  参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
-        Integer value = null;
-        if (defaultUpdateFreq != null) {
-            value = defaultUpdateFreq.getValue();
+        String logDesc = "通过siteId查询对应自查提醒记录";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw new BizException(Authority.NO_AUTHORITY);
         }
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "通过siteId查询对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "通过siteId查询对应自查提醒记录", endTime.getTime()-startTime.getTime());
-        return value;
+        try {
+            DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
+            Integer value = null;
+            if (defaultUpdateFreq != null) {
+                value = defaultUpdateFreq.getValue();
+            }
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
+            return value;
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
+        }
     }
 
     /**
@@ -87,10 +94,10 @@ public class DefaultUpdateFreqController {
         DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
         if (defaultUpdateFreqCheck == null) {//不存在对应siteId的自查提醒记录，需要新增记录
             defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
-            LogUtil.addOperationLog(OperationType.ADD, "插入自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName());
+            LogUtil.addOperationLog(OperationType.ADD, "插入自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
         } else {//存在当前siteId对应自查提醒记录，修改记录
             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
-            LogUtil.addOperationLog(OperationType.UPDATE, "修改对应自查提醒记录", siteApiService.getSiteById(siteId, "").getSiteName());
+            LogUtil.addOperationLog(OperationType.UPDATE, "修改对应自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
         }
         return null;
     }
