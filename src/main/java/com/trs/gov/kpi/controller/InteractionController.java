@@ -43,7 +43,7 @@ public class InteractionController {
      */
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
     public NBHDStatisticsRes getGovMsgBoxesCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
-//        checkAuthority(param);
+        checkAuthority(param);
         NBHDStatisticsRes res = interactionService.getGovMsgBoxesCount(param);
         LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的信件列表", "");
         return res;
@@ -59,11 +59,11 @@ public class InteractionController {
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public List<HistoryStatistics> getGovMsgHistoryCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         Date startTime = new Date();
-//        checkAuthority(param);
+        checkAuthority(param);
         List<HistoryStatistics> historyStatisticsList = interactionService.getGovMsgHistoryCount(param);
         Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的数量", "");
-        LogUtil.addElapseLog(OperationType.QUERY, "查询问政互动的数量", endTime.getTime()-startTime.getTime());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询问政互动的数量", endTime.getTime() - startTime.getTime());
         return historyStatisticsList;
     }
 
@@ -77,11 +77,11 @@ public class InteractionController {
     @RequestMapping(value = "/msg/unhandled", method = RequestMethod.GET)
     public NBHDPageDataResult getGovMsgBoxes(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         Date startTime = new Date();
-//        checkAuthority(param);
+        checkAuthority(param);
         NBHDPageDataResult result = interactionService.getGovMsgBoxes(param);
         Date endTime = new Date();
         LogUtil.addOperationLog(OperationType.QUERY, "查询问政互动的数量的历史记录", "");
-        LogUtil.addElapseLog(OperationType.QUERY, "查询问政互动的数量的历史记录", endTime.getTime()-startTime.getTime());
+        LogUtil.addElapseLog(OperationType.QUERY, "查询问政互动的数量的历史记录", endTime.getTime() - startTime.getTime());
         return result;
     }
 
