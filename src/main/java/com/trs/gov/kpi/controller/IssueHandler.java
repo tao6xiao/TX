@@ -33,9 +33,15 @@ public class IssueHandler {
      */
     @RequestMapping(value = UrlPath.HANDLE_PATH, method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) throws RemoteException {
-        issueService.handIssuesByIds(siteId, Arrays.asList(ids));
-        LogUtil.addOperationLog(OperationType.UPDATE, "处理问题", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+        String logDesc = "处理问题";
+        try {
+            issueService.handIssuesByIds(siteId, Arrays.asList(ids));
+            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
+        }
     }
 
     /**
@@ -47,9 +53,15 @@ public class IssueHandler {
      */
     @RequestMapping(value = UrlPath.IGNORE_PATH, method = RequestMethod.POST)
     public String ignoreIssuesByIds(int siteId, Integer[] ids) throws RemoteException {
-        issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
-        LogUtil.addOperationLog(OperationType.UPDATE, "忽略问题", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+        String logDesc = "忽略问题";
+        try {
+            issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
+            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
+        }
     }
 
     /**
@@ -61,9 +73,15 @@ public class IssueHandler {
      */
     @RequestMapping(value = UrlPath.DELETE_PATH, method = RequestMethod.DELETE)
     public String delIssueByIds(int siteId, Integer[] ids) throws RemoteException {
-        issueService.delIssueByIds(siteId, Arrays.asList(ids));
-        LogUtil.addOperationLog(OperationType.DELETE, "删除问题", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+        String logDesc = "删除问题";
+        try {
+            issueService.delIssueByIds(siteId, Arrays.asList(ids));
+            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        }catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
+        }
     }
 
     /**
@@ -76,9 +94,15 @@ public class IssueHandler {
      */
     @RequestMapping(value = UrlPath.UPDATE_DEPT_PATH, method = RequestMethod.POST)
     public String updateDeptByIds(int siteId, Integer[] ids, int deptId) throws RemoteException {
-        issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
-        LogUtil.addOperationLog(OperationType.UPDATE, "修改所属部门", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+        String logDesc = "修改所属部门";
+        try {
+            issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
+            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        }catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
+        }
     }
 
 }

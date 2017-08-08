@@ -48,6 +48,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
         Integer siteId = monitorSiteDeal.getSiteId();
         //保存站点信息时，注册报表等调度任务
+        // TODO: 2017/8/8 REVIEW 此处逻辑顺序错误，应该先将数据插入数据库
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
