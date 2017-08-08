@@ -12,6 +12,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -44,7 +45,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     private DeptApiService deptApiService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
@@ -95,7 +96,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new History(monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.INFO_ERROR_ISSUE.value), list);
+        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.IssueType.INFO_ERROR_ISSUE.value), list);
     }
 
     @Override
