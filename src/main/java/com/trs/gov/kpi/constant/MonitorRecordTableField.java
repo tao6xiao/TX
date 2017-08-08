@@ -2,7 +2,7 @@ package com.trs.gov.kpi.constant;
 
 /**
  * monitorrecord监测记录表字段常量
- *
+ * <p>
  * Created by li.hao on 2017/8/7.
  */
 public class MonitorRecordTableField {
@@ -21,6 +21,6 @@ public class MonitorRecordTableField {
 
     public static final String ENDTIME = "endTime";//结束时间
 
-    public MonitorRecordTableField() {
+    private MonitorRecordTableField() {
     }
 }

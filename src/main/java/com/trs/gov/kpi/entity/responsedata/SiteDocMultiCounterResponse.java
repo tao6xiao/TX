@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
@@ -34,7 +33,6 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
     private String siteName;
 
 
-
     public void setSiteId(Long id) {
         this.siteId = id;
         try {
@@ -52,16 +50,11 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        SiteDocMultiCounterResponse that = (SiteDocMultiCounterResponse) o;
-        return Objects.equals(getSiteId(), that.getSiteId()) &&
-                Objects.equals(getSiteName(), that.getSiteName());
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getSiteId(), getSiteName());
+        return super.hashCode();
     }
 }

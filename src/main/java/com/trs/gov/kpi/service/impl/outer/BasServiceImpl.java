@@ -197,28 +197,7 @@ public class BasServiceImpl implements BasService {
             historyStatistics.setTime(historyDate.getDate());
             //查询最后一个周期数据时 需要逐天累加
             if (!iterator.hasNext() && basRequest.getGranularity() != Granularity.DAY) {
-                int sum = 0;
-                int count = 0;
-                //当天的数据查不到，需要去除
-                subOneDay(historyDate);
-                dateList = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), Granularity.DAY);
-                for (HistoryDate date : dateList) {
-                    params = new HashMap<>();
-                    params.put(MPIDS, mpId);
-                    params.put(DAY, initTime(date.getBeginDate()));
-                    SiteSummary siteSummary = requestBasSummary(params);
-                    if (siteSummary != null) {
-                        sum += getVisitsByGranularity(Granularity.DAY, siteSummary);
-                    } else {
-                        sum += 0;
-                    }
-                    count++;
-                }
-                if (count == 0) {
-                    historyStatistics.setValue(0);
-                } else {
-                    historyStatistics.setValue(sum / count);
-                }
+                updateLastStatistics(historyDate, historyStatistics, mpId);
                 list.add(historyStatistics);
                 return new History(new Date(), list);
             }
@@ -233,6 +212,31 @@ public class BasServiceImpl implements BasService {
             list.add(historyStatistics);
         }
         return new History(new Date(), list);
+    }
+
+    private void updateLastStatistics(HistoryDate historyDate, HistoryStatistics historyStatistics, String mpId) throws ParseException, RemoteException {
+        int sum = 0;
+        int count = 0;
+        //当天的数据查不到，需要去除
+        subOneDay(historyDate);
+        List<HistoryDate> dateList = DateUtil.splitDate(historyDate.getBeginDate(), historyDate.getEndDate(), Granularity.DAY);
+        for (HistoryDate date : dateList) {
+            Map<String, String> params = new HashMap<>();
+            params.put(MPIDS, mpId);
+            params.put(DAY, initTime(date.getBeginDate()));
+            SiteSummary siteSummary = requestBasSummary(params);
+            if (siteSummary != null) {
+                sum += getVisitsByGranularity(Granularity.DAY, siteSummary);
+            } else {
+                sum += 0;
+            }
+            count++;
+        }
+        if (count == 0) {
+            historyStatistics.setValue(0);
+        } else {
+            historyStatistics.setValue(sum / count);
+        }
     }
 
     /**
