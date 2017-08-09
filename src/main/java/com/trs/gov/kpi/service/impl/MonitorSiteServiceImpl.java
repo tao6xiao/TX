@@ -44,9 +44,10 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     }
 
     @Override
-    public int addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException {
+    public void addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException {
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
         Integer siteId = monitorSiteDeal.getSiteId();
+        monitorSiteMapper.insert(monitorSite);
         //保存站点信息时，注册报表等调度任务
         // TODO: 2017/8/8 REVIEW 此处逻辑顺序错误，应该先将数据插入数据库
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
@@ -57,7 +58,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.SERVICE_LINK);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.SERVICE_LINK);
-        return monitorSiteMapper.insert(monitorSite);
     }
 
     @Override

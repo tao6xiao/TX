@@ -31,7 +31,7 @@ public interface MonitorSiteService {
      * @param monitorSiteDeal
      * @return
      */
-    int addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException;
+    void addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException;
 
     /**
      * 通过siteId更新MonitorSite对应记录
