@@ -24,7 +24,7 @@ public final class Constants {
     // 数据库字段名siteId
     public static final String DB_FIELD_SITE_ID = "siteId";
 
-    // 数据库字段名siteId
+    // 数据库字段名chnlId
     public static final String DB_FIELD_CHNL_ID = "chnlId";
 
     //检索字段chnlName

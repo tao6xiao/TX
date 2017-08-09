@@ -2,7 +2,6 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.controller.InfoErrorController;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
@@ -11,6 +10,12 @@ import com.trs.mlf.simplelog.LogConstant;
 import com.trs.mlf.simplelog.LogUser;
 import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+
+import javax.validation.constraints.NotNull;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * 用于添加系统日志和获取异常信息的工具类
@@ -155,16 +160,15 @@ public class LogUtil {
      *
      * @param service
      * @param siteId
+     * @param logDesc 描述， 不能为空
      * @return
      */
-    public static String buildElapseLogDesc(SiteApiService service, Integer siteId, String logDesc) {
+    public static String buildElapseLogDesc(SiteApiService service, Integer siteId, @NotNull String logDesc) {
         StringBuilder builder = new StringBuilder();
         builder.append("相关站点：");
         builder.append(getSiteNameForLog(service, siteId));
-        if (logDesc != null && !"".equals(logDesc.trim())) {
-            builder.append("，");
-            builder.append(logDesc);
-        }
+        builder.append("，");
+        builder.append(logDesc);
         return builder.toString();
     }
 
@@ -188,7 +192,7 @@ public class LogUtil {
     }
 
     /**
-     * Controller的操作封装函数，对于异常处理情况记录，操作日志
+     * Controller的操作封装函数，对于异常处理情况记录，操作失败日志
      */
     public static <R> R ControlleFunctionWrapper(ControllorFunction<R> func, String type, String desc, String systemName) throws RemoteException, BizException {
         try {
@@ -197,5 +201,59 @@ public class LogUtil {
             LogUtil.addOperationLog(type, LogUtil.buildFailOperationLogDesc(desc), systemName);
             throw e;
         }
+    }
+
+    /**
+     * 构造性能日志记录器
+     * @param type
+     * @param desc
+     * @return
+     */
+    public static PerformanceLogRecorder newPerformanceRecorder(String type, String desc) {
+        return new PerformanceLogRecorder(type, desc);
+    }
+
+    /**
+     * 性能日志记录器
+     */
+    public static class PerformanceLogRecorder {
+
+        private String type;
+        private String desc;
+        private Date startDate;
+
+        public PerformanceLogRecorder(String type, String desc) {
+            this.type = type;
+            this.desc = desc;
+            this.startDate = new Date();
+        }
+
+        public void record() {
+            Date endDate = new Date();
+            addElapseLog(type, desc, endDate.getTime() - startDate.getTime());
+        }
+    };
+
+    /**
+     * 构造参数在日志中的描述记录
+     * @param params, 参数，以 参数名,参数值,参数名,数参值,... 的格式传入
+     * @return
+     */
+    public static String paramsToLogString(Object ... params) {
+
+        if (params.length % 2 != 0) {
+            throw new IllegalArgumentException("参数不成对！");
+        }
+
+        StringBuilder result = new StringBuilder();
+        result.append("[");
+        for (int i = 0; i < params.length; i = i + 2) {
+            result.append(params[i]).append("=").append(params[i+1]);
+            if (i+2 < params.length) {
+                result.append(",");
+            }
+        }
+        result.append("]");
+        return result.toString();
     }
 }

@@ -47,7 +47,7 @@ public class LinkAvailabilityController extends IssueHandler {
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询链接可用性待解决和已解决问题数量";
+        String logDesc = "查询链接可用性待解决和已解决问题数量" + LogUtil.paramsToLogString("param", param);
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
                 (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
@@ -76,7 +76,7 @@ public class LinkAvailabilityController extends IssueHandler {
     public int getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询链接可用性待解决问题数量";
+        String logDesc = "查询链接可用性待解决问题数量" + LogUtil.paramsToLogString("param", param);
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
                 (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
@@ -163,7 +163,7 @@ public class LinkAvailabilityController extends IssueHandler {
     public IndexPage showIndexAvailability(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
-        String logDesc = "首页可用性校验";
+        String logDesc = "首页可用性校验" + LogUtil.paramsToLogString("param", param);
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
                 (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));

@@ -22,7 +22,7 @@ public interface DefaultUpdateFreqService {
      * @param defaultUpdateFreq
      * @return
      */
-    int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws ParseException;
+    int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq);
 
     /**
      * 修改当前站点的自查提醒记录
