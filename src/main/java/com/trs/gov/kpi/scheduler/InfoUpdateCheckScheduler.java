@@ -17,6 +17,7 @@ import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -42,6 +43,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     // 开始检查的第一个周期起始点
     private static final String BEGIN_CHECK_DAY = "2017-05-01 00:00:00";
+
+    @Resource
+    private SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
     SiteApiService siteApiService;
@@ -431,7 +435,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      *
      * @param siteTrees
      */
-    private void insertIssueAndWarning(List<SimpleTree<CheckingChannel>> siteTrees) {
+    private void insertIssueAndWarning(List<SimpleTree<CheckingChannel>> siteTrees) throws RemoteException {
         if (siteTrees == null || siteTrees.isEmpty()) {
             return;
         }
@@ -452,7 +456,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      *
      * @param root
      */
-    private void recursiveInsertIssueAndWarning(SimpleTree.Node<CheckingChannel> root) {
+    private void recursiveInsertIssueAndWarning(SimpleTree.Node<CheckingChannel> root) throws RemoteException {
         if (root == null) {
             return;
         }
@@ -473,7 +477,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      *
      * @param node
      */
-    private void insertOneCheckingChannel(SimpleTree.Node<CheckingChannel> node) {
+    private void insertOneCheckingChannel(SimpleTree.Node<CheckingChannel> node) throws RemoteException {
         if (node == null || node.getData() == null || node.getData().getChannel() == null) {
             return;
         }
@@ -513,7 +517,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * @param checking
      * @param node
      */
-    private void insertUpdateIssue(CheckingChannel checking, SimpleTree.Node<CheckingChannel> node) {
+    private void insertUpdateIssue(CheckingChannel checking, SimpleTree.Node<CheckingChannel> node) throws RemoteException {
         if (checking.isIssue()) {
             // 查看子栏目是否更新了，如果子栏目更新，则父栏目也算更新了
             if (!isChildChannelUpdated(node)) {
@@ -544,6 +548,34 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             }
         } else {
             // 父栏目有更新，无预警，不插入任何记录
+        }
+        insertEmptyColumn(checking);
+    }
+
+    /**
+     * 插入空栏目
+     */
+    private void insertEmptyColumn(CheckingChannel checking) throws RemoteException{
+        List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
+        for(Integer chnlId : chnlIdList){
+            QueryFilter filter = buildQueryFilter(chnlId,
+                    Types.IssueType.EMPTY_CHANNEL.value,
+                    Types.EmptyChannelType.EMPTY_COLUMN.value,
+                    checking.getBeginDateTime());
+            if (!isExist(filter)) {
+                InfoUpdate update = new InfoUpdate();
+                update.setSiteId(siteId);
+                update.setTypeId(Types.IssueType.EMPTY_CHANNEL.value);
+                update.setSubTypeId(Types.EmptyChannelType.EMPTY_COLUMN.value);
+                Date curDate = new Date();
+                update.setIssueTime(curDate);
+                update.setCheckTime(curDate);
+                update.setChnlId(chnlId);
+                issueMapper.insert(DBUtil.toRow(update));
+                count++;
+            }else {
+                //已存在该栏目为空记录则不进行操作
+            }
         }
     }
 

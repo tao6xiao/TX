@@ -111,7 +111,7 @@ public class InfoUpdateController extends IssueHandler {
     }
 
     /**
-     * 获取栏目信息更新不及时的统计信息
+     * 获取栏目信息更新不及时及空栏目的统计信息
      *
      * @param param
      * @return
