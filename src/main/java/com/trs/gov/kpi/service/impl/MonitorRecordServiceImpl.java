@@ -41,13 +41,13 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
     }
 
     @Override
-    public Date getMonitorStartTime(Integer siteId, Integer typeId) {
-        return monitorRecordMapper.getMonitorBeginTime(siteId, typeId);
+    public Date getMonitorStartTime(Integer siteId, Integer taskId) {
+        return monitorRecordMapper.getMonitorBeginTime(siteId, taskId);
     }
 
     @Override
-    public Date getMonitorEndTime(Integer siteId, Integer typeId) {
-        return monitorRecordMapper.getMonitorEndTime(siteId, typeId);
+    public Date getMonitorEndTime(Integer siteId, Integer taskId) {
+        return monitorRecordMapper.getMonitorEndTime(siteId, taskId);
     }
 
     @Override

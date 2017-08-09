@@ -105,7 +105,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.IssueType.LINK_AVAILABLE_ISSUE.value), list);
+        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
-        Date endTime = monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
+        Date endTime = monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
         indexPage.setMonitorTime(DateUtil.toString(endTime));
@@ -214,7 +214,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
         queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
         queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
-        queryFilter.addCond(IssueTableField.ISSUE_TIME, monitorRecordService.getMonitorStartTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value)).setRangeBegin(true);
+        queryFilter.addCond(IssueTableField.ISSUE_TIME, monitorRecordService.getMonitorStartTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value)).setRangeBegin(true);
         queryFilter.addCond(IssueTableField.ISSUE_TIME, endTime).setRangeEnd(true);
         queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);

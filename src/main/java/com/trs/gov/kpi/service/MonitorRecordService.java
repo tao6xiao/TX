@@ -22,19 +22,19 @@ public interface MonitorRecordService {
      * 查询最近的监测任务的开始时间
      *
      * @param siteId
-     * @param typeId
+     * @param taskId
      * @return
      */
-    Date getMonitorStartTime(Integer siteId, Integer typeId);
+    Date getMonitorStartTime(Integer siteId, Integer taskId);
 
     /**
      * 查询最近的监测任务的结束时间
      *
      * @param siteId
-     * @param typeId
+     * @param taskId
      * @return
      */
-    Date getMonitorEndTime(Integer siteId, Integer typeId);
+    Date getMonitorEndTime(Integer siteId, Integer taskId);
 
     /**
      * 查询日志监测列表

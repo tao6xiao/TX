@@ -18,19 +18,19 @@ public interface MonitorRecordMapper {
      * 查询最近的监测任务的开始时间
      *
      * @param siteId
-     * @param typeId
+     * @param taskId
      * @return
      */
-    Date getMonitorBeginTime(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId);
+    Date getMonitorBeginTime(@Param("siteId") Integer siteId, @Param("taskId") Integer taskId);
 
     /**
      * 查询最近的监测任务的结束时间
      *
      * @param siteId
-     * @param typeId
+     * @param taskId
      * @return
      */
-    Date getMonitorEndTime(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId);
+    Date getMonitorEndTime(@Param("siteId") Integer siteId, @Param("taskId") Integer taskId);
 
     /**
      * 根据filter中的条件查询数据数量

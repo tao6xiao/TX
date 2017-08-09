@@ -120,7 +120,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.IssueType.INFO_UPDATE_ISSUE.value), list);
+        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value), list);
     }
 
     /**
