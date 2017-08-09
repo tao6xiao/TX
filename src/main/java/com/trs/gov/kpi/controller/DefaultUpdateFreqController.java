@@ -79,6 +79,7 @@ public class DefaultUpdateFreqController {
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException, RemoteException {
+        String logDesc = "插入或者修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq",defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             if (defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null) {
                 log.error("Invalid parameter:  参数siteId、value（自查提醒周期值）中至少一个存在null值");
@@ -90,6 +91,7 @@ public class DefaultUpdateFreqController {
             }
             int siteId = defaultUpdateFreq.getSiteId();
             DefaultUpdateFreq defaultUpdateFreqCheck = null;
+            // TODO: 2017/8/9 REVIEW 是否需要在查询自查提醒记录时，try catch
             try {
                 defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
             } catch (Exception e) {
@@ -102,23 +104,25 @@ public class DefaultUpdateFreqController {
                 updateDefaultUpdateFreq(defaultUpdateFreq);
             }
             return null;
-        }, OperationType.ADD + OperationType.UPDATE, "插入或者修改自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
+        }, OperationType.ADD + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
     }
 
     private Integer updateDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws RemoteException, BizException {
+        String logDesc = "修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
-            LogUtil.addOperationLog(OperationType.UPDATE, "修改对应自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
+            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
             return null;
-        }, OperationType.UPDATE, "修改对应自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
+        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
     }
 
     private Integer addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws RemoteException, BizException {
+        String logDesc = "插入自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
-            LogUtil.addOperationLog(OperationType.ADD, "插入自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
+            LogUtil.addOperationLog(OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
             return null;
-        }, OperationType.ADD, "插入自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
+        }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
     }
 
 }
