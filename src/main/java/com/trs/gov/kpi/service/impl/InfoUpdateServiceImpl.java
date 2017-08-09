@@ -120,6 +120,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
+        // TODO REVIEW LINWEI 搞不懂为什么要用检测任务的时间来构造History？
         return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value), list);
     }
 

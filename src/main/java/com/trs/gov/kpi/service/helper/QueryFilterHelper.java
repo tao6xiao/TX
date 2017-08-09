@@ -121,6 +121,7 @@ public class QueryFilterHelper {
 
 
     private static void addSort(QueryFilter filter, String[] sortFields) {
+        // TODO REVIEW LINWEI 这个地方要防止sql注入
         for (String sortField : sortFields) {
             String[] nameAndDirection = sortField.split(",");
             if (nameAndDirection.length == 2 && !nameAndDirection[0].trim().isEmpty()) {
@@ -451,6 +452,7 @@ public class QueryFilterHelper {
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskName")) {
+                // TODO REVIEW LINWEI values要避免未知类型，同时获取id的集合，应该在Types.MonitorRecordNameType里面提供方法来做
                 Types.MonitorRecordNameType[] values = Types.MonitorRecordNameType.values();
                 for (Types.MonitorRecordNameType type : values) {
                     if (type.getName().contains(param.getSearchText())) {
@@ -459,6 +461,7 @@ public class QueryFilterHelper {
                     }
                 }
             }else if(param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskStatusName")){
+                // TODO REVIEW LINWEI 同上
                 Status.MonitorStatusType[] values = Status.MonitorStatusType.values();
                 for (Status.MonitorStatusType type : values) {
                     if (type.getName().contains(param.getSearchText())) {
@@ -467,6 +470,7 @@ public class QueryFilterHelper {
                     }
                 }
             }
+            // TODO REVIEW LINWEI 还有两种情况：searchField为空的情况；不为空，但是参数错误
         }
 
         // sort field

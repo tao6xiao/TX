@@ -15,6 +15,7 @@ import java.util.Date;
 @DBTable("monitorrecord")
 public class MonitorRecord {
 
+    // TODO REVIEW LINWEI 如果数据库字段的名字和变量名一样，怎不需要在注解中指定名字
     @DBField("id")
     private Integer id;
 

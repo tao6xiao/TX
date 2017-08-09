@@ -19,6 +19,7 @@ public enum Table {
     FREQ_SETUP("frequencysetup", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "presetFeqId", Constants.DB_FIELD_CHNL_ID, "setTime", "isOpen")),
     REPORT("report", Arrays.asList("id", "siteId", "title", "reportTime", "crTime", "type", "path")),
     DUTY_DEPT("dutydept", Arrays.asList(Constants.DB_FIELD_CHNL_ID, "siteId", "deptId", "contain")),
+    // TODO REVIEW LINWEI 可以通过持久化对象，获取数据库字段，这样就更容易维护
     MONITOR_RECORD("monitorrecord",Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "taskId", "taskStatus", "result", "beginTime", "endTime"));
 
 
