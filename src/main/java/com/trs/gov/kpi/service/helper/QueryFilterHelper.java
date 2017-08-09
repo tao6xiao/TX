@@ -443,7 +443,7 @@ public class QueryFilterHelper {
      * @return
      * @throws RemoteException
      */
-    public static QueryFilter toMonitorRecordFilter(ReportRequestParam param) {
+    public static QueryFilter toMonitorRecordFilter(PageDataRequestParam param) {
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, param.getSiteId());
 
