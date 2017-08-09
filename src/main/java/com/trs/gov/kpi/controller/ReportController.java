@@ -62,17 +62,24 @@ public class ReportController {
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
         Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getDay());
-        ApiPageData apiPageData = reportService.selectReportList(param, true);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "按时间节点查询报表列表", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+        String logDesc ="按时间节点查询报表列表";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        try {
+            ApiPageData apiPageData = reportService.selectReportList(param, true);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
     /**
@@ -86,22 +93,35 @@ public class ReportController {
      */
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
     public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_EXPORT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        // TODO: 2017/8/9 REVIEW he.lang 站点无需判断？
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        String path = reportService.getReportPath(param, true);
+        String logDesc = "按时间节点导出下载统计报表";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_EXPORT)) {
+            LogUtil.addOperationLog(OperationType.REQUEST, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        String path;
+        try {
+            path = reportService.getReportPath(param, true);
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc+"：获取路径"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
         if (StringUtil.isEmpty(path)) {
             return null;
         }
-        String[] str = path.split("/");
-
-        download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        LogUtil.addOperationLog(OperationType.QUERY, "按时间节点导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        return null;
+        try {
+            String[] str = path.split("/");
+            download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
+            LogUtil.addOperationLog(OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            return null;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.REQUEST, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
     /**
@@ -115,18 +135,25 @@ public class ReportController {
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
         Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
         ParamCheckUtil.checkDayTime(param.getEndDateTime());
-        ApiPageData apiPageData = reportService.selectReportList(param, false);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "按时间区间查询报表列表", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+        String logDesc = "按时间区间查询报表列表";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        try {
+            ApiPageData apiPageData = reportService.selectReportList(param, false);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
     /**
@@ -140,22 +167,35 @@ public class ReportController {
      */
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
     public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_EXPORT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        String path = reportService.getReportPath(param, false);
+        String logDesc = "按时间区间导出下载统计报表";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_EXPORT)) {
+            LogUtil.addOperationLog(OperationType.REQUEST, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        String path;
+        try {
+             path = reportService.getReportPath(param, false);
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc+"获取路径"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
         if (StringUtil.isEmpty(path)) {
             return null;
         }
-        String[] str = path.split("/");
+        try {
+            String[] str = path.split("/");
 
-        download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        LogUtil.addOperationLog(OperationType.QUERY, "按时间区间导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        return null;
+            download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
+            LogUtil.addOperationLog(OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            return null;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.REQUEST, LogUtil.buildFailOperationLogDesc(logDesc+"获取路径"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
     private void download(HttpServletResponse response, String relativePath, String fileName) {

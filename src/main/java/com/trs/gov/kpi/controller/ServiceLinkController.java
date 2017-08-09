@@ -43,16 +43,23 @@ public class ServiceLinkController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getServiceLinkList(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
         Date startTime = new Date();
+        ParamCheckUtil.paramCheck(requestParam);
+        String logDesc = "查询服务链接未解决问题列表";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), requestParam.getSiteId(), null, Authority.KPIWEB_SERVICE_SEARCH) && !authorityService.hasRight
                 (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        ParamCheckUtil.paramCheck(requestParam);
-        ApiPageData apiPageData = linkAvailabilityService.getServiceLinkList(requestParam);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询服务链接未解决问题列表", siteApiService.getSiteById(requestParam.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询服务链接未解决问题列表", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+        try {
+            ApiPageData apiPageData = linkAvailabilityService.getServiceLinkList(requestParam);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, requestParam.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
+            throw e;
+        }
     }
 
 }

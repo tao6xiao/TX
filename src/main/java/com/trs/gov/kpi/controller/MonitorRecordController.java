@@ -1,9 +1,12 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.MonitorRecordService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,9 @@ public class MonitorRecordController {
     @Resource
     private MonitorRecordService monitorRecordService;
 
+    @Resource
+    private SiteApiService siteApiService;
+
 
     /**
      * 查询日志监测（支持按照时间查询、任务名和任务状态模糊查询）
@@ -37,9 +43,13 @@ public class MonitorRecordController {
         ParamCheckUtil.pagerCheck(param.getPageIndex(),param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());
         ParamCheckUtil.checkDayTime(param.getEndDateTime());
-        ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
-
-        return apiPageData;
+        try {
+            ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("查询日志监测记录"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
 }

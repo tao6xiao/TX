@@ -46,17 +46,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/speed/count", method = RequestMethod.GET)
     public int selectReplySpeedCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "响应速度统计查询";
+        try {
+            Date startTime = new Date();
+            ParamCheckUtil.paramCheck(param);
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            int value = webPageService.selectReplySpeedCount(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return value;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        int value = webPageService.selectReplySpeedCount(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "响应速度统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "响应速度统计查询", endTime.getTime()-startTime.getTime());
-        return value;
+
     }
 
     /**
@@ -68,17 +75,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/speed", method = RequestMethod.GET)
     public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "响应速度列表查询";
+        try {
+            Date startTime = new Date();
+            ParamCheckUtil.paramCheck(param);
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ApiPageData apiPageData = webPageService.selectReplySpeed(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = webPageService.selectReplySpeed(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "响应速度列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "响应速度列表查询", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+
     }
 
     /**
@@ -90,17 +104,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/size/count", method = RequestMethod.GET)
     public int selectPageSpaceCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "过大页面的统计查询";
+        try {
+            Date startTime = new Date();
+            ParamCheckUtil.paramCheck(param);
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            int value = webPageService.selectPageSpaceCount(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return value;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        int value = webPageService.selectPageSpaceCount(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "过大页面的统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "过大页面的统计查询", endTime.getTime()-startTime.getTime());
-        return value;
+
     }
 
     /**
@@ -112,17 +133,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/size", method = RequestMethod.GET)
     public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "过大页面列表查询";
+        try {
+            Date startTime = new Date();
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ParamCheckUtil.paramCheck(param);
+            ApiPageData apiPageData = webPageService.selectPageSpace(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = webPageService.selectPageSpace(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "过大页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "过大页面列表查询", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+
     }
 
     /**
@@ -134,17 +162,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/depth/count", method = RequestMethod.GET)
     public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "过深页面统计查询";
+        try {
+            Date startTime = new Date();
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ParamCheckUtil.paramCheck(param);
+            int value = webPageService.selectPageDepthCount(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return value;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        int value = webPageService.selectPageDepthCount(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "过深页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "过深页面统计查询", endTime.getTime()-startTime.getTime());
-        return value;
+
     }
 
     /**
@@ -156,17 +191,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/depth", method = RequestMethod.GET)
     public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "过深页面列表查询";
+        try {
+            Date startTime = new Date();
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ParamCheckUtil.paramCheck(param);
+            ApiPageData apiPageData = webPageService.selectPageDepth(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = webPageService.selectPageDepth(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "过深页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "过深页面列表查询", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+
     }
 
     /**
@@ -178,17 +220,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/code/count", method = RequestMethod.GET)
     public int selectRepeatCodeCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "冗余代码统计查询";
+        try {
+            Date startTime = new Date();
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ParamCheckUtil.paramCheck(param);
+            int value = webPageService.selectRepeatCodeCount(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return value;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        int value = webPageService.selectRepeatCodeCount(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "冗余代码统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "冗余代码统计查询", endTime.getTime()-startTime.getTime());
-        return value;
+
     }
 
     /**
@@ -200,17 +249,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/code", method = RequestMethod.GET)
     public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "冗余代码列表查询";
+        try {
+            Date startTime = new Date();
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ParamCheckUtil.paramCheck(param);
+            ApiPageData apiPageData = webPageService.selectRepeatCode(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = webPageService.selectRepeatCode(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "冗余代码列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "冗余代码列表查询", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+
     }
 
     /**
@@ -222,17 +278,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/length/count", method = RequestMethod.GET)
     public int selectUrlLengthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "过长URL页面统计查询";
+        try {
+            Date startTime = new Date();
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ParamCheckUtil.paramCheck(param);
+            int value = webPageService.selectUrlLengthCount(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return value;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        int value = webPageService.selectUrlLengthCount(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "过长URL页面统计查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "过长URL页面统计查询", endTime.getTime()-startTime.getTime());
-        return value;
+
     }
 
     /**
@@ -244,17 +307,24 @@ public class WebPageController {
      */
     @RequestMapping(value = "/length", method = RequestMethod.GET)
     public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "过长URL页面列表查询";
+        try {
+            Date startTime = new Date();
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_IMPROVE_SEARCH) && !authorityService.hasRight(ContextHelper
+                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_IMPROVE_SEARCH)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            ParamCheckUtil.paramCheck(param);
+            Date endTime = new Date();
+            ApiPageData apiPageData = webPageService.selectUrlLength(param);
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
         }
-        ParamCheckUtil.paramCheck(param);
-        Date endTime = new Date();
-        ApiPageData apiPageData = webPageService.selectUrlLength(param);
-        LogUtil.addOperationLog(OperationType.QUERY, "过长URL页面列表查询", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "过长URL页面列表查询", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+
     }
 
     /**
@@ -267,13 +337,20 @@ public class WebPageController {
      */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handlePageByIds(int siteId, Integer[] ids) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_HANDLE) && !authorityService.hasRight(ContextHelper.getLoginUser
-                ().getUserName(), null, null, Authority.KPIWEB_IMPROVE_HANDLE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "处理访问优化问题";
+        try {
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_HANDLE) && !authorityService.hasRight(ContextHelper.getLoginUser
+                    ().getUserName(), null, null, Authority.KPIWEB_IMPROVE_HANDLE)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            webPageService.handlePageByIds(siteId, Arrays.asList(ids));
+            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
         }
-        webPageService.handlePageByIds(siteId, Arrays.asList(ids));
-        LogUtil.addOperationLog(OperationType.UPDATE, "处理访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+
     }
 
     /**
@@ -286,13 +363,20 @@ public class WebPageController {
      */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignorePageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_IGNORE) && !authorityService.hasRight(ContextHelper.getLoginUser
-                ().getUserName(), null, null, Authority.KPIWEB_IMPROVE_IGNORE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "忽略访问优化问题";
+        try {
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_IGNORE) && !authorityService.hasRight(ContextHelper.getLoginUser
+                    ().getUserName(), null, null, Authority.KPIWEB_IMPROVE_IGNORE)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            webPageService.ignorePageByIds(siteId, Arrays.asList(ids));
+            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
         }
-        webPageService.ignorePageByIds(siteId, Arrays.asList(ids));
-        LogUtil.addOperationLog(OperationType.UPDATE, "忽略访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+
     }
 
     /**
@@ -305,12 +389,18 @@ public class WebPageController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delPageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_DELETE) && !authorityService.hasRight(ContextHelper.getLoginUser
-                ().getUserName(), null, null, Authority.KPIWEB_IMPROVE_DELETE)) {
-            throw new BizException(Authority.NO_AUTHORITY);
+        String logDesc = "删除访问优化问题";
+        try {
+            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_IMPROVE_DELETE) && !authorityService.hasRight(ContextHelper.getLoginUser
+                    ().getUserName(), null, null, Authority.KPIWEB_IMPROVE_DELETE)) {
+                throw new BizException(Authority.NO_AUTHORITY);
+            }
+            webPageService.delPageByIds(siteId, Arrays.asList(ids));
+            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
         }
-        webPageService.delPageByIds(siteId, Arrays.asList(ids));
-        LogUtil.addOperationLog(OperationType.DELETE, "删除访问优化问题", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
     }
 }
