@@ -566,6 +566,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             if (!isExist(filter)) {
                 InfoUpdate update = new InfoUpdate();
                 update.setSiteId(siteId);
+                update.setChnlUrl("");
                 update.setTypeId(Types.IssueType.EMPTY_CHANNEL.value);
                 update.setSubTypeId(Types.EmptyChannelType.EMPTY_COLUMN.value);
                 Date curDate = new Date();
