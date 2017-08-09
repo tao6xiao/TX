@@ -145,8 +145,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         //获取所有
         List<Map<Integer, Integer>> countList = issueMapper.countList(filter);
         for (Map map : countList) {
-            Set<Integer> keySet = map.keySet();
-            if (keySet.toArray()[0] == null) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
                 continue;
             }
             count++;
@@ -170,8 +169,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         countList = issueMapper.countList(filter);
         count = 0;
         for (Map map : countList) {
-            Set<Integer> keySet = map.keySet();
-            if (keySet.toArray()[0] == null) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
                 continue;
             }
             count++;
@@ -198,8 +196,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         countList = issueMapper.countList(filter);
         count = 0;
         for (Map map : countList) {
-            Set<Integer> keySet = map.keySet();
-            if (keySet.toArray()[0] == null) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
                 continue;
             }
             count++;
@@ -208,7 +205,20 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         statisticsList.add(statistics);
 
         //获取空白栏目
-        count = siteChannelServiceHelper.getEmptyChannel(param.getSiteId()).size();
+        filter = QueryFilterHelper.toFilter(param);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.EMPTY_CHANNEL.value);
+        filter.addCond(IssueTableField.SUBTYPE_ID, Types.EmptyChannelType.EMPTY_COLUMN.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
+        countList = issueMapper.countList(filter);
+        count = 0;
+        for (Map map : countList) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
+                continue;
+            }
+            count++;
+        }
         statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL.getCode(), count);
         statisticsList.add(statistics);
 
@@ -336,7 +346,22 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     private void buildEmptyChnls(int siteId, List<EmptyChnl> emptyChnls) throws RemoteException {
-        List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.EMPTY_CHANNEL.value);
+        filter.addCond(IssueTableField.SUBTYPE_ID, Types.EmptyChannelType.EMPTY_COLUMN.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
+        List<Map<Integer, Integer>> countList = issueMapper.countList(filter);
+        List<Integer> chnlIdList = new ArrayList<>();
+        for (Map map : countList) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
+                continue;
+            }
+            chnlIdList.add(Integer.parseInt(String.valueOf(map.get(IssueTableField.CUSTOMER2))));
+        }
+//        List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
         for (Integer chnlId : chnlIdList) {
             if (chnlId != null) {
                 Channel chnl = siteApiService.getChannelById(chnlId, "");

@@ -20,7 +20,9 @@ public final class Types {
         INFO_ERROR_ISSUE(3, "信息错误"),
         SERVICE_LINK_AVAILABLE(4, "服务链接"),
         INFO_UPDATE_WARNING(51, "信息更新预警"),
-        RESPOND_WARNING(52, "互动回应预警");
+        RESPOND_WARNING(52, "互动回应预警"),
+        EMPTY_CHANNEL(101,"空栏目");
+
 
         public final int value;
 
@@ -393,6 +395,58 @@ public final class Types {
             List<Integer> result = new ArrayList<>();
             RespondWarningType[] types = RespondWarningType.values();
             for (RespondWarningType type : types) {
+                if (type != INVALID && type.name.contains(name)) {
+                    result.add(type.value);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    /**
+     * 空栏目子类型
+     */
+    public enum EmptyChannelType {
+        INVALID(-1, "未知问题"),
+        EMPTY_COLUMN(IssueType.EMPTY_CHANNEL.value * 10 + 1, "空栏目");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        EmptyChannelType(int type, String name) {
+            this.value = type;
+            this.name = name;
+        }
+
+        public static EmptyChannelType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            EmptyChannelType[] types = EmptyChannelType.values();
+            for (EmptyChannelType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+
+        /**
+         * 查找名字包含指定字符串的type，支持模糊查找
+         *
+         * @param name
+         * @return
+         */
+        public static List<Integer> findByName(String name) {
+            if (name == null || name.isEmpty()) {
+                return new ArrayList<>();
+            }
+            List<Integer> result = new ArrayList<>();
+            EmptyChannelType[] types = EmptyChannelType.values();
+            for (EmptyChannelType type : types) {
                 if (type != INVALID && type.name.contains(name)) {
                     result.add(type.value);
                 }
