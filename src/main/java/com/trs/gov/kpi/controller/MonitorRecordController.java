@@ -2,7 +2,7 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
-import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -38,7 +38,7 @@ public class MonitorRecordController {
      * @throws BizException
      */
     @RequestMapping(value = "/select", method = RequestMethod.GET)
-    public ApiPageData selectMonitorRecord(ReportRequestParam param) throws BizException {
+    public ApiPageData selectMonitorRecord(PageDataRequestParam param) throws BizException {
 
         ParamCheckUtil.pagerCheck(param.getPageIndex(),param.getPageSize());
         ParamCheckUtil.checkDayTime(param.getBeginDateTime());

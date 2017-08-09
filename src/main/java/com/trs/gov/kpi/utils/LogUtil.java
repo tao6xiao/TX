@@ -2,6 +2,9 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.controller.InfoErrorController;
+import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.mlf.simplelog.LogConstant;
@@ -173,5 +176,26 @@ public class LogUtil {
      */
     public static String buildFailOperationLogDesc(String logDesc) {
         return "操作失败：" + logDesc;
+    }
+
+    /**
+     * control处理函数Function
+     * @param <R>
+     */
+    @FunctionalInterface
+    public interface ControllorFunction<R> {
+        R apply() throws RemoteException, BizException;
+    }
+
+    /**
+     * Controller的操作封装函数，对于异常处理情况记录，操作日志
+     */
+    public static <R> R ControlleFunctionWrapper(ControllorFunction<R> func, String type, String desc, String systemName) throws RemoteException, BizException {
+        try {
+            return func.apply();
+        } catch (Exception e) {
+            LogUtil.addOperationLog(type, LogUtil.buildFailOperationLogDesc(desc), systemName);
+            throw e;
+        }
     }
 }
