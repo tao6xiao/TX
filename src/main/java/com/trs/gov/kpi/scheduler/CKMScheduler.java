@@ -82,12 +82,13 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-    int count = 0;//错误总数记录
+    //错误信息计数
+    int count = 0;
 
     @Override
     public void run() throws RemoteException {
-        log.info(SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.CKM_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
 
         //监测开始(添加基本信息)
         Date startTime = new Date();
@@ -115,20 +116,20 @@ public class CKMScheduler implements SchedulerTask {
         //监测完成(修改结果、结束时间、状态)
         Date endTime = new Date();
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-        filter.addCond(MonitorRecordTableField.SITEID, siteId);
-        filter.addCond(MonitorRecordTableField.TASKID, EnumCheckJobType.CHECK_CONTENT.value);
-        filter.addCond(MonitorRecordTableField.BEGINTIME,startTime);
+        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_CONTENT.value);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
 
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
         updater.addField(MonitorRecordTableField.RESULT,count);
-        updater.addField(MonitorRecordTableField.ENDTIME, endTime);
-        updater.addField(MonitorRecordTableField.TASKSTATUS, Status.MonitorStatusType.DONE.value);
+        updater.addField(MonitorRecordTableField.END_TIME, endTime);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
         commonMapper.update(updater, filter);
 
         LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
-        log.info(SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        log.info(SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
         // TODO REVIEW LINWEI 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.CKM_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
     }
 
 

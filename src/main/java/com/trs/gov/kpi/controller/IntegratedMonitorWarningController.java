@@ -43,15 +43,22 @@ public class IntegratedMonitorWarningController extends IssueHandler {
     @ResponseBody
     public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
         Date startTime = new Date();
+        ParamCheckUtil.paramCheck(param);
+        String logDesc = "查询预警提醒的分页数据";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_WARNING_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_WARNING_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = integratedMonitorWarningService.get(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询预警提醒的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询预警提醒的分页数据", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+        try {
+            ApiPageData apiPageData = integratedMonitorWarningService.get(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 }

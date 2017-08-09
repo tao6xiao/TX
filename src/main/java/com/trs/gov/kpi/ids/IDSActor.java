@@ -2,6 +2,7 @@ package com.trs.gov.kpi.ids;
 
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.RemoteAddrUtil;
 import com.trs.idm.client.actor.ActorException;
@@ -48,7 +49,12 @@ public class IDSActor extends StdHttpSessionBasedActor{
     public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) throws ActorException {
         HttpSession session = request.getSession();
         loginUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
-        session.setAttribute(LOGIN_FLAG, loginUser);
+
+        LocalUser localUser = new LocalUser();
+        localUser.setUserName(loginUser.getUserName());
+        localUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
+        session.setAttribute(LOGIN_FLAG, localUser);
+
         LOG.info("loadLoginUser[" + loginUser.getUserName() + "], user groups info:" + loginUser.getSSOGroups());
     }
     /**

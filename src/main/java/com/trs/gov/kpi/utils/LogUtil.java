@@ -2,8 +2,6 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.entity.exception.BizRuntimeException;
-import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.mlf.simplelog.LogConstant;
@@ -46,11 +44,7 @@ public class LogUtil {
      * @param ex
      */
     public static void addErrorLog(String operationType, String errorType, String message, Throwable ex) {
-        try {
-            SimpleLogServer.error(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, message, ex);
-        } catch (BizRuntimeException e) {
-            SimpleLogServer.error(MODULE_NAME, new LogUser(), operationType, errorType, message, ex);
-        }
+        SimpleLogServer.error(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, message, ex);
     }
 
     /**
@@ -61,11 +55,8 @@ public class LogUtil {
      * @param systemName
      */
     public static void addOperationLog(String operationType, String logDesc, String systemName) {
-        try {
-            SimpleLogServer.operation(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, logDesc, systemName);
-        } catch (BizRuntimeException e) {
-            SimpleLogServer.error(MODULE_NAME, new LogUser(), OperationType.REQUEST, ErrorType.RUN_FAILED, e.getMessage(), e);
-        }
+        SimpleLogServer.operation(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, logDesc, systemName);
+
     }
 
     /**
@@ -121,11 +112,7 @@ public class LogUtil {
      * @param timeUsed
      */
     public static void addElapseLog(String operationType, String desc, long timeUsed) {
-        try {
-            SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
-        }catch (BizRuntimeException e){
-            SimpleLogServer.elapse(MODULE_NAME, new LogUser(), operationType, desc, timeUsed);
-        }
+        SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
     }
 
     /**
@@ -141,6 +128,7 @@ public class LogUtil {
 
     /**
      * 为记录日志获取站点名称
+     *
      * @param service
      * @param siteId
      * @return
@@ -151,11 +139,39 @@ public class LogUtil {
             if (site != null) {
                 return site.getSiteName();
             } else {
-                return "site[" + siteId+ "]";
+                return "site[" + siteId + "]";
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "查询站点失败", e);
-            return "site[" + siteId+ "]";
+            return "site[" + siteId + "]";
         }
+    }
+
+    /**
+     * 构造性能日志描述
+     *
+     * @param service
+     * @param siteId
+     * @return
+     */
+    public static String buildElapseLogDesc(SiteApiService service, Integer siteId, String logDesc) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("相关站点：");
+        builder.append(getSiteNameForLog(service, siteId));
+        if (logDesc != null && !"".equals(logDesc.trim())) {
+            builder.append("，");
+            builder.append(logDesc);
+        }
+        return builder.toString();
+    }
+
+    /**
+     * 构造失败操作日志描述
+     *
+     * @param logDesc
+     * @return
+     */
+    public static String buildFailOperationLogDesc(String logDesc) {
+        return "操作失败：" + logDesc;
     }
 }

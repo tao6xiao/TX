@@ -95,13 +95,14 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     // 缓存自查更新频率
     private DefaultUpdateFreq defaultUpdateFreq;
 
-    int count = 0;//更新数量记录
+    //信息(栏目)更新数量计数
+    int count = 0;
 
     @Override
     public void run() {
 
-        log.info(SchedulerType.schedulerStart(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.schedulerStart(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+        log.info(SchedulerType.startScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
 
         //监测开始(添加基本信息)
         Date startTime = new Date();
@@ -131,14 +132,14 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             //监测完成(修改结果、结束时间、状态)
             Date endTime = new Date();
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-            filter.addCond(MonitorRecordTableField.SITEID, siteId);
-            filter.addCond(MonitorRecordTableField.TASKID, EnumCheckJobType.CHECK_INFO_UPDATE.value);
-            filter.addCond(MonitorRecordTableField.BEGINTIME,startTime);
+            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_INFO_UPDATE.value);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
             updater.addField(MonitorRecordTableField.RESULT,count);
-            updater.addField(MonitorRecordTableField.ENDTIME, endTime);
-            updater.addField(MonitorRecordTableField.TASKSTATUS, Status.MonitorStatusType.DONE.value);
+            updater.addField(MonitorRecordTableField.END_TIME, endTime);
+            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
@@ -146,8 +147,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.RUN_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
         } finally {
-            log.info(SchedulerType.schedulerEnd(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.schedulerEnd(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+            log.info(SchedulerType.endScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
         }
     }
 

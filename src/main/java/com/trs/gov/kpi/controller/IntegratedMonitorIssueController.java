@@ -43,16 +43,23 @@ public class IntegratedMonitorIssueController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
+        ParamCheckUtil.paramCheck(param);
+        String logDesc = "查询所有未解决问题列表";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_ISSUE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_ISSUE_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = issueService.get(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询所有未解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询所有未解决问题列表", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+        try {
+            ApiPageData apiPageData = issueService.get(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return apiPageData;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
 }
