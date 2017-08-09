@@ -21,10 +21,14 @@
         </RollingFile>
     </Appenders>
     <Loggers>
+        <!-- 屏蔽掉warning：Going to buffer response body of large or unknown size输出，只输出error -->
+        <Logger name="org.apache.commons.httpclient.HttpMethodBase" level="ERROR" />
+
         <!-- 输出info级别信息 -->
         <Root level="INFO">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
         </Root>
+
     </Loggers>
 </Configuration>
