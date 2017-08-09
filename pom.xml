@@ -260,7 +260,8 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-redis</artifactId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>1.5.6.RELEASE</version>
 		</dependency>
 
 		<dependency>
@@ -334,6 +335,16 @@
 			<id>dev</id>
 			<properties>
 				<profiles.active>dev</profiles.active>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<!-- 本地开发环境 -->
+			<id>gzdev</id>
+			<properties>
+				<profiles.active>gzdev</profiles.active>
 			</properties>
 			<activation>
 				<activeByDefault>false</activeByDefault>
