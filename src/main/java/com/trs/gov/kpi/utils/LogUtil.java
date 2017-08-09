@@ -198,6 +198,7 @@ public class LogUtil {
         try {
             return func.apply();
         } catch (Exception e) {
+            // TODO REVIEW LINWEI DO_he.lang 把异常描述信息加入到操作日志的描述里面去
             LogUtil.addOperationLog(type, LogUtil.buildFailOperationLogDesc(desc), systemName);
             throw e;
         }

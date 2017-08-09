@@ -93,7 +93,7 @@ public class ReportController {
      */
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
     public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        // TODO: 2017/8/9 REVIEW he.lang 站点无需判断？
+        // TODO: 2017/8/9 REVIEW he.lang DO_ran.wei 站点无需判断？
         if (param.getId() == null) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
@@ -110,6 +110,7 @@ public class ReportController {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc+"：获取路径"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }
+        // TODO REVEIW DO_RAN.WEI 对于文件找不到的情况，抛出一个异常
         if (StringUtil.isEmpty(path)) {
             return null;
         }

@@ -53,7 +53,6 @@ public class DefaultUpdateFreqController {
             }
             if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
                     .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw new BizException(Authority.NO_AUTHORITY);
             }
 
@@ -90,21 +89,15 @@ public class DefaultUpdateFreqController {
                 throw new BizException(Authority.NO_AUTHORITY);
             }
             int siteId = defaultUpdateFreq.getSiteId();
-            DefaultUpdateFreq defaultUpdateFreqCheck = null;
-            // TODO: 2017/8/9 REVIEW 是否需要在查询自查提醒记录时，try catch
-            try {
-                defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
-            } catch (Exception e) {
-                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("查询自查提醒记录"), LogUtil.getSiteNameForLog(siteApiService, siteId));
-                throw e;
-            }
+            // TODO: 2017/8/9 REVIEW HELANG FIXED 是否需要在查询自查提醒记录时，try catch
+            DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
             if (defaultUpdateFreqCheck == null) {//不存在对应siteId的自查提醒记录，需要新增记录
                 addDefaultUpdateFreq(defaultUpdateFreq);
             } else {//存在当前siteId对应自查提醒记录，修改记录
                 updateDefaultUpdateFreq(defaultUpdateFreq);
             }
             return null;
-        }, OperationType.ADD + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
+        }, OperationType.ADD + "," + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
     }
 
     private Integer updateDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws RemoteException, BizException {

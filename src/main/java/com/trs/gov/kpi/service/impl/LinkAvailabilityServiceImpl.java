@@ -204,6 +204,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     @Override
     public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
+        // TODO REVIEW DO_li.hao 需要考虑首页检测任务没有执行完成的情况
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
         Date endTime = monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
         IndexPage indexPage = new IndexPage();

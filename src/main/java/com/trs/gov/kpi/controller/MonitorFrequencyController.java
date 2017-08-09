@@ -17,6 +17,7 @@ import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,7 +87,7 @@ public class MonitorFrequencyController {
     @RequestMapping(value = "/monitorfrequency", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException, RemoteException {
-        // TODO: 2017/8/9 REVIEW he.lang 圈复杂度上升
+        // TODO: 2017/8/9 REVIEW he.lang DO_he.lang 圈复杂度上升
         MonitorFrequencyFreq[] freqs = freqSetUp.getFreqs();
         if (freqSetUp.getSiteId() == null || freqs == null || freqs.length == 0) {
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -106,6 +107,9 @@ public class MonitorFrequencyController {
             log.error("Invalid parameter: 添加频率设置时，缺少某些频率类型的数据");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+
+//        ParamCheckUtil.checkFreqSetUp(freqSetUp);
+
         String logDesc = "设置监测频率（含添加和修改）";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), freqSetUp.getSiteId(), null, Authority.KPIWEB_MONITORSETUP_SAVE) && !authorityService.hasRight
                 (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SAVE)) {

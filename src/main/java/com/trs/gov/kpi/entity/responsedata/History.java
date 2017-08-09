@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 import java.util.List;
 
-// TODO REVIEW LINWEI  注释说明一下该实体类干嘛用的， History这个名字不能很好的反映出来，需要修改
+// TODO REVIEW LINWEI DO_ran.wei  注释说明一下该实体类干嘛用的， History这个名字不能很好的反映出来，需要修改
 /**
  * Created by ranwei on 2017/6/9.
  */
