@@ -44,9 +44,10 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     }
 
     @Override
-    public int addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException {
+    public void addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException {
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
-        //保存站点信息时，注册报表生成等调度任务
+        monitorSiteMapper.insert(monitorSite);
+        //保存站点信息后，注册报表生成等调度任务
         Integer siteId = monitorSite.getSiteId();
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
@@ -56,7 +57,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.SERVICE_LINK);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.SERVICE_LINK);
-        return monitorSiteMapper.insert(monitorSite);
     }
 
     @Override
