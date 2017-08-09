@@ -48,16 +48,23 @@ public class ServiceGuideController {
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
     public SGStatistics getSPCount(PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
+        ParamCheckUtil.paramCheck(param);
+        String logDesc = "查询服务指南按类型统计的问题总数";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_SERVICE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        ParamCheckUtil.paramCheck(param);
-        SGStatistics sgStatistics = sgService.getSGCount(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询服务指南按类型统计的问题总数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询服务指南按类型统计的问题总数", endTime.getTime()-startTime.getTime());
-        return sgStatistics;
+        try {
+            SGStatistics sgStatistics = sgService.getSGCount(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return sgStatistics;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
     /**
@@ -70,16 +77,23 @@ public class ServiceGuideController {
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public History getSPHistoryCount(PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
+        ParamCheckUtil.paramCheck(param);
+        String logDesc = "查询服务指南问题总数的历史纪录";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_SERVICE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        ParamCheckUtil.paramCheck(param);
-        History history = sgService.getSGHistoryCount(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询服务指南问题总数的历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询服务指南问题总数的历史纪录", endTime.getTime()-startTime.getTime());
-        return history;
+        try {
+            History history = sgService.getSGHistoryCount(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return history;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
     /**
@@ -92,16 +106,23 @@ public class ServiceGuideController {
     @RequestMapping(value = "/guide/issue/unhandled", method = RequestMethod.GET)
     public SGPageDataRes getSGList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
+        ParamCheckUtil.paramCheck(param);
+        String logDesc = "查询服务指南问题总数";
         if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_SERVICE_SEARCH) && !authorityService.hasRight(ContextHelper
                 .getLoginUser().getUserName(), null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw new BizException(Authority.NO_AUTHORITY);
         }
-        ParamCheckUtil.paramCheck(param);
-        SGPageDataRes sgPageDataRes = sgService.getSGList(param);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询服务指南问题总数", siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询服务指南问题总数", endTime.getTime()-startTime.getTime());
-        return sgPageDataRes;
+        try {
+            SGPageDataRes sgPageDataRes = sgService.getSGList(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            return sgPageDataRes;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            throw e;
+        }
     }
 
 
