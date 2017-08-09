@@ -7,7 +7,7 @@ import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.MonitorRecordMapper;
 import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.MonitorRecordResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
@@ -51,7 +51,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
     }
 
     @Override
-    public ApiPageData selectMonitorRecordList(ReportRequestParam param) {
+    public ApiPageData selectMonitorRecordList(PageDataRequestParam param) {
 
         QueryFilter filter = QueryFilterHelper.toMonitorRecordFilter(param);
         filter.addCond(MonitorRecordTableField.BEGIN_TIME, param.getBeginDateTime()).setRangeBegin(true);

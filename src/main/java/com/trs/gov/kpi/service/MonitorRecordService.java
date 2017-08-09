@@ -1,7 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorRecord;
-import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
+import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
 import java.util.Date;
@@ -41,5 +41,5 @@ public interface MonitorRecordService {
      * @param param
      * @return
      */
-    ApiPageData selectMonitorRecordList(ReportRequestParam param);
+    ApiPageData selectMonitorRecordList(PageDataRequestParam param);
 }
