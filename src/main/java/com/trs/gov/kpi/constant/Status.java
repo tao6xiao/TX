@@ -99,8 +99,9 @@ public class Status {
 
     public enum MonitorStatusType {
 
-        DOING(1, "正在监测"),
-        DONE(2, "监测完成");
+        NO(1,"未提交监测"),
+        DOING(1, "正在运行"),
+        DONE(2, "运行结束");
 
         public final int value;
 
@@ -110,6 +111,17 @@ public class Status {
         MonitorStatusType(int value, String name) {
             this.value = value;
             this.name = name;
+        }
+
+        public static MonitorStatusType valueOf(int value) {
+
+            MonitorStatusType[] types = MonitorStatusType.values();
+            for (MonitorStatusType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return null;
         }
     }
 }

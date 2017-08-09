@@ -20,7 +20,9 @@ public final class Types {
         INFO_ERROR_ISSUE(3, "信息错误"),
         SERVICE_LINK_AVAILABLE(4, "服务链接"),
         INFO_UPDATE_WARNING(51, "信息更新预警"),
-        RESPOND_WARNING(52, "互动回应预警");
+        RESPOND_WARNING(52, "互动回应预警"),
+        EMPTY_CHANNEL(101,"空栏目");
+
 
         public final int value;
 
@@ -402,6 +404,58 @@ public final class Types {
         }
     }
 
+    /**
+     * 空栏目子类型
+     */
+    public enum EmptyChannelType {
+        INVALID(-1, "未知问题"),
+        EMPTY_COLUMN(IssueType.EMPTY_CHANNEL.value * 10 + 1, "空栏目");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        EmptyChannelType(int type, String name) {
+            this.value = type;
+            this.name = name;
+        }
+
+        public static EmptyChannelType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            EmptyChannelType[] types = EmptyChannelType.values();
+            for (EmptyChannelType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+
+        /**
+         * 查找名字包含指定字符串的type，支持模糊查找
+         *
+         * @param name
+         * @return
+         */
+        public static List<Integer> findByName(String name) {
+            if (name == null || name.isEmpty()) {
+                return new ArrayList<>();
+            }
+            List<Integer> result = new ArrayList<>();
+            EmptyChannelType[] types = EmptyChannelType.values();
+            for (EmptyChannelType type : types) {
+                if (type != INVALID && type.name.contains(name)) {
+                    result.add(type.value);
+                }
+            }
+
+            return result;
+        }
+    }
+
     public static String getSubTypeName(IssueType issueType, int subType) {
         switch (issueType) {
             case LINK_AVAILABLE_ISSUE:
@@ -449,6 +503,46 @@ public final class Types {
             }
             AnalysisType[] types = AnalysisType.values();
             for (AnalysisType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return INVALID;
+        }
+
+    }
+
+    /**
+     * 日志监测_任务类型
+     */
+    public enum MonitorRecordNameType {
+        INVALID(-1, "未知类型"),
+        TASK_CHECK_HOME_PAGE(1, "首页可用性监测任务"),
+        TASK_CHECK_LINK(2, "全站失效链接监测任务"),
+        TASK_CHECK_CONTENT(3, "信息错误监测任务"),
+        TASK_CHECK_INFO_UPDATE(4, "栏目更新监测任务"),
+        TASK_CALCULATE_PERFORMANCE(5, "绩效指数计算后台任务"),
+        TASK_TIMENODE_REPORT_GENERATE(6, "按时间节点生成报表的后台任务"),
+        TASK_TIMEINTERVAL_REPORT_GENERATE(7, "按时间区间生成报表的后台任务"),
+        TASK_SERVICE_LINK(8, "服务连接监测任务");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorRecordNameType(int value, String name) {
+
+            this.value = value;
+            this.name = name;
+        }
+
+        public static MonitorRecordNameType valueOf(int value) {
+            if (value <= 0) {
+                return INVALID;
+            }
+            MonitorRecordNameType[] types = MonitorRecordNameType.values();
+            for (MonitorRecordNameType type : types) {
                 if (type.value == value) {
                     return type;
                 }

@@ -133,7 +133,7 @@ public class InteractionServiceImpl implements InteractionService {
             if (response.isSuccessful()) {
                 String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
-                    return null;
+                    return new ArrayList<>();
                 }
                 nbhdHistoryRes = JSON.parseObject(jsonResult, NBHDHistoryRes.class);
             } else {

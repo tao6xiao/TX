@@ -56,20 +56,27 @@ public class FrequencySetupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@ModelAttribute FrequencySetupSelectRequest selectRequest) throws BizException, RemoteException {
         Date startTime = new Date();
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), selectRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (selectRequest.getSiteId() == null) {
             log.error("Invalid parameter: 参数siteId存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         ParamCheckUtil.pagerCheck(selectRequest.getPageIndex(), selectRequest.getPageSize());
-        ApiPageData apiPageData = frequencySetupService.getPageData(selectRequest);
-        Date endTime = new Date();
-        LogUtil.addOperationLog(OperationType.QUERY, "查询当前站点频率设置", siteApiService.getSiteById(selectRequest.getSiteId(), "").getSiteName());
-        LogUtil.addElapseLog(OperationType.QUERY, "查询当前站点频率设置", endTime.getTime()-startTime.getTime());
-        return apiPageData;
+        String logDesc = "查询当前站点频率设置";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), selectRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, selectRequest.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        try {
+            ApiPageData apiPageData = frequencySetupService.getPageData(selectRequest);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, selectRequest.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, selectRequest.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
+            return apiPageData;
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, selectRequest.getSiteId()));
+            throw e;
+        }
 
     }
 
@@ -83,10 +90,6 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.POST)
     @ResponseBody
     public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, ParseException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), frequencySetupSetRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL) &&
-                !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (frequencySetupSetRequest.getSiteId() == null || frequencySetupSetRequest.getPresetFeqId() == null || frequencySetupSetRequest.getChnlIds() == null || frequencySetupSetRequest
                 .getChnlIds().length == 0) {
             log.error("Invalid parameter: 参数FrequencySetupSetRequest对象中siteId、presetFeqId、chilIds[]三个属性中至少有一个存在null值");
@@ -99,22 +102,52 @@ public class FrequencySetupController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
+        String logDesc = "添加更新频率（添加和修改）";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), frequencySetupSetRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL) &&
+                !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL)) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         int siteId = frequencySetupSetRequest.getSiteId();
         int presetFeqId = frequencySetupSetRequest.getPresetFeqId();
-        if (!frequencyPresetService.isPresetFeqIdExist(siteId, presetFeqId)) {
+        boolean state;
+        try {
+            state = frequencyPresetService.isPresetFeqIdExist(siteId, presetFeqId);
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc+"：查询id["+presetFeqId+"]所对应栏目更新频率预设记录是否存在"), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
+            throw e;
+        }
+        if (!state) {
             log.error("Invalid parameter: 参数FrequencySetupSetRequest对象中presetFeqId不在数据库表预设记录中");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         for (int i = 0; i < chnlIds.length; i++) {
-            FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
+            FrequencySetup frequencySetup;
+            try {
+                frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(siteId, chnlIds[i]);
+            }catch (Exception e){
+                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc+"：查询站点site["+siteId+"]下chnlId["+chnlIds[i]+"]所对应栏目更新频率设置记录是否存在"), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
+                throw e;
+            }
+
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
-                frequencySetup = frequencySetupService.toFrequencySetupBySetupRequest(frequencySetupSetRequest, chnlIds[i]);
-                frequencySetupService.insert(frequencySetup);
-                LogUtil.addOperationLog(OperationType.ADD, "添加更新频率", siteApiService.getSiteById(frequencySetupSetRequest.getSiteId(), "").getSiteName());
+                try {
+                    frequencySetup = frequencySetupService.toFrequencySetupBySetupRequest(frequencySetupSetRequest, chnlIds[i]);
+                    frequencySetupService.insert(frequencySetup);
+                    LogUtil.addOperationLog(OperationType.ADD, "添加更新频率", LogUtil.getSiteNameForLog(siteApiService, siteId));
+                }catch (Exception e){
+                    LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("添加更新频率"), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
+                    throw e;
+                }
             } else {//当前站点的当前栏目设置过更新频率，需要修改
-                frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
-                frequencySetupService.updateFrequencySetupById(frequencySetup);
-                LogUtil.addOperationLog(OperationType.UPDATE, "添加更新频率时，当前更新频率存在，那么修改这个更新频率", siteApiService.getSiteById(frequencySetupSetRequest.getSiteId(), "").getSiteName());
+                try {
+                    frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
+                    frequencySetupService.updateFrequencySetupById(frequencySetup);
+                    LogUtil.addOperationLog(OperationType.UPDATE, "添加更新频率时，当前更新频率存在，那么修改这个更新频率", LogUtil.getSiteNameForLog(siteApiService, siteId));
+                }catch (Exception e){
+                    LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("添加更新频率时，当前更新频率存在，那么修改这个更新频率"), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
+                    throw e;
+                }
             }
         }
         return null;
@@ -130,18 +163,25 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequest frequencySetupUpdateRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), frequencySetupUpdateRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL) &&
-                !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (frequencySetupUpdateRequest.getSiteId() == null || frequencySetupUpdateRequest.getId() == null || frequencySetupUpdateRequest.getPresetFeqId() == null ||
                 frequencySetupUpdateRequest.getChnlId() == null) {
             log.error("Invalid parameter:  参数FrequencySetupSetRequest对象中siteId、presetFeqId、chilIds[]三个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequest);
-        LogUtil.addOperationLog(OperationType.UPDATE, "直接修改更新频率", siteApiService.getSiteById(frequencySetupUpdateRequest.getSiteId(), "").getSiteName());
-        return null;
+        String logDesc = "直接修改更新频率";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), frequencySetupUpdateRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL) &&
+                !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL)) {
+            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, frequencySetupUpdateRequest.getSiteId()));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
+        try {
+            frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequest);
+            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupUpdateRequest.getSiteId()));
+            return null;
+        }catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, frequencySetupUpdateRequest.getSiteId()));
+            throw e;
+        }
     }
 
     /**
@@ -155,10 +195,6 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELMONITORCHNL) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELMONITORCHNL)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (siteId == null || ids == null) {
             log.error("Invalid parameter: 参数siteId或者数组ids（设置的更新频率记录对应id数组）存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -169,11 +205,22 @@ public class FrequencySetupController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
-        for (Integer id : ids) {
-            frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
+        String logDesc = "删除更新频率";
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELMONITORCHNL) && !authorityService.hasRight(ContextHelper
+                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELMONITORCHNL)) {
+            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw new BizException(Authority.NO_AUTHORITY);
         }
-        LogUtil.addOperationLog(OperationType.DELETE, "删除这个更新频率", siteApiService.getSiteById(siteId, "").getSiteName());
-        return null;
+        try {
+            for (Integer id : ids) {
+                frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
+            }
+            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            return null;
+        }catch (Exception e){
+            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw e;
+        }
     }
 
     /**
@@ -187,10 +234,6 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq/open", method = RequestMethod.PUT)
     @ResponseBody
     public Object closeOrOpen(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids, @RequestParam("isOpen") Integer isOpen) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
         if (siteId == null || ids == null || isOpen == null) {
             log.error("Invalid parameter: 参数siteId、数组ids（设置的更新频率记录对应id数组）、isOpen(关闭/开启请求标识)存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -200,21 +243,44 @@ public class FrequencySetupController {
                 log.error("Invalid parameter: 参数数组ids（设置的更新频率记录对应id数组）中存在某一或者多个id为null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             } else {
-                if (!frequencySetupService.isIdExist(siteId, id)) {
+                boolean state;
+                try {
+                    state = frequencySetupService.isIdExist(siteId, id);
+                }catch (Exception e){
+                    LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc("关闭或者生效更新频率记录：查询id["+id+"]对应栏目更新频率记录是否存在"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                    throw e;
+                }
+                if (!state) {
                     log.error("Invalid parameter: 参数数组ids（设置的更新频率记录对应id数组）中存在id不是数据库表指定站点中对应某一记录的id");
                     throw new BizException(Constants.INVALID_PARAMETER);
                 }
             }
         }
+        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL) && !authorityService.hasRight
+                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL)) {
+            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc("关闭或者生效更新频率记录"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
         if (isOpen == Status.Open.OPEN.value) {
-            frequencySetupService.closeOrOpen(siteId, ids, isOpen);
+            try {
+                frequencySetupService.closeOrOpen(siteId, ids, isOpen);
+                LogUtil.addOperationLog(OperationType.UPDATE, "生效更新频率记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
+            }catch (Exception e){
+                LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("生效更新频率记录"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                throw e;
+            }
         } else if (isOpen == Status.Open.CLOSE.value) {
-            frequencySetupService.closeOrOpen(siteId, ids, isOpen);
+            try {
+                frequencySetupService.closeOrOpen(siteId, ids, isOpen);
+                LogUtil.addOperationLog(OperationType.UPDATE, "关闭更新频率记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
+            }catch (Exception e){
+                LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("关闭更新频率记录"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                throw e;
+            }
         } else {
             log.error("Invalid parameter: 参数isOpen不存在对应数值的请求");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        LogUtil.addOperationLog(OperationType.UPDATE, "关闭或者生效更新频率记录", siteApiService.getSiteById(siteId, "").getSiteName());
         return null;
     }
 

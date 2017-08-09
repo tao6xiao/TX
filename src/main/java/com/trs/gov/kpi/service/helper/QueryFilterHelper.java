@@ -437,4 +437,43 @@ public class QueryFilterHelper {
         return orCondDBFields;
     }
 
+    /**
+     * 日志监测filter
+     * @param param
+     * @return
+     * @throws RemoteException
+     */
+    public static QueryFilter toMonitorRecordFilter(ReportRequestParam param) {
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, param.getSiteId());
+
+
+
+        if (param.getSearchText() != null) {
+            if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskName")) {
+                Types.MonitorRecordNameType[] values = Types.MonitorRecordNameType.values();
+                for (Types.MonitorRecordNameType type : values) {
+                    if (type.getName().contains(param.getSearchText())) {
+                        int taskId = type.value;
+                        filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
+                    }
+                }
+            }else if(param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskStatusName")){
+                Status.MonitorStatusType[] values = Status.MonitorStatusType.values();
+                for (Status.MonitorStatusType type : values) {
+                    if (type.getName().contains(param.getSearchText())) {
+                        int taskStatus = type.value;
+                        filter.addCond(MonitorRecordTableField.TASK_STATUS, taskStatus);
+                    }
+                }
+            }
+        }
+
+        // sort field
+        if (!StringUtil.isEmpty(param.getSortFields())) {
+            String[] sortFields = param.getSortFields().trim().split(";");
+            addSort(filter, sortFields);
+        }
+        return filter;
+    }
 }

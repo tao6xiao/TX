@@ -60,6 +60,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    //首页可用性(状态记录；0可用，1不可用)
     int isAvailable = 0;
 
     @Override
@@ -117,14 +118,14 @@ public class HomePageCheckScheduler implements SchedulerTask {
             //监测完成(修改结果、结束时间、状态)
             Date endTime = new Date();
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-            filter.addCond(MonitorRecordTableField.SITEID, siteId);
-            filter.addCond(MonitorRecordTableField.TASKID, EnumCheckJobType.CHECK_HOME_PAGE.value);
-            filter.addCond(MonitorRecordTableField.BEGINTIME,startTime);
+            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_HOME_PAGE.value);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
             updater.addField(MonitorRecordTableField.RESULT,isAvailable);
-            updater.addField(MonitorRecordTableField.ENDTIME, endTime);
-            updater.addField(MonitorRecordTableField.TASKSTATUS, Status.MonitorStatusType.DONE.value);
+            updater.addField(MonitorRecordTableField.END_TIME, endTime);
+            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
             // TODO REVIEW LINWEI  性能日志的operationType有没有规范？要不然会冲突。 SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
