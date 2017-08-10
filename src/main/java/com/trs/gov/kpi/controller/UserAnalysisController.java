@@ -5,7 +5,7 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -73,17 +73,17 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
-    public History getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public HistoryStatisticsRes getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
         Date startTime = new Date();
         check(basRequest);
         String logDesc = "访问量历史记录查询";
         authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
         try {
-            History history = basService.getHistoryVisits(basRequest);
+            HistoryStatisticsRes historyStatisticsRes = basService.getHistoryVisits(basRequest);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, basRequest.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return history;
+            return historyStatisticsRes;
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
             throw e;
@@ -127,17 +127,17 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
-    public History getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public HistoryStatisticsRes getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
         String logDesc = "停留时间历史记录查询";
         try {
             Date startTime = new Date();
             check(basRequest);
             authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
-            History history = basService.getHistoryStayTime(basRequest);
+            HistoryStatisticsRes historyStatisticsRes = basService.getHistoryStayTime(basRequest);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, basRequest.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return history;
+            return historyStatisticsRes;
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
             throw e;

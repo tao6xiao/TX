@@ -13,7 +13,7 @@ import com.trs.gov.kpi.entity.outerapi.bas.BasPVResponse;
 import com.trs.gov.kpi.entity.outerapi.bas.SiteSummary;
 import com.trs.gov.kpi.entity.outerapi.bas.SummaryResponse;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -71,7 +71,7 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public History getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
+    public HistoryStatisticsRes getHistoryVisits(BasRequest basRequest) throws RemoteException, ParseException {
         Site site = siteApiService.getSiteById(basRequest.getSiteId(), null);
         String siteIndexPage = "";
         if (site != null) {
@@ -94,7 +94,7 @@ public class BasServiceImpl implements BasService {
             list.add(historyStatistics);
         }
 
-        return new History(new Date(), list);
+        return new HistoryStatisticsRes(new Date(), list);
     }
 
     /**
@@ -171,7 +171,7 @@ public class BasServiceImpl implements BasService {
     }
 
     @Override
-    public History getHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException, BizException {
+    public HistoryStatisticsRes getHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException, BizException {
 
         DateUtil.setDefaultDate(basRequest);
 
@@ -199,7 +199,7 @@ public class BasServiceImpl implements BasService {
             if (!iterator.hasNext() && basRequest.getGranularity() != Granularity.DAY) {
                 updateLastStatistics(historyDate, historyStatistics, mpId);
                 list.add(historyStatistics);
-                return new History(new Date(), list);
+                return new HistoryStatisticsRes(new Date(), list);
             }
 
             SiteSummary siteSummary = requestBasSummary(params);
@@ -211,7 +211,7 @@ public class BasServiceImpl implements BasService {
             }
             list.add(historyStatistics);
         }
-        return new History(new Date(), list);
+        return new HistoryStatisticsRes(new Date(), list);
     }
 
     private void updateLastStatistics(HistoryDate historyDate, HistoryStatistics historyStatistics, String mpId) throws ParseException, RemoteException {

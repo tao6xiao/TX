@@ -11,7 +11,7 @@ import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
@@ -54,12 +54,12 @@ public class SGServiceImpl implements SGService {
     }
 
     @Override
-    public History getSGHistoryCount(PageDataRequestParam param) throws RemoteException {
+    public HistoryStatisticsRes getSGHistoryCount(PageDataRequestParam param) throws RemoteException {
         Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/bsznCountByGranularity.jsp", paramMap);
         List list = (List) getResult(client, request, "获取服务指南历史统计失败！", List.class);
-        return new History(new Date(), list);
+        return new HistoryStatisticsRes(new Date(), list);
     }
 
     @Override

@@ -91,17 +91,17 @@ public class IssueCountController {
      */
     @RequestMapping(value = "/count/history", method = RequestMethod.GET)
     @ResponseBody
-    public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+    public HistoryStatisticsRes historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(request);
         checkAuthority(request);
         String logDesc = "问题统计中分类查询统计历史数量";
         try {
-            History history = countService.historyCountSort(request);
+            HistoryStatisticsRes historyStatisticsRes = countService.historyCountSort(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
             LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
-            return history;
+            return historyStatisticsRes;
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
             throw e;

@@ -3,6 +3,7 @@ package com.trs.gov.kpi.entity.responsedata;
 import lombok.Data;
 
 /**
+ * 分页数据的返回模板
  * Created by rw103 on 2017/5/13.
  */
 @Data
