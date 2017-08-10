@@ -60,8 +60,7 @@ public class MonitorSiteController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
             authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SEARCH, siteId);
-            MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
-            return monitorSiteDeal;
+            return monitorSiteService.getMonitorSiteDealBySiteId(siteId);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
