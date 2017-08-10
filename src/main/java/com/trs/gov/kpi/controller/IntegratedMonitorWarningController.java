@@ -48,15 +48,7 @@ public class IntegratedMonitorWarningController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_WARNING_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = null;
-            try {
-                apiPageData = integratedMonitorWarningService.get(param);
-            } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
+            return integratedMonitorWarningService.get(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 }

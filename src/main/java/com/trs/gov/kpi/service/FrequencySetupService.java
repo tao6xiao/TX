@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
@@ -61,7 +62,7 @@ public interface FrequencySetupService {
      * @param frequencySetup
      * @return
      */
-    int insert(FrequencySetup frequencySetup) throws ParseException;
+    int insert(FrequencySetup frequencySetup);
 
     /**
      * 通过前段传入的frequencySetupSetRequestDetail对象获取想应的FrequencySetup对象

@@ -53,15 +53,7 @@ public class IntegratedMonitorController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITOR_SEARCH, param.getSiteId());
-            Double score = null;
-            try {
-                score = integratedMonitorService.getPerformance(param);
-            } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return score;
+            return integratedMonitorService.getPerformance(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 

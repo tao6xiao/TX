@@ -51,9 +51,7 @@ public class InteractionController {
         String logDesc = "查询问政互动的信件列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
-            NBHDStatisticsRes res = interactionService.getGovMsgBoxesCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return res;
+            return interactionService.getGovMsgBoxesCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -70,7 +68,6 @@ public class InteractionController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
             List<HistoryStatistics> historyStatisticsList = interactionService.getGovMsgHistoryCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             return new HistoryStatisticsRes(new Date(), historyStatisticsList);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
@@ -87,9 +84,7 @@ public class InteractionController {
         String logDesc = "查询问政互动的信件列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
-            NBHDPageDataResult result = interactionService.getGovMsgBoxes(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return result;
+            return interactionService.getGovMsgBoxes(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 

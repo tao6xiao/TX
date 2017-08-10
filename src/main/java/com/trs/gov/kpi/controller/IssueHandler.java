@@ -39,7 +39,6 @@ public class IssueHandler {
         String logDesc = "处理问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.handIssuesByIds(siteId, Arrays.asList(ids));
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
         }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -56,7 +55,6 @@ public class IssueHandler {
         String logDesc = "忽略问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
         }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -73,7 +71,6 @@ public class IssueHandler {
         String logDesc = "删除问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.delIssueByIds(siteId, Arrays.asList(ids));
-            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
         }, OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -91,7 +88,6 @@ public class IssueHandler {
         String logDesc = "修改所属部门" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
         }, OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }

@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumIndexUpdateType;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -56,10 +57,7 @@ public class PerformanceService {
     @Resource
     private SGService sgService;
 
-    @Resource
-    private InteractionService interactionService;
-
-    public Double calPerformanceIndex(Integer siteId) throws ParseException, RemoteException {
+    public Double calPerformanceIndex(Integer siteId) throws BizException, RemoteException {
 
         PageDataRequestParam param = new PageDataRequestParam();
         param.setSiteId(siteId);

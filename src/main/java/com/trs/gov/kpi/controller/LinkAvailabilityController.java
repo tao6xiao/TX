@@ -49,9 +49,7 @@ public class LinkAvailabilityController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-            List list = linkAvailabilityService.getIssueCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return list;
+            return linkAvailabilityService.getIssueCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -68,9 +66,7 @@ public class LinkAvailabilityController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-            int value = linkAvailabilityService.getUnhandledIssueCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return value;
+            return linkAvailabilityService.getUnhandledIssueCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -87,9 +83,7 @@ public class LinkAvailabilityController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-            HistoryStatisticsRes historyStatisticsRes = linkAvailabilityService.getIssueHistoryCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return historyStatisticsRes;
+            return linkAvailabilityService.getIssueHistoryCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -106,9 +100,7 @@ public class LinkAvailabilityController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = linkAvailabilityService.getIssueList(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
+            return linkAvailabilityService.getIssueList(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -125,9 +117,7 @@ public class LinkAvailabilityController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-            IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return indexPage;
+            return linkAvailabilityService.showIndexAvailability(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 

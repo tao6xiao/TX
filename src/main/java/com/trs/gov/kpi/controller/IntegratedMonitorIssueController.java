@@ -46,9 +46,7 @@ public class IntegratedMonitorIssueController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_ISSUE_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = issueService.get(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
+            return issueService.get(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 

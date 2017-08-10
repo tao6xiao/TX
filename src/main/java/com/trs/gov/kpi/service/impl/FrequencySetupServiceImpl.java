@@ -6,6 +6,7 @@ import com.trs.gov.kpi.dao.FrequencySetupMapper;
 import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.FrequencySetup;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
@@ -79,7 +80,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     }
 
     @Override
-    public int insert(FrequencySetup frequencySetup) throws ParseException {
+    public int insert(FrequencySetup frequencySetup) {
         frequencySetup.setSetTime(new Date());
         frequencySetup.setIsOpen((byte) Status.Open.OPEN.value);
         return frequencySetupMapper.insert(frequencySetup);

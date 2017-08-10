@@ -7,6 +7,7 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -59,7 +60,7 @@ public class IntegratedMonitorWarningServiceImpl implements IntegratedMonitorWar
     }
 
     @Override
-    public ApiPageData get(PageDataRequestParam param) throws ParseException, RemoteException {
+    public ApiPageData get(PageDataRequestParam param) throws BizException, RemoteException {
 
         if (!StringUtil.isEmpty(param.getSearchText())) {
             param.setSearchText(StringUtil.escape(param.getSearchText()));

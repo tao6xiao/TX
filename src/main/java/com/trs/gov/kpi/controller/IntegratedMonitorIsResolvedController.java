@@ -48,9 +48,7 @@ public class IntegratedMonitorIsResolvedController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
+            return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
