@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.InteractionService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -70,7 +71,7 @@ public class InteractionController {
      * @throws RemoteException
      */
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getGovMsgHistoryCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
+    public HistoryStatisticsRes getGovMsgHistoryCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         Date startTime = new Date();
         authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
         String logDesc = "查询问政互动的数量";
@@ -79,7 +80,7 @@ public class InteractionController {
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return historyStatisticsList;
+            return new HistoryStatisticsRes(new Date(), historyStatisticsList);
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
