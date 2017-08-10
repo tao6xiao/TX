@@ -11,7 +11,6 @@ import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
@@ -65,11 +64,7 @@ public class FrequencyPresetController {
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         String logDesc = "查询更新频率及预警初设数据";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
         try {
             int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
             Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
@@ -104,14 +99,10 @@ public class FrequencyPresetController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "添加预设记录";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), request.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDPREFREQ) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ADDPREFREQ)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, request.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDPREFREQ, request.getSiteId());
         int num;
         try {
-            num  = frequencyPresetService.addFrequencyPreset(request);
+            num = frequencyPresetService.addFrequencyPreset(request);
             LogUtil.addOperationLog(OperationType.ADD, logDesc, siteApiService.getSiteById(request.getSiteId(), "").getSiteName());
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, request.getSiteId()));
@@ -146,16 +137,12 @@ public class FrequencyPresetController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "修改预设记录";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), preset.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ)) {
-            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, preset.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ, preset.getSiteId());
         int num;
         try {
             num = frequencyPresetService.updateBySiteIdAndId(preset);
             LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, preset.getSiteId()));
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, preset.getSiteId()));
             throw e;
         }
@@ -184,29 +171,26 @@ public class FrequencyPresetController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "删除预设记录";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ)) {
-            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ, siteId);
         boolean state;
         try {
             state = frequencySetupService.isPresetFeqUsed(siteId, id);
-        }catch (Exception e){
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc+"：查询当前预设记录id["+id+"]所对应记录是否被某个栏目使用"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：查询当前预设记录id[" + id + "]所对应记录是否被某个栏目使用"), LogUtil.getSiteNameForLog(siteApiService,
+                    siteId));
             throw e;
         }
         if (!state) {
             try {
                 frequencyPresetService.deleteBySiteIdAndId(siteId, id);
                 LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            }catch (Exception e){
+            } catch (Exception e) {
                 LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw e;
             }
         } else {
-            log.error("Invalid parameter:  当前参数siteId["+siteId+"]和id["+id+"]下的记录已经被某一栏目所使用，无法删除");
-            LogUtil.addWarnLog(OperationType.DELETE, ErrorType.BIZ_EXCEPTION, "Invalid parameter:  当前参数siteId["+siteId+"]和id["+id+"]下的记录已经被某一栏目所使用，无法删除");
+            log.error("Invalid parameter:  当前参数siteId[" + siteId + "]和id[" + id + "]下的记录已经被某一栏目所使用，无法删除");
+            LogUtil.addWarnLog(OperationType.DELETE, ErrorType.BIZ_EXCEPTION, "Invalid parameter:  当前参数siteId[" + siteId + "]和id[" + id + "]下的记录已经被某一栏目所使用，无法删除");
             throw new BizException("当前预设记录已经被某一栏目所使用，无法删除");
         }
         return null;

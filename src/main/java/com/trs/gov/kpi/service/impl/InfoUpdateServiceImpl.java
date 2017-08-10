@@ -103,8 +103,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
-        DateUtil.setDefaultDate(param);
+    public HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param) {
+        param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();

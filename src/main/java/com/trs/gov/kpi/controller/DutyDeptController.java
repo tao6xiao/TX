@@ -9,7 +9,6 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.DutyDeptRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.DutyDeptService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -53,16 +52,13 @@ public class DutyDeptController {
             log.error("Invalid parameter: 传入的参数siteId、chnlId、deptId、contain中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), deptRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_DUTYDEPT) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DUTYDEPT)) {
-            LogUtil.addOperationLog(OperationType.ADD + OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("添加或修改栏目和部门的关系"), LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DUTYDEPT, deptRequest.getSiteId());
         DutyDept dutyDept = null;
         try {
             dutyDept = deptService.getByChnlId(deptRequest.getChnlId());
         } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("通过栏目id[" + deptRequest.getChnlId() + "]查询部门"), LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("通过栏目id[" + deptRequest.getChnlId() + "]查询部门"), LogUtil.getSiteNameForLog(siteApiService,
+                    deptRequest.getSiteId()));
             throw e;
         }
         if (dutyDept == null) {
@@ -97,11 +93,7 @@ public class DutyDeptController {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "查询栏目和部门的关系";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, param.getSiteId());
         try {
             ApiPageData apiPageData = deptService.get(param);
             Date endTime = new Date();
@@ -130,17 +122,13 @@ public class DutyDeptController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "删除对于站点栏目下设置的部门";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT)) {
-            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT, siteId);
         try {
             ParamCheckUtil.integerArrayParamCheck(chnlIds);
             deptService.delete(siteId, chnlIds);
             LogUtil.addOperationLog(OperationType.DELETE, logDesc, siteApiService.getSiteById(siteId, "").getSiteName());
             return null;
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
             throw e;
         }

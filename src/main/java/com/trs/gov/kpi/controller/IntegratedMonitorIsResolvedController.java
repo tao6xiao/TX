@@ -6,7 +6,6 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IntegratedMonitorIsResolvedService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -47,18 +46,14 @@ public class IntegratedMonitorIsResolvedController {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "获取已解决的分页数据";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_RESOLVED_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_RESOLVED_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
         try {
             ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }
@@ -77,18 +72,14 @@ public class IntegratedMonitorIsResolvedController {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "获取已忽略的分页数据";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_RESOLVED_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_RESOLVED_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
         try {
             ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }

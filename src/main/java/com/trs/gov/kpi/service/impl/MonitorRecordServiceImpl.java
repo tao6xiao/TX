@@ -44,7 +44,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
     }
 
     @Override
-    public Date getLastMonitorEndTime(Integer siteId, Integer taskId) {
+    public Date getMonitorEndTime(Integer siteId, Integer taskId) {
 
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);

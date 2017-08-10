@@ -3,7 +3,7 @@ package com.trs.gov.kpi.entity.responsedata;
 import lombok.Data;
 
 /**
- * 首页可用性
+ * 首页可用性数据返回的模板
  */
 @Data
 public class IndexPage {

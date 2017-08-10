@@ -62,7 +62,7 @@ public class IssueCountController {
             List<Statistics> list = countService.countSort(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime() - startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return list;
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
@@ -91,18 +91,18 @@ public class IssueCountController {
      */
     @RequestMapping(value = "/count/history", method = RequestMethod.GET)
     @ResponseBody
-    public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+    public HistoryStatisticsRes historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(request);
         checkAuthority(request);
         String logDesc = "问题统计中分类查询统计历史数量";
         try {
-            History history = countService.historyCountSort(request);
+            HistoryStatisticsRes historyStatisticsRes = countService.historyCountSort(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime() - startTime.getTime());
-            return history;
-        }catch (Exception e) {
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
+            return historyStatisticsRes;
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
             throw e;
         }
@@ -125,9 +125,9 @@ public class IssueCountController {
             List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime() - startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return deptCountResponses;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
             throw e;
         }
@@ -153,9 +153,9 @@ public class IssueCountController {
             List<DeptCount> deptCountList = countService.getDeptCountByType(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime() - startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return deptCountList;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
             throw e;
         }
@@ -179,9 +179,9 @@ public class IssueCountController {
             DeptInductionResponse[] inductionResponseArray = countService.deptInductionSort(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime() - startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return inductionResponseArray;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
             throw e;
         }
@@ -189,10 +189,11 @@ public class IssueCountController {
 
 
     private void checkAuthority(IssueCountRequest request) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+        String userName = ContextHelper.getLoginUser().getUserName();
+        if (!authorityService.hasRight(userName, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
             String[] siteIds = request.getSiteIds().split(",");
-            for (int i = 0; i < siteIds.length; i++) {
-                if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+            for (String siteId : siteIds) {
+                if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), Integer.parseInt(siteId), Authority.KPIWEB_STATISTICS_ISSUE)) {
                     throw new BizException(Authority.NO_AUTHORITY);
                 }
             }

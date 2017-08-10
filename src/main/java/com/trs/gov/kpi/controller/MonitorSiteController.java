@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.MonitorSite;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
@@ -59,18 +58,14 @@ public class MonitorSiteController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "查询监测站点设置信息";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_MONITORSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SEARCH, siteId);
         try {
             MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return monitorSiteDeal;
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
             throw e;
         }
@@ -97,25 +92,21 @@ public class MonitorSiteController {
             throw new BizException("当前站点没有首页，不能设置！");
         }
         String logDesc = "设置监测站点设置信息（包括添加和修改）";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), monitorSiteDeal.getSiteId(), null, Authority.KPIWEB_MONITORSETUP_UPDATEADMIN) && !authorityService
-                .hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_MONITORSETUP_UPDATEADMIN)) {
-            LogUtil.addOperationLog(OperationType.ADD + OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, monitorSiteDeal.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-
+        authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_UPDATEADMIN, monitorSiteDeal.getSiteId());
         int siteId = monitorSiteDeal.getSiteId();
         MonitorSite monitorSite;
         try {
             monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
-        }catch (Exception e){
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc+"：查询当前站点site["+siteId+"]是否已设置成为监测站点"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+        } catch (Exception e) {
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：查询当前站点site[" + siteId + "]是否已设置成为监测站点"), LogUtil.getSiteNameForLog(siteApiService,
+                    siteId));
             throw e;
         }
         if (monitorSite != null) {//检测站点表中存在siteId对应记录，将修改记录
             try {
                 monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
                 LogUtil.addOperationLog(OperationType.UPDATE, "修改监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName());
-            }catch (Exception e){
+            } catch (Exception e) {
                 LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("修改监测站点设置信息"), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw e;
             }
@@ -130,7 +121,7 @@ public class MonitorSiteController {
             try {
                 monitorSiteService.addMonitorSite(monitorSiteDeal);
                 LogUtil.addOperationLog(OperationType.ADD, "添加监测站点设置信息", LogUtil.getSiteNameForLog(siteApiService, siteId));
-            }catch (Exception e){
+            } catch (Exception e) {
                 LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("添加监测站点设置信息"), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw e;
             }
@@ -156,7 +147,7 @@ public class MonitorSiteController {
         }
         try {
             EnumCheckJobType checkJobType = null;
-            switch (checkJobValue){
+            switch (checkJobValue) {
                 case (1):
                     checkJobType = EnumCheckJobType.CHECK_HOME_PAGE;
                     break;
@@ -173,7 +164,7 @@ public class MonitorSiteController {
             }
             schedulerService.doCheckJobOnce(siteId, checkJobType);
             LogUtil.addOperationLog(OperationType.TASK_SCHEDULE, "网站手动监测", LogUtil.getSiteNameForLog(siteApiService, siteId));
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.TASK_SCHEDULE, LogUtil.buildFailOperationLogDesc("网站手动监测"), LogUtil.getSiteNameForLog(siteApiService, siteId));
             throw e;
         }

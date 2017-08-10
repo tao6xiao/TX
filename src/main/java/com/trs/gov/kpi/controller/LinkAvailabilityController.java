@@ -8,9 +8,8 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -48,18 +47,14 @@ public class LinkAvailabilityController extends IssueHandler {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "查询链接可用性待解决和已解决问题数量" + LogUtil.paramsToLogString("param", param);
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
         try {
             List list = linkAvailabilityService.getIssueCount(param);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return list;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }
@@ -77,18 +72,14 @@ public class LinkAvailabilityController extends IssueHandler {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "查询链接可用性待解决问题数量" + LogUtil.paramsToLogString("param", param);
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
         try {
             int value = linkAvailabilityService.getUnhandledIssueCount(param);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return value;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }
@@ -102,22 +93,18 @@ public class LinkAvailabilityController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+    public HistoryStatisticsRes getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "查询链接可用性历史纪录";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
         try {
-            History history = linkAvailabilityService.getIssueHistoryCount(param);
+            HistoryStatisticsRes historyStatisticsRes = linkAvailabilityService.getIssueHistoryCount(param);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return history;
-        }catch (Exception e) {
+            return historyStatisticsRes;
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }
@@ -135,18 +122,14 @@ public class LinkAvailabilityController extends IssueHandler {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "查询链接可用性未解决问题列表";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
         try {
             ApiPageData apiPageData = linkAvailabilityService.getIssueList(param);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }
@@ -164,18 +147,14 @@ public class LinkAvailabilityController extends IssueHandler {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(param);
         String logDesc = "首页可用性校验" + LogUtil.paramsToLogString("param", param);
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
         try {
             IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return indexPage;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }

@@ -6,7 +6,6 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.DefaultUpdateFreq;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -51,10 +50,7 @@ public class DefaultUpdateFreqController {
                 log.error("Invalid parameter:  参数siteId存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
 
             DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
             Integer value = null;
@@ -78,16 +74,13 @@ public class DefaultUpdateFreqController {
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException, RemoteException {
-        String logDesc = "插入或者修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq",defaultUpdateFreq);
+        String logDesc = "插入或者修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             if (defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null) {
                 log.error("Invalid parameter:  参数siteId、value（自查提醒周期值）中至少一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), defaultUpdateFreq.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ) && !authorityService
-                    .hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ, defaultUpdateFreq.getSiteId());
             int siteId = defaultUpdateFreq.getSiteId();
             // TODO: 2017/8/9 REVIEW HELANG FIXED 是否需要在查询自查提醒记录时，try catch
             DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);

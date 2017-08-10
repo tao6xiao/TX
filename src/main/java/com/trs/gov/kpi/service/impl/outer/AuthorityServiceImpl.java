@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
+import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
@@ -35,16 +38,13 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     private static final String MODULE_ID = "40";//绩效考核模块ID
 
-
     @Override
-    public boolean hasRight(String currUserName, Integer siteId, Integer channelId, String oprkeys) throws RemoteException {
+    public boolean hasRight(String currUserName, Integer siteId, String oprkeys) throws RemoteException {
 
         Map<String, String> params = new HashMap<>();
+        //siteId为null，判断对应oprkeys的平台级权限；siteId不为null，判断对应oprkeys的站点级权限；
         if (siteId != null) {
             params.put("siteId", String.valueOf(siteId));
-        }
-        if (channelId != null) {
-            params.put("channelId", String.valueOf(channelId));
         }
         params.put("oprkeys", oprkeys);
         //判断平台级权限需要用到
@@ -79,5 +79,13 @@ public class AuthorityServiceImpl implements AuthorityService {
                 .setServiceName(serviceName)
                 .setMethodName(methodName)
                 .setParams(params).build();
+    }
+
+    @Override
+    public void checkRight(String oprkeys, Integer siteId) throws RemoteException, BizException {
+        String userName = ContextHelper.getLoginUser().getUserName();
+        if (!hasRight(userName, siteId, oprkeys) && !hasRight(userName, null, oprkeys)) {
+            throw new BizException(Authority.NO_AUTHORITY);
+        }
     }
 }

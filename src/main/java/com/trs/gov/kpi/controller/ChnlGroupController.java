@@ -11,7 +11,6 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -52,17 +51,13 @@ public class ChnlGroupController {
         String logDesc = "查询栏目分类" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
         return LogUtil.ControlleFunctionWrapper(() -> {
             LogUtil.PerformanceLogRecorder performanceLogRecorder = LogUtil.newPerformanceRecorder(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc));
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
 
             ChnlGroupsResponse[] groupsResponseArray = chnlGroupService.getChnlGroupsResponseDetailArray();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, siteApiService.getSiteById(siteId, "").getSiteName());
             performanceLogRecorder.record();
             return groupsResponseArray;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-
     }
 
     /**
@@ -87,10 +82,7 @@ public class ChnlGroupController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
             ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
 
             int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
             Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
@@ -119,10 +111,7 @@ public class ChnlGroupController {
                 log.error("Invalid parameter:  参数对象chnlGroupChnlsAddRequest中siteId、groupId（分类编号）、chnlIds[]中至少有一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), chnlGroupChnlsAddRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE) &&
-                    !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE, chnlGroupChnlsAddRequest.getSiteId());
 
             chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequest);
             LogUtil.addOperationLog(OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlsAddRequest.getSiteId()));
@@ -148,10 +137,7 @@ public class ChnlGroupController {
                 log.error("Invalid parameter:  参数对象chnlGroupChnlRequestDetails中iteId、groupId（分类编号）、id（当前栏目设置对象编号）、chnlId中（栏目id）至少有一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), chnlGroupChnlRequestDetail.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL) &&
-                    !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL, chnlGroupChnlRequestDetail.getSiteId());
 
             chnlGroupChnlRequestDetail.getId();
             chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
@@ -177,11 +163,7 @@ public class ChnlGroupController {
                 log.error("Invalid parameter:  参数siteId、id（当前栏目设置对象编号）中至少有一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE) && !authorityService.hasRight(ContextHelper
-                    .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE)) {
-                LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE, siteId);
 
             chnlGroupService.deleteBySiteIdAndId(siteId, id);
             LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
