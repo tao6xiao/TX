@@ -79,7 +79,7 @@ public class BasServiceImpl implements BasService {
         }
         String url = basServiceUrl + "/api/retrieveWebUV";
 
-        DateUtil.setDefaultDate(basRequest);
+        basRequest.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(basRequest.getBeginDateTime(), basRequest.getEndDateTime(), basRequest.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -173,7 +173,7 @@ public class BasServiceImpl implements BasService {
     @Override
     public HistoryStatisticsRes getHistoryStayTime(BasRequest basRequest) throws ParseException, RemoteException, BizException {
 
-        DateUtil.setDefaultDate(basRequest);
+        basRequest.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(basRequest.getBeginDateTime(), basRequest.getEndDateTime(), basRequest.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();

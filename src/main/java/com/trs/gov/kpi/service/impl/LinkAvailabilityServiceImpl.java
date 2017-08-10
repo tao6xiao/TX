@@ -89,7 +89,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Override
     public HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param) {
-        DateUtil.setDefaultDate(param);
+        param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
