@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 
 /**
  * Created by HLoach on 2017/5/11.
@@ -142,6 +141,7 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+        authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
         try {
             EnumCheckJobType checkJobType = null;
             switch (checkJobValue) {
