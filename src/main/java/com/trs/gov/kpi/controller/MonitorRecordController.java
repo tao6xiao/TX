@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * 日志监测记录
@@ -40,13 +41,18 @@ public class MonitorRecordController {
     @RequestMapping(value = "/select", method = RequestMethod.GET)
     public ApiPageData selectMonitorRecord(PageDataRequestParam param) throws BizException {
 
+        String logDesc = "查询日志监测记录";
         // TODO REVIEW LINWEI DO_li.hao 记得加日志成功和性能日志， 同时有一个 paramCheck 方法，为什么不用呢？ @see ParamCheckUtil#paramCheck
-        ParamCheckUtil.paramCheck(param);
         try {
+            Date startTime = new Date();
+            ParamCheckUtil.paramCheck(param);
             ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
+            Date endTime = new Date();
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
         }catch (Exception e){
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("查询日志监测记录"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
         }
     }
