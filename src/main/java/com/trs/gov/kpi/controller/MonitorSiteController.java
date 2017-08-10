@@ -81,8 +81,8 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException, RemoteException {
-        //TODO REVIEW RANWEI 参数校验逻辑需要修改，缺少错误日志
-        // TODO: 2017/8/9  REVIEW he.lang 圈复杂度上升
+        //TODO REVIEW RANWEI DO_he.lang 参数校验逻辑需要修改，缺少错误日志
+        // TODO: 2017/8/9  REVIEW DO_he.lang 圈复杂度上升
         if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getGuarderId() == null) {
             log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId、四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -110,7 +110,7 @@ public class MonitorSiteController {
                 LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("修改监测站点设置信息"), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw e;
             }
-            //TODO REVIEW RANWEI controller层只进行权限校验和参数校验等，下面代码应当放入service层
+            //TODO REVIEW RANWEI DO_he.lang controller层只进行权限校验和参数校验等，下面代码应当放入service层
             if (monitorSite.getIndexUrl() != null && !monitorSite.getIndexUrl().trim().isEmpty()) {
                 schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }

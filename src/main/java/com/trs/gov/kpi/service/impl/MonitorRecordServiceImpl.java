@@ -15,6 +15,7 @@ import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,12 +42,12 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
     }
 
     @Override
-    public Date getMonitorStartTime(Integer siteId, Integer taskId) {
+    public Date getMonitorStartTime(@NonNull Integer siteId, @NonNull Integer taskId) {
         return monitorRecordMapper.getMonitorBeginTime(siteId, taskId);
     }
 
     @Override
-    public Date getMonitorEndTime(Integer siteId, Integer taskId) {
+    public Date getMonitorEndTime(@NonNull Integer siteId, @NonNull Integer taskId) {
         return monitorRecordMapper.getMonitorEndTime(siteId, taskId);
     }
 

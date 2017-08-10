@@ -65,10 +65,11 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/bytype", method = RequestMethod.GET)
     @ResponseBody
     public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
-        Date startTime = new Date();
-        String logDesc = "本月新增文档分类型统计查询";
-        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
-        try {
+        String logDesc = "本月新增文档分类型统计查询" + LogUtil.paramsToLogString(Collections.singletonMap("siteId", siteId));
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            LogUtil.PerformanceLogRecorder performanceLogRecorder = LogUtil.newPerformanceRecorder(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc));
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
             ReportApiService.ReportApiParam param = ReportApiService.ReportApiParamBuilder.newBuilder()
                     .setReportName("editcenter_doctype_new_bymonth")
                     .setDimensionFields("DocType")
@@ -77,9 +78,8 @@ public class DocReportController {
 
             String reportData = reportApiService.getReport(param);
             if (StringUtil.isEmpty(reportData)) {
-                Date endTime = new Date();
                 LogUtil.addOperationLog(OperationType.QUERY, logDesc, "");
-                LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
+                performanceLogRecorder.record();
                 return new ArrayList<>();
             } else {
                 final ArrayList<DocTypeCounterResponse> responseList = new ArrayList<>();
@@ -88,15 +88,11 @@ public class DocReportController {
                     JSONObject data = objects.getJSONObject(index);
                     responseList.add(new DocTypeCounterResponse(data.getInteger("DocType"), data.getLong("Count")));
                 }
-                Date endTime = new Date();
                 LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-                LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
+                performanceLogRecorder.record();
                 return responseList;
             }
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -160,7 +156,7 @@ public class DocReportController {
         try {
             List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
             SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) -> counter.setSiteId(Long.valueOf(value));
-            final java.util.List<SiteDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class,
+            final List<SiteDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class,
                     setSiteIdFunc);
             Map<String, Object> result = getResult(allReports);
             Date endTime = new Date();
@@ -261,7 +257,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, ParseException, BizException {
         Date startTime = new Date();
-        String logDesc = "原稿，已发，上报，下达历史数据量统计查询";
+        String logDesc = "原稿，已发，上报，下达历史数据量统计查询" + LogUtil.paramsToLogString("siteId", siteId, "month", month);
         authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
         if (StringUtil.isEmpty(month)) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));

@@ -40,4 +40,14 @@ public class ChannelGroup {
     public void setChnlId(Integer chnlId) {
         this.chnlId = chnlId;
     }
+
+    @Override
+    public String toString() {
+        return "ChannelGroup{" +
+                "id=" + id +
+                ", siteId=" + siteId +
+                ", groupId=" + groupId +
+                ", chnlId=" + chnlId +
+                '}';
+    }
 }

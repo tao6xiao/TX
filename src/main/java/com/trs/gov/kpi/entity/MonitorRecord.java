@@ -2,6 +2,7 @@ package com.trs.gov.kpi.entity;
 
 import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
+import com.trs.gov.kpi.constant.MonitorRecordTableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Date;
 @DBTable("monitorrecord")
 public class MonitorRecord {
 
+    // TODO REVIEW LINWEI DO_li.hao 如果数据库字段的名字和变量名一样，怎不需要在注解中指定名字
     @DBField("id")
     private Integer id;
 

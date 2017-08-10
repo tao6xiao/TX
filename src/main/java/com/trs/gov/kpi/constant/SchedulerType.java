@@ -6,6 +6,8 @@ package com.trs.gov.kpi.constant;
  */
 public class SchedulerType {
 
+    // TODO REVIEW DO_he.lang 修改为枚举类型，解决名字冲突
+
     public static final String CKM_SCHEDULER = "CKMScheduler ";
 
     public static final String HOMEPAGE_CHECK_SCHEDULER = "CKMScheduler ";
@@ -22,6 +24,7 @@ public class SchedulerType {
 
     private SchedulerType(){}
 
+    // TODO REVIEW DO_he.lang 修改方法名
     public static String startScheduler(String schedulerType, Integer siteId){
         return schedulerType + siteId + " start...";
     }

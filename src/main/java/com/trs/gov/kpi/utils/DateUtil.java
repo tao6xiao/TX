@@ -156,6 +156,7 @@ public class DateUtil {
      *
      * @param param
      */
+    // TODO REVIEW LINWEI DO_ran.wei setDefaultDate 这个方法放在 DateRequest 里面可能更为合适
     public static void setDefaultDate(DateRequest param) {
         if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
             Date endDate = new Date();

@@ -23,7 +23,7 @@ public class DefaultUpdateFreqServiceImpl implements DefaultUpdateFreqService {
     }
 
     @Override
-    public int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws ParseException {
+    public int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) {
         defaultUpdateFreq.setSetTime(new Date());
         return defaultUpdateFreqMapper.insert(defaultUpdateFreq);
     }

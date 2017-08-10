@@ -6,11 +6,13 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by he.lang on 2017/6/8.
@@ -33,7 +35,7 @@ public class IssueHandler {
      */
     @RequestMapping(value = UrlPath.HANDLE_PATH, method = RequestMethod.POST)
     public String handIssuesByIds(int siteId, Integer[] ids) throws RemoteException {
-        String logDesc = "处理问题";
+        String logDesc = "处理问题" + LogUtil.paramsToLogString("siteId", siteId, "ids", ids);
         try {
             issueService.handIssuesByIds(siteId, Arrays.asList(ids));
             LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
