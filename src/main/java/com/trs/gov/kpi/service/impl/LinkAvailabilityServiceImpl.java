@@ -2,6 +2,7 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
+import com.trs.gov.kpi.dao.MonitorRecordMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.LinkAvailability;
@@ -41,6 +42,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Resource
     private MonitorRecordService monitorRecordService;
+
+    @Resource
+    private MonitorRecordMapper monitorRecordMapper;
 
     @Resource
     private SiteApiService siteApiService;
@@ -105,7 +109,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
+        return new History(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
     }
 
     @Override
@@ -204,26 +208,19 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     @Override
     public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
-        // TODO REVIEW DO_li.hao 需要考虑首页检测任务没有执行完成的情况
+        // TODO REVIEW DO_li.hao FIXED 需要考虑首页检测任务没有执行完成的情况
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
-        Date endTime = monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
+        Date endTime = monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
+
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
         indexPage.setMonitorTime(DateUtil.toString(endTime));
-        QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
-        queryFilter.addCond(IssueTableField.SITE_ID, param.getSiteId());
-        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-        queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
-        queryFilter.addCond(IssueTableField.ISSUE_TIME, monitorRecordService.getMonitorStartTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value)).setRangeBegin(true);
-        queryFilter.addCond(IssueTableField.ISSUE_TIME, endTime).setRangeEnd(true);
-        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        int count = issueMapper.count(queryFilter);
-        if (count > 0) {
-            indexPage.setIndexAvailable(false);
-        } else {
+
+        int result = monitorRecordMapper.getResuleByLastEndTime(endTime);
+        if (result == 0) {
             indexPage.setIndexAvailable(true);
+        } else {
+            indexPage.setIndexAvailable(false);
         }
         return indexPage;
     }

@@ -41,9 +41,7 @@ public class MonitorRecordController {
     public ApiPageData selectMonitorRecord(PageDataRequestParam param) throws BizException {
 
         // TODO REVIEW LINWEI DO_li.hao 记得加日志成功和性能日志， 同时有一个 paramCheck 方法，为什么不用呢？ @see ParamCheckUtil#paramCheck
-        ParamCheckUtil.pagerCheck(param.getPageIndex(),param.getPageSize());
-        ParamCheckUtil.checkDayTime(param.getBeginDateTime());
-        ParamCheckUtil.checkDayTime(param.getEndDateTime());
+        ParamCheckUtil.paramCheck(param);
         try {
             ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
             return apiPageData;

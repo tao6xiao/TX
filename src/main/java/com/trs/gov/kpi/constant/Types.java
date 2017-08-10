@@ -550,6 +550,26 @@ public final class Types {
             return INVALID;
         }
 
+        /**
+         * 根据任务名称查询任务编号，（支持模糊查询）
+         * @param searchText
+         * @return
+         */
+        public static List<Integer> getTaskIdsByTaskName(String searchText){
+            MonitorRecordNameType[] values = MonitorRecordNameType.values();
+            List<Integer> taskIds = new ArrayList<>();
+            for (MonitorRecordNameType type : values) {
+                if (type != INVALID && type.getName().contains(searchText)) {
+                    int taskId = type.value;
+                    taskIds.add(taskId);
+                }
+            }
+            if (taskIds.size() == 0){
+                taskIds.add(INVALID.value);
+            }
+            return taskIds;
+        }
+
     }
 
 }

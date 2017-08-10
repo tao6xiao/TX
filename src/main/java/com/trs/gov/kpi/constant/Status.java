@@ -2,6 +2,9 @@ package com.trs.gov.kpi.constant;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by linwei on 2017/5/25.
  */
@@ -99,7 +102,8 @@ public class Status {
 
     public enum MonitorStatusType {
 
-        NO(1,"未提交监测"),
+        INVALID(-1, "未知类型"),
+        NO(0,"未提交监测"),
         DOING(1, "正在运行"),
         DONE(2, "运行结束");
 
@@ -114,6 +118,9 @@ public class Status {
         }
 
         public static MonitorStatusType valueOf(int value) {
+            if(value <= 0 ){
+                return INVALID;
+            }
 
             MonitorStatusType[] types = MonitorStatusType.values();
             for (MonitorStatusType type : types) {
@@ -122,6 +129,26 @@ public class Status {
                 }
             }
             return null;
+        }
+
+        /**
+         * 根据任务状态名称获取任务编号（支持模糊查询）
+         * @param searchText
+         * @return
+         */
+        public static List<Integer> getStatusByStatusName(String searchText){
+            MonitorStatusType[] values = MonitorStatusType.values();
+            List<Integer> statrsList = new ArrayList<>();
+            for (Status.MonitorStatusType type : values) {
+                if (type != INVALID && type.getName().contains(searchText)) {
+                    int taskStatus = type.value;
+                    statrsList.add(taskStatus);
+                }
+            }
+            if(statrsList.size() == 0){
+                statrsList.add(INVALID.value);
+            }
+            return statrsList;
         }
     }
 }

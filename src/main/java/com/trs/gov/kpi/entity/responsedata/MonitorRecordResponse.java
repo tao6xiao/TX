@@ -17,7 +17,7 @@ public class MonitorRecordResponse {
 
     private Integer result;//执行结果
 
-    private Date beginTime;//开始时间
+    private Date beginDateTime;//开始时间
 
-    private Date endTime;//结束时间
+    private Date endDateTime;//结束时间
 }
