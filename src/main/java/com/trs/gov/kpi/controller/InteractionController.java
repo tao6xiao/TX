@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
 import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.InteractionService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -48,7 +47,7 @@ public class InteractionController {
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
     public NBHDStatisticsRes getGovMsgBoxesCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         Date startTime = new Date();
-        checkAuthority(param);
+        authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
         String logDesc = "查询问政互动的信件列表";
         try {
             NBHDStatisticsRes res = interactionService.getGovMsgBoxesCount(param);
@@ -73,7 +72,7 @@ public class InteractionController {
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public List<HistoryStatistics> getGovMsgHistoryCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         Date startTime = new Date();
-        checkAuthority(param);
+        authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
         String logDesc = "查询问政互动的数量";
         try {
             List<HistoryStatistics> historyStatisticsList = interactionService.getGovMsgHistoryCount(param);
@@ -97,7 +96,7 @@ public class InteractionController {
     @RequestMapping(value = "/msg/unhandled", method = RequestMethod.GET)
     public NBHDPageDataResult getGovMsgBoxes(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         Date startTime = new Date();
-        checkAuthority(param);
+        authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
         String logDesc = "查询问政互动的信件列表";
         try {
             NBHDPageDataResult result = interactionService.getGovMsgBoxes(param);
@@ -108,14 +107,6 @@ public class InteractionController {
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             throw e;
-        }
-    }
-
-    private void checkAuthority(NBHDRequestParam param) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_NBHD_SEARCH) && !authorityService.hasRight(ContextHelper.getLoginUser()
-                .getUserName(), param.getSiteId(), null, Authority.KPIWEB_NBHD_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("问政互动相关查询"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
         }
     }
 

@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 信息错误数据的返回模板
  * Created by ran.wei on 2017/5/15.
  */
 @Data

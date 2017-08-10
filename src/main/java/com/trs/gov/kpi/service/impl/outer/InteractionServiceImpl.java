@@ -118,7 +118,7 @@ public class InteractionServiceImpl implements InteractionService {
 
         Map<String, String> params = new HashMap<>();
         params.put(SITE_ID, String.valueOf(param.getSiteId()));
-        DateUtil.setDefaultDate(param);
+        param.setDefaultDate();
         addCond(param, params);
         if (param.getGranularity() != null) {
             params.put("granularity", String.valueOf(param.getGranularity()));

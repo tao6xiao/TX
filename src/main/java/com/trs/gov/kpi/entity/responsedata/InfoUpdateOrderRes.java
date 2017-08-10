@@ -5,6 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 信息更新工单数据的返回模板
  * Created by ranwei on 2017/6/7.
  */
 @Data

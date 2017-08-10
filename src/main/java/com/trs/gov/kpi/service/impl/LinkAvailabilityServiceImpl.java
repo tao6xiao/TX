@@ -88,8 +88,8 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
-        DateUtil.setDefaultDate(param);
+    public HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param) {
+        param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -105,7 +105,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
+        return new HistoryStatisticsRes(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
     }
 
     @Override

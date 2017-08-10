@@ -80,8 +80,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
-        DateUtil.setDefaultDate(param);
+    public HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param) {
+        param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -96,7 +96,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new History(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value), list);
+        return new HistoryStatisticsRes(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value), list);
     }
 
     @Override
