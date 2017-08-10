@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
-import com.trs.gov.kpi.dao.MonitorRecordMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.LinkAvailability;
@@ -42,9 +41,6 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
 
     @Resource
     private MonitorRecordService monitorRecordService;
-
-    @Resource
-    private MonitorRecordMapper monitorRecordMapper;
 
     @Resource
     private SiteApiService siteApiService;
@@ -216,7 +212,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         indexPage.setIndexUrl(indexUrl);
         indexPage.setMonitorTime(DateUtil.toString(endTime));
 
-        int result = monitorRecordMapper.getResuleByLastEndTime(endTime);
+        int result = monitorRecordService.getResuleByLastEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value,endTime);
         if (result == 0) {
             indexPage.setIndexAvailable(true);
         } else {

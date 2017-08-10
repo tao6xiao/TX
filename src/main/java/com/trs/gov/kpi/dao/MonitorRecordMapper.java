@@ -16,10 +16,10 @@ public interface MonitorRecordMapper {
     /**
      * 根据最后一次监测完成时间获取首页可用性的状态
      *
-     * @param endTime
+     * @param filter
      * @return
      */
-    int getResuleByLastEndTime(Date endTime);
+    int getResuleByLastEndTime(QueryFilter filter);
 
     /**
      * 查询最近的监测任务的结束时间

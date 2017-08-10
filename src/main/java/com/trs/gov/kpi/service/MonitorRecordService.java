@@ -31,6 +31,15 @@ public interface MonitorRecordService {
     Date getLastMonitorEndTime(Integer siteId, Integer taskId);
 
     /**
+     * 根据最后一次监测完成时间获取首页可用性的状态
+     * @param siteId
+     * @param taskId
+     * @param endTime
+     * @return
+     */
+    int getResuleByLastEndTime(Integer siteId, Integer taskId, Date endTime);
+
+    /**
      * 查询日志监测列表
      * @param param
      * @return
