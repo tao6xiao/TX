@@ -108,17 +108,6 @@ public class LogUtil {
      * @param desc
      * @param timeUsed
      */
-    public static void addElapseLog(String operationType, String desc, int timeUsed) {
-        SimpleLogServer.elapse(MODULE_NAME, new LogUser(), operationType, desc, timeUsed);
-    }
-
-    /**
-     * 添加性能日志
-     *
-     * @param operationType
-     * @param desc
-     * @param timeUsed
-     */
     public static void addElapseLog(String operationType, String desc, long timeUsed) {
         SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
     }
@@ -198,10 +187,14 @@ public class LogUtil {
         try {
             return func.apply();
         } catch (Exception e) {
-            // TODO REVIEW LINWEI DO_he.lang 把异常描述信息加入到操作日志的描述里面去
-            LogUtil.addOperationLog(type, LogUtil.buildFailOperationLogDesc(desc), systemName);
+            // TODO REVIEW LINWEI DONE_he.lang 把异常描述信息加入到操作日志的描述里面去
+            LogUtil.addFailOperationLog(type, LogUtil.buildFailOperationLogDesc(desc + e.getLocalizedMessage()), systemName);
             throw e;
         }
+    }
+
+    private static void addFailOperationLog(String operationType, String logDesc, String systemName) {
+        SimpleLogServer.operation(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, logDesc, systemName);
     }
 
     /**
@@ -223,6 +216,9 @@ public class LogUtil {
         private String desc;
         private Date startDate;
 
+        // 超时时间
+        private static final long LIMIT = 1000;
+
         public PerformanceLogRecorder(String type, String desc) {
             this.type = type;
             this.desc = desc;
@@ -230,8 +226,10 @@ public class LogUtil {
         }
 
         public void record() {
-            Date endDate = new Date();
-            addElapseLog(type, desc, endDate.getTime() - startDate.getTime());
+            long spendTime = new Date().getTime() - startDate.getTime();
+            if (spendTime > LIMIT) {
+                addElapseLog(type, desc, spendTime);
+            }
         }
     };
 

@@ -44,6 +44,8 @@ public class IssueCountController {
     @Resource
     private UserApiService userApiService;
 
+    private static final String REQUEST = "request";
+
     /**
      * 分类查询问题数量统计
      *
@@ -54,20 +56,14 @@ public class IssueCountController {
     @RequestMapping(value = "/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(request);
-        checkAuthority(request);
-        String logDesc = "问题统计中分类查询问题数量统计";
-        try {
+        String logDesc = "问题统计中分类查询问题数量统计" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
             List<Statistics> list = countService.countSort(request);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return list;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
     private String getSystemName(IssueCountRequest request) {
@@ -92,20 +88,14 @@ public class IssueCountController {
     @RequestMapping(value = "/count/history", method = RequestMethod.GET)
     @ResponseBody
     public HistoryStatisticsRes historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(request);
-        checkAuthority(request);
-        String logDesc = "问题统计中分类查询统计历史数量";
-        try {
+        String logDesc = "问题统计中分类查询统计历史数量" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
             HistoryStatisticsRes historyStatisticsRes = countService.historyCountSort(request);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return historyStatisticsRes;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
     /**
@@ -117,20 +107,14 @@ public class IssueCountController {
     @RequestMapping(value = "/bydept/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(request);
-        checkAuthority(request);
-        String logDesc = "问题统计中部门分类查询统计数量";
-        try {
+        String logDesc = "问题统计中部门分类查询统计数量" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
             List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return deptCountResponses;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
     /**
@@ -142,23 +126,17 @@ public class IssueCountController {
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCount> getDeptIssueCountByType(@ModelAttribute IssueCountByTypeRequest request) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(request);
-        if (request.getTypeId() > 5 || request.getTypeId() < 1) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String logDesc = "问题统计中根据问题类型部门分类查询统计数量";
-        checkAuthority(request);
-        try {
+        String logDesc = "问题统计中根据问题类型部门分类查询统计数量" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            if (request.getTypeId() > 5 || request.getTypeId() < 1) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            checkAuthority(request);
             List<DeptCount> deptCountList = countService.getDeptCountByType(request);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return deptCountList;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
 
@@ -171,20 +149,14 @@ public class IssueCountController {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     @ResponseBody
     public DeptInductionResponse[] deptInductionSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(request);
-        checkAuthority(request);
-        String logDesc = "问题统计中部门分类归纳统计数量查询";
-        try {
+        String logDesc = "问题统计中部门分类归纳统计数量查询" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
             DeptInductionResponse[] inductionResponseArray = countService.deptInductionSort(request);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return inductionResponseArray;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
 

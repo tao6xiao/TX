@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,43 +39,38 @@ public class DetectorController {
     @RequestMapping(value = "/check/text", method = RequestMethod.POST)
     @ResponseBody
     public Object checkText(@RequestBody CheckTextRequest request) throws BizException, RemoteException {
-        Date startTime = new Date();
         String logDesc = "执行ckm校对";
-        if (request.getCheckType() == null || request.getCheckType().length == 0) {
-            log.error("check type is empty!");
-            LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check type is empty!", "");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-
-        if (StringUtil.isEmpty(request.getCheckContent())) {
-            log.error("check content is empty!");
-            LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check content is empty!", "");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-
-        List<String> checkTypeList = Arrays.asList(ALL_CHECK_TYPES);
-        for (String type : request.getCheckType()) {
-            if (!checkTypeList.contains(type)) {
-                log.error("invalid check type: " + type);
-                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", invalid check type: " + type, "");
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            if (request.getCheckType() == null || request.getCheckType().length == 0) {
+                log.error("check type is empty!");
+                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check type is empty!", "");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-        }
-        try {
+
+            if (StringUtil.isEmpty(request.getCheckContent())) {
+                log.error("check content is empty!");
+                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check content is empty!", "");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+
+            List<String> checkTypeList = Arrays.asList(ALL_CHECK_TYPES);
+            for (String type : request.getCheckType()) {
+                if (!checkTypeList.contains(type)) {
+                    log.error("invalid check type: " + type);
+                    LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", invalid check type: " + type, "");
+                    throw new BizException(Constants.INVALID_PARAMETER);
+                }
+            }
+
             final ContentCheckResult checkResult = contentCheckApiService.check(request.getCheckContent(), CollectionUtil.join(Arrays.asList(request.getCheckType()), ";"));
             if (!checkResult.isOk()) {
                 log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
                 LogUtil.addWarnLog(OperationType.REQUEST, logDesc + "check return error: " + checkResult.getMessage() + ", content is " + request, "");
                 throw new RemoteException(checkResult.getMessage());
             }
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, "");
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc, endTime.getTime() - startTime.getTime());
             return JSON.parseObject(checkResult.getResult());
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), "");
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, "");
     }
 
 }

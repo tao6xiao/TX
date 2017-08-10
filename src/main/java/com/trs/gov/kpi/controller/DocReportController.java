@@ -108,24 +108,24 @@ public class DocReportController {
      */
     @RequestMapping(value = "/bydepartment", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
+    public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException,
             BizException {
-        Date startTime = new Date();
-        String logDesc = "查询按部门统计的稿件信息";
-        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
-        try {
+        String logDesc = "查询按部门统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "beginDateTime", beginDateTime, "endDateTime", endDateTime);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
             List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
             SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) -> counter.setDepartmentId(Long.valueOf(value));
-            List<DepDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
+            List<DepDocMultiCounterResponse> allReports = null;
+            try {
+                allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
+            } catch (InstantiationException | IllegalAccessException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             Map<String, Object> result = getResult(allReports);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return result;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     private Map<String, Object> getResult(List allReports) {
@@ -150,23 +150,25 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
             BizException {
-        Date startTime = new Date();
-        String logDesc = "查询按站点统计的稿件信息";
-        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
-        try {
+        String logDesc = "查询按站点统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "beginDateTime", beginDateTime, "endDateTime", endDateTime);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
             List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
             SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) -> counter.setSiteId(Long.valueOf(value));
-            final List<SiteDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class,
-                    setSiteIdFunc);
+            final List<SiteDocMultiCounterResponse> allReports;
+            try {
+                allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class,
+                        setSiteIdFunc);
+            } catch (InstantiationException | IllegalAccessException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             Map<String, Object> result = getResult(allReports);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return result;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -184,23 +186,24 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
             BizException {
-        Date startTime = new Date();
-        String logDesc = "查询按个人统计的稿件信息";
-        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+        String logDesc = "查询按个人统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "beginDateTime", beginDateTime, "endDateTime", endDateTime);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
-        try {
             List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports = getMultiReportList("user");
             SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) -> counter.setUserName(value);
-            final List<UserDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
+            final List<UserDocMultiCounterResponse> allReports;
+            try {
+                allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
+            } catch (InstantiationException | IllegalAccessException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             Map<String, Object> result = getResult(allReports);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return result;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -213,10 +216,10 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/byday", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, String> getCurMonthCounterByDay(Integer siteId) throws RemoteException, BizException {
-        Date startTime = new Date();
-        String logDesc = "查询本月每天发稿量统计信息";
-        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
-        try {
+        String logDesc = "查询本月每天发稿量统计信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
             Calendar now = Calendar.getInstance();// 当前起始日期
             Date curDate = new Date();
             now.setTime(curDate);
@@ -234,14 +237,9 @@ public class DocReportController {
             String beginDay = DateUtil.toString(now.getTime());
             final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
             allMonthReport.putAll(reportData);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return allMonthReport;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -255,23 +253,28 @@ public class DocReportController {
      */
     @RequestMapping(value = "/multi/onemonth", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, ParseException, BizException {
-        Date startTime = new Date();
+    public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, BizException {
         String logDesc = "原稿，已发，上报，下达历史数据量统计查询" + LogUtil.paramsToLogString("siteId", siteId, "month", month);
-        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
-        if (StringUtil.isEmpty(month)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        if (!DateUtil.isValidMonth(month)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        try {
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+            if (StringUtil.isEmpty(month)) {
+                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            if (!DateUtil.isValidMonth(month)) {
+                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+
             Calendar nextMonthCalendar = Calendar.getInstance();// 当前起始日期
 
             String beginDay = month + "-01 00:00:00";
-            nextMonthCalendar.setTime(DateUtil.toDate(beginDay));
+            try {
+                nextMonthCalendar.setTime(DateUtil.toDate(beginDay));
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
             nextMonthCalendar.set(Calendar.MONTH, nextMonthCalendar.get(Calendar.MONTH) + 1);
             String endDay = DateUtil.toString(new Date(nextMonthCalendar.getTime().getTime() - 1000));
 
@@ -284,14 +287,9 @@ public class DocReportController {
             result.put("push", countMap(pushReportData));
             final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
             result.put("distribute", countMap(distributeReportData));
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return result;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -304,10 +302,10 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/bystatus", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Long> getCurMonthDocStatusReport(Integer siteId) throws RemoteException, BizException {
-        Date startTime = new Date();
-        String logDesc = "本月新增文档状态统计";
-        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
-        try {
+        String logDesc = "本月新增文档状态统计" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
             String beginDay = DateUtil.curMonth();
             Map<String, Long> result = new HashMap<>();
             final Map<String, String> daibianReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daibian_doc_byday", "Site", beginDay, null);
@@ -318,15 +316,9 @@ public class DocReportController {
             result.put("daiqian", countMap(daiqianReportData));
             final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
             result.put("yifa", countMap(yifaReportData));
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
-
             return result;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     private <T extends DocMultiCounterResponse> Long countAll(List<T> counters) {

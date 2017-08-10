@@ -54,22 +54,16 @@ public class MonitorFrequencyController {
     @RequestMapping(value = "/checkfreq", method = RequestMethod.GET)
     @ResponseBody
     public List<MonitorFrequencyResponse> queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (siteId == null) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String logDesc = "查询当前站点的监测频率";
-        authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SEARCH, siteId);
-        try {
+        String logDesc = "查询当前站点的监测频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            if (siteId == null) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SEARCH, siteId);
             List<MonitorFrequencyResponse> frequencyResponseList = monitorFrequencyService.queryBySiteId(siteId);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, siteApiService.getSiteById(siteId, "").getSiteName());
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return frequencyResponseList;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -82,68 +76,67 @@ public class MonitorFrequencyController {
     @RequestMapping(value = "/monitorfrequency", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException, RemoteException {
+        String logDesc = "设置监测频率（含添加和修改）" + LogUtil.paramsToLogString("freqSetUp", freqSetUp);
         // TODO: 2017/8/9 REVIEW he.lang DO_he.lang 圈复杂度上升
-        MonitorFrequencyFreq[] freqs = freqSetUp.getFreqs();
-        if (freqSetUp.getSiteId() == null || freqs == null || freqs.length == 0) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        for (int i = 0; i < freqs.length; i++) {
-            if (freqs[i].getId() == null || freqs[i].getValue() == null) {
-                log.error("Invalid parameter: 参数freqs[]中id（类型编号）存在null值");
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            MonitorFrequencyFreq[] freqs = freqSetUp.getFreqs();
+            if (freqSetUp.getSiteId() == null || freqs == null || freqs.length == 0) {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
+            for (int i = 0; i < freqs.length; i++) {
+                if (freqs[i].getId() == null || freqs[i].getValue() == null) {
+                    log.error("Invalid parameter: 参数freqs[]中id（类型编号）存在null值");
+                    throw new BizException(Constants.INVALID_PARAMETER);
+                }
 
-            if (FrequencyType.valueOf(freqs[i].getId()) == null) {
-                log.error("Invalid parameter: 参数freqs[]中id（类型编号）无对应的频率设置类型");
+                if (FrequencyType.valueOf(freqs[i].getId()) == null) {
+                    log.error("Invalid parameter: 参数freqs[]中id（类型编号）无对应的频率设置类型");
+                    throw new BizException(Constants.INVALID_PARAMETER);
+                }
+            }
+            if (freqs.length < FrequencyType.values().length) {
+                log.error("Invalid parameter: 添加频率设置时，缺少某些频率类型的数据");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-        }
-        if (freqs.length < FrequencyType.values().length) {
-            log.error("Invalid parameter: 添加频率设置时，缺少某些频率类型的数据");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-
-//        ParamCheckUtil.checkFreqSetUp(freqSetUp);
-
-        String logDesc = "设置监测频率（含添加和修改）";
-        authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SAVE, freqSetUp.getSiteId());
-        int siteId = freqSetUp.getSiteId();
-        MonitorSite monitorSite;
-        try {
-            monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：查询siteId[" + siteId + "]是否是监测站点"), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
-        if (monitorSite == null) {
-            log.error("Invalid parameter: 当前站点" + siteId + "不是监测站点");
-            throw new BizException("请先进行监测站点模块相关设置");
-        }
-        List<MonitorFrequency> monitorFrequencyList;
-        try {
-            monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：查询siteId[" + siteId + "]是否已经设置监测频率"), LogUtil.getSiteNameForLog(siteApiService,
-                    siteId));
-            throw e;
-        }
-        if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
+            authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SAVE, freqSetUp.getSiteId());
+            int siteId = freqSetUp.getSiteId();
+            MonitorSite monitorSite;
             try {
-                monitorFrequencyService.addMonitorFrequencySetUp(freqSetUp);
-                LogUtil.addOperationLog(OperationType.ADD, "添加监测频率", LogUtil.getSiteNameForLog(siteApiService, siteId));
+                monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
             } catch (Exception e) {
-                LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("添加监测频率"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：查询siteId[" + siteId + "]是否是监测站点"), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw e;
             }
-        } else {//siteId和typeId同时存在，修改对应站点的监测频率记录
+            if (monitorSite == null) {
+                log.error("Invalid parameter: 当前站点" + siteId + "不是监测站点");
+                throw new BizException("请先进行监测站点模块相关设置");
+            }
+            List<MonitorFrequency> monitorFrequencyList;
             try {
-                monitorFrequencyService.updateMonitorFrequencySetUp(freqSetUp);
-                LogUtil.addOperationLog(OperationType.UPDATE, "修改监测频率", LogUtil.getSiteNameForLog(siteApiService, siteId));
+                monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
             } catch (Exception e) {
-                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("修改监测频率"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：查询siteId[" + siteId + "]是否已经设置监测频率"), LogUtil.getSiteNameForLog(siteApiService,
+                        siteId));
                 throw e;
             }
-        }
-        return null;
+            if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
+                try {
+                    monitorFrequencyService.addMonitorFrequencySetUp(freqSetUp);
+                    LogUtil.addOperationLog(OperationType.ADD, "添加监测频率", LogUtil.getSiteNameForLog(siteApiService, siteId));
+                } catch (Exception e) {
+                    LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("添加监测频率"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                    throw e;
+                }
+            } else {//siteId和typeId同时存在，修改对应站点的监测频率记录
+                try {
+                    monitorFrequencyService.updateMonitorFrequencySetUp(freqSetUp);
+                    LogUtil.addOperationLog(OperationType.UPDATE, "修改监测频率", LogUtil.getSiteNameForLog(siteApiService, siteId));
+                } catch (Exception e) {
+                    LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("修改监测频率"), LogUtil.getSiteNameForLog(siteApiService, siteId));
+                    throw e;
+                }
+            }
+            return null;
+        }, OperationType.ADD + "," + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, freqSetUp.getSiteId()));
     }
 }
