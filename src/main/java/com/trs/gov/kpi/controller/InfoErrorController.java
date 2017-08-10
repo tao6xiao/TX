@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 
 
@@ -49,9 +48,7 @@ public class InfoErrorController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOERROR_SEARCH, param.getSiteId());
-            List list = infoErrorService.getIssueCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return list;
+            return infoErrorService.getIssueCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -67,9 +64,7 @@ public class InfoErrorController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOERROR_SEARCH, param.getSiteId());
-            HistoryStatisticsRes historyStatisticsRes = infoErrorService.getIssueHistoryCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return historyStatisticsRes;
+            return infoErrorService.getIssueHistoryCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -86,9 +81,7 @@ public class InfoErrorController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOERROR_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = infoErrorService.getInfoErrorList(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
+            return infoErrorService.getInfoErrorList(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 

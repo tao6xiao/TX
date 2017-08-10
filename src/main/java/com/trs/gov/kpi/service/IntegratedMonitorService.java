@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
@@ -19,7 +20,7 @@ public interface IntegratedMonitorService {
 
     List<Statistics> getWarningCount(PageDataRequestParam param) throws RemoteException;
 
-    Double getPerformance(PageDataRequestParam param) throws ParseException, RemoteException;
+    Double getPerformance(PageDataRequestParam param) throws BizException, RemoteException;
 
     List<HistoryStatistics> getHistoryPerformance(PageDataRequestParam param) throws ParseException;
 }

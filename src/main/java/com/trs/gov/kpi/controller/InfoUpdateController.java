@@ -49,9 +49,7 @@ public class InfoUpdateController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-            List list = infoUpdateService.getIssueCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return list;
+            return infoUpdateService.getIssueCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -67,9 +65,7 @@ public class InfoUpdateController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-            HistoryStatisticsRes historyStatisticsRes = infoUpdateService.getIssueHistoryCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return historyStatisticsRes;
+            return infoUpdateService.getIssueHistoryCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -86,9 +82,7 @@ public class InfoUpdateController extends IssueHandler {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = infoUpdateService.get(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
+            return infoUpdateService.get(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -103,20 +97,12 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
     @ResponseBody
-    public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+    public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "获取栏目信息更新不及时的统计信息" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-            List<Statistics> list = null;
-            try {
-                list = infoUpdateService.getUpdateNotInTimeCountList(param);
-            } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return list;
+            return infoUpdateService.getUpdateNotInTimeCountList(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -138,9 +124,7 @@ public class InfoUpdateController extends IssueHandler {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, siteId);
-            MonthUpdateResponse response = infoUpdateService.getNotInTimeCountMonth(siteId);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            return response;
+            return infoUpdateService.getNotInTimeCountMonth(siteId);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 }

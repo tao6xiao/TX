@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,9 +40,6 @@ public class IssueCountController {
     @Resource
     private SiteApiService siteApiService;
 
-    @Resource
-    private UserApiService userApiService;
-
     private static final String REQUEST = "request";
 
     /**
@@ -60,9 +56,7 @@ public class IssueCountController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
-            List<Statistics> list = countService.countSort(request);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            return list;
+            return countService.countSort(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
@@ -92,9 +86,7 @@ public class IssueCountController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
-            HistoryStatisticsRes historyStatisticsRes = countService.historyCountSort(request);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            return historyStatisticsRes;
+            return countService.historyCountSort(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
@@ -111,9 +103,7 @@ public class IssueCountController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
-            List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            return deptCountResponses;
+            return countService.deptCountSort(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
@@ -133,9 +123,7 @@ public class IssueCountController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
             checkAuthority(request);
-            List<DeptCount> deptCountList = countService.getDeptCountByType(request);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            return deptCountList;
+            return countService.getDeptCountByType(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
@@ -153,9 +141,7 @@ public class IssueCountController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
-            DeptInductionResponse[] inductionResponseArray = countService.deptInductionSort(request);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            return inductionResponseArray;
+            return countService.deptInductionSort(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 

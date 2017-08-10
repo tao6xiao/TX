@@ -9,6 +9,7 @@ import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
@@ -276,7 +277,7 @@ public class IntegratedMonitorServiceImpl implements IntegratedMonitorService {
     }
 
     @Override
-    public Double getPerformance(PageDataRequestParam param) throws ParseException, RemoteException {
+    public Double getPerformance(PageDataRequestParam param) throws BizException, RemoteException {
         return performanceService.calPerformanceIndex(param.getSiteId());
     }
 

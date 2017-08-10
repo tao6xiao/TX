@@ -69,7 +69,6 @@ public class DutyDeptController {
         String logDesc = "修改栏目和部门的关系" + LogUtil.paramsToLogString("deptRequest", deptRequest);
         return LogUtil.ControlleFunctionWrapper(() -> {
             deptService.update(deptRequest);
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
     }
@@ -78,7 +77,6 @@ public class DutyDeptController {
         String logDesc = "添加栏目和部门的关系" + LogUtil.paramsToLogString("deptRequest", deptRequest);
         return LogUtil.ControlleFunctionWrapper(() -> {
             deptService.add(deptRequest);
-            LogUtil.addOperationLog(OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
             return null;
         }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
     }
@@ -96,14 +94,7 @@ public class DutyDeptController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, param.getSiteId());
-            try {
-                ApiPageData apiPageData = deptService.get(param);
-                LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-                return apiPageData;
-            } catch (Exception e) {
-                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-                throw e;
-            }
+            return deptService.get(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -127,9 +118,7 @@ public class DutyDeptController {
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DELDUTYDEPT, siteId);
             ParamCheckUtil.integerArrayParamCheck(chnlIds);
             deptService.delete(siteId, chnlIds);
-            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-
         }, OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 }

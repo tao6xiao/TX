@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.InfoUpdateOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -133,7 +134,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
      * @throws RemoteException
      */
     @Override
-    public List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException {
+    public List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws BizException, RemoteException {
         int count = 0;
         List<Statistics> statisticsList = new ArrayList<>();
 

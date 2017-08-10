@@ -43,13 +43,11 @@ public class DetectorController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             if (request.getCheckType() == null || request.getCheckType().length == 0) {
                 log.error("check type is empty!");
-                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check type is empty!", "");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
 
             if (StringUtil.isEmpty(request.getCheckContent())) {
                 log.error("check content is empty!");
-                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", check content is empty!", "");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
 
@@ -57,7 +55,6 @@ public class DetectorController {
             for (String type : request.getCheckType()) {
                 if (!checkTypeList.contains(type)) {
                     log.error("invalid check type: " + type);
-                    LogUtil.addWarnLog(OperationType.REQUEST, logDesc + ", invalid check type: " + type, "");
                     throw new BizException(Constants.INVALID_PARAMETER);
                 }
             }
@@ -65,10 +62,8 @@ public class DetectorController {
             final ContentCheckResult checkResult = contentCheckApiService.check(request.getCheckContent(), CollectionUtil.join(Arrays.asList(request.getCheckType()), ";"));
             if (!checkResult.isOk()) {
                 log.error("check return error: " + checkResult.getMessage() + ", content is " + request);
-                LogUtil.addWarnLog(OperationType.REQUEST, logDesc + "check return error: " + checkResult.getMessage() + ", content is " + request, "");
-                throw new RemoteException(checkResult.getMessage());
+                throw new RemoteException("文本校对错误：" + checkResult.getMessage());
             }
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, "");
             return JSON.parseObject(checkResult.getResult());
         }, OperationType.QUERY, logDesc, "");
     }

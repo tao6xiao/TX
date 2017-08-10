@@ -67,7 +67,6 @@ public class DocReportController {
     public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
         String logDesc = "本月新增文档分类型统计查询" + LogUtil.paramsToLogString(Collections.singletonMap("siteId", siteId));
         return LogUtil.ControlleFunctionWrapper(() -> {
-            LogUtil.PerformanceLogRecorder performanceLogRecorder = LogUtil.newPerformanceRecorder(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc));
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
             ReportApiService.ReportApiParam param = ReportApiService.ReportApiParamBuilder.newBuilder()
@@ -78,8 +77,6 @@ public class DocReportController {
 
             String reportData = reportApiService.getReport(param);
             if (StringUtil.isEmpty(reportData)) {
-                LogUtil.addOperationLog(OperationType.QUERY, logDesc, "");
-                performanceLogRecorder.record();
                 return new ArrayList<>();
             } else {
                 final ArrayList<DocTypeCounterResponse> responseList = new ArrayList<>();
@@ -88,8 +85,6 @@ public class DocReportController {
                     JSONObject data = objects.getJSONObject(index);
                     responseList.add(new DocTypeCounterResponse(data.getInteger("DocType"), data.getLong("Count")));
                 }
-                LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-                performanceLogRecorder.record();
                 return responseList;
             }
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
@@ -116,15 +111,8 @@ public class DocReportController {
             List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
             SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) -> counter.setDepartmentId(Long.valueOf(value));
             List<DepDocMultiCounterResponse> allReports = null;
-            try {
-                allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
-            } catch (InstantiationException | IllegalAccessException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            Map<String, Object> result = getResult(allReports);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            return result;
+            allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
+            return getResult(allReports);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
@@ -157,17 +145,9 @@ public class DocReportController {
             List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
             SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) -> counter.setSiteId(Long.valueOf(value));
             final List<SiteDocMultiCounterResponse> allReports;
-            try {
-                allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class,
+            allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class,
                         setSiteIdFunc);
-            } catch (InstantiationException | IllegalAccessException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            Map<String, Object> result = getResult(allReports);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            return result;
-
+            return getResult(allReports);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
@@ -193,16 +173,8 @@ public class DocReportController {
             List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports = getMultiReportList("user");
             SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) -> counter.setUserName(value);
             final List<UserDocMultiCounterResponse> allReports;
-            try {
-                allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
-            } catch (InstantiationException | IllegalAccessException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            Map<String, Object> result = getResult(allReports);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            return result;
-
+            allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
+            return getResult(allReports);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
@@ -237,7 +209,6 @@ public class DocReportController {
             String beginDay = DateUtil.toString(now.getTime());
             final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
             allMonthReport.putAll(reportData);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return allMonthReport;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -258,16 +229,13 @@ public class DocReportController {
         return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
             if (StringUtil.isEmpty(month)) {
-                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
             if (!DateUtil.isValidMonth(month)) {
-                LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
 
             Calendar nextMonthCalendar = Calendar.getInstance();// 当前起始日期
-
             String beginDay = month + "-01 00:00:00";
             try {
                 nextMonthCalendar.setTime(DateUtil.toDate(beginDay));
@@ -287,7 +255,6 @@ public class DocReportController {
             result.put("push", countMap(pushReportData));
             final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
             result.put("distribute", countMap(distributeReportData));
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return result;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -316,7 +283,6 @@ public class DocReportController {
             result.put("daiqian", countMap(daiqianReportData));
             final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
             result.put("yifa", countMap(yifaReportData));
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return result;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -359,7 +325,7 @@ public class DocReportController {
     private <T> List<T> getMultiCounterReport(
             List<Pair<String, SetFunc<T, String>>> reports,
             String dimensionFields, String beginDateTime, String endDateTime,
-            Class<T> counterClass, SetFunc<T, String> setIdFunc) throws RemoteException, InstantiationException, IllegalAccessException {
+            Class<T> counterClass, SetFunc<T, String> setIdFunc) throws RemoteException, BizException {
         Map<String, T> counterMap = new HashMap<>();
         for (Pair<String, SetFunc<T, String>> report : reports) {
             Map<String, String> reportData = getDocReport(report.getKey(), dimensionFields, beginDateTime, endDateTime);
@@ -397,7 +363,7 @@ public class DocReportController {
     }
 
     private <T> void setCounter(Map<String, T> counterMap, Map<String, String> newDocReport, Class<T> counterClass, SetFunc<T, String> setIdFunc, SetFunc<T, String> setCounterFunc) throws
-            IllegalAccessException, InstantiationException {
+            BizException {
         final Iterator<Map.Entry<String, String>> newDocIterator = newDocReport.entrySet().iterator();
         while (newDocIterator.hasNext()) {
             final Map.Entry<String, String> newDocEntry = newDocIterator.next();
@@ -405,7 +371,6 @@ public class DocReportController {
             T counter = counterMap.get(key);
             if (counter == null) {
                 counter = applicationContext.getBean(counterClass);
-//                counter = counterClass.newInstance();
                 setIdFunc.apply(counter, key);
                 counterMap.put(key, counter);
             }
