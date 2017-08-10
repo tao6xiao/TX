@@ -108,17 +108,6 @@ public class LogUtil {
      * @param desc
      * @param timeUsed
      */
-    public static void addElapseLog(String operationType, String desc, int timeUsed) {
-        SimpleLogServer.elapse(MODULE_NAME, new LogUser(), operationType, desc, timeUsed);
-    }
-
-    /**
-     * 添加性能日志
-     *
-     * @param operationType
-     * @param desc
-     * @param timeUsed
-     */
     public static void addElapseLog(String operationType, String desc, long timeUsed) {
         SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
     }

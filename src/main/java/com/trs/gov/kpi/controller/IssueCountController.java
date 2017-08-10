@@ -109,13 +109,10 @@ public class IssueCountController {
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         String logDesc = "问题统计中部门分类查询统计数量" + LogUtil.paramsToLogString(REQUEST, request);
         return LogUtil.ControlleFunctionWrapper(() -> {
-            Date startTime = new Date();
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
             List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc + "，相关站点:" + getSystemName(request), endTime.getTime() - startTime.getTime());
             return deptCountResponses;
         }, OperationType.QUERY, logDesc, getSystemName(request));
     }

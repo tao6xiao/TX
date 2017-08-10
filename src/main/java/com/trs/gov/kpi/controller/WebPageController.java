@@ -129,13 +129,10 @@ public class WebPageController {
     public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过大页面列表查询";
         try {
-            Date startTime = new Date();
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             ApiPageData apiPageData = webPageService.selectPageSpace(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
@@ -156,13 +153,10 @@ public class WebPageController {
     public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过深页面统计查询";
         try {
-            Date startTime = new Date();
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             int value = webPageService.selectPageDepthCount(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return value;
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
@@ -183,13 +177,10 @@ public class WebPageController {
     public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过深页面列表查询";
         try {
-            Date startTime = new Date();
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             ApiPageData apiPageData = webPageService.selectPageDepth(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
         } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
