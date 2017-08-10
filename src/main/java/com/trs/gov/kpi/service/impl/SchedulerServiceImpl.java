@@ -141,6 +141,9 @@ public class SchedulerServiceImpl implements SchedulerService {
             case CHECK_LINK://链接可用性检测
                 doCheckJobNow(siteId, EnumCheckJobType.CHECK_LINK);
                 break;
+            case SERVICE_LINK://链接可用性检测
+                doCheckJobNow(siteId, EnumCheckJobType.SERVICE_LINK);
+                break;
             default:
         }
     }

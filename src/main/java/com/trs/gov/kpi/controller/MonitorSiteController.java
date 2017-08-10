@@ -157,6 +157,9 @@ public class MonitorSiteController {
                 case (4):
                     checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
                     break;
+                case (8):
+                    checkJobType = EnumCheckJobType.SERVICE_LINK;
+                    break;
                 default:
             }
             schedulerService.doCheckJobOnce(siteId, checkJobType);
