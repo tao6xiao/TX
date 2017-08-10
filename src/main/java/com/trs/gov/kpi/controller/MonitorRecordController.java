@@ -52,8 +52,7 @@ public class MonitorRecordController {
             // TODO REVIEW LINWEI DO_li.hao 记得加日志成功和性能日志， 同时有一个 paramCheck 方法，为什么不用呢？ @see ParamCheckUtil#paramCheck
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITORRECORD_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
-            return apiPageData;
+            return monitorRecordService.selectMonitorRecordList(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
