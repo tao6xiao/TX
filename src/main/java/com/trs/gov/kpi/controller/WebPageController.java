@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * Created by ranwei on 2017/6/6.
@@ -46,21 +46,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/speed/count", method = RequestMethod.GET)
     public int selectReplySpeedCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "响应速度统计查询";
-        try {
-            Date startTime = new Date();
+        String logDesc = "响应速度统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
-            int value = webPageService.selectReplySpeedCount(param);
-            Date endTime = new Date();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-
+            return webPageService.selectReplySpeedCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -73,20 +64,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/speed", method = RequestMethod.GET)
     public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "响应速度列表查询";
-        try {
-            Date startTime = new Date();
+        String logDesc = "响应速度列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = webPageService.selectReplySpeed(param);
-            Date endTime = new Date();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+            return webPageService.selectReplySpeed(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
 
@@ -100,20 +83,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/size/count", method = RequestMethod.GET)
     public int selectPageSpaceCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "过大页面的统计查询";
-        try {
-            Date startTime = new Date();
+        String logDesc = "过大页面的统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
-            int value = webPageService.selectPageSpaceCount(param);
-            Date endTime = new Date();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+            return webPageService.selectPageSpaceCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
 
@@ -127,18 +102,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/size", method = RequestMethod.GET)
     public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "过大页面列表查询";
-        try {
+        String logDesc = "过大页面列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
-            ApiPageData apiPageData = webPageService.selectPageSpace(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-
+            return webPageService.selectPageSpace(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -151,17 +120,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/depth/count", method = RequestMethod.GET)
     public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "过深页面统计查询";
-        try {
+        String logDesc = "过深页面统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
-            int value = webPageService.selectPageDepthCount(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+            return webPageService.selectPageDepthCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
 
@@ -175,17 +139,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/depth", method = RequestMethod.GET)
     public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "过深页面列表查询";
-        try {
+        String logDesc = "过深页面列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
-            ApiPageData apiPageData = webPageService.selectPageDepth(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+            return webPageService.selectPageDepth(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
 
@@ -199,20 +158,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/code/count", method = RequestMethod.GET)
     public int selectRepeatCodeCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "冗余代码统计查询";
-        try {
-            Date startTime = new Date();
+        String logDesc = "冗余代码统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
-            int value = webPageService.selectRepeatCodeCount(param);
-            Date endTime = new Date();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+            return webPageService.selectRepeatCodeCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
 
@@ -226,21 +177,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/code", method = RequestMethod.GET)
     public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "冗余代码列表查询";
-        try {
-            Date startTime = new Date();
+        String logDesc = "冗余代码列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
-            ApiPageData apiPageData = webPageService.selectRepeatCode(param);
-            Date endTime = new Date();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-
+            return webPageService.selectRepeatCode(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -253,20 +195,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/length/count", method = RequestMethod.GET)
     public int selectUrlLengthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "过长URL页面统计查询";
-        try {
-            Date startTime = new Date();
+        String logDesc = "过长URL页面统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
-            int value = webPageService.selectUrlLengthCount(param);
-            Date endTime = new Date();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+            return webPageService.selectUrlLengthCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
 
@@ -280,20 +214,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/length", method = RequestMethod.GET)
     public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        String logDesc = "过长URL页面列表查询";
-        try {
-            Date startTime = new Date();
+        String logDesc = "过长URL页面列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
-            Date endTime = new Date();
-            ApiPageData apiPageData = webPageService.selectUrlLength(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
-            return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+            return webPageService.selectUrlLength(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
 
@@ -308,16 +234,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handlePageByIds(int siteId, Integer[] ids) throws BizException, RemoteException {
-        String logDesc = "处理访问优化问题";
-        try {
+        String logDesc = "处理访问优化问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_HANDLE, siteId);
             webPageService.handlePageByIds(siteId, Arrays.asList(ids));
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
 
     }
 
@@ -332,16 +254,12 @@ public class WebPageController {
      */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignorePageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        String logDesc = "忽略访问优化问题";
-        try {
+        String logDesc = "忽略访问优化问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_IGNORE, siteId);
             webPageService.ignorePageByIds(siteId, Arrays.asList(ids));
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
 
     }
 
@@ -356,15 +274,11 @@ public class WebPageController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delPageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
-        String logDesc = "删除访问优化问题";
-        try {
+        String logDesc = "删除访问优化问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_DELETE, siteId);
             webPageService.delPageByIds(siteId, Arrays.asList(ids));
-            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 }

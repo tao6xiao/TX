@@ -41,6 +41,8 @@ public class MonitorSiteController {
     @Resource
     SiteApiService siteApiService;
 
+    private static final String MONITOR_SITE_DEAL = "monitorSiteDeal";
+
     /**
      * 通过siteId查询监测站点的设置参数
      *
@@ -51,20 +53,16 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.GET)
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
-        if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId存在null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String logDesc = "查询监测站点设置信息";
-        authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SEARCH, siteId);
-        try {
+        String logDesc = "查询监测站点设置信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            if (siteId == null) {
+                log.error("Invalid parameter: 参数siteId存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SEARCH, siteId);
             MonitorSiteDeal monitorSiteDeal = monitorSiteService.getMonitorSiteDealBySiteId(siteId);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return monitorSiteDeal;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -77,8 +75,49 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException, RemoteException {
-        //TODO REVIEW RANWEI DO_he.lang 参数校验逻辑需要修改，缺少错误日志
-        // TODO: 2017/8/9  REVIEW DO_he.lang 圈复杂度上升
+        //TODO REVIEW RANWEI DONE_he.lang 参数校验逻辑需要修改，缺少错误日志
+        // TODO: 2017/8/9  REVIEW DONE_he.lang 圈复杂度上升
+        String logDesc = "设置监测站点设置信息（包括添加和修改）" + LogUtil.paramsToLogString(MONITOR_SITE_DEAL, monitorSiteDeal);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            checkMonitorDeal(monitorSiteDeal);
+            authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_UPDATEADMIN, monitorSiteDeal.getSiteId());
+            int siteId = monitorSiteDeal.getSiteId();
+            MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
+            if (monitorSite != null) {//检测站点表中存在siteId对应记录，将修改记录
+                update(monitorSiteDeal);
+                //TODO REVIEW RANWEI DO_he.lang controller层只进行权限校验和参数校验等，下面代码应当放入service层
+                if (monitorSite.getIndexUrl() != null && !monitorSite.getIndexUrl().trim().isEmpty()) {
+                    schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+                }
+                if (monitorSiteDeal.getIndexUrl() != null && !monitorSiteDeal.getIndexUrl().trim().isEmpty()) {
+                    schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+                }
+            } else {//检测站点表中不存在siteId对应记录，将插入记录
+                add(monitorSiteDeal);
+                // 触发监控
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+            }
+            return null;
+        }, OperationType.ADD + "," + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, monitorSiteDeal.getSiteId()));
+    }
+
+    private Integer add(MonitorSiteDeal monitorSiteDeal) throws RemoteException, BizException {
+        String logDesc = "添加监测站点设置信息" + LogUtil.paramsToLogString(MONITOR_SITE_DEAL, monitorSiteDeal);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            monitorSiteService.addMonitorSite(monitorSiteDeal);
+            return null;
+        }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, monitorSiteDeal.getSiteId()));
+    }
+
+    private Integer update(MonitorSiteDeal monitorSiteDeal) throws RemoteException, BizException {
+        String logDesc = "修改监测站点设置信息" + LogUtil.paramsToLogString(MONITOR_SITE_DEAL, monitorSiteDeal);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
+            return null;
+        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, monitorSiteDeal.getSiteId()));
+    }
+
+    private void checkMonitorDeal(MonitorSiteDeal monitorSiteDeal) throws BizException {
         if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getGuarderId() == null) {
             log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId、四个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -87,45 +126,6 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 当前站点没有首页");
             throw new BizException("当前站点没有首页，不能设置！");
         }
-        String logDesc = "设置监测站点设置信息（包括添加和修改）";
-        authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_UPDATEADMIN, monitorSiteDeal.getSiteId());
-        int siteId = monitorSiteDeal.getSiteId();
-        MonitorSite monitorSite;
-        try {
-            monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：查询当前站点site[" + siteId + "]是否已设置成为监测站点"), LogUtil.getSiteNameForLog(siteApiService,
-                    siteId));
-            throw e;
-        }
-        if (monitorSite != null) {//检测站点表中存在siteId对应记录，将修改记录
-            try {
-                monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
-                LogUtil.addOperationLog(OperationType.UPDATE, "修改监测站点设置信息", siteApiService.getSiteById(siteId, "").getSiteName());
-            } catch (Exception e) {
-                LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("修改监测站点设置信息"), LogUtil.getSiteNameForLog(siteApiService, siteId));
-                throw e;
-            }
-            //TODO REVIEW RANWEI DO_he.lang controller层只进行权限校验和参数校验等，下面代码应当放入service层
-            if (monitorSite.getIndexUrl() != null && !monitorSite.getIndexUrl().trim().isEmpty()) {
-                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-            }
-            if (monitorSiteDeal.getIndexUrl() != null && !monitorSiteDeal.getIndexUrl().trim().isEmpty()) {
-                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-            }
-        } else {//检测站点表中不存在siteId对应记录，将插入记录
-            try {
-                monitorSiteService.addMonitorSite(monitorSiteDeal);
-                LogUtil.addOperationLog(OperationType.ADD, "添加监测站点设置信息", LogUtil.getSiteNameForLog(siteApiService, siteId));
-            } catch (Exception e) {
-                LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("添加监测站点设置信息"), LogUtil.getSiteNameForLog(siteApiService, siteId));
-                throw e;
-            }
-
-            // 触发监控
-            schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-        }
-        return null;
     }
 
     /**
@@ -136,13 +136,14 @@ public class MonitorSiteController {
      */
     @RequestMapping(value = "/manual/check", method = RequestMethod.PUT)
     @ResponseBody
-    public void manualMonitoring(Integer siteId, Integer checkJobValue) throws BizException, RemoteException {
-        if (siteId == null && checkJobValue == null) {
-            log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
-        try {
+    public Object manualMonitoring(Integer siteId, Integer checkJobValue) throws BizException, RemoteException {
+        String logDesc = "网站手动监测" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "checkJobValue", checkJobValue);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            if (siteId == null && checkJobValue == null) {
+                log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+			authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
             EnumCheckJobType checkJobType = null;
             switch (checkJobValue) {
                 case (1):
@@ -163,11 +164,7 @@ public class MonitorSiteController {
                 default:
             }
             schedulerService.doCheckJobOnce(siteId, checkJobType);
-            LogUtil.addOperationLog(OperationType.TASK_SCHEDULE, "网站手动监测", LogUtil.getSiteNameForLog(siteApiService, siteId));
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.TASK_SCHEDULE, LogUtil.buildFailOperationLogDesc("网站手动监测"), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
-
+            return null;
+        }, OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 }

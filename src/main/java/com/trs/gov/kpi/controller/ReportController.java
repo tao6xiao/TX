@@ -56,19 +56,22 @@ public class ReportController {
      * @throws BizException
      */
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
-    public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
-        ParamCheckUtil.checkDayTime(param.getDay());
-        String logDesc = "按时间节点查询报表列表";
-        authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
-        try {
-            ApiPageData apiPageData = reportService.selectReportList(param, true);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+    public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, BizException {
+        String logDesc = "按时间节点查询报表列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+            ParamCheckUtil.checkDayTime(param.getDay());
+            authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
+            ApiPageData apiPageData = null;
+            try {
+                apiPageData = reportService.selectReportList(param, true);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+
     }
 
     /**
@@ -82,33 +85,34 @@ public class ReportController {
      * @throws RemoteException
      */
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
-    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException, FileNotFoundException {
+    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws BizException, RemoteException {
         // TODO: 2017/8/9 REVIEW he.lang DO_ran.wei FIXED 站点无需判断？
-        if (param.getId() == null || param.getSiteId() == null) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String logDesc = "按时间节点导出下载统计报表";
-        authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
-        String path;
-        try {
-            path = reportService.getReportPath(param, true);
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "：获取路径"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-        // TODO REVEIW DO_RAN.WEI FIXED  对于文件找不到的情况，抛出一个异常
-        if (StringUtil.isEmpty(path)) {
-            throw new FileNotFoundException("报表文件不存在");
-        }
-        try {
+        String logDesc = "按时间节点导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            if (param.getId() == null || param.getSiteId() == null) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
+            String path = null;
+            try {
+                path = reportService.getReportPath(param, true);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
+            // TODO REVEIW DO_RAN.WEI FIXED  对于文件找不到的情况，抛出一个异常
+            if (StringUtil.isEmpty(path)) {
+                try {
+                    throw new FileNotFoundException("报表文件不存在");
+                } catch (FileNotFoundException e) {
+                    log.error("", e);
+                    throw new BizException(e.getMessage());
+                }
+            }
             String[] str = path.split("/");
             download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-            LogUtil.addOperationLog(OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             return null;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.REQUEST, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.DOWNLOAD, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -121,20 +125,22 @@ public class ReportController {
      * @throws BizException
      */
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
-    public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
-        ParamCheckUtil.checkDayTime(param.getBeginDateTime());
-        ParamCheckUtil.checkDayTime(param.getEndDateTime());
-        String logDesc = "按时间区间查询报表列表";
-        authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
-        try {
-            ApiPageData apiPageData = reportService.selectReportList(param, false);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+    public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, BizException {
+        String logDesc = "按时间区间查询报表列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+            ParamCheckUtil.checkDayTime(param.getBeginDateTime());
+            ParamCheckUtil.checkDayTime(param.getEndDateTime());
+            authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
+            ApiPageData apiPageData = null;
+            try {
+                apiPageData = reportService.selectReportList(param, false);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -149,31 +155,27 @@ public class ReportController {
      */
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
     public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (param.getId() == null) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String logDesc = "按时间区间导出下载统计报表";
-        authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
-        String path;
-        try {
-            path = reportService.getReportPath(param, false);
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc + "获取路径"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-        if (StringUtil.isEmpty(path)) {
-            return null;
-        }
-        try {
+        String logDesc = "按时间区间导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            if (param.getId() == null) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
+            String path;
+            try {
+                path = reportService.getReportPath(param, false);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
+            if (StringUtil.isEmpty(path)) {
+                return null;
+            }
             String[] str = path.split("/");
 
             download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-            LogUtil.addOperationLog(OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             return null;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.REQUEST, LogUtil.buildFailOperationLogDesc(logDesc + "获取路径"), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.DOWNLOAD, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     private void download(HttpServletResponse response, String relativePath, String fileName) {

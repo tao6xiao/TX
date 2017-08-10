@@ -40,17 +40,12 @@ public class ServiceLinkController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getServiceLinkList(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
-        ParamCheckUtil.paramCheck(requestParam);
-        String logDesc = "查询服务链接未解决问题列表";
-        authorityService.checkRight(Authority.KPIWEB_SERVICE_SEARCH, requestParam.getSiteId());
-        try {
-            ApiPageData apiPageData = linkAvailabilityService.getServiceLinkList(requestParam);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
-            return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
-            throw e;
-        }
+        String logDesc = "查询服务链接未解决问题列表" + LogUtil.paramsToLogString("requestParam", requestParam);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(requestParam);
+            authorityService.checkRight(Authority.KPIWEB_SERVICE_SEARCH, requestParam.getSiteId());
+            return linkAvailabilityService.getServiceLinkList(requestParam);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
     }
 
 }
