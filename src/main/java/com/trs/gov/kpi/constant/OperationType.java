@@ -20,6 +20,8 @@ public class OperationType {
 
     public static final String TASK_SCHEDULE = "任务调度";
 
+    public static final String DOWNLOAD = "下载";
+
     private OperationType() {
     }
 }

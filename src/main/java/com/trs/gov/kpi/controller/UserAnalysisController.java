@@ -11,6 +11,7 @@ import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +26,7 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping(value = "/gov/kpi/analysis/user")
+@Slf4j
 public class UserAnalysisController {
 
     @Resource
@@ -35,6 +37,8 @@ public class UserAnalysisController {
 
     @Resource
     SiteApiService siteApiService;
+
+    private static final String BAS_REQUEST = "basRequest";
 
     /**
      * 访问量统计信息查询
@@ -47,17 +51,19 @@ public class UserAnalysisController {
      */
     @RequestMapping(value = "/access", method = RequestMethod.GET)
     public Integer getVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        check(basRequest);
-        String logDesc = "访问量统计信息查询";
-        authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
-        try {
-            Integer value = basService.getVisits(basRequest);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
+        String logDesc = "访问量统计信息查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            check(basRequest);
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
+            Integer value = null;
+            try {
+                value = basService.getVisits(basRequest);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     /**
@@ -71,17 +77,21 @@ public class UserAnalysisController {
      */
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
     public HistoryStatisticsRes getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        check(basRequest);
-        String logDesc = "访问量历史记录查询";
-        authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
-        try {
-            HistoryStatisticsRes historyStatisticsRes = basService.getHistoryVisits(basRequest);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
+        String logDesc = "访问量历史记录查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            check(basRequest);
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
+
+            HistoryStatisticsRes historyStatisticsRes = null;
+            try {
+                historyStatisticsRes = basService.getHistoryVisits(basRequest);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             return historyStatisticsRes;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            throw e;
-        }
+
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     /**
@@ -94,18 +104,12 @@ public class UserAnalysisController {
      */
     @RequestMapping(value = "/stay", method = RequestMethod.GET)
     public Integer getStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
-        check(basRequest);
-        String logDesc = "最近一个月次均停留时间查询";
-        authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
-        try {
-            Integer value = basService.getStayTime(basRequest);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            throw e;
-        }
-
+        String logDesc = "最近一个月次均停留时间查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            check(basRequest);
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
+            return basService.getStayTime(basRequest);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     /**
@@ -118,18 +122,20 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
-    public HistoryStatisticsRes getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public HistoryStatisticsRes getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
         String logDesc = "停留时间历史记录查询";
-        try {
+        return LogUtil.ControlleFunctionWrapper(() -> {
             check(basRequest);
             authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
-            HistoryStatisticsRes historyStatisticsRes = basService.getHistoryStayTime(basRequest);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
+            HistoryStatisticsRes historyStatisticsRes = null;
+            try {
+                historyStatisticsRes = basService.getHistoryStayTime(basRequest);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             return historyStatisticsRes;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     private void check(BasRequest basRequest) throws BizException {

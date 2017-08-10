@@ -1,7 +1,9 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.MonitorRecordService;
@@ -34,24 +36,20 @@ public class MonitorRecordController {
 
     /**
      * 查询日志监测（支持按照时间查询、任务名和任务状态模糊查询）
+     *
      * @param param
      * @return
      * @throws BizException
      */
     @RequestMapping(value = "/select", method = RequestMethod.GET)
-    public ApiPageData selectMonitorRecord(PageDataRequestParam param) throws BizException {
-
-        String logDesc = "查询日志监测记录";
-        // TODO REVIEW LINWEI DO_li.hao 记得加日志成功和性能日志， 同时有一个 paramCheck 方法，为什么不用呢？ @see ParamCheckUtil#paramCheck
-        try {
-            ParamCheckUtil.paramCheck(param);
-            ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return apiPageData;
-        }catch (Exception e){
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
+    public ApiPageData selectMonitorRecord(PageDataRequestParam param) throws BizException, RemoteException {
+        String logDesc = "查询日志监测记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            // TODO REVIEW LINWEI DO_li.hao 记得加日志成功和性能日志， 同时有一个 paramCheck 方法，为什么不用呢？ @see ParamCheckUtil#paramCheck
+                ParamCheckUtil.paramCheck(param);
+                ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
+                return apiPageData;
+            },OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
         }
-    }
 
-}
+    }
