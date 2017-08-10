@@ -54,7 +54,7 @@ public class MonitorSiteController {
     @ResponseBody
     public MonitorSiteDeal queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
         String logDesc = "查询监测站点设置信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null) {
                 log.error("Invalid parameter: 参数siteId存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -77,7 +77,7 @@ public class MonitorSiteController {
         //TODO REVIEW RANWEI DONE_he.lang 参数校验逻辑需要修改，缺少错误日志
         // TODO: 2017/8/9  REVIEW DONE_he.lang 圈复杂度上升
         String logDesc = "设置监测站点设置信息（包括添加和修改）" + LogUtil.paramsToLogString(MONITOR_SITE_DEAL, monitorSiteDeal);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             checkMonitorDeal(monitorSiteDeal);
             authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_UPDATEADMIN, monitorSiteDeal.getSiteId());
             int siteId = monitorSiteDeal.getSiteId();
@@ -102,7 +102,7 @@ public class MonitorSiteController {
 
     private Integer add(MonitorSiteDeal monitorSiteDeal) throws RemoteException, BizException {
         String logDesc = "添加监测站点设置信息" + LogUtil.paramsToLogString(MONITOR_SITE_DEAL, monitorSiteDeal);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             monitorSiteService.addMonitorSite(monitorSiteDeal);
             return null;
         }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, monitorSiteDeal.getSiteId()));
@@ -110,7 +110,7 @@ public class MonitorSiteController {
 
     private Integer update(MonitorSiteDeal monitorSiteDeal) throws RemoteException, BizException {
         String logDesc = "修改监测站点设置信息" + LogUtil.paramsToLogString(MONITOR_SITE_DEAL, monitorSiteDeal);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             monitorSiteService.updateMonitorSiteBySiteId(monitorSiteDeal);
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, monitorSiteDeal.getSiteId()));
@@ -137,7 +137,7 @@ public class MonitorSiteController {
     @ResponseBody
     public Object manualMonitoring(Integer siteId, Integer checkJobValue) throws BizException, RemoteException {
         String logDesc = "网站手动监测" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "checkJobValue", checkJobValue);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null && checkJobValue == null) {
                 log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);

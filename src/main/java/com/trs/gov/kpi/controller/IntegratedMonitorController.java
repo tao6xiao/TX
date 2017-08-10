@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,9 +47,9 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/index/now", method = RequestMethod.GET)
-    public Double getPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+    public Double getPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询当前的绩效指数得分" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITOR_SEARCH, param.getSiteId());
             return integratedMonitorService.getPerformance(param);
@@ -64,9 +63,9 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/index/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+    public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询绩效指数得分的历史记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITOR_SEARCH, param.getSiteId());
             List<HistoryStatistics> list = null;
@@ -90,7 +89,7 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/issue/all/count", method = RequestMethod.GET)
     public List<Statistics> getAllIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "首页查询所有问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITOR_SEARCH, param.getSiteId());
             List<Statistics> list = integratedMonitorService.getAllIssueCount(param);
@@ -108,7 +107,7 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/issue/unhandled/bytype/count", method = RequestMethod.GET)
     public List<Statistics> getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询各类问题的待解决问题数" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITOR_SEARCH, param.getSiteId());
             List<Statistics> list = integratedMonitorService.getUnhandledIssueCount(param);
@@ -126,7 +125,7 @@ public class IntegratedMonitorController {
     @RequestMapping(value = "/issue/warning/bytype/count")
     public List<Statistics> getWarningCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询各类预警的待解决数" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITOR_SEARCH, param.getSiteId());
             List<Statistics> list = integratedMonitorService.getWarningCount(param);

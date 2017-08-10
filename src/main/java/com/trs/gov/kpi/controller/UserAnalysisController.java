@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.Date;
 
 /**
  * Created by ranwei on 2017/6/13.
@@ -50,9 +49,9 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/access", method = RequestMethod.GET)
-    public Integer getVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public Integer getVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
         String logDesc = "访问量统计信息查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             check(basRequest);
             authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
             Integer value = null;
@@ -76,9 +75,9 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
-    public HistoryStatisticsRes getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
+    public HistoryStatisticsRes getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
         String logDesc = "访问量历史记录查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             check(basRequest);
             authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
 
@@ -105,7 +104,7 @@ public class UserAnalysisController {
     @RequestMapping(value = "/stay", method = RequestMethod.GET)
     public Integer getStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
         String logDesc = "最近一个月次均停留时间查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             check(basRequest);
             authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
             return basService.getStayTime(basRequest);
@@ -124,7 +123,7 @@ public class UserAnalysisController {
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
     public HistoryStatisticsRes getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
         String logDesc = "停留时间历史记录查询";
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             check(basRequest);
             authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
             HistoryStatisticsRes historyStatisticsRes = null;

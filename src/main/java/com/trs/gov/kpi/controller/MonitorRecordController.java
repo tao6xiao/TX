@@ -48,12 +48,11 @@ public class MonitorRecordController {
     @RequestMapping(value = "/select", method = RequestMethod.GET)
     public ApiPageData selectMonitorRecord(PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询日志监测记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             // TODO REVIEW LINWEI DO_li.hao 记得加日志成功和性能日志， 同时有一个 paramCheck 方法，为什么不用呢？ @see ParamCheckUtil#paramCheck
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_MONITORRECORD_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = monitorRecordService.selectMonitorRecordList(param);
-            return apiPageData;
+            return monitorRecordService.selectMonitorRecordList(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 

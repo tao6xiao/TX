@@ -58,7 +58,7 @@ public class ReportController {
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
     public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, BizException {
         String logDesc = "按时间节点查询报表列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
             ParamCheckUtil.checkDayTime(param.getDay());
             authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
@@ -88,7 +88,7 @@ public class ReportController {
     public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws BizException, RemoteException {
         // TODO: 2017/8/9 REVIEW he.lang DO_ran.wei FIXED 站点无需判断？
         String logDesc = "按时间节点导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (param.getId() == null || param.getSiteId() == null) {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
@@ -127,7 +127,7 @@ public class ReportController {
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
     public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, BizException {
         String logDesc = "按时间区间查询报表列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
             ParamCheckUtil.checkDayTime(param.getBeginDateTime());
             ParamCheckUtil.checkDayTime(param.getEndDateTime());
@@ -154,9 +154,9 @@ public class ReportController {
      * @throws RemoteException
      */
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
-    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
+    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws BizException, RemoteException {
         String logDesc = "按时间区间导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (param.getId() == null) {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }

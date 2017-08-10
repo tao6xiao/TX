@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 
 /**
  * 栏目更新频率Controller
@@ -60,7 +59,7 @@ public class FrequencySetupController {
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@ModelAttribute FrequencySetupSelectRequest selectRequest) throws BizException, RemoteException {
         String logDesc = "查询当前站点频率设置" + LogUtil.paramsToLogString("selectRequest", selectRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (selectRequest.getSiteId() == null) {
                 log.error("Invalid parameter: 参数siteId存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -81,9 +80,9 @@ public class FrequencySetupController {
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.POST)
     @ResponseBody
-    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, ParseException, RemoteException {
+    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, RemoteException {
         String logDesc = "添加更新频率（添加和修改）" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             checkSetupParam(frequencySetupSetRequest);
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL, frequencySetupSetRequest.getSiteId());
             int siteId = frequencySetupSetRequest.getSiteId();
@@ -97,7 +96,7 @@ public class FrequencySetupController {
         }, OperationType.ADD + "," + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
     }
 
-    private void addOrUpdateFrequency(FrequencySetupSetRequest frequencySetupSetRequest) throws BizException {
+    private void addOrUpdateFrequency(FrequencySetupSetRequest frequencySetupSetRequest) {
         Integer[] chnlIds = frequencySetupSetRequest.getChnlIds();
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(frequencySetupSetRequest.getSiteId(), chnlIds[i]);
@@ -140,7 +139,7 @@ public class FrequencySetupController {
     @ResponseBody
     public Object pdateFrequencySetup(@ModelAttribute FrequencySetupUpdateRequest frequencySetupUpdateRequest) throws BizException, RemoteException {
         String logDesc = "直接修改更新频率" + LogUtil.paramsToLogString("frequencySetupUpdateRequest", frequencySetupUpdateRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (frequencySetupUpdateRequest.getSiteId() == null || frequencySetupUpdateRequest.getId() == null || frequencySetupUpdateRequest.getPresetFeqId() == null ||
                     frequencySetupUpdateRequest.getChnlId() == null) {
                 log.error("Invalid parameter:  参数FrequencySetupSetRequest对象中siteId、presetFeqId、chilIds[]三个属性中至少有一个存在null值");
@@ -165,7 +164,7 @@ public class FrequencySetupController {
     @ResponseBody
     public Object deleteFrequencySetupBySiteIdAndId(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids) throws BizException, RemoteException {
         String logDesc = "删除更新频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null || ids == null) {
                 log.error("Invalid parameter: 参数siteId或者数组ids（设置的更新频率记录对应id数组）存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -198,7 +197,7 @@ public class FrequencySetupController {
     @ResponseBody
     public Object closeOrOpen(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids, @RequestParam("isOpen") Integer isOpen) throws BizException, RemoteException {
         String logDesc = "打开/关闭更新频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             checkCloseOrOpenParam(siteId, ids, isOpen);
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL, siteId);
             if (isOpen == Status.Open.OPEN.value) {
@@ -215,7 +214,7 @@ public class FrequencySetupController {
 
     private Integer open(Integer siteId, Integer[] ids, Integer isOpen) throws RemoteException, BizException {
         String logDesc = "打开更新频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             frequencySetupService.closeOrOpen(siteId, ids, isOpen);
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
@@ -223,7 +222,7 @@ public class FrequencySetupController {
 
     private Integer close(Integer siteId, Integer[] ids, Integer isOpen) throws RemoteException, BizException {
         String logDesc = "关闭更新频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             frequencySetupService.closeOrOpen(siteId, ids, isOpen);
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));

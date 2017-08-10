@@ -5,7 +5,6 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.RemoteAddrUtil;
-import com.trs.idm.client.actor.ActorException;
 import com.trs.idm.client.actor.SSOUser;
 import com.trs.idm.client.actor.StdHttpSessionBasedActor;
 import org.apache.log4j.Logger;
@@ -31,7 +30,7 @@ public class IDSActor extends StdHttpSessionBasedActor{
 
      * @see StdHttpSessionBasedActor#checkLocalLogin(javax.servlet.http.HttpSession)
      */
-    public boolean checkLocalLogin(HttpSession session) throws ActorException {
+    public boolean checkLocalLogin(HttpSession session) {
         try {
             return session.getAttribute(LOGIN_FLAG) != null;
         } catch (IllegalStateException e) {
@@ -46,7 +45,7 @@ public class IDSActor extends StdHttpSessionBasedActor{
      * @see StdHttpSessionBasedActor#loadLoginUser(javax.servlet.http.HttpServletRequest,
      *      com.trs.idm.client.actor.SSOUser)
      */
-    public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) throws ActorException {
+    public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) {
         HttpSession session = request.getSession();
         loginUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
 
@@ -62,7 +61,7 @@ public class IDSActor extends StdHttpSessionBasedActor{
      *
      * @see StdHttpSessionBasedActor#logout(javax.servlet.http.HttpSession)
      */
-    public void logout(HttpSession session) throws ActorException {
+    public void logout(HttpSession session) {
         try {
             session.invalidate();
         } catch (IllegalStateException e) {
@@ -71,42 +70,42 @@ public class IDSActor extends StdHttpSessionBasedActor{
     }
 
     @Override
-    public boolean userExist(SSOUser ssoUser) throws ActorException {
+    public boolean userExist(SSOUser ssoUser) {
         return false;
     }
 
     @Override
-    public boolean removeUser(SSOUser ssoUser, HttpServletRequest httpServletRequest) throws ActorException {
+    public boolean removeUser(SSOUser ssoUser, HttpServletRequest httpServletRequest) {
         return false;
     }
 
     @Override
-    public boolean updateUser(SSOUser ssoUser, HttpServletRequest httpServletRequest) throws ActorException {
+    public boolean updateUser(SSOUser ssoUser, HttpServletRequest httpServletRequest) {
         return false;
     }
 
     @Override
-    public boolean addUser(SSOUser ssoUser, HttpServletRequest httpServletRequest) throws ActorException {
+    public boolean addUser(SSOUser ssoUser, HttpServletRequest httpServletRequest) {
         return false;
     }
 
     @Override
-    public boolean enableUser(SSOUser ssoUser) throws ActorException {
+    public boolean enableUser(SSOUser ssoUser) {
         return false;
     }
 
     @Override
-    public boolean disableUser(SSOUser ssoUser) throws ActorException {
+    public boolean disableUser(SSOUser ssoUser) {
         return false;
     }
 
     @Override
-    public String extractUserPwd(HttpServletRequest httpServletRequest) throws ActorException {
+    public String extractUserPwd(HttpServletRequest httpServletRequest) {
         return null;
     }
 
     @Override
-    public String extractUserName(HttpServletRequest httpServletRequest) throws ActorException {
+    public String extractUserName(HttpServletRequest httpServletRequest) {
         return null;
     }
 

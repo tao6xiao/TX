@@ -15,7 +15,6 @@ import com.trs.gov.kpi.utils.ParamCheckUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 
 /**
  * 综合监测：已解决Controller，主要是查询
@@ -45,7 +44,7 @@ public class IntegratedMonitorIsResolvedController {
     @ResponseBody
     public ApiPageData getPageDataIsResolved(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "获取已解决的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
             return integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
@@ -63,7 +62,7 @@ public class IntegratedMonitorIsResolvedController {
     @ResponseBody
     public ApiPageData getPageDataIsIgnored(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "获取已忽略的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
             ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);

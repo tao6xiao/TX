@@ -12,7 +12,6 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.service.outer.UserApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
@@ -53,7 +52,7 @@ public class IssueCountController {
     @ResponseBody
     public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         String logDesc = "问题统计中分类查询问题数量统计" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
             return countService.countSort(request);
@@ -83,7 +82,7 @@ public class IssueCountController {
     @ResponseBody
     public HistoryStatisticsRes historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         String logDesc = "问题统计中分类查询统计历史数量" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
             return countService.historyCountSort(request);
@@ -100,7 +99,7 @@ public class IssueCountController {
     @ResponseBody
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         String logDesc = "问题统计中部门分类查询统计数量" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
             return countService.deptCountSort(request);
@@ -117,7 +116,7 @@ public class IssueCountController {
     @ResponseBody
     public List<DeptCount> getDeptIssueCountByType(@ModelAttribute IssueCountByTypeRequest request) throws BizException, RemoteException {
         String logDesc = "问题统计中根据问题类型部门分类查询统计数量" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             if (request.getTypeId() > 5 || request.getTypeId() < 1) {
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -138,7 +137,7 @@ public class IssueCountController {
     @ResponseBody
     public DeptInductionResponse[] deptInductionSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         String logDesc = "问题统计中部门分类归纳统计数量查询" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
             return countService.deptInductionSort(request);

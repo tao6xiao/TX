@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * Created by ranwei on 2017/6/7.
@@ -57,7 +56,7 @@ public class WorkOrderController {
     @RequestMapping(value = "/channel/update", method = RequestMethod.GET)
     public ApiPageData selectInfoUpdateOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         String logDesc = "查询更新监测数据列表（为工单模块提供）" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoUpdateService.selectInfoUpdateOrder(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
@@ -88,7 +87,7 @@ public class WorkOrderController {
     @RequestMapping(value = "/channel/update/single", method = RequestMethod.GET)
     public InfoUpdateOrderRes getInfoUpdateOrderById(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         String logDesc = "查询单条更新频率问题（为工单模块提供）" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoUpdateService.getInfoUpdateOrderById(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
@@ -106,7 +105,7 @@ public class WorkOrderController {
     @RequestMapping(value = "/document/error", method = RequestMethod.GET)
     public ApiPageData selectInfoErrorOrder(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         String logDesc = "查询敏感信息监测数据列表（为工单模块提供）" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoErrorService.selectInfoErrorOrder(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
@@ -124,7 +123,7 @@ public class WorkOrderController {
     @RequestMapping(value = "/document/error/single", method = RequestMethod.GET)
     public InfoErrorOrderRes getInfoErrorOrderById(@ModelAttribute WorkOrderRequest request) throws BizException, RemoteException {
         String logDesc = "查询单条敏感信息监测问题（为工单模块提供）" + LogUtil.paramsToLogString(REQUEST, request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoErrorService.getInfoErrorOrderById(request);
         }, OperationType.QUERY, logDesc, getSystemName(request));
@@ -141,7 +140,7 @@ public class WorkOrderController {
     @RequestMapping(value = "/workorder", method = RequestMethod.POST)
     public String updateOrderByIds(Integer workOrderStatus, Integer[] ids) throws BizException, RemoteException {
         String logDesc = "修改问题工单处理状态（为工单模块提供）" + LogUtil.paramsToLogString("workOrderStatus", workOrderStatus, Constants.IDS, ids);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (workOrderStatus == null) {
                 throw new BizException("参数不合法！");
             }

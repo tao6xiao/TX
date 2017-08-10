@@ -6,7 +6,6 @@ import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.Date;
 
 /**

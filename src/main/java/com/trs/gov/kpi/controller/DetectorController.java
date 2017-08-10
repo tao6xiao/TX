@@ -40,7 +40,7 @@ public class DetectorController {
     @ResponseBody
     public Object checkText(@RequestBody CheckTextRequest request) throws BizException, RemoteException {
         String logDesc = "执行ckm校对";
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (request.getCheckType() == null || request.getCheckType().length == 0) {
                 log.error("check type is empty!");
                 throw new BizException(Constants.INVALID_PARAMETER);

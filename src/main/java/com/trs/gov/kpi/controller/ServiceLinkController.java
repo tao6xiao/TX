@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Date;
 
 /**
  * 服务实用中服务链接Controller
@@ -42,7 +41,7 @@ public class ServiceLinkController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getServiceLinkList(@ModelAttribute PageDataRequestParam requestParam) throws BizException, RemoteException {
         String logDesc = "查询服务链接未解决问题列表" + LogUtil.paramsToLogString("requestParam", requestParam);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(requestParam);
             authorityService.checkRight(Authority.KPIWEB_SERVICE_SEARCH, requestParam.getSiteId());
             return linkAvailabilityService.getServiceLinkList(requestParam);
