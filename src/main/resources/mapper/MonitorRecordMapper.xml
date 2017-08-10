@@ -12,24 +12,18 @@
     </resultMap>
 
 
-    <select id="getMonitorBeginTime" resultType="Date">
-        SELECT max(beginTime)
-        FROM monitorrecord
-        WHERE siteId = #{siteId}
-        AND taskId = #{taskId}
-    </select>
-
-    <select id="getMonitorEndTime" resultType="Date">
-        SELECT max(endTime)
-        FROM monitorrecord
-        WHERE siteId = #{siteId}
-        AND taskId = #{taskId}
-    </select>
-
-    <select id="selectMonitorRecordCount" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="int">
+    <select id="getResuleByLastEndTime" parameterType="java.util.Date" resultType="int">
         SELECT
-        count(1)
-        FROM monitorrecord WHERE 1=1
+        result
+        FROM monitorrecord
+        WHERE endTime = #{endTime}
+    </select>
+
+    <select id="getLastMonitorEndTime" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="Date">
+        SELECT
+        max(endTime)
+        FROM monitorrecord
+        WHERE  1 = 1
         <include refid="all_conditions_sql"/>
     </select>
 

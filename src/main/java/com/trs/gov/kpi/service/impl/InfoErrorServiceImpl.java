@@ -96,7 +96,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new HistoryStatisticsRes(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value), list);
+        return new HistoryStatisticsRes(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value), list);
     }
 
     @Override

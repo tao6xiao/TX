@@ -72,15 +72,6 @@ public class LinkAnalysisScheduler implements SchedulerTask{
         log.info(SchedulerType.startScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
 
-        //监测开始(添加基本信息)
-        Date startTime = new Date();
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTaskId(EnumCheckJobType.CHECK_LINK.value);
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
-
         try {
 
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -94,6 +85,15 @@ public class LinkAnalysisScheduler implements SchedulerTask{
                 log.warn("site[" + siteId + "]'s web http is empty!");
                 return;
             }
+
+            //监测开始(添加基本信息)
+            Date startTime = new Date();
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_LINK.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
 
             spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
 

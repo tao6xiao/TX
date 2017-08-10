@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.MonitorRecord;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
@@ -18,16 +19,8 @@ public interface MonitorRecordService {
      */
     void insertMonitorRecord(MonitorRecord monitorRecord);
 
-    /**
-     * 查询最近的监测任务的开始时间
-     *
-     * @param siteId
-     * @param taskId
-     * @return
-     */
-    // TODO REVIEW LINWEI DO_li.hao 函数名称体现不出来是最近一次检测任务，容易产生误解
-    Date getMonitorStartTime(Integer siteId, Integer taskId);
 
+    // TODO REVIEW LINWEI DO_li.hao FIXED 函数名称体现不出来是最近一次检测任务，容易产生误解
     /**
      * 查询最近的监测任务的结束时间
      *
@@ -35,12 +28,12 @@ public interface MonitorRecordService {
      * @param taskId
      * @return
      */
-    Date getMonitorEndTime(Integer siteId, Integer taskId);
+    Date getLastMonitorEndTime(Integer siteId, Integer taskId);
 
     /**
      * 查询日志监测列表
      * @param param
      * @return
      */
-    ApiPageData selectMonitorRecordList(PageDataRequestParam param);
+    ApiPageData selectMonitorRecordList(PageDataRequestParam param) throws BizException;
 }

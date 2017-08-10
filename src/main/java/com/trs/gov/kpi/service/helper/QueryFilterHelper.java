@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.*;
 import com.trs.gov.kpi.service.outer.DeptApiService;
@@ -14,6 +15,7 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.SpringContextUtil;
 import com.trs.gov.kpi.utils.StringUtil;
+import lombok.extern.log4j.Log4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +27,7 @@ import java.util.List;
 /**
  * Created by linwei on 2017/5/22.
  */
+@Log4j
 public class QueryFilterHelper {
 
     public static final String FREQ_SETUP_TABLE_FIELD_CHNL_ID = "chnlId";
@@ -443,31 +446,24 @@ public class QueryFilterHelper {
      * @return
      * @throws RemoteException
      */
-    public static QueryFilter toMonitorRecordFilter(PageDataRequestParam param) {
+    public static QueryFilter toMonitorRecordFilter(PageDataRequestParam param) throws BizException {
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, param.getSiteId());
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskName")) {
-                // TODO REVIEW LINWEI DO_li.hao values要避免未知类型，同时获取id的集合，应该在Types.MonitorRecordNameType里面提供方法来做
-                Types.MonitorRecordNameType[] values = Types.MonitorRecordNameType.values();
-                for (Types.MonitorRecordNameType type : values) {
-                    if (type.getName().contains(param.getSearchText())) {
-                        int taskId = type.value;
-                        filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
-                    }
-                }
+                // TODO REVIEW LINWEI DO_li.hao FIXED values要避免未知类型，同时获取id的集合，应该在Types.MonitorRecordNameType里面提供方法来做
+                List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(param.getSearchText());
+                filter.addCond(MonitorRecordTableField.TASK_ID, taskIds);
             }else if(param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskStatusName")){
-                // TODO REVIEW LINWEI 同上
-                Status.MonitorStatusType[] values = Status.MonitorStatusType.values();
-                for (Status.MonitorStatusType type : values) {
-                    if (type.getName().contains(param.getSearchText())) {
-                        int taskStatus = type.value;
-                        filter.addCond(MonitorRecordTableField.TASK_STATUS, taskStatus);
-                    }
-                }
+                // TODO REVIEW LINWEI DO_li.hao FIXED 同上
+                List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(param.getSearchText());
+                filter.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
+            }else{
+                log.error("Invalid parameter: 检索类型错误，目前支持（任务名称（taskName），任务状态名称（taskStatusName）");
+                throw new BizException(Constants.INVALID_PARAMETER);
             }
-            // TODO REVIEW LINWEI DO_li.hao 还有两种情况：searchField为空的情况；不为空，但是参数错误（不做处理）
+            // TODO REVIEW LINWEI DO_li.hao FIXED 还有两种情况：searchField为空的情况(不做处理）；不为空，但是参数错误
         }
 
         // sort field

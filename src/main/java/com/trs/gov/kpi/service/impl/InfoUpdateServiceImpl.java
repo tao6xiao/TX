@@ -121,7 +121,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             list.add(historyStatistics);
         }
         // TODO REVIEW LINWEI 搞不懂为什么要用检测任务的时间来构造History？
-        return new HistoryStatisticsRes(monitorRecordService.getMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value), list);
+        return new HistoryStatisticsRes(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value), list);
     }
 
     /**

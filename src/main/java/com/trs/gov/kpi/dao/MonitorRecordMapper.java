@@ -3,7 +3,6 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -15,29 +14,27 @@ import java.util.List;
 public interface MonitorRecordMapper {
 
     /**
-     * 查询最近的监测任务的开始时间
+     * 根据最后一次监测完成时间获取首页可用性的状态
      *
-     * @param siteId
-     * @param taskId
+     * @param endTime
      * @return
      */
-    Date getMonitorBeginTime(@Param("siteId") Integer siteId, @Param("taskId") Integer taskId);
+    int getResuleByLastEndTime(Date endTime);
 
     /**
      * 查询最近的监测任务的结束时间
      *
-     * @param siteId
-     * @param taskId
+     * @param filter
      * @return
      */
-    Date getMonitorEndTime(@Param("siteId") Integer siteId, @Param("taskId") Integer taskId);
+    Date getLastMonitorEndTime(QueryFilter filter);
 
     /**
      * 根据filter中的条件查询数据数量
      * @param filter
      * @return
      */
-    // TODO REVIEW LINWEI DO_li.hao 在CommonMap里面弄一个通用的Count方法
+    // TODO REVIEW LINWEI DO_li.hao FIXED 在CommonMap里面弄一个通用的Count方法
     int selectMonitorRecordCount(QueryFilter filter);
 
     /**
