@@ -154,7 +154,7 @@ public class ReportController {
      * @throws RemoteException
      */
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
-    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
+    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws BizException, RemoteException {
         String logDesc = "按时间区间导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             if (param.getId() == null) {

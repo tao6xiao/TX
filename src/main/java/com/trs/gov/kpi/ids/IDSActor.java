@@ -5,7 +5,6 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.RemoteAddrUtil;
-import com.trs.idm.client.actor.ActorException;
 import com.trs.idm.client.actor.SSOUser;
 import com.trs.idm.client.actor.StdHttpSessionBasedActor;
 import org.apache.log4j.Logger;
