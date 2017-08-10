@@ -45,7 +45,7 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息更新已解决、预警和更新不及时的数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
             return infoUpdateService.getIssueCount(param);
@@ -61,7 +61,7 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public HistoryStatisticsRes getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息更新历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
             return infoUpdateService.getIssueHistoryCount(param);
@@ -78,7 +78,7 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息更新待解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
             return infoUpdateService.get(param);
@@ -98,7 +98,7 @@ public class InfoUpdateController extends IssueHandler {
     @ResponseBody
     public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "获取栏目信息更新不及时的统计信息" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
             return infoUpdateService.getUpdateNotInTimeCountList(param);
@@ -117,7 +117,7 @@ public class InfoUpdateController extends IssueHandler {
     @ResponseBody
     public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, RemoteException {
         String logDesc = "获取更新不及时栏目的更新不及时总月数以及空栏目" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null) {
                 log.error("Invalid parameter: 参数siteId为null值");
                 throw new BizException(Constants.INVALID_PARAMETER);

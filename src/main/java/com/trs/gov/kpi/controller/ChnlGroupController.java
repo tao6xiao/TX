@@ -49,7 +49,7 @@ public class ChnlGroupController {
     @ResponseBody
     public ChnlGroupsResponse[] getChnlGroups(@RequestParam("siteId") Integer siteId) throws RemoteException, BizException {
         String logDesc = "查询栏目分类" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
             return chnlGroupService.getChnlGroupsResponseDetailArray();
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
@@ -70,7 +70,7 @@ public class ChnlGroupController {
     public ApiPageData getPageDataBySiteIdAndGroupId(@RequestParam("siteId") Integer siteId, @RequestParam Integer groupId, Integer pageSize, Integer pageIndex) throws BizException,
             RemoteException {
         String logDesc = "查询站点和根栏目分类下的数据" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null || groupId == null) {
                 log.error("Invalid parameter:  参数siteId、groupId（分类编号）至少有一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -96,7 +96,7 @@ public class ChnlGroupController {
     @ResponseBody
     public Object addChnlGroupChnls(@RequestBody ChnlGroupChnlsAddRequest chnlGroupChnlsAddRequest) throws BizException, RemoteException {
         String logDesc = "在当前站点和根栏目下添加栏目" + LogUtil.paramsToLogString("chnlGroupChnlsAddRequest", chnlGroupChnlsAddRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (chnlGroupChnlsAddRequest.getSiteId() == null || chnlGroupChnlsAddRequest.getGroupId() == null || chnlGroupChnlsAddRequest.getChnlIds() == null ||
                     chnlGroupChnlsAddRequest.getChnlIds().length == 0) {
 
@@ -121,7 +121,7 @@ public class ChnlGroupController {
     @ResponseBody
     public Object updateChnlGroupChnls(@ModelAttribute ChnlGroupChannelRequest chnlGroupChnlRequestDetail) throws BizException, RemoteException {
         String logDesc = "在当前站点和根栏目下修改栏目" + LogUtil.paramsToLogString("chnlGroupChnlRequestDetail", chnlGroupChnlRequestDetail);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (chnlGroupChnlRequestDetail.getSiteId() == null || chnlGroupChnlRequestDetail.getGroupId() == null || chnlGroupChnlRequestDetail.getId() == null ||
                     chnlGroupChnlRequestDetail
                             .getChnlId() == null) {
@@ -147,7 +147,7 @@ public class ChnlGroupController {
     @ResponseBody
     public Object deleteChnlGroupChnl(@RequestParam Integer siteId, @RequestParam Integer id) throws BizException, RemoteException {
         String logDesc = "删除对应站点和id的栏目记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.DB_FIELD_ID, id);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null || id == null) {
                 log.error("Invalid parameter:  参数siteId、id（当前栏目设置对象编号）中至少有一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);

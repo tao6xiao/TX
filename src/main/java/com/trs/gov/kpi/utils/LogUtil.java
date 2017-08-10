@@ -180,7 +180,7 @@ public class LogUtil {
     /**
      * Controller的操作封装函数，对于异常处理情况记录，操作失败日志
      */
-    public static <R> R ControlleFunctionWrapper(ControllorFunction<R> func, String type, String desc, String systemName) throws RemoteException, BizException {
+    public static <R> R controlleFunctionWrapper(ControllorFunction<R> func, String type, String desc, String systemName) throws RemoteException, BizException {
         try {
             R r = func.apply();
             LogUtil.addOperationLog(type, desc, systemName);

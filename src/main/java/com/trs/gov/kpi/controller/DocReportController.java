@@ -68,7 +68,7 @@ public class DocReportController {
     @ResponseBody
     public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
         String logDesc = "本月新增文档分类型统计查询" + LogUtil.paramsToLogString(Collections.singletonMap("siteId", siteId));
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
             ReportApiService.ReportApiParam param = ReportApiService.ReportApiParamBuilder.newBuilder()
@@ -108,7 +108,7 @@ public class DocReportController {
     public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException,
             BizException {
         String logDesc = "查询按部门统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
             List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
             SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) -> counter.setDepartmentId(Long.valueOf(value));
@@ -140,7 +140,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, BizException {
         String logDesc = "查询按站点统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
             List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
@@ -167,7 +167,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, BizException {
         String logDesc = "查询按个人统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
             List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports = getMultiReportList("user");
@@ -189,7 +189,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, String> getCurMonthCounterByDay(Integer siteId) throws RemoteException, BizException {
         String logDesc = "查询本月每天发稿量统计信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
             Calendar now = Calendar.getInstance();// 当前起始日期
@@ -226,7 +226,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, BizException {
         String logDesc = "原稿，已发，上报，下达历史数据量统计查询" + LogUtil.paramsToLogString("siteId", siteId, "month", month);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
             if (StringUtil.isEmpty(month)) {
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -270,7 +270,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Long> getCurMonthDocStatusReport(Integer siteId) throws RemoteException, BizException {
         String logDesc = "本月新增文档状态统计" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
             String beginDay = DateUtil.curMonth();

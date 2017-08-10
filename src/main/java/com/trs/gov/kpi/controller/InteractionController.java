@@ -49,7 +49,7 @@ public class InteractionController {
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
     public NBHDStatisticsRes getGovMsgBoxesCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         String logDesc = "查询问政互动的信件列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
             return interactionService.getGovMsgBoxesCount(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
@@ -65,7 +65,7 @@ public class InteractionController {
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public HistoryStatisticsRes getGovMsgHistoryCount(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         String logDesc = "查询问政互动的数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
             List<HistoryStatistics> historyStatisticsList = interactionService.getGovMsgHistoryCount(param);
             return new HistoryStatisticsRes(new Date(), historyStatisticsList);
@@ -82,7 +82,7 @@ public class InteractionController {
     @RequestMapping(value = "/msg/unhandled", method = RequestMethod.GET)
     public NBHDPageDataResult getGovMsgBoxes(@ModelAttribute NBHDRequestParam param) throws RemoteException, BizException {
         String logDesc = "查询问政互动的信件列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_NBHD_SEARCH, param.getSiteId());
             return interactionService.getGovMsgBoxes(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));

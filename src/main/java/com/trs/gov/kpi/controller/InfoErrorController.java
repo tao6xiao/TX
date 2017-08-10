@@ -45,7 +45,7 @@ public class InfoErrorController extends IssueHandler {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误待解决和已解决问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOERROR_SEARCH, param.getSiteId());
             return infoErrorService.getIssueCount(param);
@@ -61,7 +61,7 @@ public class InfoErrorController extends IssueHandler {
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public HistoryStatisticsRes getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误历史记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOERROR_SEARCH, param.getSiteId());
             return infoErrorService.getIssueHistoryCount(param);
@@ -78,7 +78,7 @@ public class InfoErrorController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误待解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOERROR_SEARCH, param.getSiteId());
             return infoErrorService.getInfoErrorList(param);

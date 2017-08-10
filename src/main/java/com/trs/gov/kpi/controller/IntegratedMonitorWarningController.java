@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 
 /**
  * 综合实时监测：预警提醒Controller
@@ -44,7 +43,7 @@ public class IntegratedMonitorWarningController extends IssueHandler {
     @ResponseBody
     public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询预警提醒的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_WARNING_SEARCH, param.getSiteId());
             return integratedMonitorWarningService.get(param);

@@ -48,7 +48,7 @@ public class ServiceGuideController {
     @RequestMapping(value = "/issue/bytype/count", method = RequestMethod.GET)
     public SGStatistics getSPCount(PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询服务指南按类型统计的问题总数" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_SERVICE_SEARCH, param.getSiteId());
             return sgService.getSGCount(param);
@@ -66,7 +66,7 @@ public class ServiceGuideController {
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
     public HistoryStatisticsRes getSPHistoryCount(PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询服务指南问题总数的历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_SERVICE_SEARCH, param.getSiteId());
             return sgService.getSGHistoryCount(param);
@@ -84,7 +84,7 @@ public class ServiceGuideController {
     @RequestMapping(value = "/guide/issue/unhandled", method = RequestMethod.GET)
     public SGPageDataRes getSGList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询服务指南问题总数" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_SERVICE_SEARCH, param.getSiteId());
             return sgService.getSGList(param);

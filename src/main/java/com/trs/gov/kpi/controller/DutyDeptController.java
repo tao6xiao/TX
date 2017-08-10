@@ -48,7 +48,7 @@ public class DutyDeptController {
     @ResponseBody
     public String set(@ModelAttribute DutyDeptRequest deptRequest) throws BizException, RemoteException {
         String logDesc = "设置栏目和部门的关系" + LogUtil.paramsToLogString(DEPT_REQUEST, deptRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (deptRequest.getSiteId() == null || deptRequest.getChnlId() == null || deptRequest.getDeptId() == null || deptRequest.getContain() == null) {
                 log.error("Invalid parameter: 传入的参数siteId、chnlId、deptId、contain中至少有一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -66,7 +66,7 @@ public class DutyDeptController {
 
     private Integer update(DutyDeptRequest deptRequest) throws RemoteException, BizException {
         String logDesc = "修改栏目和部门的关系" + LogUtil.paramsToLogString(DEPT_REQUEST, deptRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             deptService.update(deptRequest);
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
@@ -74,7 +74,7 @@ public class DutyDeptController {
 
     private Integer add(DutyDeptRequest deptRequest) throws RemoteException, BizException {
         String logDesc = "添加栏目和部门的关系" + LogUtil.paramsToLogString(DEPT_REQUEST, deptRequest);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             deptService.add(deptRequest);
             return null;
         }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, deptRequest.getSiteId()));
@@ -90,7 +90,7 @@ public class DutyDeptController {
     @ResponseBody
     public ApiPageData get(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询栏目和部门的关系" + LogUtil.paramsToLogString("param", param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, param.getSiteId());
             return deptService.get(param);
@@ -109,7 +109,7 @@ public class DutyDeptController {
     @ResponseBody
     public String delete(Integer siteId, Integer[] chnlIds) throws BizException, RemoteException {
         String logDesc = "删除对于站点栏目下设置的部门" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "chnlIds", chnlIds);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null || chnlIds == null || chnlIds.length == 0) {
                 log.error("Invalid parameter: 参数siteId存在null值或者数组chnlIds为null");
                 throw new BizException(Constants.INVALID_PARAMETER);

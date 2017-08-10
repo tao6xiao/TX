@@ -54,7 +54,7 @@ public class MonitorFrequencyController {
     @ResponseBody
     public List<MonitorFrequencyResponse> queryBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
         String logDesc = "查询当前站点的监测频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null) {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
@@ -77,7 +77,7 @@ public class MonitorFrequencyController {
     public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException, RemoteException {
         String logDesc = "设置监测频率（含添加和修改）" + LogUtil.paramsToLogString(FREQ_SETUP, freqSetUp);
         // TODO: 2017/8/9 REVIEW he.lang DONE_he.lang 圈复杂度上升
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             checkMonitorFrequency(freqSetUp);
             authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SAVE, freqSetUp.getSiteId());
             int siteId = freqSetUp.getSiteId();
@@ -97,7 +97,7 @@ public class MonitorFrequencyController {
 
     private Integer update(MonitorFrequencySetUp freqSetUp) throws RemoteException, BizException {
         String logDesc = "修改监测频率" + LogUtil.paramsToLogString(FREQ_SETUP, freqSetUp);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             monitorFrequencyService.updateMonitorFrequencySetUp(freqSetUp);
             LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, freqSetUp.getSiteId()));
             return null;
@@ -106,7 +106,7 @@ public class MonitorFrequencyController {
 
     private Integer add(MonitorFrequencySetUp freqSetUp) throws RemoteException, BizException {
         String logDesc = "添加监测频率" + LogUtil.paramsToLogString(FREQ_SETUP, freqSetUp);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             monitorFrequencyService.addMonitorFrequencySetUp(freqSetUp);
             LogUtil.addOperationLog(OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, freqSetUp.getSiteId()));
             return null;

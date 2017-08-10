@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 
 /**
  * 按需更新的自查提醒Controller
@@ -47,7 +46,7 @@ public class DefaultUpdateFreqController {
     @ResponseBody
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
         String logDesc = "通过siteId查询对应自查提醒记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null) {
                 log.error("Invalid parameter:  参数siteId存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -74,7 +73,7 @@ public class DefaultUpdateFreqController {
     @ResponseBody
     public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, RemoteException {
         String logDesc = "插入/修改自查提醒记录" + LogUtil.paramsToLogString(DEFAULT_UPDATE_FREQ_NAME, defaultUpdateFreq);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null) {
                 log.error("Invalid parameter:  参数siteId、value（自查提醒周期值）中至少一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -93,7 +92,7 @@ public class DefaultUpdateFreqController {
 
     private Integer updateDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws RemoteException, BizException {
         String logDesc = "修改自查提醒记录" + LogUtil.paramsToLogString(DEFAULT_UPDATE_FREQ_NAME, defaultUpdateFreq);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
@@ -101,7 +100,7 @@ public class DefaultUpdateFreqController {
 
     private Integer addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws RemoteException, BizException {
         String logDesc = "插入自查提醒记录" + LogUtil.paramsToLogString(DEFAULT_UPDATE_FREQ_NAME, defaultUpdateFreq);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
             return null;
         }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));

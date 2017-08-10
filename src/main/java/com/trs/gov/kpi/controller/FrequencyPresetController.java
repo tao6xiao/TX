@@ -56,7 +56,7 @@ public class FrequencyPresetController {
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
         String logDesc = "查询更新频率及预警初设数据" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "pageSize", pageSize, "pageIndex", pageIndex);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null) {
                 log.error("Invalid parameter:  参数siteId存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -82,7 +82,7 @@ public class FrequencyPresetController {
     @ResponseBody
     public Object addFrequencyPreset(@ModelAttribute FrequencyPresetRequest request) throws BizException, RemoteException {
         String logDesc = "添加预设记录" + LogUtil.paramsToLogString("request", request);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (request.getSiteId() == null || request.getUpdateFreq() == null || request.getAlertFreq() == null) {
                 log.error("Invalid parameter:  参数siteId、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -113,7 +113,7 @@ public class FrequencyPresetController {
     @ResponseBody
     public Object updateFrequencyPresetBySiteIdAndId(@ModelAttribute FrequencyPreset preset) throws BizException, RemoteException {
         String logDesc = "修改预设记录" + LogUtil.paramsToLogString("preset", preset);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (preset.getSiteId() == null || preset.getId() == null
                     || preset.getUpdateFreq() == null || preset.getAlertFreq() == null) {
                 log.error("Invalid parameter:  参数siteId、id（预设记录编号）、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
@@ -146,7 +146,7 @@ public class FrequencyPresetController {
     @ResponseBody
     public Object deleteFrequencyPreset(@RequestParam("siteId") Integer siteId, @RequestParam("id") Integer id) throws BizException, RemoteException {
         String logDesc = "删除预设记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.DB_FIELD_ID, id);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             if (siteId == null || id == null) {
                 log.error("Invalid parameter:  参数siteId或者id（预设记录编号）存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);

@@ -47,7 +47,7 @@ public class WebPageController {
     @RequestMapping(value = "/speed/count", method = RequestMethod.GET)
     public int selectReplySpeedCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "响应速度统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             return webPageService.selectReplySpeedCount(param);
@@ -65,7 +65,7 @@ public class WebPageController {
     @RequestMapping(value = "/speed", method = RequestMethod.GET)
     public ApiPageData selectReplySpeed(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "响应速度列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             return webPageService.selectReplySpeed(param);
@@ -84,7 +84,7 @@ public class WebPageController {
     @RequestMapping(value = "/size/count", method = RequestMethod.GET)
     public int selectPageSpaceCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过大页面的统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             return webPageService.selectPageSpaceCount(param);
@@ -103,7 +103,7 @@ public class WebPageController {
     @RequestMapping(value = "/size", method = RequestMethod.GET)
     public ApiPageData selectPageSpace(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过大页面列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             return webPageService.selectPageSpace(param);
@@ -121,7 +121,7 @@ public class WebPageController {
     @RequestMapping(value = "/depth/count", method = RequestMethod.GET)
     public int selectPageDepthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过深页面统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             return webPageService.selectPageDepthCount(param);
@@ -140,7 +140,7 @@ public class WebPageController {
     @RequestMapping(value = "/depth", method = RequestMethod.GET)
     public ApiPageData selectPageDepth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过深页面列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             return webPageService.selectPageDepth(param);
@@ -159,7 +159,7 @@ public class WebPageController {
     @RequestMapping(value = "/code/count", method = RequestMethod.GET)
     public int selectRepeatCodeCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "冗余代码统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             return webPageService.selectRepeatCodeCount(param);
@@ -178,7 +178,7 @@ public class WebPageController {
     @RequestMapping(value = "/code", method = RequestMethod.GET)
     public ApiPageData selectRepeatCode(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "冗余代码列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             return webPageService.selectRepeatCode(param);
@@ -196,7 +196,7 @@ public class WebPageController {
     @RequestMapping(value = "/length/count", method = RequestMethod.GET)
     public int selectUrlLengthCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过长URL页面统计查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             return webPageService.selectUrlLengthCount(param);
@@ -215,7 +215,7 @@ public class WebPageController {
     @RequestMapping(value = "/length", method = RequestMethod.GET)
     public ApiPageData selectUrlLength(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "过长URL页面列表查询" + LogUtil.paramsToLogString(Constants.PARAM, param);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_SEARCH, param.getSiteId());
             ParamCheckUtil.paramCheck(param);
             return webPageService.selectUrlLength(param);
@@ -235,7 +235,7 @@ public class WebPageController {
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
     public String handlePageByIds(int siteId, Integer[] ids) throws BizException, RemoteException {
         String logDesc = "处理访问优化问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_HANDLE, siteId);
             webPageService.handlePageByIds(siteId, Arrays.asList(ids));
             return null;
@@ -255,7 +255,7 @@ public class WebPageController {
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
     public String ignorePageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
         String logDesc = "忽略访问优化问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_IGNORE, siteId);
             webPageService.ignorePageByIds(siteId, Arrays.asList(ids));
             return null;
@@ -275,7 +275,7 @@ public class WebPageController {
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public String delPageByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
         String logDesc = "删除访问优化问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
-        return LogUtil.ControlleFunctionWrapper(() -> {
+        return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_DELETE, siteId);
             webPageService.delPageByIds(siteId, Arrays.asList(ids));
             return null;
