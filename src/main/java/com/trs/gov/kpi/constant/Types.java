@@ -564,7 +564,7 @@ public final class Types {
                     taskIds.add(taskId);
                 }
             }
-            if (taskIds.size() == 0){
+            if (taskIds.isEmpty()){
                 taskIds.add(INVALID.value);
             }
             return taskIds;
