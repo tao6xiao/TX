@@ -109,7 +109,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new History(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
+        return new HistoryStatisticsRes(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
     }
 
     @Override
