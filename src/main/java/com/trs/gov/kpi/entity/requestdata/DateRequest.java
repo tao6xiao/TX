@@ -1,8 +1,21 @@
 package com.trs.gov.kpi.entity.requestdata;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.Granularity;
+import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.StringUtil;
+import lombok.extern.slf4j.Slf4j;
+
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by linwei on 2017/6/12.
  */
+@Slf4j
 public class DateRequest {
 
     private String beginDateTime;
@@ -107,5 +120,43 @@ public class DateRequest {
             return;
         }
         this.searchText = searchText;
+    }
+
+    /**
+     * 设置默认起止时间
+     */
+    // TODO REVIEW LINWEI DO_ran.wei  FIXED setDefaultDate 这个方法放在 DateRequest 里面可能更为合适
+    public void setDefaultDate() {
+        if (StringUtil.isEmpty(getBeginDateTime()) && StringUtil.isEmpty(getEndDateTime())) {
+            Date endDate = new Date();
+            setEndDateTime(DateUtil.toString(endDate));
+            String beginTime;
+            Calendar calendar = Calendar.getInstance();
+            try {
+                calendar.setTime(DateUtil.toDate(getEndDateTime()));
+            } catch (ParseException e) {
+                log.error("解析开始日期失败！", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "解析开始日期失败！", e);
+            }
+
+            if (Granularity.DAY.equals(getGranularity())) {
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginTime = DateUtil.toString(calendar.getTime());
+            } else if (Granularity.WEEK.equals(getGranularity())) {
+                calendar.add(Calendar.WEEK_OF_YEAR, -11);
+                calendar.set(Calendar.DAY_OF_WEEK, 1);
+                beginTime = DateUtil.toString(calendar.getTime());
+            } else if (Granularity.YEAR.equals(getGranularity())) {
+                calendar.add(Calendar.YEAR, -5);
+                calendar.set(Calendar.MONTH, 0);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginTime = DateUtil.toString(calendar.getTime());
+            } else {//不设置，默认为月
+                calendar.set(Calendar.MONTH, 0);
+                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                beginTime = DateUtil.toString(calendar.getTime());
+            }
+            setBeginDateTime(beginTime);
+        }
     }
 }

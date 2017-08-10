@@ -2,7 +2,6 @@ package com.trs.gov.kpi.entity;
 
 import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
-import com.trs.gov.kpi.constant.MonitorRecordTableField;
 import lombok.Data;
 
 import java.util.Date;
@@ -16,26 +15,26 @@ import java.util.Date;
 @DBTable("monitorrecord")
 public class MonitorRecord {
 
-    // TODO REVIEW LINWEI DO_li.hao 如果数据库字段的名字和变量名一样，怎不需要在注解中指定名字
-    @DBField("id")
+    // TODO REVIEW LINWEI DO_li.hao FIXED 如果数据库字段的名字和变量名一样，怎不需要在注解中指定名字
+    @DBField
     private Integer id;
 
-    @DBField("siteId")
+    @DBField
     private Integer siteId;//站点编号
 
-    @DBField("taskId")
+    @DBField
     private Integer taskId;//任务类型编号
 
-    @DBField("taskStatus")
+    @DBField
     private  Integer taskStatus;//任务状态
 
-    @DBField("result")
+    @DBField
     private Integer result;//执行结果
 
-    @DBField("beginTime")
+    @DBField
     private Date beginTime;//开始时间
 
-    @DBField("endTime")
+    @DBField
     private Date endTime;//结束时间
 
 }

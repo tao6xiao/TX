@@ -89,16 +89,7 @@ public class CKMScheduler implements SchedulerTask {
     public void run() throws RemoteException {
         log.info(SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
-
-        //监测开始(添加基本信息)
-        Date startTime = new Date();
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
-
+        
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         if (checkSite == null) {
             log.warn("site[" + siteId + "] is not exist!");
@@ -110,6 +101,15 @@ public class CKMScheduler implements SchedulerTask {
             log.warn("site[" + siteId + "]'s web http is empty!");
             return;
         }
+
+        //监测开始(添加基本信息)
+        Date startTime = new Date();
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
 
         spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 

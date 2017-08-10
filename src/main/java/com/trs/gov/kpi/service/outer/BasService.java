@@ -3,7 +3,7 @@ package com.trs.gov.kpi.service.outer;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 
 import java.text.ParseException;
 
@@ -26,7 +26,7 @@ public interface BasService {
      * @param request
      * @return
      */
-    History getHistoryVisits(BasRequest request) throws RemoteException, ParseException;
+    HistoryStatisticsRes getHistoryVisits(BasRequest request) throws RemoteException, ParseException;
 
     /**
      * 获取最近一个月的次均停留时间
@@ -42,5 +42,5 @@ public interface BasService {
      * @param request
      * @return
      */
-    History getHistoryStayTime(BasRequest request) throws ParseException, RemoteException, BizException;
+    HistoryStatisticsRes getHistoryStayTime(BasRequest request) throws ParseException, RemoteException, BizException;
 }

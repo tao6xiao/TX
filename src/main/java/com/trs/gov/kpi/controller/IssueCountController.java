@@ -87,14 +87,14 @@ public class IssueCountController {
      */
     @RequestMapping(value = "/count/history", method = RequestMethod.GET)
     @ResponseBody
-    public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+    public HistoryStatisticsRes historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
         String logDesc = "问题统计中分类查询统计历史数量" + LogUtil.paramsToLogString(REQUEST, request);
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             checkAuthority(request);
-            History history = countService.historyCountSort(request);
+            HistoryStatisticsRes historyStatisticsRes = countService.historyCountSort(request);
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            return history;
+            return historyStatisticsRes;
         }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 

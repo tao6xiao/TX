@@ -8,7 +8,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 import com.trs.gov.kpi.entity.responsedata.MonthUpdateResponse;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
@@ -62,14 +62,14 @@ public class InfoUpdateController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+    public HistoryStatisticsRes getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息更新历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-            History history = infoUpdateService.getIssueHistoryCount(param);
+            HistoryStatisticsRes historyStatisticsRes = infoUpdateService.getIssueHistoryCount(param);
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return history;
+            return historyStatisticsRes;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 

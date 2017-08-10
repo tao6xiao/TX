@@ -26,4 +26,11 @@ public interface CommonMapper {
      */
     void update(@Param("updater") DBUpdater updater, @Param("filter") QueryFilter filter);
 
+    /**
+     *  统计记录数
+     * @param filter
+     * @return
+     */
+    int count(@Param("filter") QueryFilter filter);
+
 }

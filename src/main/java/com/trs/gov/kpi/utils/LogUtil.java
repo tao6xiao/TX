@@ -227,6 +227,9 @@ public class LogUtil {
         private String desc;
         private Date startDate;
 
+        // 超时时间
+        private static final long LIMIT = 1000;
+
         public PerformanceLogRecorder(String type, String desc) {
             this.type = type;
             this.desc = desc;
@@ -234,8 +237,10 @@ public class LogUtil {
         }
 
         public void record() {
-            Date endDate = new Date();
-            addElapseLog(type, desc, endDate.getTime() - startDate.getTime());
+            long spendTime = new Date().getTime() - startDate.getTime();
+            if (spendTime > LIMIT) {
+                addElapseLog(type, desc, spendTime);
+            }
         }
     };
 

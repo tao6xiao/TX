@@ -9,7 +9,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
@@ -82,14 +82,14 @@ public class LinkAvailabilityController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+    public HistoryStatisticsRes getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询链接可用性历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
             authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-            History history = linkAvailabilityService.getIssueHistoryCount(param);
+            HistoryStatisticsRes historyStatisticsRes = linkAvailabilityService.getIssueHistoryCount(param);
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            return history;
+            return historyStatisticsRes;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
