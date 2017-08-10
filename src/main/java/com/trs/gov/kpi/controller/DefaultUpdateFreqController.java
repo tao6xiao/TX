@@ -6,7 +6,6 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.DefaultUpdateFreq;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -51,11 +50,8 @@ public class DefaultUpdateFreqController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "通过siteId查询对应自查提醒记录";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
         try {
             DefaultUpdateFreq defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
             Integer value = null;
@@ -86,16 +82,12 @@ public class DefaultUpdateFreqController {
             log.error("Invalid parameter:  参数siteId、value（自查提醒周期值）中至少一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), defaultUpdateFreq.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ) && !authorityService
-                .hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ)) {
-            LogUtil.addOperationLog(OperationType.ADD + OperationType.UPDATE, LogUtil.buildFailOperationLogDesc("插入或者修改自查提醒记录"), LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ, defaultUpdateFreq.getSiteId());
         int siteId = defaultUpdateFreq.getSiteId();
         DefaultUpdateFreq defaultUpdateFreqCheck = null;
         try {
             defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc("查询自查提醒记录"), LogUtil.getSiteNameForLog(siteApiService, siteId));
             throw e;
         }
@@ -103,7 +95,7 @@ public class DefaultUpdateFreqController {
             try {
                 defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
                 LogUtil.addOperationLog(OperationType.ADD, "插入自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
-            }catch (Exception e){
+            } catch (Exception e) {
                 LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("插入自查提醒记录"), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw e;
             }
@@ -112,7 +104,7 @@ public class DefaultUpdateFreqController {
             try {
                 defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
                 LogUtil.addOperationLog(OperationType.UPDATE, "修改对应自查提醒记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc("修改对应自查提醒记录"), LogUtil.getSiteNameForLog(siteApiService, siteId));
                 throw e;
             }

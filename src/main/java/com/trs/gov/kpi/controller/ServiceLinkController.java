@@ -7,7 +7,6 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -45,18 +44,14 @@ public class ServiceLinkController extends IssueHandler {
         Date startTime = new Date();
         ParamCheckUtil.paramCheck(requestParam);
         String logDesc = "查询服务链接未解决问题列表";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), requestParam.getSiteId(), null, Authority.KPIWEB_SERVICE_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_SERVICE_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_SERVICE_SEARCH, requestParam.getSiteId());
         try {
             ApiPageData apiPageData = linkAvailabilityService.getServiceLinkList(requestParam);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, requestParam.getSiteId(), logDesc), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, requestParam.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, requestParam.getSiteId()));
             throw e;
         }

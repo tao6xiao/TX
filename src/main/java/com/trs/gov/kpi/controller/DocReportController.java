@@ -9,7 +9,6 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.responsedata.*;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.ReportApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -68,11 +67,7 @@ public class DocReportController {
     public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
         Date startTime = new Date();
         String logDesc = "本月新增文档分类型统计查询";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
         try {
             ReportApiService.ReportApiParam param = ReportApiService.ReportApiParamBuilder.newBuilder()
                     .setReportName("editcenter_doctype_new_bymonth")
@@ -121,11 +116,7 @@ public class DocReportController {
             BizException {
         Date startTime = new Date();
         String logDesc = "查询按部门统计的稿件信息";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
         try {
             List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
             SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) -> counter.setDepartmentId(Long.valueOf(value));
@@ -165,11 +156,7 @@ public class DocReportController {
             BizException {
         Date startTime = new Date();
         String logDesc = "查询按站点统计的稿件信息";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
         try {
             List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
             SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) -> counter.setSiteId(Long.valueOf(value));
@@ -203,11 +190,8 @@ public class DocReportController {
             BizException {
         Date startTime = new Date();
         String logDesc = "查询按个人统计的稿件信息";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
         try {
             List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports = getMultiReportList("user");
             SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) -> counter.setUserName(value);
@@ -235,11 +219,7 @@ public class DocReportController {
     public Map<String, String> getCurMonthCounterByDay(Integer siteId) throws RemoteException, BizException {
         Date startTime = new Date();
         String logDesc = "查询本月每天发稿量统计信息";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
         try {
             Calendar now = Calendar.getInstance();// 当前起始日期
             Date curDate = new Date();
@@ -282,11 +262,7 @@ public class DocReportController {
     public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, ParseException, BizException {
         Date startTime = new Date();
         String logDesc = "原稿，已发，上报，下达历史数据量统计查询";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
         if (StringUtil.isEmpty(month)) {
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
             throw new BizException(Constants.INVALID_PARAMETER);
@@ -334,11 +310,7 @@ public class DocReportController {
     public Map<String, Long> getCurMonthDocStatusReport(Integer siteId) throws RemoteException, BizException {
         Date startTime = new Date();
         String logDesc = "本月新增文档状态统计";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
         try {
             String beginDay = DateUtil.curMonth();
             Map<String, Long> result = new HashMap<>();

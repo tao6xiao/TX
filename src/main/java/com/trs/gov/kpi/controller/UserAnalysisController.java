@@ -6,7 +6,6 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
 import com.trs.gov.kpi.entity.responsedata.History;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -51,11 +50,7 @@ public class UserAnalysisController {
         Date startTime = new Date();
         check(basRequest);
         String logDesc = "访问量统计信息查询";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
         try {
             Integer value = basService.getVisits(basRequest);
             Date endTime = new Date();
@@ -82,11 +77,7 @@ public class UserAnalysisController {
         Date startTime = new Date();
         check(basRequest);
         String logDesc = "访问量历史记录查询";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
         try {
             History history = basService.getHistoryVisits(basRequest);
             Date endTime = new Date();
@@ -112,11 +103,7 @@ public class UserAnalysisController {
         Date startTime = new Date();
         check(basRequest);
         String logDesc = "最近一个月次均停留时间查询";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
         try {
             Integer value = basService.getStayTime(basRequest);
             Date endTime = new Date();
@@ -145,10 +132,7 @@ public class UserAnalysisController {
         try {
             Date startTime = new Date();
             check(basRequest);
-            if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight
-                    (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
-                throw new BizException(Authority.NO_AUTHORITY);
-            }
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
             History history = basService.getHistoryStayTime(basRequest);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));

@@ -11,7 +11,6 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupChnlsResponse;
 import com.trs.gov.kpi.entity.responsedata.ChnlGroupsResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.ChnlGroupService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -52,11 +51,7 @@ public class ChnlGroupController {
     public ChnlGroupsResponse[] getChnlGroups(@RequestParam("siteId") Integer siteId) throws RemoteException, BizException {
         Date startTime = new Date();
         String logDesc = "查询栏目分类";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
         try {
             ChnlGroupsResponse[] groupsResponseArray = chnlGroupService.getChnlGroupsResponseDetailArray();
             Date endTime = new Date();
@@ -90,11 +85,7 @@ public class ChnlGroupController {
         }
         ParamCheckUtil.pagerCheck(pageIndex, pageSize);
         String logDesc = "查询站点和根栏目分类下的数据";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
         try {
             int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
             Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
@@ -125,16 +116,12 @@ public class ChnlGroupController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "在当前站点和根栏目下添加栏目";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), chnlGroupChnlsAddRequest.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE) &&
-                !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE)) {
-            LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlsAddRequest.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, chnlGroupChnlsAddRequest.getSiteId());
         try {
             chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequest);
             LogUtil.addOperationLog(OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlsAddRequest.getSiteId()));
             return null;
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.ADD, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlsAddRequest.getSiteId()));
             throw e;
         }
@@ -157,17 +144,13 @@ public class ChnlGroupController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "在当前站点和根栏目下修改栏目";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), chnlGroupChnlRequestDetail.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL) &&
-                !authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL)) {
-            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlRequestDetail.getSiteId()));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL, chnlGroupChnlRequestDetail.getSiteId());
         try {
             chnlGroupChnlRequestDetail.getId();
             chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
             LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlRequestDetail.getSiteId()));
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlRequestDetail.getSiteId()));
             throw e;
         }
@@ -189,16 +172,12 @@ public class ChnlGroupController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         String logDesc = "删除对应站点和id的栏目记录";
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE)) {
-            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
+        authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE, siteId);
         try {
             chnlGroupService.deleteBySiteIdAndId(siteId, id);
             LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
             throw e;
         }
