@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -43,20 +44,14 @@ public class IntegratedMonitorIsResolvedController {
     @RequestMapping(value = "/handled", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataIsResolved(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "获取已解决的分页数据";
-        authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "获取已解决的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
             ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, true);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -69,19 +64,13 @@ public class IntegratedMonitorIsResolvedController {
     @RequestMapping(value = "/ignored", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataIsIgnored(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "获取已忽略的分页数据";
-        authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "获取已忽略的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_RESOLVED_SEARCH, param.getSiteId());
             ApiPageData apiPageData = integratedMonitorIsResolvedService.getPageDataIsResolvedList(param, false);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 }

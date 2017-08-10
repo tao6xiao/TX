@@ -30,6 +30,12 @@ public final class Constants {
     //检索字段chnlName
     public static final String CHNL_NAME = "chnlName";
 
+    //参数param
+    public static final String PARAM = "param";
+
+    //参数ids
+    public static final String IDS = "ids";
+
     //用于标识消息传输（接收和发送）的常量
     public static final String INPUT_CHANNEL = "input_channel";
     public static final String OUTPUT_CHANNEL = "output_channel";

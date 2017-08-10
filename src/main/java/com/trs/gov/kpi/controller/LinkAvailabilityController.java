@@ -2,6 +2,7 @@ package com.trs.gov.kpi.controller;
 
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -44,20 +45,14 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询链接可用性待解决和已解决问题数量" + LogUtil.paramsToLogString("param", param);
-        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询链接可用性待解决和已解决问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
             List list = linkAvailabilityService.getIssueCount(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return list;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -69,20 +64,14 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     public int getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询链接可用性待解决问题数量" + LogUtil.paramsToLogString("param", param);
-        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询链接可用性待解决问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
             int value = linkAvailabilityService.getUnhandledIssueCount(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return value;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
 
@@ -94,20 +83,14 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询链接可用性历史纪录";
-        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询链接可用性历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
             History history = linkAvailabilityService.getIssueHistoryCount(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return history;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -119,20 +102,14 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询链接可用性未解决问题列表";
-        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询链接可用性未解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
             ApiPageData apiPageData = linkAvailabilityService.getIssueList(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -144,21 +121,14 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/check/index", method = RequestMethod.GET)
     public IndexPage showIndexAvailability(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "首页可用性校验" + LogUtil.paramsToLogString("param", param);
-        authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "首页可用性校验" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
             IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return indexPage;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
 }

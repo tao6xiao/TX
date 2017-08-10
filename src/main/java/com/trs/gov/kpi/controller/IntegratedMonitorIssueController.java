@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -41,20 +42,14 @@ public class IntegratedMonitorIssueController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询所有未解决问题列表";
-        authorityService.checkRight(Authority.KPIWEB_ISSUE_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询所有未解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_ISSUE_SEARCH, param.getSiteId());
             ApiPageData apiPageData = issueService.get(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -11,6 +12,7 @@ import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +25,7 @@ import java.util.Date;
  */
 @RestController
 @RequestMapping(UrlPath.INTEGRATED_MONITOR_WARNING_PATH)
+@Slf4j
 public class IntegratedMonitorWarningController extends IssueHandler {
 
     @Resource
@@ -41,19 +44,19 @@ public class IntegratedMonitorWarningController extends IssueHandler {
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询预警提醒的分页数据";
-        authorityService.checkRight(Authority.KPIWEB_WARNING_SEARCH, param.getSiteId());
-        try {
-            ApiPageData apiPageData = integratedMonitorWarningService.get(param);
-            Date endTime = new Date();
+        String logDesc = "查询预警提醒的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_WARNING_SEARCH, param.getSiteId());
+            ApiPageData apiPageData = null;
+            try {
+                apiPageData = integratedMonitorWarningService.get(param);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 }

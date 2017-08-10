@@ -1,7 +1,9 @@
 package com.trs.gov.kpi.controller;
 
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.UrlPath;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -25,7 +27,6 @@ public class IssueHandler {
     @Resource
     SiteApiService siteApiService;
 
-
     /**
      * 批量处理
      *
@@ -34,16 +35,13 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = UrlPath.HANDLE_PATH, method = RequestMethod.POST)
-    public String handIssuesByIds(int siteId, Integer[] ids) throws RemoteException {
-        String logDesc = "处理问题" + LogUtil.paramsToLogString("siteId", siteId, "ids", ids);
-        try {
+    public String handIssuesByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
+        String logDesc = "处理问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.handIssuesByIds(siteId, Arrays.asList(ids));
             LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -54,16 +52,13 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = UrlPath.IGNORE_PATH, method = RequestMethod.POST)
-    public String ignoreIssuesByIds(int siteId, Integer[] ids) throws RemoteException {
-        String logDesc = "忽略问题";
-        try {
+    public String ignoreIssuesByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
+        String logDesc = "忽略问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
             LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -74,16 +69,13 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = UrlPath.DELETE_PATH, method = RequestMethod.DELETE)
-    public String delIssueByIds(int siteId, Integer[] ids) throws RemoteException {
-        String logDesc = "删除问题";
-        try {
+    public String delIssueByIds(int siteId, Integer[] ids) throws RemoteException, BizException {
+        String logDesc = "删除问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.delIssueByIds(siteId, Arrays.asList(ids));
             LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        }catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -95,16 +87,13 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = UrlPath.UPDATE_DEPT_PATH, method = RequestMethod.POST)
-    public String updateDeptByIds(int siteId, Integer[] ids, int deptId) throws RemoteException {
-        String logDesc = "修改所属部门";
-        try {
+    public String updateDeptByIds(int siteId, Integer[] ids, int deptId) throws RemoteException, BizException {
+        String logDesc = "修改所属部门" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
+        return LogUtil.ControlleFunctionWrapper(() -> {
             issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
             LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
-        }catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
 }

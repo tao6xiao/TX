@@ -45,20 +45,14 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        String logDesc = "查询信息更新已解决、预警和更新不及时的数量";
-        ParamCheckUtil.paramCheck(param);
-        authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询信息更新已解决、预警和更新不及时的数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
             List list = infoUpdateService.getIssueCount(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return list;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -69,21 +63,14 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
     public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询信息更新历史纪录";
-        authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询信息更新历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
             History history = infoUpdateService.getIssueHistoryCount(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return history;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -95,20 +82,14 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "查询信息更新待解决问题列表";
-        authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-        try {
+        String logDesc = "查询信息更新待解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
             ApiPageData apiPageData = infoUpdateService.get(param);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
             return apiPageData;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -123,21 +104,20 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/bygroup/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> getUpdateNotInTimeCountList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-        Date startTime = new Date();
-        ParamCheckUtil.paramCheck(param);
-        String logDesc = "获取栏目信息更新不及时的统计信息";
-        authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
-        try {
-            List<Statistics> list = infoUpdateService.getUpdateNotInTimeCountList(param);
-            Date endTime = new Date();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, siteApiService.getSiteById(param.getSiteId(), "").getSiteName());
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, param.getSiteId(), logDesc), endTime.getTime() - startTime.getTime());
+        String logDesc = "获取栏目信息更新不及时的统计信息" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
+            List<Statistics> list = null;
+            try {
+                list = infoUpdateService.getUpdateNotInTimeCountList(param);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
+            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             return list;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
-            throw e;
-        }
-
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -151,23 +131,16 @@ public class InfoUpdateController extends IssueHandler {
     @RequestMapping(value = "/month/count", method = RequestMethod.GET)
     @ResponseBody
     public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, RemoteException {
-        Date startTime = new Date();
-        if (siteId == null) {
-            log.error("Invalid parameter: 参数siteId为null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String logDesc = "获取更新不及时栏目的更新不及时总月数以及空栏目";
-        authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, siteId);
-        try {
+        String logDesc = "获取更新不及时栏目的更新不及时总月数以及空栏目" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.ControlleFunctionWrapper(() -> {
+            if (siteId == null) {
+                log.error("Invalid parameter: 参数siteId为null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, siteId);
             MonthUpdateResponse response = infoUpdateService.getNotInTimeCountMonth(siteId);
-            Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            LogUtil.addElapseLog(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc), endTime.getTime() - startTime.getTime());
             return response;
-        } catch (Exception e) {
-            LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
-            throw e;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
-
 }
