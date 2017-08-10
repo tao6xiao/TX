@@ -563,7 +563,13 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                     Types.IssueType.EMPTY_CHANNEL.value,
                     Types.EmptyChannelType.EMPTY_COLUMN.value,
                     checking.getBeginDateTime());
-            if (!isExist(filter)) {
+            if (isExist(filter)) {
+                //若栏目记录已存在，则更新CHECK_TIME
+                DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                updater.addField(IssueTableField.CHECK_TIME, new Date());
+                commonMapper.update(updater, filter);
+                count++;
+            } else {
                 InfoUpdate update = new InfoUpdate();
                 update.setSiteId(siteId);
                 update.setChnlUrl("");
@@ -575,8 +581,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 update.setChnlId(chnlId);
                 issueMapper.insert(DBUtil.toRow(update));
                 count++;
-            }else {
-                //已存在该栏目为空记录则不进行操作
             }
         }
     }
