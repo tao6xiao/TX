@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,7 +47,7 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/index/now", method = RequestMethod.GET)
-    public Double getPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+    public Double getPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询当前的绩效指数得分" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
@@ -64,7 +63,7 @@ public class IntegratedMonitorController {
      * @return
      */
     @RequestMapping(value = "/index/history", method = RequestMethod.GET)
-    public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+    public List<HistoryStatistics> getHistoryPerformance(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询绩效指数得分的历史记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);

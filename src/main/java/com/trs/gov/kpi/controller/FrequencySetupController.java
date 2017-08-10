@@ -81,7 +81,7 @@ public class FrequencySetupController {
      */
     @RequestMapping(value = "/chnlfreq", method = RequestMethod.POST)
     @ResponseBody
-    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, ParseException, RemoteException {
+    public Object addOrUpdateFrequencySetup(@RequestBody FrequencySetupSetRequest frequencySetupSetRequest) throws BizException, RemoteException {
         String logDesc = "添加更新频率（添加和修改）" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest);
         return LogUtil.ControlleFunctionWrapper(() -> {
             checkSetupParam(frequencySetupSetRequest);
@@ -97,7 +97,7 @@ public class FrequencySetupController {
         }, OperationType.ADD + "," + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
     }
 
-    private void addOrUpdateFrequency(FrequencySetupSetRequest frequencySetupSetRequest) throws BizException {
+    private void addOrUpdateFrequency(FrequencySetupSetRequest frequencySetupSetRequest) {
         Integer[] chnlIds = frequencySetupSetRequest.getChnlIds();
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(frequencySetupSetRequest.getSiteId(), chnlIds[i]);

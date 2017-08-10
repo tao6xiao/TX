@@ -3,7 +3,6 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.InfoErrorOrderRes;
@@ -14,7 +13,6 @@ import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +31,7 @@ import java.util.Date;
 @RequestMapping("/gov/kpi/opendata/issue")
 public class WorkOrderController {
 
+    public static final String strRelativeSite = "，相关站点:";
     @Resource
     private InfoUpdateService infoUpdateService;
 
@@ -61,7 +60,7 @@ public class WorkOrderController {
             ApiPageData apiPageData = infoUpdateService.selectInfoUpdateOrder(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc+ strRelativeSite +getSystemName(request), endTime.getTime()-startTime.getTime());
             return apiPageData;
         }catch (Exception e){
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
@@ -99,7 +98,7 @@ public class WorkOrderController {
             InfoUpdateOrderRes updateOrderRes = infoUpdateService.getInfoUpdateOrderById(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc+ strRelativeSite +getSystemName(request), endTime.getTime()-startTime.getTime());
             return updateOrderRes;
         }catch (Exception e){
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
@@ -124,7 +123,7 @@ public class WorkOrderController {
             ApiPageData apiPageData = infoErrorService.selectInfoErrorOrder(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc+ strRelativeSite +getSystemName(request), endTime.getTime()-startTime.getTime());
             return apiPageData;
         }catch (Exception e){
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));
@@ -149,7 +148,7 @@ public class WorkOrderController {
             InfoErrorOrderRes errorOrderRes = infoErrorService.getInfoErrorOrderById(request);
             Date endTime = new Date();
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, getSystemName(request));
-            LogUtil.addElapseLog(OperationType.QUERY, logDesc+"，相关站点:"+getSystemName(request), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.QUERY, logDesc+ strRelativeSite +getSystemName(request), endTime.getTime()-startTime.getTime());
             return errorOrderRes;
         }catch (Exception e){
             LogUtil.addOperationLog(OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), getSystemName(request));

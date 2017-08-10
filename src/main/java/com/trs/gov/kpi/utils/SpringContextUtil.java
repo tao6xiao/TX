@@ -15,7 +15,7 @@ public class SpringContextUtil implements ApplicationContextAware {
     //设置上下文
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        SpringContextUtil.applicationContext = applicationContext;
+        this.applicationContext = applicationContext;
     }
 
     //获取上下文

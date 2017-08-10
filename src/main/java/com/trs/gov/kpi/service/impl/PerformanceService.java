@@ -9,12 +9,10 @@ import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.outer.InteractionService;
 import com.trs.gov.kpi.service.outer.SGService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.List;
 
 /**

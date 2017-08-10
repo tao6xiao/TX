@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
-import java.util.Date;
 
 /**
  * 综合实时监测：预警提醒Controller
@@ -43,7 +42,7 @@ public class IntegratedMonitorWarningController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
+    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询预警提醒的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.ControlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);

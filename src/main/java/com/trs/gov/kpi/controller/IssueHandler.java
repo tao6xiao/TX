@@ -8,13 +8,11 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by he.lang on 2017/6/8.

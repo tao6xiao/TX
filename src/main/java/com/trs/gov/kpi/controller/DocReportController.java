@@ -41,6 +41,8 @@ public class DocReportController {
     public static final String KEY_TOTAL_COUNT = "totalCount";
     public static final String KEY_DATA = "data";
     public static final String SITE_YIFA_DOC_BYDAY = "site_yifa_doc_byday";
+    public static final String BEGIN_DATE_TIME = "beginDateTime";
+    public static final String END_DATE_TIME = "endDateTime";
     @Resource
     private ReportApiService reportApiService;
 
@@ -105,7 +107,7 @@ public class DocReportController {
     @ResponseBody
     public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException,
             BizException {
-        String logDesc = "查询按部门统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "beginDateTime", beginDateTime, "endDateTime", endDateTime);
+        String logDesc = "查询按部门统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
         return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
             List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
@@ -136,9 +138,8 @@ public class DocReportController {
      */
     @RequestMapping(value = "/bysite", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
-            BizException {
-        String logDesc = "查询按站点统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "beginDateTime", beginDateTime, "endDateTime", endDateTime);
+    public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, BizException {
+        String logDesc = "查询按站点统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
         return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
@@ -164,9 +165,8 @@ public class DocReportController {
      */
     @RequestMapping(value = "/byuser", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
-            BizException {
-        String logDesc = "查询按个人统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "beginDateTime", beginDateTime, "endDateTime", endDateTime);
+    public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, BizException {
+        String logDesc = "查询按个人统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
         return LogUtil.ControlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
@@ -362,8 +362,7 @@ public class DocReportController {
         }
     }
 
-    private <T> void setCounter(Map<String, T> counterMap, Map<String, String> newDocReport, Class<T> counterClass, SetFunc<T, String> setIdFunc, SetFunc<T, String> setCounterFunc) throws
-            BizException {
+    private <T> void setCounter(Map<String, T> counterMap, Map<String, String> newDocReport, Class<T> counterClass, SetFunc<T, String> setIdFunc, SetFunc<T, String> setCounterFunc) {
         final Iterator<Map.Entry<String, String>> newDocIterator = newDocReport.entrySet().iterator();
         while (newDocIterator.hasNext()) {
             final Map.Entry<String, String> newDocEntry = newDocIterator.next();

@@ -25,7 +25,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.ParseException;
-import java.util.Date;
 
 /**
  * Created by ranwei on 2017/6/9.

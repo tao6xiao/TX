@@ -4,7 +4,6 @@ import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.Granularity;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.HistoryDate;
-import com.trs.gov.kpi.entity.requestdata.DateRequest;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 

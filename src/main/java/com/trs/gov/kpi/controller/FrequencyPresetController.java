@@ -2,7 +2,6 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.FrequencyPreset;
 import com.trs.gov.kpi.entity.exception.BizException;

@@ -14,11 +14,9 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.javassist.compiler.ast.StringL;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
 
 /**
  * 设置->为栏目设置部门
@@ -29,6 +27,7 @@ import java.util.Date;
 @RequestMapping("/gov/kpi/setting")
 public class DutyDeptController {
 
+    public static final String DEPT_REQUEST = "deptRequest";
     @Resource
     DutyDeptService deptService;
 
@@ -48,7 +47,7 @@ public class DutyDeptController {
     @RequestMapping(value = "/dept", method = RequestMethod.POST)
     @ResponseBody
     public String set(@ModelAttribute DutyDeptRequest deptRequest) throws BizException, RemoteException {
-        String logDesc = "设置栏目和部门的关系" + LogUtil.paramsToLogString("deptRequest", deptRequest);
+        String logDesc = "设置栏目和部门的关系" + LogUtil.paramsToLogString(DEPT_REQUEST, deptRequest);
         return LogUtil.ControlleFunctionWrapper(() -> {
             if (deptRequest.getSiteId() == null || deptRequest.getChnlId() == null || deptRequest.getDeptId() == null || deptRequest.getContain() == null) {
                 log.error("Invalid parameter: 传入的参数siteId、chnlId、deptId、contain中至少有一个存在null值");
@@ -66,7 +65,7 @@ public class DutyDeptController {
     }
 
     private Integer update(DutyDeptRequest deptRequest) throws RemoteException, BizException {
-        String logDesc = "修改栏目和部门的关系" + LogUtil.paramsToLogString("deptRequest", deptRequest);
+        String logDesc = "修改栏目和部门的关系" + LogUtil.paramsToLogString(DEPT_REQUEST, deptRequest);
         return LogUtil.ControlleFunctionWrapper(() -> {
             deptService.update(deptRequest);
             return null;
@@ -74,7 +73,7 @@ public class DutyDeptController {
     }
 
     private Integer add(DutyDeptRequest deptRequest) throws RemoteException, BizException {
-        String logDesc = "添加栏目和部门的关系" + LogUtil.paramsToLogString("deptRequest", deptRequest);
+        String logDesc = "添加栏目和部门的关系" + LogUtil.paramsToLogString(DEPT_REQUEST, deptRequest);
         return LogUtil.ControlleFunctionWrapper(() -> {
             deptService.add(deptRequest);
             return null;

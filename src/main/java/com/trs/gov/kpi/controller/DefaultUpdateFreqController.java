@@ -24,6 +24,9 @@ import java.text.ParseException;
 @RestController
 @RequestMapping("/gov/kpi/setting")
 public class DefaultUpdateFreqController {
+
+    public static final String DEFAULT_UPDATE_FREQ_NAME = "defaultUpdateFreq";
+
     @Resource
     DefaultUpdateFreqService defaultUpdateFreqService;
 
@@ -69,8 +72,8 @@ public class DefaultUpdateFreqController {
      */
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.PUT)
     @ResponseBody
-    public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException, RemoteException {
-        String logDesc = "插入/修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
+    public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, RemoteException {
+        String logDesc = "插入/修改自查提醒记录" + LogUtil.paramsToLogString(DEFAULT_UPDATE_FREQ_NAME, defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             if (defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null) {
                 log.error("Invalid parameter:  参数siteId、value（自查提醒周期值）中至少一个存在null值");
@@ -89,7 +92,7 @@ public class DefaultUpdateFreqController {
     }
 
     private Integer updateDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws RemoteException, BizException {
-        String logDesc = "修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
+        String logDesc = "修改自查提醒记录" + LogUtil.paramsToLogString(DEFAULT_UPDATE_FREQ_NAME, defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
             return null;
@@ -97,7 +100,7 @@ public class DefaultUpdateFreqController {
     }
 
     private Integer addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws RemoteException, BizException {
-        String logDesc = "插入自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
+        String logDesc = "插入自查提醒记录" + LogUtil.paramsToLogString(DEFAULT_UPDATE_FREQ_NAME, defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
             return null;

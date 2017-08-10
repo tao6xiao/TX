@@ -363,7 +363,6 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             }
             chnlIdList.add(Integer.parseInt(String.valueOf(map.get(IssueTableField.CUSTOMER2))));
         }
-//        List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
         for (Integer chnlId : chnlIdList) {
             if (chnlId != null) {
                 Channel chnl = siteApiService.getChannelById(chnlId, "");

@@ -39,15 +39,17 @@ public class OuterApiUtil {
         String ret = response.body().string();
 
         ApiResult result = null;
+        final String invalidResult = "invalid result msg: ";
+        final String responseStr = ", response: ";
         try {
             result = OuterApiUtil.toResultObj(ret);
         } catch (Exception e) {
-            log.error("invalid result msg: " + ret + ", response: " + response, e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "invalid result msg: " + ret + ", response: " + response, e);
+            log.error(invalidResult + ret + responseStr + response, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, invalidResult + ret + responseStr + response, e);
             throw new RemoteException(errMsg + "失败！");
         }
         if (result == null) {
-            log.error("invalid result msg: " + ret + ", response: " + response);
+            log.error(invalidResult + ret + responseStr + response);
             throw new RemoteException(errMsg + "失败！");
         }
         if (!result.isOk()) {

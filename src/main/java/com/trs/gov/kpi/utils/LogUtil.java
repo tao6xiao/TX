@@ -10,12 +10,9 @@ import com.trs.mlf.simplelog.LogConstant;
 import com.trs.mlf.simplelog.LogUser;
 import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 
 import javax.validation.constraints.NotNull;
-import java.text.ParseException;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * 用于添加系统日志和获取异常信息的工具类
@@ -233,7 +230,7 @@ public class LogUtil {
                 addElapseLog(type, desc, spendTime);
             }
         }
-    };
+    }
 
     /**
      * 构造参数在日志中的描述记录

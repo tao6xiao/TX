@@ -1,14 +1,11 @@
 package com.trs.gov.kpi.service;
 
 import com.trs.gov.kpi.entity.FrequencySetup;
-import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSelectRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-
-import java.text.ParseException;
 
 /**
  * 栏目更新频率设置Service
