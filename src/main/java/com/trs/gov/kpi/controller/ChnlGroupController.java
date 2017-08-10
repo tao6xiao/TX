@@ -50,13 +50,8 @@ public class ChnlGroupController {
     public ChnlGroupsResponse[] getChnlGroups(@RequestParam("siteId") Integer siteId) throws RemoteException, BizException {
         String logDesc = "查询栏目分类" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
         return LogUtil.ControlleFunctionWrapper(() -> {
-            LogUtil.PerformanceLogRecorder performanceLogRecorder = LogUtil.newPerformanceRecorder(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc));
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
-
-            ChnlGroupsResponse[] groupsResponseArray = chnlGroupService.getChnlGroupsResponseDetailArray();
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, siteApiService.getSiteById(siteId, "").getSiteName());
-            performanceLogRecorder.record();
-            return groupsResponseArray;
+            return chnlGroupService.getChnlGroupsResponseDetailArray();
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
@@ -76,7 +71,6 @@ public class ChnlGroupController {
             RemoteException {
         String logDesc = "查询站点和根栏目分类下的数据" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
         return LogUtil.ControlleFunctionWrapper(() -> {
-            LogUtil.PerformanceLogRecorder performanceLogRecorder = LogUtil.newPerformanceRecorder(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc));
             if (siteId == null || groupId == null) {
                 log.error("Invalid parameter:  参数siteId、groupId（分类编号）至少有一个存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -87,8 +81,6 @@ public class ChnlGroupController {
             int itemCount = chnlGroupService.getItemCountBySiteIdAndGroupId(siteId, groupId);
             Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
             List<ChnlGroupChnlsResponse> chnlGroupChnlsResponseList = chnlGroupService.getPageDataBySiteIdAndGroupId(siteId, groupId, pager.getCurrPage() - 1, pager.getPageSize());
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, siteApiService.getSiteById(siteId, "").getSiteName());
-            performanceLogRecorder.record();
             return new ApiPageData(pager, chnlGroupChnlsResponseList);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -114,7 +106,6 @@ public class ChnlGroupController {
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDCHNLTOTYPE, chnlGroupChnlsAddRequest.getSiteId());
 
             chnlGroupService.addChnlGroupChnls(chnlGroupChnlsAddRequest);
-            LogUtil.addOperationLog(OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlsAddRequest.getSiteId()));
             return null;
         }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlsAddRequest.getSiteId()));
     }
@@ -139,9 +130,7 @@ public class ChnlGroupController {
             }
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATETYPEOFCHNL, chnlGroupChnlRequestDetail.getSiteId());
 
-            chnlGroupChnlRequestDetail.getId();
             chnlGroupService.updateBySiteIdAndId(chnlGroupChnlRequestDetail);
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlRequestDetail.getSiteId()));
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, chnlGroupChnlRequestDetail.getSiteId()));
     }
@@ -166,7 +155,6 @@ public class ChnlGroupController {
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DELCHNLFROMTYPE, siteId);
 
             chnlGroupService.deleteBySiteIdAndId(siteId, id);
-            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
         }, OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }

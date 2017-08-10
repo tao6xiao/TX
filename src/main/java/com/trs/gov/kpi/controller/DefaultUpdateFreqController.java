@@ -45,7 +45,6 @@ public class DefaultUpdateFreqController {
     public Integer getDefaultUpdateFreqBySiteId(@RequestParam Integer siteId) throws BizException, RemoteException {
         String logDesc = "通过siteId查询对应自查提醒记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
         return LogUtil.ControlleFunctionWrapper(() -> {
-            LogUtil.PerformanceLogRecorder performanceLogRecorder = LogUtil.newPerformanceRecorder(OperationType.QUERY, LogUtil.buildElapseLogDesc(siteApiService, siteId, logDesc));
             if (siteId == null) {
                 log.error("Invalid parameter:  参数siteId存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -57,10 +56,7 @@ public class DefaultUpdateFreqController {
             if (defaultUpdateFreq != null) {
                 value = defaultUpdateFreq.getValue();
             }
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
-            performanceLogRecorder.record();
             return value;
-
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
@@ -74,7 +70,7 @@ public class DefaultUpdateFreqController {
     @RequestMapping(value = "/defaultupdatefreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object save(@ModelAttribute DefaultUpdateFreq defaultUpdateFreq) throws BizException, ParseException, RemoteException {
-        String logDesc = "插入或者修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
+        String logDesc = "插入/修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             if (defaultUpdateFreq.getSiteId() == null || defaultUpdateFreq.getValue() == null) {
                 log.error("Invalid parameter:  参数siteId、value（自查提醒周期值）中至少一个存在null值");
@@ -82,7 +78,6 @@ public class DefaultUpdateFreqController {
             }
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATEDEMANDFREQ, defaultUpdateFreq.getSiteId());
             int siteId = defaultUpdateFreq.getSiteId();
-            // TODO: 2017/8/9 REVIEW HELANG FIXED 是否需要在查询自查提醒记录时，try catch
             DefaultUpdateFreq defaultUpdateFreqCheck = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
             if (defaultUpdateFreqCheck == null) {//不存在对应siteId的自查提醒记录，需要新增记录
                 addDefaultUpdateFreq(defaultUpdateFreq);
@@ -97,7 +92,6 @@ public class DefaultUpdateFreqController {
         String logDesc = "修改自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             defaultUpdateFreqService.updateDefaultUpdateFreq(defaultUpdateFreq);
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
     }
@@ -106,7 +100,6 @@ public class DefaultUpdateFreqController {
         String logDesc = "插入自查提醒记录" + LogUtil.paramsToLogString("defaultUpdateFreq", defaultUpdateFreq);
         return LogUtil.ControlleFunctionWrapper(() -> {
             defaultUpdateFreqService.addDefaultUpdateFreq(defaultUpdateFreq);
-            LogUtil.addOperationLog(OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
             return null;
         }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, defaultUpdateFreq.getSiteId()));
     }

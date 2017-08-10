@@ -143,6 +143,7 @@ public class MonitorSiteController {
                 log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
+			authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
             EnumCheckJobType checkJobType = null;
             switch (checkJobValue) {
                 case (1):
@@ -156,6 +157,9 @@ public class MonitorSiteController {
                     break;
                 case (4):
                     checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
+                    break;
+                case (8):
+                    checkJobType = EnumCheckJobType.SERVICE_LINK;
                     break;
                 default:
             }

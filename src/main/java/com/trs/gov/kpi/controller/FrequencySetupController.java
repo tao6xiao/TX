@@ -67,9 +67,7 @@ public class FrequencySetupController {
             }
             ParamCheckUtil.pagerCheck(selectRequest.getPageIndex(), selectRequest.getPageSize());
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, selectRequest.getSiteId());
-            ApiPageData apiPageData = frequencySetupService.getPageData(selectRequest);
-            LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, selectRequest.getSiteId()));
-            return apiPageData;
+            return frequencySetupService.getPageData(selectRequest);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, selectRequest.getSiteId()));
 
     }
@@ -105,20 +103,13 @@ public class FrequencySetupController {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(frequencySetupSetRequest.getSiteId(), chnlIds[i]);
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
                 frequencySetup = frequencySetupService.toFrequencySetupBySetupRequest(frequencySetupSetRequest, chnlIds[i]);
-                try {
-                    frequencySetupService.insert(frequencySetup);
-                    LogUtil.addOperationLog(OperationType.ADD, "添加更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
-                } catch (ParseException e) {
-                    log.error("", e);
-                    throw new BizException("");
-                }
-
+                frequencySetupService.insert(frequencySetup);
+                LogUtil.addOperationLog(OperationType.ADD, "添加更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
             } else {//当前站点的当前栏目设置过更新频率，需要修改
 
                 frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
                 frequencySetupService.updateFrequencySetupById(frequencySetup);
-                LogUtil.addOperationLog(OperationType.UPDATE, "添加更新频率时，当前更新频率存在，那么修改这个更新频率" + "添加更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
-
+                LogUtil.addOperationLog(OperationType.UPDATE, "修改更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
             }
         }
     }
@@ -157,7 +148,6 @@ public class FrequencySetupController {
             }
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATEMONITORCHNL, frequencySetupUpdateRequest.getSiteId());
             frequencySetupService.updateFrequencySetupById(frequencySetupUpdateRequest);
-            LogUtil.addOperationLog(OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupUpdateRequest.getSiteId()));
             return null;
 
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupUpdateRequest.getSiteId()));
@@ -191,7 +181,6 @@ public class FrequencySetupController {
             for (Integer id : ids) {
                 frequencySetupService.deleteFrequencySetupBySiteIdAndId(siteId, id);
             }
-            LogUtil.addOperationLog(OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
 
         }, OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
@@ -208,7 +197,7 @@ public class FrequencySetupController {
     @RequestMapping(value = "/chnlfreq/open", method = RequestMethod.PUT)
     @ResponseBody
     public Object closeOrOpen(@RequestParam("siteId") Integer siteId, @RequestParam("ids") Integer[] ids, @RequestParam("isOpen") Integer isOpen) throws BizException, RemoteException {
-        String logDesc = "关闭或者生效更新频率记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
+        String logDesc = "打开/关闭更新频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
         return LogUtil.ControlleFunctionWrapper(() -> {
             checkCloseOrOpenParam(siteId, ids, isOpen);
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ENABLEDMONITORCHNL, siteId);
@@ -225,19 +214,17 @@ public class FrequencySetupController {
     }
 
     private Integer open(Integer siteId, Integer[] ids, Integer isOpen) throws RemoteException, BizException {
-        String logDesc = "生效更新频率记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
+        String logDesc = "打开更新频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
         return LogUtil.ControlleFunctionWrapper(() -> {
             frequencySetupService.closeOrOpen(siteId, ids, isOpen);
-            LogUtil.addOperationLog(OperationType.UPDATE, "生效更新频率记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     private Integer close(Integer siteId, Integer[] ids, Integer isOpen) throws RemoteException, BizException {
-        String logDesc = "关闭更新频率记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
+        String logDesc = "关闭更新频率" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, IDS, ids, IS_OPEN, isOpen);
         return LogUtil.ControlleFunctionWrapper(() -> {
             frequencySetupService.closeOrOpen(siteId, ids, isOpen);
-            LogUtil.addOperationLog(OperationType.UPDATE, "关闭更新频率记录", LogUtil.getSiteNameForLog(siteApiService, siteId));
             return null;
         }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }

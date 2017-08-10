@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
@@ -36,7 +37,7 @@ public interface InfoUpdateService {
      * @param param
      * @return
      */
-    List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException;
+    List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws BizException, RemoteException;
 
     /**
      * 查询未解决问题的列表

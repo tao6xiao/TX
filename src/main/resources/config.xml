@@ -452,6 +452,20 @@
             <type>kpiweb.nbhd</type>
         </operation>
 
+        <operation name="kpiweb.monitorrecord.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->日志监测-->查询</desc>
+            <index>520</index>
+            <type>kpiweb.monitorrecord</type>
+        </operation>
+
+        <operation name="kpiweb.manualmonitor.check">
+            <disp-name>监测</disp-name>
+            <desc>绩效考核-->手动监测-->监测</desc>
+            <index>521</index>
+            <type>kpiweb.manualmonitor</type>
+        </operation>
+
     </extension>
 
 

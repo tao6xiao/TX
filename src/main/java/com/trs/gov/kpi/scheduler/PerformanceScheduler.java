@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.constant.SchedulerType;
 import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.impl.PerformanceService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -64,7 +65,7 @@ public class PerformanceScheduler implements SchedulerTask {
             performanceMapper.insert(performance);
             Date endTime = new Date();
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.PERFORMANCE_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
-        } catch (ParseException | RemoteException e) {
+        } catch (BizException | RemoteException e) {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
         }finally {
