@@ -335,6 +335,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
 
     private List<EmptyChnl> getEmptyChnls(PageDataRequestParam param) throws RemoteException {
         QueryFilter filter = QueryFilterHelper.toFilter(param);
+        //TODO DO_tao.xiao 不需要再设置SITE_ID 条件了
         filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.EMPTY_CHANNEL.value);
         filter.addCond(IssueTableField.SUBTYPE_ID, Types.EmptyChannelType.EMPTY_COLUMN.value);
