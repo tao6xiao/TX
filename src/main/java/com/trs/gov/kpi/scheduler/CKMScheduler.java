@@ -143,6 +143,7 @@ public class CKMScheduler implements SchedulerTask {
 
         ContentCheckResult result = null;
         try {
+
             result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             log.error("failed to check content " + checkContent, e);
