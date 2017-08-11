@@ -44,7 +44,7 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
             }
         } catch (RemoteException e) {
             log.error("调用外部接口 getSiteById 失败", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口 getSiteById 失败", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口 getSiteById 失败siteId[" + id + "]", e);
         }
     }
 

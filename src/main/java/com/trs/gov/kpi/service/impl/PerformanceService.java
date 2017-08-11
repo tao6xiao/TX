@@ -24,8 +24,8 @@ import java.util.List;
  * 总分：37.5
  * <p>
  * 网站信息更新情况：
- * 网站中应更新但长期未更新的栏目数超过（含）10个，此项直接为0分；
- * 空白栏目数量超过（含）5个，此项直接为0分。
+ * 网站中应更新但长期未更新的栏目数，每发现一个扣10%分；空白栏目问题，每发现一个扣20%分。扣完为止。
+ * <p>
  * 总分：37.5
  * <p>
  * 办事指南要素的完整性、准确性：
@@ -94,10 +94,10 @@ public class PerformanceService {
                 blankChnlCount = statistics.getCount();
             }
         }
-        if (updateNotInTimeCount >= 10) {
-            infoUpdateScore = 0;
-        }
-        if (blankChnlCount >= 5) {
+        double percent = 1 - updateNotInTimeCount * 0.1 - blankChnlCount * 0.2;
+        if (percent > 0) {
+            infoUpdateScore = 37.5 * percent;
+        } else {
             infoUpdateScore = 0;
         }
 

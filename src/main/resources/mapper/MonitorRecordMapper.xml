@@ -12,7 +12,7 @@
     </resultMap>
 
 
-    <select id="getResuleByLastEndTime" parameterType="java.util.Date" resultType="int">
+    <select id="getResultByLastEndTime" parameterType="java.util.Date" resultType="Integer">
         SELECT
         result
         FROM monitorrecord

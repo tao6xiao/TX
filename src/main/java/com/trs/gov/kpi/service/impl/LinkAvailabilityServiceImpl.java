@@ -207,13 +207,25 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         // TODO REVIEW DO_li.hao FIXED 需要考虑首页检测任务没有执行完成的情况
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
         Date endTime = monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
+        if (endTime == null) {
+            // TODO 如果一次都没有检测过，需要显示成其他的
+            // 记录不存在， 还没有进行过一次完整的检测
+            IndexPage indexPage = new IndexPage();
+            indexPage.setIndexAvailable(true);
+            indexPage.setIndexUrl(indexUrl);
+            indexPage.setMonitorTime(DateUtil.toString(new Date()));
+            return indexPage;
+        }
 
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
         indexPage.setMonitorTime(DateUtil.toString(endTime));
 
-        int result = monitorRecordService.getResuleByLastEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value,endTime);
-        if (result == 0) {
+        Integer result = monitorRecordService.getResultByLastEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value,endTime);
+        if (result == null) {
+            // 记录不存在， 还没有进行过一次完整的检测
+            indexPage.setIndexAvailable(true);
+        } else if (result == 0) {
             indexPage.setIndexAvailable(true);
         } else {
             indexPage.setIndexAvailable(false);

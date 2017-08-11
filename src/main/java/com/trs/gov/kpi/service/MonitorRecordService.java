@@ -37,7 +37,7 @@ public interface MonitorRecordService {
      * @param endTime
      * @return
      */
-    int getResuleByLastEndTime(Integer siteId, Integer taskId, Date endTime);
+    Integer getResultByLastEndTime(Integer siteId, Integer taskId, Date endTime);
 
     /**
      * 查询日志监测列表

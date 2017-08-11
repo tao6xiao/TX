@@ -55,13 +55,13 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
     }
 
     @Override
-    public int getResuleByLastEndTime(Integer siteId, Integer taskId, Date endTime) {
+    public Integer getResultByLastEndTime(Integer siteId, Integer taskId, Date endTime) {
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
         filter.addCond(MonitorRecordTableField.END_TIME, endTime);
         filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
 
-        return monitorRecordMapper.getResuleByLastEndTime(filter);
+        return monitorRecordMapper.getResultByLastEndTime(filter);
     }
 
     @Override

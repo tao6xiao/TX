@@ -7,7 +7,6 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.mlf.simplelog.LogConstant;
-import com.trs.mlf.simplelog.LogUser;
 import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,7 +71,7 @@ public class LogUtil {
      * @param desc
      */
     public static void addInfoLog(String operationType, String errorType, String desc) {
-        SimpleLogServer.info(MODULE_NAME, new LogUser(), operationType, errorType, desc);
+        SimpleLogServer.info(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, desc);
     }
 
     /**
@@ -83,7 +82,7 @@ public class LogUtil {
      * @param desc
      */
     public static void addWarnLog(String operationType, String errorType, String desc) {
-        SimpleLogServer.warn(MODULE_NAME, new LogUser(), operationType, errorType, desc);
+        SimpleLogServer.warn(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, desc);
     }
 
     /**
@@ -95,7 +94,7 @@ public class LogUtil {
      * @param e
      */
     public static void addWarnLog(String operationType, String errorType, String desc, Throwable e) {
-        SimpleLogServer.warn(MODULE_NAME, new LogUser(), operationType, errorType, desc, e);
+        SimpleLogServer.warn(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, desc, e);
     }
 
     /**
@@ -117,7 +116,15 @@ public class LogUtil {
      * @param desc
      */
     public static void addDebugLog(String operationType, String debugType, String desc) {
-        SimpleLogServer.debug(MODULE_NAME, new LogUser(), operationType, debugType, desc);
+        SimpleLogServer.debug(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, debugType, desc);
+    }
+
+    /**
+     * 添加安全日志（登录日志）
+     * @param loginResult
+     */
+    public static void addSecurityLog(String loginResult) {
+        SimpleLogServer.security(MODULE_NAME, TRSLogUserUtil.getLogUser(), loginResult);
     }
 
     /**
@@ -170,6 +177,7 @@ public class LogUtil {
 
     /**
      * control处理函数Function
+     *
      * @param <R>
      */
     @FunctionalInterface
@@ -198,6 +206,7 @@ public class LogUtil {
 
     /**
      * 构造性能日志记录器
+     *
      * @param type
      * @param desc
      * @return
@@ -234,10 +243,11 @@ public class LogUtil {
 
     /**
      * 构造参数在日志中的描述记录
+     *
      * @param params, 参数，以 参数名,参数值,参数名,数参值,... 的格式传入
      * @return
      */
-    public static String paramsToLogString(Object ... params) {
+    public static String paramsToLogString(Object... params) {
 
         if (params.length % 2 != 0) {
             throw new IllegalArgumentException("参数不成对！");
@@ -246,8 +256,8 @@ public class LogUtil {
         StringBuilder result = new StringBuilder();
         result.append("[");
         for (int i = 0; i < params.length; i = i + 2) {
-            result.append(params[i]).append("=").append(params[i+1]);
-            if (i+2 < params.length) {
+            result.append(params[i]).append("=").append(params[i + 1]);
+            if (i + 2 < params.length) {
                 result.append(",");
             }
         }
