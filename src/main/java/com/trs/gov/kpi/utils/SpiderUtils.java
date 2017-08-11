@@ -204,7 +204,7 @@ public class SpiderUtils {
                 chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl().intern(), siteId);
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "url=" + request.getUrl().intern() + ", siteId=" + siteId, e);
             }
 
             if (!isUrlAvailable.get()) {
@@ -315,7 +315,7 @@ public class SpiderUtils {
                 }
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "插入失效链接，url=" + unavailableUrlAndParentUrl.getValue(), e);
             }
 
         }

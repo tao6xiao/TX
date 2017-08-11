@@ -95,7 +95,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         } catch (SchedulerException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "任务调度失败，siteId[" + siteId + "]", e);
         }
     }
 
@@ -183,7 +183,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         } catch (SchedulerException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "任务调度失败", e);
         }
     }
 
@@ -512,6 +512,7 @@ public class SchedulerServiceImpl implements SchedulerService {
      * 写入问题定位文件所需的样式文件
      */
     private void distStyleFile() {
+        String message = "写入问题定位文件所需的样式文件";
         final InputStream resourceAsStream = getClass().getResourceAsStream("/style/css.css");
         BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream));
         StringBuilder sb = new StringBuilder();
@@ -522,13 +523,13 @@ public class SchedulerServiceImpl implements SchedulerService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, message, e);
         } finally {
             try {
                 resourceAsStream.close();
             } catch (IOException e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, message, e);
             }
         }
 
@@ -537,7 +538,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             FileUtils.writeStringToFile(new File(locationDir + File.separator + "style" + File.separator + "css.css"), sb.toString());
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, message, e);
         }
     }
 }

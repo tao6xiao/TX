@@ -61,7 +61,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "从采编中心获取部门", e);
             throw new RemoteException("获取部门失败！", e);
         }
     }
@@ -95,7 +95,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "从采编中心获取部门集合", e);
             throw new RemoteException("获取部门集合失败！", e);
         }
     }

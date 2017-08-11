@@ -86,7 +86,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
                 site = siteApiService.getSiteById(siteId, "");
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "报表生成，siteId[" + siteId + "]", e);
             }
             String title = "";
             if (site != null) {
@@ -246,7 +246,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
                 workbook.write(out);
             } catch (IOException e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "报表生成，文件写入错误，siteId[" + siteId + "]", e);
             }
             report.setPath(fileDir + fileName);
             report.setCrTime(new Date());
