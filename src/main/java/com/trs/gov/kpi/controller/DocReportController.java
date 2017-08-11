@@ -89,7 +89,7 @@ public class DocReportController {
                 }
                 return responseList;
             }
-        }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**

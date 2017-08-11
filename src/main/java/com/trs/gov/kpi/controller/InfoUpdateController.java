@@ -108,7 +108,7 @@ public class InfoUpdateController extends IssueHandler {
     /**
      * 获取更新不及时栏目的更新不及时以及空栏目列表
      *
-     * @param siteId
+     * @param param
      * @return
      * @throws BizException
      * @throws RemoteException
