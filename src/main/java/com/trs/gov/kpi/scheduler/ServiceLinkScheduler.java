@@ -110,7 +110,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
             LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "服务链接监测，siteId[" + siteId + "]", e);
         } finally {
             log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));

@@ -212,7 +212,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(chnl, parent);
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "构建栏目检树失败，siteId[" + siteId + "]", e);
             }
         }
 
@@ -273,7 +273,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(channel, parent);
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, "递归构建channelId[" + curChnl.getChannelId() + "]子栏目检查树，siteId[" + siteId + "]", e);
             }
         }
     }
@@ -426,7 +426,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             return ids != null && !ids.isEmpty();
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查一个栏目channelId[" + channelId + "]是否更新，siteId[" + siteId + "]", e);
         }
         // NOTE: 异常情况下，先暂时不判定为未更新，以免发生错误，等下次的检查的时候再判定
         return true;
@@ -639,7 +639,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             update.setChnlUrl(siteApiService.getChannelPublishUrl("", 0, channelId));
         } catch (Exception e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "插入信息更新监测的数据失败，siteId[" + siteId + "]", e);
         }
         issueMapper.insert(DBUtil.toRow(update));
         count++;
@@ -721,7 +721,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息更新监测，siteId[" + siteId + "]", e);
         }
         DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
         if (chnlUrl != null) {

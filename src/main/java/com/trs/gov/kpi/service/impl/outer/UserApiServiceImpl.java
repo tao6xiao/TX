@@ -60,7 +60,7 @@ public class UserApiServiceImpl implements UserApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed get user by id from edit center", e);
             throw new RemoteException("获取用户失败！", e);
         }
     }
@@ -86,7 +86,7 @@ public class UserApiServiceImpl implements UserApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed get user by userName from edit center", e);
             throw new RemoteException("获取用户失败！", e);
         }
     }

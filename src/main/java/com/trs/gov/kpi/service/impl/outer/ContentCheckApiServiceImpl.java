@@ -83,7 +83,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                 throw new RemoteException("bad code: " + code);
             }
         } catch (IOException e) {
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "检查信息错误信息", e);
             throw new RemoteException("fail to check!", e);
         } finally {
             if (httpClient != null) {
@@ -91,7 +91,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                     httpClient.close();
                 } catch (IOException e) {
                     log.error("", e);
-                    LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+                    LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "检查信息错误信息", e);
                 }
             }
         }

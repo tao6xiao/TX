@@ -63,11 +63,11 @@ public class PerformanceScheduler implements SchedulerTask {
             performance.setCheckTime(calendar.getTime());
             performanceMapper.insert(performance);
             Date endTime = new Date();
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
         } catch (BizException | RemoteException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "", e);
-        }finally {
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "绩效指数计算失败，siteId[" + siteId + "]", e);
+        } finally {
             log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
         }

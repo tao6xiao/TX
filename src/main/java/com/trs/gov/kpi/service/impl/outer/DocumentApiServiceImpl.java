@@ -70,7 +70,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "find document error", e);
             throw new RemoteException("获取发布文档ID失败！", e);
         }
 

@@ -121,6 +121,7 @@ public class LogUtil {
 
     /**
      * 添加安全日志（登录日志）
+     *
      * @param loginResult
      */
     public static void addSecurityLog(String loginResult) {
@@ -143,7 +144,7 @@ public class LogUtil {
                 return "site[" + siteId + "]";
             }
         } catch (Exception e) {
-            addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "查询站点失败", e);
+            addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "查询站点失败，siteId[" + siteId + "]", e);
             return "site[" + siteId + "]";
         }
     }

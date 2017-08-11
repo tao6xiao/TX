@@ -14,6 +14,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.service.LinkContentStatsService;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
@@ -82,6 +83,9 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    @Resource
+    private LinkContentStatsService linkContentStatsService;
+
     //错误信息计数
     int count = 0;
 
@@ -112,24 +116,24 @@ public class CKMScheduler implements SchedulerTask {
             monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
             monitorRecordService.insertMonitorRecord(monitorRecord);
 
-            spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
+        spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
             //监测完成(修改结果、结束时间、状态)
             Date endTime = new Date();
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
             filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
             filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_CONTENT.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT,count);
+            updater.addField(MonitorRecordTableField.RESULT, count);
             updater.addField(MonitorRecordTableField.END_TIME, endTime);
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
 
-        }finally {
+        } finally {
             log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
             // TODO REVIEW LINWEI DONE_he.lang 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
@@ -147,8 +151,14 @@ public class CKMScheduler implements SchedulerTask {
 
         ContentCheckResult result = null;
         try {
-
-            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+            String thisTimeMd5 = linkContentStatsService.getThisTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
+            String lastTimeMd5 = linkContentStatsService.getLastTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
+            if(lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)){//第一次检查或链接内容发生变化
+                //检测爬取内容
+                result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+            }else{//内容较上一次没有变化
+                return issueList;
+            }
         } catch (Exception e) {
             log.error("failed to check content " + checkContent, e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to check content " + checkContent, e);
@@ -507,11 +517,11 @@ public class CKMScheduler implements SchedulerTask {
                 List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
-                    count ++;
+                    count++;
                 }
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "插入信息错误数据失败，siteId[" + siteId + "]", e);
             }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
@@ -523,7 +533,7 @@ public class CKMScheduler implements SchedulerTask {
             insert(buildList(page, checkTypeList));
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
         }
     }
 }
