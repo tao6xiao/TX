@@ -87,7 +87,7 @@ public class IssueHandler {
         return LogUtil.controlleFunctionWrapper(() -> {
             issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
             return null;
-        }, OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
+        }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
 }

@@ -67,7 +67,7 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/bytype", method = RequestMethod.GET)
     @ResponseBody
     public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
-        String logDesc = "本月新增文档分类型统计查询" + LogUtil.paramsToLogString(Collections.singletonMap("siteId", siteId));
+        String logDesc = "本月新增文档分类型统计查询" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
         return LogUtil.controlleFunctionWrapper(() -> {
             authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
