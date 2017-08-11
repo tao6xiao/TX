@@ -19,7 +19,7 @@ public interface MonitorRecordMapper {
      * @param filter
      * @return
      */
-    int getResuleByLastEndTime(QueryFilter filter);
+    Integer getResuleByLastEndTime(QueryFilter filter);
 
     /**
      * 查询最近的监测任务的结束时间
