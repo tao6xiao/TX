@@ -100,20 +100,20 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     @Override
     public void run() {
-
-        log.info(SchedulerType.startScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
-
-        //监测开始(添加基本信息)
-        Date startTime = new Date();
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTaskId(EnumCheckJobType.CHECK_INFO_UPDATE.value);
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
-
         try {
+            log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+
+            //监测开始(添加基本信息)
+            Date startTime = new Date();
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_INFO_UPDATE.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
+
+
             List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
             // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
@@ -134,21 +134,21 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
             filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
             filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_INFO_UPDATE.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT,count);
+            updater.addField(MonitorRecordTableField.RESULT, count);
             updater.addField(MonitorRecordTableField.END_TIME, endTime);
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.RUN_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
         } finally {
-            log.info(SchedulerType.endScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER, siteId));
+            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         }
     }
 
@@ -556,9 +556,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     /**
      * 插入空栏目
      */
-    private void insertEmptyColumn(CheckingChannel checking) throws RemoteException{
+    private void insertEmptyColumn(CheckingChannel checking) throws RemoteException {
         List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
-        for(Integer chnlId : chnlIdList){
+        for (Integer chnlId : chnlIdList) {
             QueryFilter filter = buildQueryFilter(chnlId,
                     Types.IssueType.EMPTY_CHANNEL.value,
                     Types.EmptyChannelType.EMPTY_COLUMN.value,
