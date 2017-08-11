@@ -64,10 +64,10 @@ public interface InfoUpdateService {
     InfoUpdateOrderRes getInfoUpdateOrderById(WorkOrderRequest request) throws RemoteException;
 
     /**
-     * 获取当前站点下面更新不及时栏目的月数以及空栏目
+     * 获取当前站点下面更新不及时栏目以及空栏目列表
      *
-     * @param siteId
+     * @param param
      * @return
      */
-    MonthUpdateResponse getNotInTimeCountMonth(int siteId) throws RemoteException;
+    MonthUpdateResponse getNotInTimeCountMonth(PageDataRequestParam param) throws RemoteException;
 }

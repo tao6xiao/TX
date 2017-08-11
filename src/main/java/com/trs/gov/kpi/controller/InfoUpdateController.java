@@ -86,7 +86,7 @@ public class InfoUpdateController extends IssueHandler {
     }
 
     /**
-     * 获取栏目信息更新不及时及空栏目的统计信息
+     * 获取栏目信息更新不及时及空栏目的数量统计信息
      *
      * @param param
      * @return
@@ -106,7 +106,7 @@ public class InfoUpdateController extends IssueHandler {
     }
 
     /**
-     * 获取更新不及时栏目的更新不及时总月数以及空栏目
+     * 获取更新不及时栏目的更新不及时以及空栏目列表
      *
      * @param siteId
      * @return
@@ -115,15 +115,12 @@ public class InfoUpdateController extends IssueHandler {
      */
     @RequestMapping(value = "/month/count", method = RequestMethod.GET)
     @ResponseBody
-    public MonthUpdateResponse getNotInTimeCountMonth(@RequestParam("siteId") Integer siteId) throws BizException, RemoteException {
-        String logDesc = "获取更新不及时栏目的更新不及时总月数以及空栏目" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+    public MonthUpdateResponse getNotInTimeCountMonth(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        String logDesc = "获取更新不及时栏目的更新不及时总月数以及空栏目" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
-            if (siteId == null) {
-                log.error("Invalid parameter: 参数siteId为null值");
-                throw new BizException(Constants.INVALID_PARAMETER);
-            }
-            authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, siteId);
-            return infoUpdateService.getNotInTimeCountMonth(siteId);
-        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_INFOUPDATE_SEARCH, param.getSiteId());
+            return infoUpdateService.getNotInTimeCountMonth(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 }

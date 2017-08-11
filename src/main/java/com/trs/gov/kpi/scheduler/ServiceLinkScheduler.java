@@ -65,20 +65,19 @@ public class ServiceLinkScheduler implements SchedulerTask {
 
     @Override
     public void run() {
-
-        log.info(SchedulerType.startScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
-
-        //监测开始(添加基本信息)
-        Date startTime = new Date();
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTaskId(EnumCheckJobType.SERVICE_LINK.value);
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
-
         try {
+            log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
+
+            //监测开始(添加基本信息)
+            Date startTime = new Date();
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskId(EnumCheckJobType.SERVICE_LINK.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
+
             for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
                 if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
                     Issue issue = new Issue();
@@ -91,7 +90,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
                     issue.setIssueTime(nowTime);
                     issue.setCheckTime(nowTime);
                     issueMapper.insert(DBUtil.toRow(issue));
-                    count ++;
+                    count++;
                 }
             }
 
@@ -100,21 +99,21 @@ public class ServiceLinkScheduler implements SchedulerTask {
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
             filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
             filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.SERVICE_LINK.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT,count);
+            updater.addField(MonitorRecordTableField.RESULT, count);
             updater.addField(MonitorRecordTableField.END_TIME, endTime);
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.SERVICE_LINK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
         } catch (RemoteException e) {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
         } finally {
-            log.info(SchedulerType.endScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.SERVICE_LINK_SCHEDULER, siteId));
+            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
         }
     }
 

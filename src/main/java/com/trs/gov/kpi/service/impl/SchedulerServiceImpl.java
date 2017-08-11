@@ -12,7 +12,6 @@ import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.quartz.*;
@@ -114,10 +113,10 @@ public class SchedulerServiceImpl implements SchedulerService {
                     log.warn("failed delete job " + jobKey);
                 }
             }
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REMOVE_SCHEDULE, "移除调度任务，移除类型：" + checkType);
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REMOVE_SCHEDULE, "移除调度任务，相关站点：siteId[" + siteId + "]，移除类型：" + checkType);
         } catch (SchedulerException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "移除调度任务失败，移除类型：" + checkType, e);
         }
     }
 
@@ -205,6 +204,8 @@ public class SchedulerServiceImpl implements SchedulerService {
         for (MonitorSite site : allMonitorSites) {
             scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, DateUtil.SECOND_ONE_DAY);
         }
+
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "启动栏目更新检查任务:注册成功");
     }
 
     /**
@@ -272,7 +273,7 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         for (MonitorSite site : allMonitorSites) {
             // 每个月1日凌晨0点执行一次
-            // TODO REVIEW LINWEI DO_he.lang 这个地方没有记录日志
+            // TODO REVIEW LINWEI DONE_he.lang 这个地方没有记录日志
             scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, FIRST_DAY_OF_MONTH);
         }
     }
@@ -333,10 +334,6 @@ public class SchedulerServiceImpl implements SchedulerService {
     private void scheduleCheckJob(Scheduler scheduler, MonitorSite site, FrequencyType freqType, EnumCheckJobType jobType) {
         final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
                 .queryBySiteId(site.getSiteId());
-        if (StringUtil.isEmpty(site.getIndexUrl())
-                || monitorFrequencies == null || monitorFrequencies.isEmpty()) {
-            return;
-        }
 
         for (MonitorFrequency freq : monitorFrequencies) {
             if (freq != null && freq.getTypeId() == freqType.getTypeId()) {
@@ -377,8 +374,19 @@ public class SchedulerServiceImpl implements SchedulerService {
      * @param cronExpress cron 表达式
      */
     private void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, String cronExpress) {
-        scheduleJob(scheduler, jobType, site, cronSchedule(cronExpress));
+        try {
+            scheduleJob(scheduler, jobType, site, cronSchedule(cronExpress));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务成功：任务类型:" + jobType.name() + "，间隔时间：" + cronSchedule(cronExpress));
+        } catch (SchedulerException e) {
+            addSchedulerExceptionLog(jobType, site, e);
+        }
     }
+
+    private void addSchedulerExceptionLog(EnumCheckJobType jobType, MonitorSite site, SchedulerException e) {
+        log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
+        LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "注册调度任务失败：failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
+    }
+
 
     /**
      * 注册调度任务
@@ -389,10 +397,14 @@ public class SchedulerServiceImpl implements SchedulerService {
      * @param interval  间隔时间
      */
     private void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, int interval) {
-        scheduleJob(scheduler, jobType, site, simpleSchedule()
-                .withIntervalInSeconds(interval)
-                .repeatForever());
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务，任务类型:" + jobType);
+        try {
+            scheduleJob(scheduler, jobType, site, simpleSchedule()
+                    .withIntervalInSeconds(interval)
+                    .repeatForever());
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务成功：任务类型:" + jobType.name() + "，间隔时间：" + interval);
+        } catch (SchedulerException e) {
+            addSchedulerExceptionLog(jobType, site, e);
+        }
     }
 
     /**
@@ -403,11 +415,11 @@ public class SchedulerServiceImpl implements SchedulerService {
      * @param site
      * @param builder
      */
-    private <T extends Trigger> void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, ScheduleBuilder<T> builder) {
+    private <T extends Trigger> void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, ScheduleBuilder<T> builder) throws SchedulerException {
 
         SchedulerTask task = newTask(jobType);
         if (task == null) {
-            return;
+            throw new SchedulerException();
         }
 
         JobDetail job = newJob(CheckJob.class)
@@ -431,12 +443,9 @@ public class SchedulerServiceImpl implements SchedulerService {
                 .forJob(job.getKey())
                 .withSchedule(builder)
                 .build();
-        try {
-            scheduler.scheduleJob(job, trigger);
-        } catch (SchedulerException e) {
-            log.error("failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "failed to schedule " + jobType.name() + " check of site " + site.getSiteId(), e);
-        }
+
+        scheduler.scheduleJob(job, trigger);
+
     }
 
     /**
@@ -446,11 +455,11 @@ public class SchedulerServiceImpl implements SchedulerService {
      * @param checkJobType
      * @throws RemoteException
      */
-    private void doCheckJobNow(Integer siteId, EnumCheckJobType checkJobType) throws RemoteException {
+    private void doCheckJobNow(Integer siteId, EnumCheckJobType checkJobType) throws RemoteException, BizException {
 
         SchedulerTask task = newTask(checkJobType);
         if (task == null) {
-            return;
+            throw new BizException("手动检测失败：检测站点siteId[" + siteId + "]，检测任务类型type[" + checkJobType.name() + "]");
         }
         task.setSiteId(siteId);
         task.run();

@@ -66,8 +66,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info(SchedulerType.startScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+        log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
 
         try {
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -119,23 +119,23 @@ public class HomePageCheckScheduler implements SchedulerTask {
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
             filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
             filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_HOME_PAGE.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT,isAvailable);
+            updater.addField(MonitorRecordTableField.RESULT, isAvailable);
             updater.addField(MonitorRecordTableField.END_TIME, endTime);
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
+            // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
         } catch (Exception e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "", e);
         } finally {
-            // TODO REVIEW LINWEI SchedulerType.endScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
-            log.info(SchedulerType.endScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.HOMEPAGE_CHECK_SCHEDULER, siteId));
+            // TODO REVIEW LINWEI DONE_he.lang SchedulerRelated.getEndMessage(SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
+            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
         }
 
     }

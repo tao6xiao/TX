@@ -279,6 +279,6 @@ public class WebPageController {
             authorityService.checkRight(Authority.KPIWEB_IMPROVE_DELETE, siteId);
             webPageService.delPageByIds(siteId, Arrays.asList(ids));
             return null;
-        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+        }, OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 }

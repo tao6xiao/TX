@@ -31,6 +31,7 @@ import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.*;
 
+import static com.trs.gov.kpi.constant.Constants.PARAM;
 import static com.trs.gov.kpi.constant.Constants.WARNING_BEGIN_ID;
 
 /**
@@ -152,7 +153,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             }
             count++;
         }
-        Statistics statistics = getStatisticsByCount(EnumIndexUpdateType.ALL.getCode(), count);
+        Statistics statistics = getStatisticsByCount(EnumIndexUpdateType.ALL, count);
         statisticsList.add(statistics);
 
         //获取A类
@@ -176,7 +177,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             }
             count++;
         }
-        statistics = getStatisticsByCount(EnumIndexUpdateType.A_TYPE.getCode(), count);
+        statistics = getStatisticsByCount(EnumIndexUpdateType.A_TYPE, count);
         statisticsList.add(statistics);
 
         //获取首页
@@ -203,25 +204,12 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             }
             count++;
         }
-        statistics = getStatisticsByCount(EnumIndexUpdateType.HOMEPAGE.getCode(), count);
+        statistics = getStatisticsByCount(EnumIndexUpdateType.HOMEPAGE, count);
         statisticsList.add(statistics);
 
         //获取空白栏目
-        filter = QueryFilterHelper.toFilter(param);
-        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.EMPTY_CHANNEL.value);
-        filter.addCond(IssueTableField.SUBTYPE_ID, Types.EmptyChannelType.EMPTY_COLUMN.value);
-        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        filter.addGroupField(IssueTableField.CUSTOMER2);
-        countList = issueMapper.countList(filter);
-        count = 0;
-        for (Map map : countList) {
-            if(map.get(IssueTableField.CUSTOMER2) == null){
-                continue;
-            }
-            count++;
-        }
-        statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL.getCode(), count);
+        count = getEmptyChnls(param).size();
+        statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL, count);
         statisticsList.add(statistics);
 
         return statisticsList;
@@ -287,11 +275,11 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return responseList;
     }
 
-    private Statistics getStatisticsByCount(int i, int count) {
+    private Statistics getStatisticsByCount(EnumIndexUpdateType type, int count) {
         Statistics statistics = new Statistics();
         statistics.setCount(count);
-        statistics.setType(i);
-        statistics.setName(EnumIndexUpdateType.valueOf(i).getName());
+        statistics.setType(type.getCode());
+        statistics.setName(type.getName());
         return statistics;
     }
 
@@ -325,12 +313,10 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public MonthUpdateResponse getNotInTimeCountMonth(int siteId) throws RemoteException {
+    public MonthUpdateResponse getNotInTimeCountMonth(PageDataRequestParam param) throws RemoteException {
         MonthUpdateResponse monthUpdateResponse = new MonthUpdateResponse();
         List<UpdateNotInTimeChnl> notInTimeChnls = new ArrayList<>();
-        List<EmptyChnl> emptyChnls = new ArrayList<>();
-        QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.SITE_ID, siteId);
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addGroupField(IssueTableField.CUSTOMER2);
@@ -339,17 +325,17 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             if (update.getChnlId() == null) {
                 continue;
             }
-            buildNotInTimeChnls(update, siteId, notInTimeChnls);
+            addNotInTimeChnls(update, param, notInTimeChnls);
         }
         monthUpdateResponse.setUpdateNotInTimeChnl(notInTimeChnls);
-        buildEmptyChnls(siteId, emptyChnls);
+        List<EmptyChnl> emptyChnls = getEmptyChnls(param);
         monthUpdateResponse.setEmptyChnl(emptyChnls);
         return monthUpdateResponse;
     }
 
-    private void buildEmptyChnls(int siteId, List<EmptyChnl> emptyChnls) throws RemoteException {
-        QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.SITE_ID, siteId);
+    private List<EmptyChnl> getEmptyChnls(PageDataRequestParam param) throws RemoteException {
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
+        filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.EMPTY_CHANNEL.value);
         filter.addCond(IssueTableField.SUBTYPE_ID, Types.EmptyChannelType.EMPTY_COLUMN.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
@@ -357,6 +343,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         filter.addGroupField(IssueTableField.CUSTOMER2);
         List<Map<Integer, Integer>> countList = issueMapper.countList(filter);
         List<Integer> chnlIdList = new ArrayList<>();
+        List<EmptyChnl> emptyChnls = new ArrayList<>();
         for (Map map : countList) {
             if(map.get(IssueTableField.CUSTOMER2) == null){
                 continue;
@@ -374,58 +361,24 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
                 }
             }
         }
+        return emptyChnls;
     }
 
-    private void buildNotInTimeChnls(InfoUpdate update, int siteId, List<UpdateNotInTimeChnl> notInTimeChnls) throws RemoteException {
-        QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.SITE_ID, siteId);
+    private void addNotInTimeChnls(InfoUpdate update, PageDataRequestParam param, List<UpdateNotInTimeChnl> notInTimeChnls) throws RemoteException {
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
+        filter.addCond(IssueTableField.SITE_ID, param.getSiteId());
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addCond(IssueTableField.CUSTOMER2, update.getChnlId());
-        Date maxIssueTime = issueMapper.getMaxIssueTime(filter);
-        Date nowTime = new Date();
-        double countMonth;
-        Calendar c = Calendar.getInstance();
 
-        c.setTime(maxIssueTime);
-        int yearIssue = c.get(Calendar.YEAR);
-        int monthIssue = c.get(Calendar.MONTH);
-        int dayIssue = c.get(Calendar.DATE);
-
-        c.setTime(nowTime);
-        int yearNow = c.get(Calendar.YEAR);
-        int monthNow = c.get(Calendar.MONTH);
-        int dayNow = c.get(Calendar.DATE);
-
-        if (monthNow < monthIssue) {
-            return;
-        }
-        if (yearIssue == yearNow) {
-            countMonth = (double) (monthNow - monthIssue);
-        } else {
-            countMonth = (double) (12 * (yearNow - yearIssue) + monthNow - monthIssue);
-        }
-        if (dayNow > dayIssue) {
-            if (dayNow - dayIssue <= 15) {
-                countMonth += 0.5;
-            } else {
-                countMonth += 1;
-            }
-        } else if (dayNow < dayIssue) {
-            c.setTime(maxIssueTime);
-            int maxDayOfMonthIssue = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-            if ((maxDayOfMonthIssue - dayIssue + dayNow) <= 15) {
-                countMonth -= 0.5;
-            }
-        }
         Channel chnl = siteApiService.getChannelById(update.getChnlId(), "");
         if (chnl != null) {
             UpdateNotInTimeChnl notInTimeChnl = new UpdateNotInTimeChnl();
             notInTimeChnl.setChnlId(update.getChnlId());
             notInTimeChnl.setChnlName(chnl.getChnlDesc());
-            notInTimeChnl.setCountMonth(countMonth);
             notInTimeChnls.add(notInTimeChnl);
         }
+
     }
 
 

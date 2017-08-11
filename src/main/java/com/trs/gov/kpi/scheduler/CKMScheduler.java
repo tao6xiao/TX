@@ -91,49 +91,53 @@ public class CKMScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
-        log.info(SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.CKM_SCHEDULER, siteId));
-        
-        final Site checkSite = siteApiService.getSiteById(siteId, null);
-        if (checkSite == null) {
-            log.warn("site[" + siteId + "] is not exist!");
-            return;
-        }
+        try {
+            log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
 
-        baseUrl = checkSite.getWebHttp();
-        if (StringUtil.isEmpty(baseUrl)) {
-            log.warn("site[" + siteId + "]'s web http is empty!");
-            return;
-        }
+            final Site checkSite = siteApiService.getSiteById(siteId, null);
+            if (checkSite == null) {
+                log.warn("site[" + siteId + "] is not exist!");
+                return;
+            }
 
-        //监测开始(添加基本信息)
-        Date startTime = new Date();
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
+            baseUrl = checkSite.getWebHttp();
+            if (StringUtil.isEmpty(baseUrl)) {
+                log.warn("site[" + siteId + "]'s web http is empty!");
+                return;
+            }
+
+            //监测开始(添加基本信息)
+            Date startTime = new Date();
+            MonitorRecord monitorRecord = new MonitorRecord();
+            monitorRecord.setSiteId(siteId);
+            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
+            monitorRecord.setBeginTime(startTime);
+            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+            monitorRecordService.insertMonitorRecord(monitorRecord);
 
         spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
-        //监测完成(修改结果、结束时间、状态)
-        Date endTime = new Date();
-        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_CONTENT.value);
-        filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
+            //监测完成(修改结果、结束时间、状态)
+            Date endTime = new Date();
+            QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_CONTENT.value);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
 
-        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-        updater.addField(MonitorRecordTableField.RESULT,count);
-        updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
-        commonMapper.update(updater, filter);
+            DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+            updater.addField(MonitorRecordTableField.RESULT,count);
+            updater.addField(MonitorRecordTableField.END_TIME, endTime);
+            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+            commonMapper.update(updater, filter);
 
-        LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
-        log.info(SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
-        // TODO REVIEW LINWEI DO_he.lang 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.CKM_SCHEDULER, siteId));
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), endTime.getTime()-startTime.getTime());
+
+        }finally {
+            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            // TODO REVIEW LINWEI DONE_he.lang 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
+        }
     }
 
 

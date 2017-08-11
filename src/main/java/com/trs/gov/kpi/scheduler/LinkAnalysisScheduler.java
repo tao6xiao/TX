@@ -69,11 +69,11 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Override
     public void run() {
 
-        log.info(SchedulerType.startScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerType.startScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+        log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
 
         try {
-
+            Date startTime = new Date();
             final Site checkSite = siteApiService.getSiteById(siteId, null);
             if (checkSite == null) {
                 log.error("site[" + siteId + "] is not exsit!");
@@ -87,7 +87,6 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             }
 
             //监测开始(添加基本信息)
-            Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
             monitorRecord.setTaskId(EnumCheckJobType.CHECK_LINK.value);
@@ -110,13 +109,13 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER.intern(), endTime.getTime()-startTime.getTime());
+            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), endTime.getTime()-startTime.getTime());
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
         } finally {
-            log.info(SchedulerType.endScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerType.endScheduler(SchedulerType.LINK_ANALYSIS_SCHEDULER, siteId));
+            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
 
         }
     }
