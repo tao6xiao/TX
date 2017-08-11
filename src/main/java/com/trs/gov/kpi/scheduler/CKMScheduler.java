@@ -14,6 +14,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
+import com.trs.gov.kpi.service.LinkContentStatsService;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
@@ -82,6 +83,9 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    @Resource
+    private LinkContentStatsService linkContentStatsService;
+
     //错误信息计数
     int count = 0;
 
@@ -111,7 +115,7 @@ public class CKMScheduler implements SchedulerTask {
         monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
 
-        spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
+        spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
         //监测完成(修改结果、结束时间、状态)
         Date endTime = new Date();
@@ -143,8 +147,14 @@ public class CKMScheduler implements SchedulerTask {
 
         ContentCheckResult result = null;
         try {
-
-            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+            String thisTimeMd5 = linkContentStatsService.getThisTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
+            String lastTimeMd5 = linkContentStatsService.getLastTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
+            if(lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)){//第一次检查或链接内容发生变化
+                //检测爬取内容
+                result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+            }else{//内容较上一次没有变化
+                return issueList;
+            }
         } catch (Exception e) {
             log.error("failed to check content " + checkContent, e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to check content " + checkContent, e);

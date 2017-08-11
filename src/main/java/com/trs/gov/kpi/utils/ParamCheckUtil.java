@@ -34,6 +34,13 @@ public class ParamCheckUtil {
         }
     }
 
+    public static void siteIdCheck(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数param的siteId为null");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+    }
+
     /**
      * 问题和预警的参数校验
      *
@@ -52,6 +59,7 @@ public class ParamCheckUtil {
         checkCommonTime(param.getEndDateTime());
 
     }
+
 
     /**
      * 工单的参数校验
