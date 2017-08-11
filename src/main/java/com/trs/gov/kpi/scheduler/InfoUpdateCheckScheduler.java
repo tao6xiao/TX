@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.util.*;
 
@@ -583,6 +584,39 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 count++;
             }
         }
+        updateResolvedEmptyColumn(chnlIdList);
+    }
+
+    /**
+     * TODO
+     * 更新已解决空栏目的状态
+     */
+    void updateResolvedEmptyColumn(List<Integer> chnlIdList){
+        QueryFilter filter = buildQueryFilter(
+                Types.IssueType.EMPTY_CHANNEL.value,
+                Types.EmptyChannelType.EMPTY_COLUMN.value,
+                Status.Resolve.UN_RESOLVED.value);
+        List<Issue> issues = issueMapper.select(filter);
+        List<Integer> chnlIdListInDB = new ArrayList<>();
+        //获取数据库中空栏目记录的栏目ID集合
+        for(Issue issue :issues ){
+            try {
+                chnlIdListInDB.add(Integer.valueOf(issue.getCustomer2()));
+            }catch (Exception e){
+                log.error("",e.getMessage());
+            }
+
+        }
+        //从数据库空栏目ID集合中去掉仍为空栏目的集合，余下为已处理的空栏目。
+        chnlIdListInDB.removeAll(chnlIdList);
+        for(Integer resolvedChnlId : chnlIdListInDB){
+            filter = buildQueryFilter(Arrays.asList(resolvedChnlId),
+                    Types.IssueType.EMPTY_CHANNEL.value,
+                    Types.EmptyChannelType.EMPTY_COLUMN.value);
+            DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+            updater.addField(IssueTableField.IS_RESOLVED, IssueIndicator.SOLVED.value);
+            commonMapper.update(updater, filter);
+        }
     }
 
     /**
@@ -637,6 +671,40 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
         filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
         filter.addCond(IssueTableField.CHECK_TIME, beginDateTime).setRangeBegin(true);
+        return filter;
+    }
+
+    /**
+     * 构造查询过滤器
+     *
+     * @param chnlIdList
+     * @param issueTypeId
+     * @param subIssueTypeId
+     * @return
+     */
+    private QueryFilter buildQueryFilter(List<Integer> chnlIdList, int issueTypeId, int subIssueTypeId) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, 1);
+        filter.addCond(IssueTableField.CUSTOMER2, chnlIdList);
+        filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
+        filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
+        return filter;
+    }
+
+    /**
+     * 构造查询过滤器
+     *
+     * @param issueTypeId
+     * @param issueTypeId
+     * @param subIssueTypeId
+     * @return
+     */
+    private QueryFilter buildQueryFilter(int issueTypeId, int subIssueTypeId, int isResolved ) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, 1);
+        filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
+        filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
+        filter.addCond(IssueTableField.IS_RESOLVED, isResolved);
         return filter;
     }
 
