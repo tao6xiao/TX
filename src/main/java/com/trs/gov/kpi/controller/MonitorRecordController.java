@@ -50,7 +50,10 @@ public class MonitorRecordController {
         String logDesc = "查询日志监测记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             // TODO REVIEW LINWEI DO_li.hao 记得加日志成功和性能日志， 同时有一个 paramCheck 方法，为什么不用呢？ @see ParamCheckUtil#paramCheck
-            ParamCheckUtil.paramCheck(param);
+            ParamCheckUtil.siteIdCheck(param.getSiteId());
+            ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+            ParamCheckUtil.checkDayTime(param.getBeginDateTime());
+            ParamCheckUtil.checkDayTime(param.getEndDateTime());
             authorityService.checkRight(Authority.KPIWEB_MONITORRECORD_SEARCH, param.getSiteId());
             return monitorRecordService.selectMonitorRecordList(param);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
