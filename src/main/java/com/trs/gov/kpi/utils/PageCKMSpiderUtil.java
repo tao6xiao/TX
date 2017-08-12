@@ -34,7 +34,7 @@ public class PageCKMSpiderUtil {
     @Getter
     private String baseUrl;
 
-    private Integer SiteId;
+    private Integer siteId;
 
     private CKMScheduler ckmScheduler;
 
@@ -109,7 +109,7 @@ public class PageCKMSpiderUtil {
                 isUrlAvailable.set(false);
                 Page result = super.download(request, task);
                 if (isUrlAvailable.get()) {
-                    linkContentStatsService.insertLinkContent(SiteId, Types.IssueType.INFO_ERROR_ISSUE.value,request.getUrl().intern(), result.getRawText().intern());
+                    linkContentStatsService.insertLinkContent(siteId, Types.IssueType.INFO_ERROR_ISSUE.value,request.getUrl().intern(), result.getRawText().intern());
                     ckmScheduler.insert(new CKMPage(request.getUrl().intern(), result.getRawText()));
                     return result;
                 } else {
@@ -142,7 +142,7 @@ public class PageCKMSpiderUtil {
     public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler, Integer siteId) {
 
         log.info("fetch ckm pages started!");
-        this.SiteId = siteId;
+        this.siteId = siteId;
         this.ckmScheduler = ckmScheduler;
         init(baseUrl);
         if (StringUtils.isBlank(baseUrl)) {
