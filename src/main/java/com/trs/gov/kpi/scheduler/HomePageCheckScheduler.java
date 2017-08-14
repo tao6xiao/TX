@@ -98,6 +98,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
 
             List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
             if (unavailableUrls.contains(baseUrl)) {
+                isAvailable = 1;
                 QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
                 queryFilter.addCond(IssueTableField.SITE_ID, siteId);
                 queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
@@ -115,7 +116,10 @@ public class HomePageCheckScheduler implements SchedulerTask {
                     issue.setCustomer1(baseUrl);
                     issue.setIssueTime(new Date());
                     issueMapper.insert(DBUtil.toRow(issue));
-                    isAvailable = 1;
+                }else {
+                    DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                    updater.addField(IssueTableField.CHECK_TIME, new Date());
+                    commonMapper.update(updater, queryFilter);
                 }
             }
 
