@@ -60,9 +60,6 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-    //失效的服务链接计数
-    int count = 0;
-
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     private Integer monitorType;
@@ -83,6 +80,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
             monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
             monitorRecordService.insertMonitorRecord(monitorRecord);
 
+            //失效的服务链接计数
+            int count = 0;
             for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
                 if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
                     QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
