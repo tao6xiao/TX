@@ -23,7 +23,7 @@ import java.util.Map;
 public class TRSLogUserUtil {
 
     public static void main(String[] args) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "信息错误", new BizException());
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "siteId[1]", new BizException());
         LogUtil.addOperationLog(OperationType.QUERY, "查询栏目", LogUtil.getSiteNameForLog(new SiteApiServiceImpl(), 1));
     }
 

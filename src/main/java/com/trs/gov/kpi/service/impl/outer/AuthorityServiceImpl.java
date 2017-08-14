@@ -66,7 +66,7 @@ public class AuthorityServiceImpl implements AuthorityService {
             }
         } catch (IOException e) {
             log.error("failed findRight", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed findRight", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed findRigh, siteId[" + siteId + "]", e);
             throw new RemoteException("查找指定oprkeys的权限失败！", e);
         }
     }

@@ -102,7 +102,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "find channel child failed", e);
             throw new RemoteException("获取子栏目失败！", e);
         }
     }

@@ -43,7 +43,7 @@ public class SiteChannelServiceHelper {
             return emptyChannels;
         }
 
-        for(Integer channelId : allLeafChannels) {
+        for (Integer channelId : allLeafChannels) {
             try {
                 final List<Integer> publishDocIds = documentApiService.getPublishDocIds("", siteId,
                         channelId, null);
@@ -52,7 +52,7 @@ public class SiteChannelServiceHelper {
                 }
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "获取空栏目，siteId[" + siteId + "]", e);
             }
         }
 
