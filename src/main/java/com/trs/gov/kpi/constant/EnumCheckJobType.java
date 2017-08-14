@@ -19,4 +19,15 @@ public enum EnumCheckJobType {
     EnumCheckJobType(int value) {
         this.value = value;
     }
+
+    public static EnumCheckJobType valueOf(Integer id) {
+        EnumCheckJobType[] all = EnumCheckJobType.values();
+        for (EnumCheckJobType type : all) {
+            if (type.value == id) {
+                return type;
+            }
+        }
+        return null;
+    }
+
 }

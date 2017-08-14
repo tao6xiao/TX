@@ -7,7 +7,7 @@ package com.trs.gov.kpi.constant;
 public class SchedulerRelated {
 
     // TODO REVIEW DONE_he.lang FIXED 修改为枚举类型，解决名字冲突
-
+    // TODO REVIEW 这个枚举类放这不合适，可以单独成为一个类了，不用放在SchedulerRelated下面
     public enum SchedulerType {
         CKM_SCHEDULER,
         HOMEPAGE_CHECK_SCHEDULER,

@@ -19,5 +19,16 @@ public class MonitorSiteDeal {
 
     private String guarderPhone;
 
+    @Override
+    public String toString() {
+        return "{" +
+                "siteId=" + siteId +
+                ", departmentName='" + departmentName + '\'' +
+                ", guarderId=" + guarderId +
+                ", guarderName='" + guarderName + '\'' +
+                ", guarderAccount='" + guarderAccount + '\'' +
+                ", guarderPhone='" + guarderPhone + '\'' +
+                '}';
+    }
 }
 

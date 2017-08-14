@@ -127,31 +127,12 @@ public class MonitorSiteController {
     public Object manualMonitoring(Integer siteId, Integer checkJobValue) throws BizException, RemoteException {
         String logDesc = "网站手动监测" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "checkJobValue", checkJobValue);
         return LogUtil.controlleFunctionWrapper(() -> {
-            if (siteId == null && checkJobValue == null) {
+            if (siteId == null || checkJobValue == null) {
                 log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
 			authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
-            EnumCheckJobType checkJobType = null;
-            switch (checkJobValue) {
-                case (1):
-                    checkJobType = EnumCheckJobType.CHECK_HOME_PAGE;
-                    break;
-                case (2):
-                    checkJobType = EnumCheckJobType.CHECK_LINK;
-                    break;
-                case (3):
-                    checkJobType = EnumCheckJobType.CHECK_CONTENT;
-                    break;
-                case (4):
-                    checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
-                    break;
-                case (8):
-                    checkJobType = EnumCheckJobType.SERVICE_LINK;
-                    break;
-                default:
-            }
-            schedulerService.doCheckJobOnce(siteId, checkJobType);
+            schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
             return null;
         }, OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
