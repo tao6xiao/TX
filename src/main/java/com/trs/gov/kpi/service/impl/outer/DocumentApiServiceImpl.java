@@ -107,13 +107,11 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             if (chnlId == null) {
                 continue;
             }
-            // TODO: 2017/5/24  set userName
             List<Integer> publishDocIds = getPublishDocIds(null, siteId, chnlId, null);
             for (Integer publishDocId : publishDocIds) {
                 if (publishDocId == null) {
                     continue;
                 }
-                // TODO: 2017/5/24  set userName
                 Document document = getDocument(null, chnlId, publishDocId);
                 document.setSiteId(siteId);
                 documentList.add(document);

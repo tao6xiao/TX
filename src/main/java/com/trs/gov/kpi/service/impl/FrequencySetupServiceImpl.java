@@ -132,7 +132,6 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
                 frequencySetupResponse.setAlertFreq(frequencyPreset.getAlertFreq());
             }
             frequencySetupResponse.setChnlId(frequencySetup.getChnlId());
-            //TODO add userName to validate
             Integer chnlId = frequencySetup.getChnlId();
             if (chnlId != null) {
                 Channel childChnl = siteApiService.getChannelById(chnlId, null);
