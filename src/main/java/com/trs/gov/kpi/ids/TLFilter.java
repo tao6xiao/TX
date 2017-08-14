@@ -4,6 +4,7 @@ import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.entity.exception.BizException;
+import com.trs.gov.kpi.entity.exception.BizRuntimeException;
 import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -33,7 +34,12 @@ public class TLFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         if (req.getSession().getAttribute(IDSActor.LOGIN_FLAG) != null) {
-            ContextHelper.initContext((LocalUser) req.getSession().getAttribute(IDSActor.LOGIN_FLAG));
+
+            try {
+                ContextHelper.getLoginUser();
+            } catch (BizRuntimeException e) {
+                ContextHelper.initContext((LocalUser) req.getSession().getAttribute(IDSActor.LOGIN_FLAG));
+            }
             chain.doFilter(request, response);
         } else {
             //给其他模块提供的接口需要放行
