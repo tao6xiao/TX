@@ -94,7 +94,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
             //报表生成——监测开始(添加基本信息)
-            insertStartMonitorRecord();
+            insertStartMonitorRecord(startTime);
 
             IssueCountRequest request = new IssueCountRequest();
             request.setSiteIds(Integer.toString(siteId));
@@ -279,7 +279,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
             Date endTime = new Date();
             //报表生成——监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime,monitorResult);
+            insertEndMonitorRecord(startTime, monitorResult, endTime);
 
             report.setPath(fileDir + fileName);
             report.setCrTime(new Date());
@@ -370,9 +370,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
     /**
      * 报表生成任务开始，基本信息入库
+     * @param startTime
      */
-    private void insertStartMonitorRecord(){
-        Date startTime = new Date();
+    private void insertStartMonitorRecord(Date startTime){
         MonitorRecord monitorRecord = new MonitorRecord();
         monitorRecord.setSiteId(siteId);
         monitorRecord.setTypeId(monitorType);
@@ -390,9 +390,10 @@ public class ReportGenerateScheduler implements SchedulerTask {
      * 报表生成任务结束，修改结果、结束时间、状态
      * @param startTime
      * @param result
+     * @param endTime
      */
-    private void insertEndMonitorRecord(Date startTime, Integer result){
-        Date endTime = new Date();
+    private void insertEndMonitorRecord(Date startTime, Integer result, Date endTime){
+
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
         if(isTimeNode){
