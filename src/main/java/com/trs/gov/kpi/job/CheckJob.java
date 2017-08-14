@@ -23,10 +23,10 @@ public class CheckJob implements Job {
         SchedulerTask task = (SchedulerTask) jobExecutionContext.getMergedJobDataMap().get("task");
         try {
             task.run();
-        } catch (RemoteException | BizException e) {
-            //TODO REVIEW  ran.wei  日志描述错误 应该为任务调度
-            log.error("调用外部接口失败", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口失败", e);
+        } catch (Exception e) {
+            //TODO REVIEW  ran.wei DO_he.lang FIXED 日志描述错误 应该为任务调度
+            log.error("", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "任务调度运行失败，站点siteId[" + task.getSiteId() + "]", e);
         }
     }
 }

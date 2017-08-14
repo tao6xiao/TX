@@ -91,6 +91,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
 
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
             //报表生成——监测开始(添加基本信息)
             insertStartMonitorRecord();
@@ -284,8 +285,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             report.setCrTime(new Date());
             //入库
             reportMapper.insert(report);
-
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
+            performanceLogRecorder.recordAlways();
         } finally {
             log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
