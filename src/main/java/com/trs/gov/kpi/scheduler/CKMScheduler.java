@@ -1,6 +1,5 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
@@ -96,8 +95,8 @@ public class CKMScheduler implements SchedulerTask {
     @Override
     public void run() throws RemoteException {
         try {
-            log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            log.info(SchedulerRelated.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
 
             final Site checkSite = siteApiService.getSiteById(siteId, null);
             if (checkSite == null) {
@@ -111,7 +110,7 @@ public class CKMScheduler implements SchedulerTask {
                 return;
             }
 
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.CKM_SCHEDULER + "[siteId=" + siteId + "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER + "[siteId=" + siteId + "]");
 
             //监测开始(添加基本信息)
             Date startTime = new Date();
@@ -140,7 +139,7 @@ public class CKMScheduler implements SchedulerTask {
 
             performanceLogRecorder.recordAlways();
         } finally {
-            String info = SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId);
+            String info = SchedulerRelated.getEndMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId);
             log.info(info);
             // TODO REVIEW LINWEI DONE_he.lang FIXED 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
