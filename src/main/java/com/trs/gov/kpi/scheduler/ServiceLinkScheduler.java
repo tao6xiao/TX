@@ -60,8 +60,6 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-
-
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     private Integer monitorType;
