@@ -47,6 +47,10 @@ public class PerformanceScheduler implements SchedulerTask {
     @Getter
     private Boolean isTimeNode;
 
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    private Integer monitorType;
+
     @Override
     public void run() {
         log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
