@@ -85,7 +85,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private CommonMapper commonMapper;
 
     @Override
-    public void run() throws RemoteException, BizException {
+    public void run() {
         try {
 
             log.info(SchedulerRelated.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
@@ -286,7 +286,10 @@ public class ReportGenerateScheduler implements SchedulerTask {
             //入库
             reportMapper.insert(report);
             performanceLogRecorder.recordAlways();
-        } finally {
+        }catch (Exception e){
+            log.error("", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "报表生成任务调度运行失败，站点siteId[" + siteId + "]", e);
+        }finally {
             log.info(SchedulerRelated.getEndMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
         }
