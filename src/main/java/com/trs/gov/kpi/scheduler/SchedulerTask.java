@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 
 /**
@@ -8,7 +9,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
  */
 public interface SchedulerTask {
 
-    void run() throws RemoteException;
+    void run() throws RemoteException, BizException;
 
     Integer getSiteId();
 

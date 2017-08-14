@@ -76,7 +76,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSite.setSiteId(monitorSiteDeal.getSiteId());
         monitorSite.setDepartmentName(monitorSiteDeal.getDepartmentName());
         monitorSite.setGuarderId(monitorSiteDeal.getGuarderId());
-        monitorSite.setIndexUrl(monitorSiteDeal.getIndexUrl());
         return monitorSite;
     }
 
@@ -91,7 +90,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSiteDeal.setGuarderName(userApiService.findUserById("", monitorSite.getGuarderId()).getTrueName());
         monitorSiteDeal.setGuarderAccount(userApiService.findUserById("", monitorSite.getGuarderId()).getUserName());
         monitorSiteDeal.setGuarderPhone(userApiService.findUserById("", monitorSite.getGuarderId()).getMobile());
-        monitorSiteDeal.setIndexUrl(monitorSite.getIndexUrl());
         return monitorSiteDeal;
     }
 

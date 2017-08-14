@@ -117,6 +117,10 @@ public class HomePageCheckScheduler implements SchedulerTask {
                     issue.setCustomer1(baseUrl);
                     issue.setIssueTime(new Date());
                     issueMapper.insert(DBUtil.toRow(issue));
+                }else {
+                    DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                    updater.addField(IssueTableField.CHECK_TIME, new Date());
+                    commonMapper.update(updater, queryFilter);
                 }
             }
 

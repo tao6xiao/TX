@@ -19,7 +19,5 @@ public class MonitorSiteDeal {
 
     private String guarderPhone;
 
-    private String indexUrl;
-
 }
 

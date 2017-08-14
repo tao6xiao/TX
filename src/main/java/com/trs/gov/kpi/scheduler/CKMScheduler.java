@@ -123,7 +123,7 @@ public class CKMScheduler implements SchedulerTask {
             monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
             monitorRecordService.insertMonitorRecord(monitorRecord);
 
-        spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
+            spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
             //监测完成(修改结果、结束时间、状态)
             Date endTime = new Date();

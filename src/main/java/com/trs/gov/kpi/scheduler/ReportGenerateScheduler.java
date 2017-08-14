@@ -3,6 +3,7 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.ReportMapper;
 import com.trs.gov.kpi.entity.Report;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
@@ -72,7 +73,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private Integer monitorType;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() throws RemoteException, BizException {
         try {
             log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
@@ -92,11 +93,11 @@ public class ReportGenerateScheduler implements SchedulerTask {
                 log.error("", e);
                 LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "报表生成，siteId[" + siteId + "]", e);
             }
-            String title = "";
-            if (site != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
+            if (site == null) {
+                throw new BizException("站点不存在");
             }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
             report.setTitle(title);
 
             String granularity;
@@ -107,7 +108,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
                 granularity = "month";
                 report.setTypeId(2);
             }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+            sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
             String fileDir = "/" + Integer.toString(siteId) + "/" + granularity + "/";
             String fileName = sdf.format(new Date()) + ".xlsx";
