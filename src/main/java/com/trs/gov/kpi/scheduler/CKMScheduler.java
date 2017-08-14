@@ -93,7 +93,7 @@ public class CKMScheduler implements SchedulerTask {
     private Integer monitorType;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() {
         try {
             log.info(SchedulerRelated.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
@@ -122,6 +122,9 @@ public class CKMScheduler implements SchedulerTask {
             insertEndMonitorRecord(startTime);
 
             performanceLogRecorder.recordAlways();
+        } catch (RemoteException e) {
+            log.error("");
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息错误监测，siteId[" + siteId + "]，url[" + baseUrl + "]", e);
         } finally {
             String info = SchedulerRelated.getEndMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId);
             log.info(info);
@@ -142,10 +145,10 @@ public class CKMScheduler implements SchedulerTask {
         try {
             String thisTimeMd5 = linkContentStatsService.getThisTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
             String lastTimeMd5 = linkContentStatsService.getLastTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
-            if(lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)){//第一次检查或链接内容发生变化
+            if (lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)) {//第一次检查或链接内容发生变化
                 //检测爬取内容
                 result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-            }else{//内容较上一次没有变化
+            } else {//内容较上一次没有变化
                 return issueList;
             }
         } catch (Exception e) {
@@ -528,6 +531,7 @@ public class CKMScheduler implements SchedulerTask {
 
     /**
      * 插入检测记录
+     *
      * @param startTime
      */
     private void insertStartMonitorRecord(Date startTime) {
@@ -543,6 +547,7 @@ public class CKMScheduler implements SchedulerTask {
 
     /**
      * 检测结束，记录入库
+     *
      * @param startTime
      */
     private void insertEndMonitorRecord(Date startTime) {
