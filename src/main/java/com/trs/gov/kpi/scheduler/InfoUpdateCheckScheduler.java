@@ -684,7 +684,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      */
     private QueryFilter buildQueryFilter(List<Integer> chnlIdList, int issueTypeId, int subIssueTypeId) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.SITE_ID, 1);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.CUSTOMER2, chnlIdList);
         filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
         filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
@@ -701,7 +701,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      */
     private QueryFilter buildQueryFilter(int issueTypeId, int subIssueTypeId, int isResolved ) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.SITE_ID, 1);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
         filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
         filter.addCond(IssueTableField.IS_RESOLVED, isResolved);
