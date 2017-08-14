@@ -108,6 +108,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
+
             //监测开始(添加基本信息)
             Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
@@ -147,7 +149,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
+            performanceLogRecorder.recordAlways();
         } catch (Exception e) {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
