@@ -63,6 +63,10 @@ public class ServiceLinkScheduler implements SchedulerTask {
     //失效的服务链接计数
     int count = 0;
 
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    private Integer monitorType;
+
     @Override
     public void run() {
         try {
@@ -73,6 +77,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
             Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
+            monitorRecord.setTypeId(monitorType);
             monitorRecord.setTaskId(EnumCheckJobType.SERVICE_LINK.value);
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);

@@ -32,6 +32,9 @@ public class MonitorRecord {
     private Integer result;//执行结果
 
     @DBField
+    private Integer typeId;//监测类型（0：自动监测；1：手动监测）
+
+    @DBField
     private Date beginTime;//开始时间
 
     @DBField

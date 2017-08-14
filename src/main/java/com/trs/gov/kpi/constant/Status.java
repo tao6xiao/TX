@@ -100,6 +100,9 @@ public class Status {
         }
     }
 
+    /**
+     * 站点监测状态类型
+     */
     public enum MonitorStatusType {
 
         INVALID(-1, "未知类型"),
@@ -150,5 +153,24 @@ public class Status {
             }
             return statrsList;
         }
+    }
+
+    /**
+     * 站点监测类型
+     */
+    public enum MonitorType {
+        AUTO_MONITOR(0, "主动监测"),
+        MANUAL_MONITOR(1, "手动监测");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorType(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
     }
 }

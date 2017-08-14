@@ -67,6 +67,10 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private int rowIndex = 0;//excel行的索引
     private int cellIndex = 0;//excel列的索引
 
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    private Integer monitorType;
+
     @Override
     public void run() throws RemoteException {
         try {
