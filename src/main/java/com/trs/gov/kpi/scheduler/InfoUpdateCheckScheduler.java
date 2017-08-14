@@ -96,7 +96,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private DefaultUpdateFreq defaultUpdateFreq;
 
     //信息(栏目)更新数量计数
-    int count = 0;
+    private Integer infoUpdateCount = 0;
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
@@ -112,14 +112,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
             //监测开始(添加基本信息)
             Date startTime = new Date();
-            MonitorRecord monitorRecord = new MonitorRecord();
-            monitorRecord.setSiteId(siteId);
-            monitorRecord.setTypeId(monitorType);
-            monitorRecord.setTaskId(EnumCheckJobType.CHECK_INFO_UPDATE.value);
-            monitorRecord.setBeginTime(startTime);
-            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-            monitorRecordService.insertMonitorRecord(monitorRecord);
-
+            insertStartMonitorRecord(startTime);
 
             List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
@@ -137,17 +130,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             insertIssueAndWarning(siteTrees);
 
             //监测完成(修改结果、结束时间、状态)
-            Date endTime = new Date();
-            QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_INFO_UPDATE.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
-
-            DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT, count);
-            updater.addField(MonitorRecordTableField.END_TIME, endTime);
-            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
-            commonMapper.update(updater, filter);
+            insertEndMonitorRecord(startTime);
 
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
@@ -575,7 +558,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
                 updater.addField(IssueTableField.CHECK_TIME, new Date());
                 commonMapper.update(updater, filter);
-                count++;
+                infoUpdateCount++;
             } else {
                 InfoUpdate update = new InfoUpdate();
                 update.setSiteId(siteId);
@@ -587,7 +570,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 update.setCheckTime(curDate);
                 update.setChnlId(chnlId);
                 issueMapper.insert(DBUtil.toRow(update));
-                count++;
+                infoUpdateCount++;
             }
         }
         updateResolvedEmptyColumn(chnlIdList);
@@ -648,7 +631,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "插入信息更新监测的数据失败，siteId[" + siteId + "]", e);
         }
         issueMapper.insert(DBUtil.toRow(update));
-        count++;
+        infoUpdateCount++;
     }
 
     /**
@@ -735,7 +718,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         }
         updater.addField(IssueTableField.CHECK_TIME, new Date());
         commonMapper.update(updater, filter);
-        count++;
+        infoUpdateCount++;
     }
 
     /**
@@ -767,6 +750,39 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         }
 
         return false;
+    }
+
+    /**
+     * 插入检测记录
+     * @param startTime
+     */
+    private void insertStartMonitorRecord(Date startTime) {
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTypeId(monitorType);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_INFO_UPDATE.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
+
+    }
+
+    /**
+     * 检测结束，记录入库
+     * @param startTime
+     */
+    private void insertEndMonitorRecord(Date startTime) {
+        Date endTime = new Date();
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_INFO_UPDATE.value);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
+
+        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+        updater.addField(MonitorRecordTableField.RESULT, infoUpdateCount);
+        updater.addField(MonitorRecordTableField.END_TIME, endTime);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        commonMapper.update(updater, filter);
     }
 
 }

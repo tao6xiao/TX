@@ -60,9 +60,6 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-    //首页可用性(状态记录；0可用，1不可用)
-    int isAvailable = 0;
-
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     private Integer monitorType;
@@ -89,14 +86,10 @@ public class HomePageCheckScheduler implements SchedulerTask {
             //监测开始(添加基本信息)
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
-            MonitorRecord monitorRecord = new MonitorRecord();
-            monitorRecord.setSiteId(siteId);
-            monitorRecord.setTypeId(monitorType);
-            monitorRecord.setTaskId(EnumCheckJobType.CHECK_HOME_PAGE.value);
-            monitorRecord.setBeginTime(startTime);
-            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-            monitorRecordService.insertMonitorRecord(monitorRecord);
+            insertStartMonitorRecord(startTime);
 
+            //首页可用性(状态记录；0可用，1不可用)
+            int isAvailable = 0;
             List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
             if (unavailableUrls.contains(baseUrl)) {
                 isAvailable = 1;
@@ -125,17 +118,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
             }
 
             //监测完成(修改结果、结束时间、状态)
-            Date endTime = new Date();
-            QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_HOME_PAGE.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
+            insertEndMonitorRecord(startTime, isAvailable);
 
-            DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT, isAvailable);
-            updater.addField(MonitorRecordTableField.END_TIME, endTime);
-            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
-            commonMapper.update(updater, filter);
 
             // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
             performanceLogRecorder.recordAlways();
@@ -150,5 +134,38 @@ public class HomePageCheckScheduler implements SchedulerTask {
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
 
+    }
+
+    /**
+     * 插入检测记录
+     * @param startTime
+     */
+    private void insertStartMonitorRecord(Date startTime) {
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTypeId(monitorType);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_HOME_PAGE.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
+
+    }
+
+    /**
+     * 检测结束，记录入库
+     * @param startTime
+     */
+    private void insertEndMonitorRecord(Date startTime, Integer isAvailable) {
+        Date endTime = new Date();
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_HOME_PAGE.value);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
+
+        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+        updater.addField(MonitorRecordTableField.RESULT, isAvailable);
+        updater.addField(MonitorRecordTableField.END_TIME, endTime);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        commonMapper.update(updater, filter);
     }
 }

@@ -369,7 +369,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     }
 
     /**
-     * 报表生成任务开始，基本信息入库
+     * 插入检测记录
      * @param startTime
      */
     private void insertStartMonitorRecord(Date startTime){
@@ -387,7 +387,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     }
 
     /**
-     * 报表生成任务结束，修改结果、结束时间、状态
+     * 检测完成，修改结果、结束时间、状态
      * @param startTime
      * @param result
      * @param endTime

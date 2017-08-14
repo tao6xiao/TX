@@ -87,7 +87,7 @@ public class CKMScheduler implements SchedulerTask {
     private LinkContentStatsService linkContentStatsService;
 
     //错误信息计数
-    int count = 0;
+    private Integer ckmCount = 0;
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
@@ -115,28 +115,12 @@ public class CKMScheduler implements SchedulerTask {
 
             //监测开始(添加基本信息)
             Date startTime = new Date();
-            MonitorRecord monitorRecord = new MonitorRecord();
-            monitorRecord.setSiteId(siteId);
-            monitorRecord.setTypeId(monitorType);
-            monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
-            monitorRecord.setBeginTime(startTime);
-            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-            monitorRecordService.insertMonitorRecord(monitorRecord);
+            insertStartMonitorRecord(startTime);
 
             spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
             //监测完成(修改结果、结束时间、状态)
-            Date endTime = new Date();
-            QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_CONTENT.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
-
-            DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT, count);
-            updater.addField(MonitorRecordTableField.END_TIME, endTime);
-            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
-            commonMapper.update(updater, filter);
+            insertEndMonitorRecord(startTime);
 
             performanceLogRecorder.recordAlways();
         } finally {
@@ -523,7 +507,7 @@ public class CKMScheduler implements SchedulerTask {
                 List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
-                    count++;
+                    ckmCount++;
                 }
             } catch (RemoteException e) {
                 log.error("", e);
@@ -542,4 +526,39 @@ public class CKMScheduler implements SchedulerTask {
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
         }
     }
+
+    /**
+     * 插入检测记录
+     * @param startTime
+     */
+    private void insertStartMonitorRecord(Date startTime) {
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTypeId(monitorType);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
+
+    }
+
+    /**
+     * 检测结束，记录入库
+     * @param startTime
+     */
+    private void insertEndMonitorRecord(Date startTime) {
+        Date endTime = new Date();
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_CONTENT.value);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
+
+        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+        updater.addField(MonitorRecordTableField.RESULT, ckmCount);
+        updater.addField(MonitorRecordTableField.END_TIME, endTime);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        commonMapper.update(updater, filter);
+    }
+
+
 }
