@@ -8,7 +8,6 @@ import com.trs.gov.kpi.entity.exception.BizRuntimeException;
 import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.impl.outer.SiteApiServiceImpl;
 import com.trs.mlf.simplelog.LogUser;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetAddress;
