@@ -67,8 +67,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+        log.info(SchedulerRelated.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
 
         try {
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -84,7 +84,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             }
 
             //监测开始(添加基本信息)
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
             insertStartMonitorRecord(startTime);
 
@@ -129,7 +129,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorInfo, e);
         } finally {
             // TODO REVIEW LINWEI DONE_he.lang FIXED SchedulerRelated.getEndMessage(SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
-            String info = SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
+            String info = SchedulerRelated.getEndMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
             log.info(info);
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }

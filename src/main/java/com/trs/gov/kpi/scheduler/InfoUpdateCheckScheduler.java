@@ -105,10 +105,10 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
         try {
-            log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+            log.info(SchedulerRelated.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.INFO_UPDATE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
 
             //监测开始(添加基本信息)
             Date startTime = new Date();
@@ -137,8 +137,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
         } finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+            log.info(SchedulerRelated.getEndMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         }
     }
 
