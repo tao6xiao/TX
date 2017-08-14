@@ -74,8 +74,8 @@ public class MonitorSiteController {
     @RequestMapping(value = "/site", method = RequestMethod.POST)
     @ResponseBody
     public Object save(@ModelAttribute MonitorSiteDeal monitorSiteDeal) throws BizException, RemoteException {
-        //TODO REVIEW RANWEI DONE_he.lang 参数校验逻辑需要修改，缺少错误日志
-        // TODO: 2017/8/9  REVIEW DONE_he.lang 圈复杂度上升
+        //TODO REVIEW RANWEI DONE_he.lang FIXED 参数校验逻辑需要修改，缺少错误日志
+        // TODO: 2017/8/9  REVIEW DONE_he.lang FIXED 圈复杂度上升
         String logDesc = "设置监测站点设置信息（包括添加和修改）" + LogUtil.paramsToLogString(MONITOR_SITE_DEAL, monitorSiteDeal);
         return LogUtil.controlleFunctionWrapper(() -> {
             checkMonitorDeal(monitorSiteDeal);

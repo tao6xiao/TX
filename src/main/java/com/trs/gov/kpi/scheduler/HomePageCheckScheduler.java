@@ -133,7 +133,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "", e);
         } finally {
-            // TODO REVIEW LINWEI DONE_he.lang SchedulerRelated.getEndMessage(SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
+            // TODO REVIEW LINWEI DONE_he.lang FIXED SchedulerRelated.getEndMessage(SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
             log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
         }

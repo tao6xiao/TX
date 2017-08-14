@@ -135,7 +135,7 @@ public class CKMScheduler implements SchedulerTask {
 
         } finally {
             log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
-            // TODO REVIEW LINWEI DONE_he.lang 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
+            // TODO REVIEW LINWEI DONE_he.lang FIXED 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
         }
     }

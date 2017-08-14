@@ -76,7 +76,7 @@ public class MonitorFrequencyController {
     @ResponseBody
     public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException, RemoteException {
         String logDesc = "设置监测频率（含添加和修改）" + LogUtil.paramsToLogString(FREQ_SETUP, freqSetUp);
-        // TODO: 2017/8/9 REVIEW he.lang DONE_he.lang 圈复杂度上升
+        // TODO: 2017/8/9 REVIEW he.lang DONE_he.lang FIXED 圈复杂度上升
         return LogUtil.controlleFunctionWrapper(() -> {
             checkMonitorFrequency(freqSetUp);
             authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SAVE, freqSetUp.getSiteId());
