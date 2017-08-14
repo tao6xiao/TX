@@ -1,9 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.DebugType;
-import com.trs.gov.kpi.constant.ErrorType;
-import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.SchedulerRelated;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -53,11 +50,11 @@ public class PerformanceScheduler implements SchedulerTask {
 
     @Override
     public void run() {
-        log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+        log.info(SchedulerRelated.getStartMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
         try {
 
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER + "[siteId=" + siteId + "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.PERFORMANCE_SCHEDULER + "[siteId=" + siteId + "]");
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -74,8 +71,8 @@ public class PerformanceScheduler implements SchedulerTask {
             log.error(errorDesc, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorDesc, e);
         } finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+            log.info(SchedulerRelated.getEndMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
         }
     }
 
