@@ -10,6 +10,7 @@ import java.util.Date;
 @Data
 public class MonitorRecordResponse {
 
+    private Integer taskId;//任务编号
 
     private String  taskName;//任务类型名称
 

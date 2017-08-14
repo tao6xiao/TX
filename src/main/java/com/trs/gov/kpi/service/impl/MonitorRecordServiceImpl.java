@@ -84,6 +84,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
             List<MonitorRecordResponse> monitorRecordResponseList = new ArrayList<>();
             for (MonitorRecord monitorRecord : monitorRecordList) {
                 MonitorRecordResponse monitorRecordResponse = new MonitorRecordResponse();
+                monitorRecordResponse.setTaskId(monitorRecord.getTaskId());
                 monitorRecordResponse.setTaskName(Types.MonitorRecordNameType.valueOf(monitorRecord.getTaskId()).getName());
                 monitorRecordResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecord.getTaskStatus()).getName());
                 monitorRecordResponse.setBeginDateTime(monitorRecord.getBeginTime());
@@ -94,7 +95,8 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
             }
             return new ApiPageData(pager, monitorRecordResponseList);
         }else{
-            return new ApiPageData(pager, Collections.emptyList());
+            List<MonitorRecordResponse> emptyMonitorRecordList = Collections.emptyList();
+            return new ApiPageData(pager, emptyMonitorRecordList);
         }
     }
 }
