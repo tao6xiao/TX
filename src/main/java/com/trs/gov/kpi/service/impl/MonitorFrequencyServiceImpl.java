@@ -102,7 +102,6 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
      * @param monitorFrequencyList
      */
     private void updateMonitorScheduler(List<MonitorFrequency> monitorFrequencyList) throws BizException {
-
         if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {
             return;
         }

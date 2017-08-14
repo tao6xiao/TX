@@ -84,17 +84,10 @@ public class MonitorSiteController {
             MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
             if (monitorSite != null) {//检测站点表中存在siteId对应记录，将修改记录
                 update(monitorSiteDeal);
-                //TODO REVIEW RANWEI DO_he.lang controller层只进行权限校验和参数校验等，下面代码应当放入service层
-                if (monitorSite.getIndexUrl() != null && !monitorSite.getIndexUrl().trim().isEmpty()) {
-                    schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-                }
-                if (monitorSiteDeal.getIndexUrl() != null && !monitorSiteDeal.getIndexUrl().trim().isEmpty()) {
-                    schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-                }
+                //TODO REVIEW RANWEI DONE_he.lang FIXED controller层只进行权限校验和参数校验等，下面代码应当放入service层
+
             } else {//检测站点表中不存在siteId对应记录，将插入记录
                 add(monitorSiteDeal);
-                // 触发监控
-                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             }
             return null;
         }, OperationType.ADD + "," + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, monitorSiteDeal.getSiteId()));
@@ -117,13 +110,9 @@ public class MonitorSiteController {
     }
 
     private void checkMonitorDeal(MonitorSiteDeal monitorSiteDeal) throws BizException {
-        if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getGuarderId() == null) {
-            log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、indexUrl、guarderId、四个属性中至少有一个存在null值");
+        if (monitorSiteDeal.getSiteId() == null || monitorSiteDeal.getDepartmentName() == null || monitorSiteDeal.getGuarderId() == null) {
+            log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、guarderId三个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        if (monitorSiteDeal.getIndexUrl() == null || monitorSiteDeal.getIndexUrl().isEmpty()) {
-            log.error("Invalid parameter: 当前站点没有首页");
-            throw new BizException("当前站点没有首页，不能设置！");
         }
     }
 
