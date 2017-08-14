@@ -25,7 +25,7 @@ public interface IssueCountService {
      * @param request
      * @return
      */
-    HistoryStatisticsRes historyCountSort(IssueCountRequest request);
+    HistoryStatisticsResp historyCountSort(IssueCountRequest request);
 
     /**
      * 部门分类查询统计数量

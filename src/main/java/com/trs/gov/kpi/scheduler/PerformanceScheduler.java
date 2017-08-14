@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.impl.PerformanceService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SchedulerUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +51,8 @@ public class PerformanceScheduler implements SchedulerTask {
 
     @Override
     public void run() {
-        log.info(SchedulerRelated.getStartMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+        log.info(SchedulerUtil.getStartMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
         try {
 
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.PERFORMANCE_SCHEDULER + "[siteId=" + siteId + "]");
@@ -71,8 +72,8 @@ public class PerformanceScheduler implements SchedulerTask {
             log.error(errorDesc, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorDesc, e);
         } finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+            log.info(SchedulerUtil.getEndMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerUtil.getEndMessage(SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
         }
     }
 

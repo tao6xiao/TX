@@ -125,19 +125,13 @@ public class DateRequest {
     /**
      * 设置默认起止时间
      */
-    // TODO REVIEW LINWEI DO_ran.wei  FIXED setDefaultDate 这个方法放在 DateRequest 里面可能更为合适
     public void setDefaultDate() {
-        if (StringUtil.isEmpty(getBeginDateTime()) && StringUtil.isEmpty(getEndDateTime())) {
-            Date endDate = new Date();
+        if (StringUtil.isEmpty(getBeginDateTime())) {
+            Date endDate = getEndDate();
             setEndDateTime(DateUtil.toString(endDate));
             String beginTime;
             Calendar calendar = Calendar.getInstance();
-            try {
-                calendar.setTime(DateUtil.toDate(getEndDateTime()));
-            } catch (ParseException e) {
-                log.error("解析开始日期失败！", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "解析开始日期失败！", e);
-            }
+            calendar.setTime(endDate);
 
             if (Granularity.DAY.equals(getGranularity())) {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -157,6 +151,21 @@ public class DateRequest {
                 beginTime = DateUtil.toString(calendar.getTime());
             }
             setBeginDateTime(beginTime);
+        }
+    }
+
+    private Date getEndDate() {
+        if (StringUtil.isEmpty(getEndDateTime())) {
+            return new Date();
+        } else {
+            try {
+                return DateUtil.toDate(getEndDateTime());
+            } catch (ParseException e) {
+                String errorInfo = "时间不合法：" + getEndDateTime();
+                log.error(errorInfo, e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.BIZ_EXCEPTION, errorInfo, e);
+            }
+            return new Date();
         }
     }
 }

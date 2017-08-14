@@ -18,6 +18,7 @@ import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SchedulerUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -88,8 +89,8 @@ public class ReportGenerateScheduler implements SchedulerTask {
     public void run() {
         try {
 
-            log.info(SchedulerRelated.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+            log.info(SchedulerUtil.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
 
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.REPORT_GENERATE_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
@@ -128,7 +129,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             }
             sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
-            String fileDir = "/" + Integer.toString(siteId) + "/" + granularity + "/";
+            String fileDir = File.separator + Integer.toString(siteId) + File.separator + granularity + File.separator;
             String fileName = sdf.format(new Date()) + ".xlsx";
             Workbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("问题统计");// 创建工作表(Sheet)
@@ -290,8 +291,8 @@ public class ReportGenerateScheduler implements SchedulerTask {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "报表生成任务调度运行失败，站点siteId[" + siteId + "]", e);
         }finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+            log.info(SchedulerUtil.getEndMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerUtil.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
         }
 
     }

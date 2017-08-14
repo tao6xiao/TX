@@ -273,7 +273,6 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         for (MonitorSite site : allMonitorSites) {
             // 每个月1日凌晨0点执行一次
-            // TODO REVIEW LINWEI DONE_he.lang FIXED 这个地方没有记录日志
             scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, FIRST_DAY_OF_MONTH);
         }
     }

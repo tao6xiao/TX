@@ -88,7 +88,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param) {
+    public HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param) {
         param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
@@ -105,7 +105,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new HistoryStatisticsRes(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
+        return new HistoryStatisticsResp(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
     }
 
     @Override
@@ -204,12 +204,10 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     @Override
     public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
-        // TODO REVIEW DO_li.hao FIXED 需要考虑首页检测任务没有执行完成的情况
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
         Date endTime = monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
         if (endTime == null) {
-            // TODO 如果一次都没有检测过，需要显示成其他的
-            // 记录不存在， 还没有进行过一次完整的检测
+            // TODO 如果一次都没有检测过，需要显示成其他的（还没有进行过一次完整的检测，就会出现记录不存在的情况）
             IndexPage indexPage = new IndexPage();
             indexPage.setIndexAvailable(true);
             indexPage.setIndexUrl(indexUrl);

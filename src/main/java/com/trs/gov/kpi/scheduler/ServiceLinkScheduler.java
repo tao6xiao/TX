@@ -14,6 +14,7 @@ import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SchedulerUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,8 +68,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Override
     public void run() {
         try {
-            log.info(SchedulerRelated.getStartMessage(SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
+            log.info(SchedulerUtil.getStartMessage(SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
 
             //监测开始(添加基本信息)
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.SERVICE_LINK_SCHEDULER + "[siteId=" + siteId + "]");
@@ -113,7 +114,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, errorInfo, e);
         } finally {
-            String info = SchedulerRelated.getEndMessage(SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId);
+            String info = SchedulerUtil.getEndMessage(SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId);
             log.info(info);
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }

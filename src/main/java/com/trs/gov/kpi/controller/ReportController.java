@@ -61,15 +61,9 @@ public class ReportController {
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
             ParamCheckUtil.checkDayTime(param.getDay());
+
             authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = null;
-            try {
-                apiPageData = reportService.selectReportList(param, true);
-            } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            return apiPageData;
+            return reportService.selectReportList(param, true);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
 
     }
@@ -86,31 +80,19 @@ public class ReportController {
      */
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
     public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws BizException, RemoteException {
-        // TODO: 2017/8/9 REVIEW he.lang DO_ran.wei FIXED 站点无需判断？
         String logDesc = "按时间节点导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             if (param.getId() == null || param.getSiteId() == null) {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
             authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
-            String path = null;
-            try {
-                path = reportService.getReportPath(param, true);
-            } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            // TODO REVEIW DO_RAN.WEI FIXED  对于文件找不到的情况，抛出一个异常
+            String path = reportService.getReportPath(param, true);
             if (StringUtil.isEmpty(path)) {
-                try {
-                    throw new FileNotFoundException("报表文件不存在");
-                } catch (FileNotFoundException e) {
-                    log.error("", e);
-                    throw new BizException(e.getMessage());
-                }
+                String errorInfo = "时间节点报表文件不存在[siteId=" + param.getSiteId() + ",ID=" + param.getId() + "]";
+                log.error(errorInfo);
+                throw new BizException(errorInfo);
             }
-            String[] str = path.split("/");
-            download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
+            download(response, path);
             return null;
         }, OperationType.DOWNLOAD, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
@@ -131,15 +113,9 @@ public class ReportController {
             ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
             ParamCheckUtil.checkDayTime(param.getBeginDateTime());
             ParamCheckUtil.checkDayTime(param.getEndDateTime());
+
             authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
-            ApiPageData apiPageData = null;
-            try {
-                apiPageData = reportService.selectReportList(param, false);
-            } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
-            return apiPageData;
+            return reportService.selectReportList(param, false);
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
@@ -161,25 +137,19 @@ public class ReportController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
             authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
-            String path;
-            try {
-                path = reportService.getReportPath(param, false);
-            } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
-            }
+            String path = reportService.getReportPath(param, false);
             if (StringUtil.isEmpty(path)) {
-                return null;
+                String errorInfo = "时间区间报表文件不存在[siteId=" + param.getSiteId() + ",ID=" + param.getId() + "]";
+                log.error(errorInfo);
+                throw new BizException(errorInfo);
             }
-            String[] str = path.split("/");
-
-            download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
+            download(response, path);
             return null;
         }, OperationType.DOWNLOAD, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
-    private void download(HttpServletResponse response, String relativePath, String fileName) {
-        File file = new File(reportDir + relativePath, fileName);
+    private void download(HttpServletResponse response, String fileName) {
+        File file = new File(reportDir + fileName);
         if (file.exists()) {
             response.setContentType("application/x-download");
             response.addHeader("Content-Disposition",

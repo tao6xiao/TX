@@ -11,10 +11,7 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.SpiderUtils;
-import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -67,8 +64,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info(SchedulerRelated.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+        log.info(SchedulerUtil.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
 
         try {
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -121,15 +118,14 @@ public class HomePageCheckScheduler implements SchedulerTask {
             insertEndMonitorRecord(startTime, isAvailable);
 
 
-            // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
+            // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerUtil.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
             String errorInfo = "首页可用性检测失败！[siteId=" + siteId + "]";
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorInfo, e);
         } finally {
-            // TODO REVIEW LINWEI DONE_he.lang FIXED SchedulerRelated.getEndMessage(SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
-            String info = SchedulerRelated.getEndMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
+            String info = SchedulerUtil.getEndMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
             log.info(info);
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }

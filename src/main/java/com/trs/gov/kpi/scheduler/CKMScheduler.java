@@ -95,8 +95,8 @@ public class CKMScheduler implements SchedulerTask {
     @Override
     public void run() {
         try {
-            log.info(SchedulerRelated.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            log.info(SchedulerUtil.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
 
             final Site checkSite = siteApiService.getSiteById(siteId, null);
             if (checkSite == null) {
@@ -126,9 +126,8 @@ public class CKMScheduler implements SchedulerTask {
             log.error("");
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息错误监测，siteId[" + siteId + "]，url[" + baseUrl + "]", e);
         } finally {
-            String info = SchedulerRelated.getEndMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId);
+            String info = SchedulerUtil.getEndMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId);
             log.info(info);
-            // TODO REVIEW LINWEI DONE_he.lang FIXED 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
     }

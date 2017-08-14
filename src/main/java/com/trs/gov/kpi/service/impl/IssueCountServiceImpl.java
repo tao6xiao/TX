@@ -95,7 +95,7 @@ public class IssueCountServiceImpl implements IssueCountService {
     }
 
     @Override
-    public HistoryStatisticsRes historyCountSort(IssueCountRequest request) {
+    public HistoryStatisticsResp historyCountSort(IssueCountRequest request) {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
         request.setDefaultDate();
 
@@ -115,7 +115,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         historyResponse = buildHistoryResponse(IssueIndicator.UN_SOLVED_ALL, dateList, siteIds);
         historyResponseList.add(historyResponse);
 
-        return new HistoryStatisticsRes(new Date(), historyResponseList);
+        return new HistoryStatisticsResp(new Date(), historyResponseList);
     }
 
     @Override

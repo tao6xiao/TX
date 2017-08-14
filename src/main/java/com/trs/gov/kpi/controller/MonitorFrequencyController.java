@@ -76,17 +76,13 @@ public class MonitorFrequencyController {
     @ResponseBody
     public Object save(@RequestBody MonitorFrequencySetUp freqSetUp) throws BizException, RemoteException {
         String logDesc = "设置监测频率（含添加和修改）" + LogUtil.paramsToLogString(FREQ_SETUP, freqSetUp);
-        // TODO: 2017/8/9 REVIEW he.lang DONE_he.lang FIXED 圈复杂度上升
         return LogUtil.controlleFunctionWrapper(() -> {
             checkMonitorFrequency(freqSetUp);
             authorityService.checkRight(Authority.KPIWEB_MONITORSETUP_SAVE, freqSetUp.getSiteId());
+
             int siteId = freqSetUp.getSiteId();
-            if (monitorSiteService.getMonitorSiteBySiteId(siteId) == null) {
-                log.error("Invalid parameter: 当前站点" + siteId + "不是监测站点");
-                throw new BizException("请先进行监测站点模块相关设置");
-            }
             List<MonitorFrequency> monitorFrequencyList = monitorFrequencyService.checkSiteIdAndTypeAreBothExitsOrNot(siteId);
-            if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
+            if (monitorFrequencyList.isEmpty()) {//siteId和typeId同时不存在，插入记录
                 add(freqSetUp);
             } else {//siteId和typeId同时存在，修改对应站点的监测频率记录
                 update(freqSetUp);
@@ -118,6 +114,12 @@ public class MonitorFrequencyController {
         if (freqSetUp.getSiteId() == null || freqs == null || freqs.length == 0) {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
+
+        if (freqs.length < FrequencyType.values().length) {
+            log.error("Invalid parameter: 添加频率设置时，缺少某些频率类型的数据");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+
         for (int i = 0; i < freqs.length; i++) {
             if (freqs[i].getId() == null || freqs[i].getValue() == null) {
                 log.error("Invalid parameter: 参数freqs[]中id（类型编号）存在null值");
@@ -129,9 +131,10 @@ public class MonitorFrequencyController {
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
-        if (freqs.length < FrequencyType.values().length) {
-            log.error("Invalid parameter: 添加频率设置时，缺少某些频率类型的数据");
-            throw new BizException(Constants.INVALID_PARAMETER);
+
+        if (monitorSiteService.getMonitorSiteBySiteId(freqSetUp.getSiteId()) == null) {
+            log.error("Invalid parameter: 当前站点" + freqSetUp.getSiteId() + "不是监测站点");
+            throw new BizException("请先进行监测站点模块相关设置");
         }
     }
 }

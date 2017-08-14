@@ -8,7 +8,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.SGPageDataRes;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsResp;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -64,7 +64,7 @@ public class ServiceGuideController {
      * @throws RemoteException
      */
     @RequestMapping(value = "/issue/all/count/history", method = RequestMethod.GET)
-    public HistoryStatisticsRes getSPHistoryCount(PageDataRequestParam param) throws BizException, RemoteException {
+    public HistoryStatisticsResp getSPHistoryCount(PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询服务指南问题总数的历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
