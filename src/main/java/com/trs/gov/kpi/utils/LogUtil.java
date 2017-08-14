@@ -104,7 +104,7 @@ public class LogUtil {
      * @param desc
      * @param timeUsed
      */
-    public static void addElapseLog(String operationType, String desc, long timeUsed) {
+    private static void addElapseLog(String operationType, String desc, long timeUsed) {
         SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
     }
 
@@ -234,11 +234,21 @@ public class LogUtil {
             this.startDate = new Date();
         }
 
+        /**
+         * 超过限定时间，则记录性能日志
+         */
         public void record() {
             long spendTime = new Date().getTime() - startDate.getTime();
             if (spendTime > LIMIT) {
                 addElapseLog(type, desc, spendTime);
             }
+        }
+
+        /**
+         * 不管限定时间，始终记录性能日志
+         */
+        public void recordAlways() {
+            addElapseLog(type, desc, new Date().getTime() - startDate.getTime());
         }
     }
 

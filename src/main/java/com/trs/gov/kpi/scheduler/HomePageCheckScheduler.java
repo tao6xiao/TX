@@ -87,6 +87,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             }
 
             //监测开始(添加基本信息)
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
@@ -133,14 +134,16 @@ public class HomePageCheckScheduler implements SchedulerTask {
             commonMapper.update(updater, filter);
 
             // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
+            performanceLogRecorder.recordAlways();
         } catch (Exception e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "", e);
+            String errorInfo = "首页可用性检测失败！[siteId=" + siteId + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorInfo, e);
         } finally {
             // TODO REVIEW LINWEI DONE_he.lang FIXED SchedulerRelated.getEndMessage(SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
-            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+            String info = SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
+            log.info(info);
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
 
     }

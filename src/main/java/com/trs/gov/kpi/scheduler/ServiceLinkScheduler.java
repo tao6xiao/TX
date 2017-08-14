@@ -60,8 +60,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-    //失效的服务链接计数
-    int count = 0;
+
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
@@ -74,6 +73,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
 
             //监测开始(添加基本信息)
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
@@ -83,6 +83,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
             monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
             monitorRecordService.insertMonitorRecord(monitorRecord);
 
+            //失效的服务链接计数
+            int count = 0;
             for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
                 if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
                     Issue issue = new Issue();
@@ -112,13 +114,15 @@ public class ServiceLinkScheduler implements SchedulerTask {
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
+            performanceLogRecorder.recordAlways();
         } catch (RemoteException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "服务链接监测，siteId[" + siteId + "]", e);
+            String errorInfo = "服务链接可用性检测失败！[siteId=" + siteId + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, errorInfo, e);
         } finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId));
+            String info = SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.SERVICE_LINK_SCHEDULER.toString(), siteId);
+            log.info(info);
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
     }
 

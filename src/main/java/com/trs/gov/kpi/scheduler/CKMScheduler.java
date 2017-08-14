@@ -111,6 +111,8 @@ public class CKMScheduler implements SchedulerTask {
                 return;
             }
 
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.CKM_SCHEDULER + "[siteId=" + siteId + "]");
+
             //监测开始(添加基本信息)
             Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
@@ -136,12 +138,12 @@ public class CKMScheduler implements SchedulerTask {
             updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
             commonMapper.update(updater, filter);
 
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
-
+            performanceLogRecorder.recordAlways();
         } finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            String info = SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId);
+            log.info(info);
             // TODO REVIEW LINWEI DONE_he.lang FIXED 为了确保end被记录在日志中， 需要放在finally里面， 其他任务里面的请一并修改
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
     }
 

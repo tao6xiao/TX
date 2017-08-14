@@ -23,10 +23,10 @@ public class SchedulerRelated {
 
     // TODO REVIEW DONE_he.lang FIXED 修改方法名
     public static String getStartMessage(String schedulerType, Integer siteId) {
-        return schedulerType + " " + siteId + " start...";
+        return schedulerType + "[siteId=" + siteId + "] start...";
     }
 
     public static String getEndMessage(String schedulerType, Integer siteId) {
-        return schedulerType + " " + siteId + " end...";
+        return schedulerType + "[siteId=" + siteId + "] end...";
     }
 }

@@ -56,7 +56,9 @@ public class PerformanceScheduler implements SchedulerTask {
         log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
         try {
-            Date startTime = new Date();
+
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER + "[siteId=" + siteId + "]");
+
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
             calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应
@@ -66,11 +68,11 @@ public class PerformanceScheduler implements SchedulerTask {
             performance.setIndex(score);
             performance.setCheckTime(calendar.getTime());
             performanceMapper.insert(performance);
-            Date endTime = new Date();
-            LogUtil.addElapseLog(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), endTime.getTime() - startTime.getTime());
+            performanceLogRecorder.recordAlways();
         } catch (BizException | RemoteException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "绩效指数计算失败，siteId[" + siteId + "]", e);
+            String errorDesc = "绩效指数计算失败! [siteId=" + siteId + "]";
+            log.error(errorDesc, e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorDesc, e);
         } finally {
             log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.PERFORMANCE_SCHEDULER.toString(), siteId));
