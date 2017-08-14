@@ -97,16 +97,7 @@ public class LogUtil {
         SimpleLogServer.warn(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, desc, e);
     }
 
-    /**
-     * 添加性能日志
-     *
-     * @param operationType
-     * @param desc
-     * @param timeUsed
-     */
-    private static void addElapseLog(String operationType, String desc, long timeUsed) {
-        SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
-    }
+
 
     /**
      * 添加调试日志
@@ -249,6 +240,17 @@ public class LogUtil {
          */
         public void recordAlways() {
             addElapseLog(type, desc, new Date().getTime() - startDate.getTime());
+        }
+
+        /**
+         * 添加性能日志
+         *
+         * @param operationType
+         * @param desc
+         * @param timeUsed
+         */
+        private static void addElapseLog(String operationType, String desc, long timeUsed) {
+            SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
         }
     }
 
