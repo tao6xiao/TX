@@ -52,7 +52,7 @@ public class TRSLogUserUtil {
         if (buffer.length() != 0) {
             groupNames = buffer.deleteCharAt(buffer.lastIndexOf(",")).toString();
         }
-        if (!"".equals(groupNames)) {
+        if (!StringUtil.isEmpty(groupNames)) {
             return new LogUser(localUser.getUserName(), localUser.getTrueName(), localUser.getLastLoginIP(), groupNames);
         }
         return new LogUser(localUser.getUserName(), localUser.getTrueName(), localUser.getLastLoginIP());
