@@ -462,6 +462,7 @@ public class SchedulerServiceImpl implements SchedulerService {
             throw new BizException("手动检测失败：检测站点siteId[" + siteId + "]，检测任务类型type[" + checkJobType.name() + "]");
         }
         task.setSiteId(siteId);
+        task.setMonitorType(Status.MonitorType.MANUAL_MONITOR.value);
         task.run();
     }
 

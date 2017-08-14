@@ -63,6 +63,10 @@ public class HomePageCheckScheduler implements SchedulerTask {
     //首页可用性(状态记录；0可用，1不可用)
     int isAvailable = 0;
 
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    private Integer monitorType;
+
     @Override
     public void run() {
 
@@ -86,6 +90,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
+            monitorRecord.setTypeId(monitorType);
             monitorRecord.setTaskId(EnumCheckJobType.CHECK_HOME_PAGE.value);
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);

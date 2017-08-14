@@ -89,6 +89,10 @@ public class CKMScheduler implements SchedulerTask {
     //错误信息计数
     int count = 0;
 
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    private Integer monitorType;
+
     @Override
     public void run() throws RemoteException {
         try {
@@ -111,6 +115,7 @@ public class CKMScheduler implements SchedulerTask {
             Date startTime = new Date();
             MonitorRecord monitorRecord = new MonitorRecord();
             monitorRecord.setSiteId(siteId);
+            monitorRecord.setTypeId(monitorType);
             monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
             monitorRecord.setBeginTime(startTime);
             monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
@@ -139,7 +144,6 @@ public class CKMScheduler implements SchedulerTask {
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.CKM_SCHEDULER.toString(), siteId));
         }
     }
-
 
     private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList) throws RemoteException {
         List<Issue> issueList = new ArrayList<>();
