@@ -436,6 +436,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         job.getJobDataMap().put("task", task);
 
 
+        // TODO: 2017/8/14 he.lang 手动检测实现后，startNow()将删除
         // 每天执行一次
         Trigger trigger = newTrigger()
                 .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
