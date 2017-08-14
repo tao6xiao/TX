@@ -11,17 +11,17 @@ public class WebPageUtil {
 
     private static final String[] resSuffixs = new String[]{"css", "js"};
 
-    private static final String[] imageSuffixs = new String[]{"png", "gif", "mpg", "mpeg", "mpe", "m1v", "mov", "qt", "jpeg", "jpg", "jpe", "bmp", "gif", "ico", "png", "tif", "tiff"};
+    private static final String[] imageSuffixs = new String[]{"gif", "mpg", "mpe", "m1v", "mov", "qt", "jpeg", "jpg", "jpe", "bmp", "gif", "ico", "png", "tif", "tiff"};
 
     private static final String[] fileSuffixs = new String[]{"zip", "doc", "xls", "xlsx", "docx", "rar"};
 
-    private static final String[] audioSuffixs = new String[]{"MP3", "AAC", "WAV", "WMA", "CDA", "FLAC", "M4A", "MID", "MKA", "MP2", "MPA", "MPC", "APE", "OFR", "OGG", "RA", "WV", "TTA",
-            "AC3", "DTS"};
+    private static final String[] audioSuffixs = new String[]{"MP1", "MP2", "MP3", "AAC", "WAV", "WMA", "CDA", "FLAC", "M4A", "MID", "MKA", "MP2", "MPA", "MPC", "APE", "OFR", "OGG", "RA",
+            "WV", "TTA", "AC3", "DTS"};
 
     private static final String[] htmlSuffixs = new String[]{"htm", "html", "shtml", "xml"};
 
-    private static final String[] videoSuffixs = new String[]{"m3u", "mpega", "mp1", "mp2", "mp3", "mpa", "wav", "wax", "wma", "aif", "aifc", "aiff", "au", "snd", "ulw", "mid", "midi",
-            "kar", "smf", "wm", "wmv", "wvx", "avi", "flv", "asx", "asf", "swf", "swfl", "awf"};
+    private static final String[] videoSuffixs = new String[]{"MP4", "3GP", "AVI", "MKV", "WMV", "MPG", "VOB", "FLV", "SWF", "MOV", "RMVB", "MPEG", "KAR", "SMF", "WM", "ASX",
+            "ASF", "SWFL", "AWF"};
 
     private WebPageUtil() {
     }
@@ -46,7 +46,7 @@ public class WebPageUtil {
         } else if (isExist(suffix, fileSuffixs)) {
             return EnumUrlType.FILE;
         } else if (isExist(suffix, audioSuffixs)) {
-            return EnumUrlType.VIDEO;
+            return EnumUrlType.AUDIO;
         } else if (isExist(suffix, resSuffixs)) {
             return EnumUrlType.RES;
         }
