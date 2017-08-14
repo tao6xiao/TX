@@ -6,7 +6,7 @@ package com.trs.gov.kpi.constant;
  */
 public class SchedulerRelated {
 
-    // TODO REVIEW DONE_he.lang 修改为枚举类型，解决名字冲突
+    // TODO REVIEW DONE_he.lang FIXED 修改为枚举类型，解决名字冲突
 
     public enum SchedulerType {
         CKM_SCHEDULER,
@@ -21,7 +21,7 @@ public class SchedulerRelated {
     private SchedulerRelated() {
     }
 
-    // TODO REVIEW DONE_he.lang 修改方法名
+    // TODO REVIEW DONE_he.lang FIXED 修改方法名
     public static String getStartMessage(String schedulerType, Integer siteId) {
         return schedulerType + " " + siteId + " start...";
     }

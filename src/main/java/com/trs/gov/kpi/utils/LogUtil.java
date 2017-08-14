@@ -195,7 +195,7 @@ public class LogUtil {
             LogUtil.addOperationLog(type, desc, systemName);
             return r;
         } catch (Exception e) {
-            // TODO REVIEW LINWEI DONE_he.lang 把异常描述信息加入到操作日志的描述里面去
+            // TODO REVIEW LINWEI DONE_he.lang FIXED 把异常描述信息加入到操作日志的描述里面去
             LogUtil.addFailOperationLog(type, LogUtil.buildFailOperationLogDesc(desc + e.getLocalizedMessage()), systemName);
             throw e;
         }
