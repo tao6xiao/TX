@@ -222,10 +222,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         indexPage.setMonitorTime(DateUtil.toString(endTime));
 
         Integer result = monitorRecordService.getResultByLastEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value,endTime);
-        if (result == null) {
-            // 记录不存在， 还没有进行过一次完整的检测
-            indexPage.setIndexAvailable(true);
-        } else if (result == 0) {
+        if (result == 0) {
             indexPage.setIndexAvailable(true);
         } else {
             indexPage.setIndexAvailable(false);
