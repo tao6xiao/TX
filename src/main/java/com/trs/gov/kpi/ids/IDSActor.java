@@ -55,32 +55,36 @@ public class IDSActor extends StdHttpSessionBasedActor {
     public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) {
         HttpSession session = request.getSession();
 
+        LocalUser localUser = new LocalUser();
+        localUser.setUserName(loginUser.getUserName());
+        localUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
+
         UserApiService userApiService = (UserApiService) SpringContextUtil.getBean(UserApiService.class);
         User user;
         String message = "采编中心无当前用户";
         try {
             user = userApiService.finUserByUserName("", loginUser.getUserName());
         } catch (RemoteException e) {
+            ContextHelper.initContext(localUser);
             log.error(message, e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, message, e);
             LogUtil.addSecurityLog("登录失败");
             return;
         }
         if (user == null) {
+            ContextHelper.initContext(localUser);
             log.error(message);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, message, new RemoteException(message));
             LogUtil.addSecurityLog("登录失败");
             return;
         }
 
-        LocalUser localUser = new LocalUser();
-        localUser.setUserName(loginUser.getUserName());
-        localUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
         localUser.setTrueName(user.getTrueName());
         localUser.setGroups((ArrayList<Map>) user.getGroups());
         session.setAttribute(LOGIN_FLAG, localUser);
+        ContextHelper.initContext(localUser);
 
-        log.info("loadLoginUser[" + loginUser.getUserName() + "], user groups info:" + loginUser.getSSOGroups());
+        log.info("LocalUser[" + localUser.getUserName() + "], user groups info:" + localUser.getGroups());
         LogUtil.addSecurityLog("登录成功");
     }
 
