@@ -85,16 +85,27 @@ public class ServiceLinkScheduler implements SchedulerTask {
 
             for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
                 if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
-                    Issue issue = new Issue();
-                    issue.setSiteId(siteId);
-                    issue.setSubTypeId(Types.ServiceLinkIssueType.INVALID_LINK.value);
-                    issue.setTypeId(Types.IssueType.SERVICE_LINK_AVAILABLE.value);
-                    issue.setDetail(guide.getItemLink());
-                    issue.setCustomer1(guide.getItemLink());
-                    Date nowTime = new Date();
-                    issue.setIssueTime(nowTime);
-                    issue.setCheckTime(nowTime);
-                    issueMapper.insert(DBUtil.toRow(issue));
+                    QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+                    queryFilter.addCond(IssueTableField.SITE_ID,siteId);
+                    queryFilter.addCond(IssueTableField.TYPE_ID,Types.IssueType.SERVICE_LINK_AVAILABLE);
+                    queryFilter.addCond(IssueTableField.DETAIL,guide.getItemLink());
+                    int issueCount = issueMapper.count(queryFilter);
+                    if(issueCount<1){
+                        Issue issue = new Issue();
+                        issue.setSiteId(siteId);
+                        issue.setSubTypeId(Types.ServiceLinkIssueType.INVALID_LINK.value);
+                        issue.setTypeId(Types.IssueType.SERVICE_LINK_AVAILABLE.value);
+                        issue.setDetail(guide.getItemLink());
+                        issue.setCustomer1(guide.getItemLink());
+                        Date nowTime = new Date();
+                        issue.setIssueTime(nowTime);
+                        issue.setCheckTime(nowTime);
+                        issueMapper.insert(DBUtil.toRow(issue));
+                    }else {
+                        DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                        updater.addField(IssueTableField.CHECK_TIME, new Date());
+                        commonMapper.update(updater, queryFilter);
+                    }
                     count++;
                 }
             }

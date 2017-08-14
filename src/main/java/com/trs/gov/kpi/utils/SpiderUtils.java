@@ -1,11 +1,13 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.PageDepth;
 import com.trs.gov.kpi.entity.PageSpace;
 import com.trs.gov.kpi.entity.ReplySpeed;
 import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -61,6 +63,9 @@ public class SpiderUtils {
 
     @Resource
     private WebPageMapper webPageMapper;
+
+    @Resource
+    private CommonMapper commonMapper;
 
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
@@ -312,6 +317,16 @@ public class SpiderUtils {
 
                     linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
                     count++;
+                }else {
+                    QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+                    queryFilter.addCond(IssueTableField.SITE_ID, siteId);
+                    queryFilter.addCond(IssueTableField.TYPE_ID,Types.IssueType.LINK_AVAILABLE_ISSUE);
+                    queryFilter.addCond(IssueTableField.DETAIL,unavailableUrlAndParentUrl.getValue());
+                    queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+                    queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+                    DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                    updater.addField(IssueTableField.CHECK_TIME, new Date());
+                    commonMapper.update(updater, queryFilter);
                 }
             } catch (Exception e) {
                 log.error("", e);
