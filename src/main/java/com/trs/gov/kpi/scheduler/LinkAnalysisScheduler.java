@@ -16,6 +16,7 @@ import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
@@ -76,15 +77,10 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Override
     public void run() throws RemoteException {
         final Site checkSite = siteApiService.getSiteById(siteId, null);
-        if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exsit!");
-            return;
-        }
-
-        baseUrl = checkSite.getWebHttp();
-        if (StringUtil.isEmpty(baseUrl)) {
-            log.warn("site[" + siteId + "]'s web http is empty!");
-            return;
+        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
+        if(StringUtil.isEmpty(baseUrl))
+        {
+            return ;
         }
 
         //监测开始(添加基本信息)
