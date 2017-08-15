@@ -96,7 +96,7 @@ public class PerformanceService {
         }
         double percent = 1 - updateNotInTimeCount * 0.1 - blankChnlCount * 0.2;
         if (percent > 0) {
-            infoUpdateScore = 37.5 * percent;
+            infoUpdateScore *= percent;
         } else {
             infoUpdateScore = 0;
         }
