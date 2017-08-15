@@ -36,12 +36,6 @@ public final class Constants {
     //参数ids
     public static final String IDS = "ids";
 
-    //用于标识消息传输（接收和发送）的常量
-    public static final String INPUT_CHANNEL = "input_channel";
-    public static final String OUTPUT_CHANNEL = "output_channel";
-    public static final String INPUT = "input";
-    public static final String OUTPUT = "output";
-
     //用于issue表中的deptId（部门编号）为null或者字符串的空值情况
     public static final String DEPT_NULL = "未归属部门";
 

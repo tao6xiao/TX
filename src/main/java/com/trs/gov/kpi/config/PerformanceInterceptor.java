@@ -45,7 +45,7 @@ public class PerformanceInterceptor extends HandlerInterceptorAdapter {
         } else if (request.getMethod().equalsIgnoreCase("POST")) {
             return OperationType.ADD;
         } else {
-            return OperationType.QUERY;
+            return OperationType.REQUEST;
         }
     }
 }

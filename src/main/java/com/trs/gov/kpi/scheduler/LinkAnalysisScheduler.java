@@ -5,8 +5,6 @@ import com.trs.gov.kpi.constant.SchedulerType;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
-import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
@@ -29,19 +27,10 @@ import javax.annotation.Resource;
 public class LinkAnalysisScheduler implements SchedulerTask {
 
     @Resource
-    LinkAvailabilityService linkAvailabilityService;
-
-    @Resource
     private SiteApiService siteApiService;
 
     @Resource
     SpiderUtils spider;
-
-    @Resource
-    WebPageService webPageService;
-
-    @Resource
-    WebPageMapper webPageMapper;
 
     @Setter
     @Getter

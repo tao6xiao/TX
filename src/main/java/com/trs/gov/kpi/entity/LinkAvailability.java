@@ -13,9 +13,13 @@ public class LinkAvailability {
 
     private String id;//问题编号
 
+    private Integer siteId; // 站点编号
+
     private Integer issueTypeId;//问题子类型编号
 
     private String invalidLink;//失效链接
+
+    private Integer chnlId; //栏目编号
 
     private String snapshot;//快照
 

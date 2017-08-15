@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -48,28 +49,25 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
-    SiteApiService siteApiService;
+    private SiteApiService siteApiService;
 
     @Resource
-    DocumentApiService documentApiService;
+    private DocumentApiService documentApiService;
 
     @Resource
-    FrequencySetupMapper frequencySetupMapper;
+    private FrequencySetupMapper frequencySetupMapper;
 
     @Resource
-    FrequencyPresetMapper frequencyPresetMapper;
+    private FrequencyPresetMapper frequencyPresetMapper;
 
     @Resource
-    MonitorSiteService monitorSiteService;
+    private DefaultUpdateFreqService defaultUpdateFreqService;
 
     @Resource
-    DefaultUpdateFreqService defaultUpdateFreqService;
+    private IssueMapper issueMapper;
 
     @Resource
-    IssueMapper issueMapper;
-
-    @Resource
-    CommonMapper commonMapper;
+    private CommonMapper commonMapper;
 
     @Getter
     @Setter
@@ -615,11 +613,22 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         update.setIssueTime(curDate);
         update.setCheckTime(curDate);
         update.setChnlId(channelId);
+
+        try {
+            final Integer deptId = siteChannelServiceHelper.findRelatedDept(channelId, "");
+            update.setDeptId(deptId);
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目所属部门失败！[chnnelId={0}, siteId={1}]", channelId, siteId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, errorInfo, e);
+        }
+
         try {
             update.setChnlUrl(siteApiService.getChannelPublishUrl("", 0, channelId));
         } catch (Exception e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "插入信息更新监测的数据失败，siteId[" + siteId + "]", e);
+            String errorInfo = MessageFormat.format("获取栏目发布URL失败！[chnnelId={0}, siteId={1}]", channelId, siteId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, errorInfo, e);
         }
         issueMapper.insert(DBUtil.toRow(update));
         monitorResult++;

@@ -15,6 +15,7 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -62,6 +65,9 @@ public class CKMScheduler implements SchedulerTask {
 
     @Resource
     private ContentCheckApiService contentCheckApiService;
+
+    @Resource
+    private SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
     private IssueMapper issueMapper;
@@ -155,7 +161,7 @@ public class CKMScheduler implements SchedulerTask {
         return issueList;
     }
 
-    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) throws RemoteException {
+    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) {
         List<Issue> issueList = new ArrayList<>();
         for (String checkType : checkTypeList) {
             Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
@@ -192,8 +198,10 @@ public class CKMScheduler implements SchedulerTask {
 
             Issue issue = new Issue();
             issue.setSiteId(siteId);
-            if (ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId) != null) {
-                issue.setCustomer2(String.valueOf(ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId)));
+            Integer chnlId = getChnlId(page);
+            if (chnlId != null) {
+                issue.setCustomer2(String.valueOf(chnlId));
+                setDeptId(issue, chnlId);
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
@@ -206,6 +214,30 @@ public class CKMScheduler implements SchedulerTask {
         }
         return issueList;
     }
+
+    private void setDeptId(Issue issue, Integer chnlId) {
+        try {
+            issue.setDeptId(siteChannelServiceHelper.findRelatedDept(chnlId, ""));
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目所属部门失败! [siteId={0}, chnlId={1}]", siteId, chnlId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+        }
+    }
+
+    @Nullable
+    private Integer getChnlId(PageCKMSpiderUtil.CKMPage page) {
+        Integer chnlId = null;
+        try {
+            chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId);
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目Id失败! [siteId={0}, url={1}]", siteId, page.getUrl());
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+        }
+        return chnlId;
+    }
+
 
     public static void createIndexHtml(String dir) throws IOException {
         String htmlText = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
@@ -278,14 +310,7 @@ public class CKMScheduler implements SchedulerTask {
                 .append(LINE_SP);
         sb.append(content.intern())
                 .append(LINE_SP);
-        // 在源码中增加定位用的脚本定义
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
-                .append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>")
-                .append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>")
-                .append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+        sb.append(addScriptDef());
         return sb.toString();
     }
 
@@ -418,26 +443,26 @@ public class CKMScheduler implements SchedulerTask {
         // 将html标签转义
         String sourceEscape = StringEscapeUtils.escapeHtml4(content);
         StringBuilder sb = new StringBuilder();
-        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-        sb.append(LINE_SP);
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append(LINE_SP);
-        sb.append("	<head>");
-        sb.append(LINE_SP);
-        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
-        sb.append(LINE_SP);
-        sb.append("		<title>源码定位</title>");
-        sb.append(LINE_SP);
-        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("	</head>");
-        sb.append(LINE_SP);
-        sb.append("	<body> ");
-        sb.append(LINE_SP);
-        sb.append("		<div class=\"sh_code\">");
-        sb.append(LINE_SP);
-        sb.append("			<ol start=\"1\">");
-        sb.append(LINE_SP);
+        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
+                .append(LINE_SP);
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">")
+                .append(LINE_SP);
+        sb.append("	<head>")
+                .append(LINE_SP);
+        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>")
+                .append(LINE_SP);
+        sb.append("		<title>源码定位</title>")
+                .append(LINE_SP);
+        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("	</head>")
+                .append(LINE_SP);
+        sb.append("	<body> ")
+                .append(LINE_SP);
+        sb.append("		<div class=\"sh_code\">")
+                .append(LINE_SP);
+        sb.append("			<ol start=\"1\">")
+                .append(LINE_SP);
         sourceEscape = sourceEscape.replaceAll("\r", "");
         sourceEscape = sourceEscape.replaceAll("\n", LINE_SP);
         sourceEscape = sourceEscape.replaceAll(" ", "&nbsp;");
@@ -452,26 +477,34 @@ public class CKMScheduler implements SchedulerTask {
             }
             sb.append(LINE_SP);
         }
-        sb.append("			</ol>");
+        sb.append("			</ol>")
+                .append(LINE_SP);
+        sb.append("		</div>")
+                .append(LINE_SP);
+        sb.append("	</body>")
+                .append(LINE_SP);
+        sb.append(HTML_SUF)
+                .append(LINE_SP);
         sb.append(LINE_SP);
-        sb.append("		</div>");
-        sb.append(LINE_SP);
-        sb.append("	</body>");
-        sb.append(LINE_SP);
-        sb.append(HTML_SUF);
-        sb.append(LINE_SP);
-
-        // 在源码中增加定位用的脚本定义
-        sb.append(LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
-
+        sb.append(addScriptDef());
         return sb.toString();
+    }
+
+    /**
+     * 在源码中增加定位用的脚本定义
+     * @param sb
+     * @return
+     */
+    public static StringBuilder addScriptDef(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+        return sb;
     }
 
 

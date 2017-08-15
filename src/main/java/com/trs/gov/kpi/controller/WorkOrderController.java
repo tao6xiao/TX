@@ -25,6 +25,7 @@ import java.util.Arrays;
 /**
  * Created by ranwei on 2017/6/7.
  * 信息更新工单
+ * 注意：opendata接口不进行权限验证
  */
 
 @RestController

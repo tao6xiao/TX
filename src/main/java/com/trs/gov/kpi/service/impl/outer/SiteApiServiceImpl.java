@@ -52,7 +52,8 @@ public class SiteApiServiceImpl implements SiteApiService {
 
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findSiteById", userName, params, SERVICE_NAME_SITE)).execute();
+                    OuterApiServiceUtil.buildRequest("findSiteById", userName,
+                            params, SERVICE_NAME_SITE, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取站点");
@@ -81,7 +82,8 @@ public class SiteApiServiceImpl implements SiteApiService {
             params.put("ParentChannelId", String.valueOf(parentId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("queryChildrenChannelsOnEditorCenter", userName, params, SERVICE_NAME_SITE)).execute();
+                    OuterApiServiceUtil.buildRequest("queryChildrenChannelsOnEditorCenter", userName,
+                            params, SERVICE_NAME_SITE, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取子栏目");
@@ -115,7 +117,8 @@ public class SiteApiServiceImpl implements SiteApiService {
             params.put("ChannelId", String.valueOf(channelId));
 
             OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(buildRequest("findChannelById", userName, params, SERVICE_NAME_SITE)).execute();
+            Response response = client.newCall(OuterApiServiceUtil.buildRequest("findChannelById", userName,
+                    params, SERVICE_NAME_SITE, editCenterServiceUrl)).execute();
 
             return responseManager("findChannelById", response);
         } catch (IOException e) {
@@ -126,13 +129,48 @@ public class SiteApiServiceImpl implements SiteApiService {
     }
 
     @Override
+    public List<Integer> findChannelPath(int channelId, String userName) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("CHANNELID", String.valueOf(channelId));
+
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(OuterApiServiceUtil.buildRequest("findChannelPath", userName,
+                    params, SERVICE_NAME_CHANNEL, editCenterServiceUrl)).execute();
+
+            if (response.isSuccessful()) {
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目路径");
+                if (StringUtil.isEmpty(result.getData())) {
+                    return new ArrayList<>();
+                }
+
+                List<Integer> ids = new ArrayList<>();
+                String[] strIds = result.getData().split(",");
+                for (String id : strIds) {
+                    ids.add(Integer.valueOf(id));
+                }
+                return ids;
+            } else {
+                log.error("failed to findChannelPath, chnnelId=" + channelId + ", error: " + response);
+                throw new RemoteException("获取栏目路径失败！[chnnelId=" + channelId + "]");
+            }
+        } catch (IOException e) {
+            String errorInfo = "failed findChannelPath! [chnnelId=" + channelId + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取栏目路径失败！[chnnelId=" + channelId + "]", e);
+        }
+    }
+
+    @Override
     public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
             params.put(SITE_ID, String.valueOf(siteId));
             params.put("ChannelId", String.valueOf(channelId));
             OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(buildRequest("getSiteOrChannelPubUrl", userName, params, SERVICE_NAME_SITE)).execute();
+            Response response = client.newCall(OuterApiServiceUtil.buildRequest("getSiteOrChannelPubUrl", userName,
+                    params, SERVICE_NAME_SITE, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目发布地址");
@@ -193,7 +231,8 @@ public class SiteApiServiceImpl implements SiteApiService {
             params.put("NAMEORDESC", chnlName);
 
             OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(buildRequest("queryChannelIdsByNameOrDesc", userName, params, SERVICE_NAME_CHANNEL)).execute();
+            Response response = client.newCall(OuterApiServiceUtil.buildRequest("queryChannelIdsByNameOrDesc", userName,
+                    params, SERVICE_NAME_CHANNEL, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目ids");
@@ -214,6 +253,7 @@ public class SiteApiServiceImpl implements SiteApiService {
 
     @Override
     public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
+        // TODO 该方法未实现， 需要确认一下是否使用了
         return new ArrayList<>();
     }
 
@@ -225,7 +265,8 @@ public class SiteApiServiceImpl implements SiteApiService {
             params.put("URL", url);
 
             OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(buildRequest("findChannelByUrl", userName, params, SERVICE_NAME_SITE)).execute();
+            Response response = client.newCall(OuterApiServiceUtil.buildRequest("findChannelByUrl", userName,
+                    params, SERVICE_NAME_SITE, editCenterServiceUrl)).execute();
 
             return responseManager("findChannelByUrl", response);
         } catch (IOException e) {
@@ -246,15 +287,5 @@ public class SiteApiServiceImpl implements SiteApiService {
             log.error("failed to " + method + ", error: " + response);
             throw new RemoteException("通过url获取栏目！");
         }
-    }
-
-    private Request buildRequest(String methodName, String userName, Map<String, String> params, String serviceName) {
-        OuterApiServiceUtil.addUserNameParam(userName, params);
-        return newServiceRequestBuilder()
-                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
-                .setServiceUrl(editCenterServiceUrl)
-                .setServiceName(serviceName)
-                .setMethodName(methodName)
-                .setParams(params).build();
     }
 }

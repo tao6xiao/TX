@@ -30,7 +30,7 @@ public interface DutyDeptService {
      * @param chnlId
      * @return
      */
-    DutyDept getByChnlId(int chnlId);
+    DutyDept getByChnlId(int chnlId, Byte containChildValue);
 
     /**
      * 获取分页数据

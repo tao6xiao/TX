@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.LinkAvailability;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -33,7 +34,7 @@ public interface LinkAvailabilityService {
      *
      * @param linkAvailabilityResponse
      */
-    void insertLinkAvailability(LinkAvailabilityResponse linkAvailabilityResponse);
+    void insertLinkAvailability(LinkAvailability linkAvailabilityResponse);
 
 
     /**

@@ -2,7 +2,9 @@ package com.trs.gov.kpi.service.outer;
 
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.DutyDept;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.service.DutyDeptService;
 import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,10 +23,13 @@ import java.util.Set;
 public class SiteChannelServiceHelper {
 
     @Resource
-    SiteApiService siteApiService;
+    private SiteApiService siteApiService;
 
     @Resource
-    DocumentApiService documentApiService;
+    private DocumentApiService documentApiService;
+
+    @Resource
+    private DutyDeptService dutyDeptService;
 
     /**
      * 获取所有空栏目
@@ -57,6 +62,39 @@ public class SiteChannelServiceHelper {
         }
 
         return emptyChannels;
+    }
+
+    /**
+     * 根据栏目ID查找所属部门
+     * @param chnlId
+     * @param userName
+     * @return
+     * @throws RemoteException
+     */
+    public Integer findRelatedDept(Integer chnlId, String userName) throws RemoteException {
+
+        // 先直接查找一下当前栏目是否对应了部门
+        final DutyDept dept = dutyDeptService.getByChnlId(chnlId, DutyDept.CONTAIN_ALL);
+        if (dept != null) {
+            return dept.getDeptId();
+        }
+
+        // 查找父栏目所属部门
+        final List<Integer> channelPath = siteApiService.findChannelPath(chnlId, userName);
+        // 逆向查找
+        if (channelPath.isEmpty()) {
+            return null;
+        } else {
+            // 不包含自己
+            int index = channelPath.get(channelPath.size() - 2);
+            for (; index >= 0; index--) {
+                final DutyDept dutyDept = dutyDeptService.getByChnlId(channelPath.get(index), DutyDept.CONTAIN);
+                if (dutyDept != null) {
+                    return dutyDept.getDeptId();
+                }
+            }
+            return null;
+        }
     }
 
 }

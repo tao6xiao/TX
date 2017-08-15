@@ -59,10 +59,14 @@ public class DutyDeptServiceImpl implements DutyDeptService {
     }
 
     @Override
-    public DutyDept getByChnlId(int chnlId) {
+    public DutyDept getByChnlId(int chnlId, Byte containChildValue) {
         QueryFilter filter = new QueryFilter(Table.DUTY_DEPT);
         filter.addCond(DutyDeptTableField.CHNL_ID, chnlId);
-        if (deptMapper.select(filter) == null || deptMapper.select(filter).isEmpty()) {
+        if (containChildValue == DutyDept.CONTAIN || containChildValue == DutyDept.NOT_CONTAIN) {
+            filter.addCond(DutyDeptTableField.CONTAIN, containChildValue);
+        }
+        final List<DutyDept> depts = deptMapper.select(filter);
+        if (depts == null || depts.isEmpty()) {
             return null;
         }
         return deptMapper.select(filter).get(0);
