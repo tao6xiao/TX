@@ -15,4 +15,19 @@ public class IssueCountRequest extends DateRequest {
         this.siteIds = siteIds;
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "siteIds='" + siteIds + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
+    }
+
 }

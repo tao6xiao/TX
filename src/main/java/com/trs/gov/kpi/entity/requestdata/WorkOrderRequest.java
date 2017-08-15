@@ -2,6 +2,10 @@ package com.trs.gov.kpi.entity.requestdata;
 
 import lombok.Data;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Created by ranwei on 2017/6/7.
  */
@@ -21,4 +25,24 @@ public class WorkOrderRequest extends DateRequest {
      * 0表示待解决，1表示已处理，2表示已忽略，默认为0
      */
     private Integer solveStatus = 0;
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id='" + id + '\'' +
+                "siteId='" + Arrays.asList(siteId) + '\'' +
+                "workOrderStatus='" + workOrderStatus + '\'' +
+                "solveStatus='" + solveStatus + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
+    }
+
+
 }

@@ -22,4 +22,19 @@ public class IssueCountByTypeRequest extends IssueCountRequest {
 
     private int typeId;
 
+    @Override
+    public String toString() {
+        return "{" +
+                "typeId='" + typeId + '\'' +
+                "siteIds='" + getSiteIds() + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
+    }
 }

@@ -7,4 +7,16 @@ import com.trs.gov.kpi.entity.FrequencySetup;
  */
 public class FrequencySetupUpdateRequest extends FrequencySetup {
 
+    @Override
+    public String toString() {
+        return "{" +
+                "id=" + getId() +
+                ", siteId=" + getSiteId() +
+                ", presetFeqId=" + getPresetFeqId() +
+                ", chnlId=" + getChnlId() +
+                ", setTime=" + getSetTime() +
+                ", isOpen=" + getIsOpen() +
+                '}';
+    }
+
 }
