@@ -41,6 +41,7 @@ public class WebConfigure extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 添加问题定位的静态页面映射
         registry.addResourceHandler("/gov/kpi/loc/**").addResourceLocations("file:" + locationDir + File.separator);
         super.addResourceHandlers(registry);
     }

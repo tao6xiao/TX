@@ -79,23 +79,18 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         filter.setPager(pager);
 
         List<MonitorRecord> monitorRecordList = monitorRecordMapper.selectMonitorRecordList(filter);
-        if(!monitorRecordList.isEmpty()){
-            List<MonitorRecordResponse> monitorRecordResponseList = new ArrayList<>();
-            for (MonitorRecord monitorRecord : monitorRecordList) {
-                MonitorRecordResponse monitorRecordResponse = new MonitorRecordResponse();
-                monitorRecordResponse.setTaskId(monitorRecord.getTaskId());
-                monitorRecordResponse.setTaskName(Types.MonitorRecordNameType.valueOf(monitorRecord.getTaskId()).getName());
-                monitorRecordResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecord.getTaskStatus()).getName());
-                monitorRecordResponse.setBeginDateTime(monitorRecord.getBeginTime());
-                monitorRecordResponse.setEndDateTime(monitorRecord.getEndTime());
-                monitorRecordResponse.setResult(monitorRecord.getResult());
+        List<MonitorRecordResponse> monitorRecordResponseList = new ArrayList<>();
+        for (MonitorRecord monitorRecord : monitorRecordList) {
+            MonitorRecordResponse monitorRecordResponse = new MonitorRecordResponse();
+            monitorRecordResponse.setTaskId(monitorRecord.getTaskId());
+            monitorRecordResponse.setTaskName(Types.MonitorRecordNameType.valueOf(monitorRecord.getTaskId()).getName());
+            monitorRecordResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecord.getTaskStatus()).getName());
+            monitorRecordResponse.setBeginDateTime(monitorRecord.getBeginTime());
+            monitorRecordResponse.setEndDateTime(monitorRecord.getEndTime());
+            monitorRecordResponse.setResult(monitorRecord.getResult());
 
-                monitorRecordResponseList.add(monitorRecordResponse);
-            }
-            return new ApiPageData(pager, monitorRecordResponseList);
-        }else{
-            List<MonitorRecordResponse> emptyMonitorRecordList = Collections.emptyList();
-            return new ApiPageData(pager, emptyMonitorRecordList);
+            monitorRecordResponseList.add(monitorRecordResponse);
         }
+        return new ApiPageData(pager, monitorRecordResponseList);
     }
 }
