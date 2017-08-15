@@ -1,10 +1,12 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
@@ -84,6 +86,9 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private MonitorRecordService monitorRecordService;
 
+    @Resource
+    private CommonMapper commonMapper;
+
     //错误信息计数
     @Getter
     Integer monitorResult = 0;
@@ -94,6 +99,8 @@ public class CKMScheduler implements SchedulerTask {
     private Integer monitorType;
 
     boolean contentCheck = false;
+    double changeCount = 0;
+    double allChangeCount = 0;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_CONTENT;
@@ -115,6 +122,16 @@ public class CKMScheduler implements SchedulerTask {
                 //根据上一次完成时间获取上一次检查结果
                 monitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
             }
+        }else {
+
+            int lastTimeMonitorResultCount = 0;
+            //获取上一次检查完成的时间
+            Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
+            if(endTime != null){
+                //根据上一次完成时间获取上一次检查结果
+                lastTimeMonitorResultCount = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
+            }
+            monitorResult = (int)(lastTimeMonitorResultCount + allChangeCount);
         }
 
     }
@@ -131,7 +148,6 @@ public class CKMScheduler implements SchedulerTask {
         if (checkContent.length() <= 0) {
             return issueList;
         }
-
         ContentCheckResult result = null;
         try {
             String thisTimeMd5 = linkContentStatsService.getThisTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
@@ -156,8 +172,16 @@ public class CKMScheduler implements SchedulerTask {
 
         if (result.getResult() != null) {
             issueList = toIssueList(page, checkTypeList, result);
+            QueryFilter filter = new QueryFilter(Table.ISSUE);
+            filter.addCond(IssueTableField.SITE_ID, siteId);
+            filter.addCond(IssueTableField.DETAIL, page.getUrl());
+            filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+            filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+            int lastTimIssueCount = commonMapper.count(filter);
+            changeCount = issueList.size() - lastTimIssueCount;
         }
-//        monitorResult += issueList.size();
+        allChangeCount += changeCount;
         return issueList;
     }
 
