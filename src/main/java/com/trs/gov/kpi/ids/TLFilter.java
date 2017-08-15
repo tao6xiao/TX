@@ -33,13 +33,9 @@ public class TLFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
-        if (req.getSession().getAttribute(IDSActor.LOGIN_FLAG) != null) {
-
-            try {
-                ContextHelper.getLoginUser();
-            } catch (BizRuntimeException e) {
-                ContextHelper.initContext((LocalUser) req.getSession().getAttribute(IDSActor.LOGIN_FLAG));
-            }
+        final LocalUser localUser = (LocalUser)req.getSession().getAttribute(IDSActor.LOGIN_FLAG);
+        if (localUser != null) {
+            ContextHelper.initContext(localUser);
             chain.doFilter(request, response);
         } else {
             //给其他模块提供的接口需要放行

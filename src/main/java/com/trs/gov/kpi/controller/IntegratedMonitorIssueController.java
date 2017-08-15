@@ -44,7 +44,6 @@ public class IntegratedMonitorIssueController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param, HttpServletRequest request) throws BizException, RemoteException {
-        log.info("session user = " + request.getSession().getAttribute(IDSActor.LOGIN_FLAG));
         String logDesc = "查询所有未解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
