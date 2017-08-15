@@ -12,4 +12,20 @@ public class NBHDRequestParam extends DateRequest {
     private int siteId;
 
     private Integer solveStatus = 0;//0-->待解决
+
+    @Override
+    public String toString() {
+        return "{" +
+                "siteId='" + siteId + '\'' +
+                "solveStatus='" + solveStatus + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
+    }
 }

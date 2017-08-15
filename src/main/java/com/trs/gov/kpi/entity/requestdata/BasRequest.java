@@ -14,4 +14,20 @@ public class BasRequest extends DateRequest {
 
     private Date dateTime;
 
+    @Override
+    public String toString() {
+        return "{" +
+                "siteId='" + siteId + '\'' +
+                "dateTime='" + dateTime + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
+    }
+
 }
