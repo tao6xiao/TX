@@ -11,16 +11,19 @@ import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 综合实时监测：待解决问题Controller
  */
+@Slf4j
 @RestController
 @RequestMapping("/gov/kpi/issue")
 public class IntegratedMonitorIssueController extends IssueHandler {
@@ -39,7 +42,7 @@ public class IntegratedMonitorIssueController extends IssueHandler {
      * @throws BizException
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
-    public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+    public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param, HttpServletRequest request) throws BizException, RemoteException {
         String logDesc = "查询所有未解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);

@@ -1,19 +1,21 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.constant.EnumCheckJobType;
+import com.trs.gov.kpi.constant.MonitorRecordTableField;
+import com.trs.gov.kpi.constant.SchedulerType;
+import com.trs.gov.kpi.constant.Status;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.SchedulerUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
@@ -32,7 +34,7 @@ import java.util.Date;
 @Slf4j
 @Component
 @Scope("prototype")
-public class LinkAnalysisScheduler implements SchedulerTask{
+public class LinkAnalysisScheduler implements SchedulerTask {
 
     @Resource
     LinkAvailabilityService linkAvailabilityService;
@@ -71,53 +73,40 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Setter
     private Integer monitorType;
 
-    private Date startTime;
+    @Override
+    public void run() throws RemoteException {
+        final Site checkSite = siteApiService.getSiteById(siteId, null);
+        if (checkSite == null) {
+            log.error("site[" + siteId + "] is not exsit!");
+            return;
+        }
+
+        baseUrl = checkSite.getWebHttp();
+        if (StringUtil.isEmpty(baseUrl)) {
+            log.warn("site[" + siteId + "]'s web http is empty!");
+            return;
+        }
+
+        //监测开始(添加基本信息)
+
+        // 插入检测记录
+        Date startTime = new Date();
+        insertStartMonitorRecord(startTime);
+
+        spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
+
+        //监测完成(修改结果、结束时间、状态)
+        insertEndMonitorRecord(startTime);
+    }
 
     @Override
-    public void run() {
-
-        log.info(SchedulerUtil.getStartMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
-
-        try {
-            final Site checkSite = siteApiService.getSiteById(siteId, null);
-            if (checkSite == null) {
-                log.error("site[" + siteId + "] is not exsit!");
-                return;
-            }
-
-            baseUrl = checkSite.getWebHttp();
-            if (StringUtil.isEmpty(baseUrl)) {
-                log.warn("site[" + siteId + "]'s web http is empty!");
-                return;
-            }
-
-            //监测开始(添加基本信息)
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER + "[siteId=" + siteId + "]");
-
-            // 插入检测记录
-            startTime = new Date();
-            insertStartMonitorRecord(startTime);
-            spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
-
-            //监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime, Status.MonitorStatusType.CHECK_DONE.value, spider.getCount());
-            // 记录性能日志
-            performanceLogRecorder.recordAlways();
-        } catch (Exception e) {
-            //检测失败
-            insertEndMonitorRecord(startTime, Status.MonitorStatusType.CHECK_ERROR.value, 0);
-            log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
-        } finally {
-            log.info(SchedulerUtil.getEndMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerUtil.getEndMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
-
-        }
+    public String getName() {
+        return SchedulerType.LINK_ANALYSIS_SCHEDULER.toString();
     }
 
     /**
      * 插入检测记录
+     *
      * @param startTime
      */
     private void insertStartMonitorRecord(Date startTime) {
@@ -126,25 +115,26 @@ public class LinkAnalysisScheduler implements SchedulerTask{
         monitorRecord.setTypeId(monitorType);
         monitorRecord.setTaskId(EnumCheckJobType.CHECK_LINK.value);
         monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
     }
 
     /**
      * 检测结束，记录入库
+     *
      * @param startTime
      */
-    private void insertEndMonitorRecord(Date startTime, Integer taskStatus, Integer LinkAnalysisCount) {
+    private void insertEndMonitorRecord(Date startTime) {
         Date endTime = new Date();
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
         filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_LINK.value);
-        filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
 
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-        updater.addField(MonitorRecordTableField.RESULT,LinkAnalysisCount);
+        updater.addField(MonitorRecordTableField.RESULT, spider.getCount());
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
         commonMapper.update(updater, filter);
     }
 

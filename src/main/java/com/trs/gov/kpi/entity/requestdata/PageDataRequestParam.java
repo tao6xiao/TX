@@ -20,79 +20,18 @@ public class PageDataRequestParam extends DateRequest {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{");
-        if(id != null){
-            builder.append("id=");
-            builder.append(id);
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(siteId != null){
-            builder.append("siteId=");
-            builder.append(siteId);
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getBeginDateTime() != null){
-            builder.append("beginDateTime=");
-            builder.append(getBeginDateTime());
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getEndDateTime() != null){
-            builder.append("endDateTime=");
-            builder.append(getEndDateTime());
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getPageSize() != null){
-            builder.append("pageSize=");
-            builder.append(getPageSize());
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getPageIndex() != null){
-            builder.append("pageIndex=");
-            builder.append(getPageIndex());
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getSortFields() != null){
-            builder.append("sortFields=");
-            builder.append(getSortFields());
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getGranularity() != null){
-            builder.append("granularity=");
-            builder.append(getGranularity());
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getSearchField() != null){
-            builder.append("searchField=");
-            builder.append(getSortFields());
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(getSearchText() != null){
-            builder.append("searchText=");
-            builder.append(getSearchText());
-        }
-        if(builder.toString().endsWith(", ")){
-            builder.deleteCharAt(builder.lastIndexOf(", "));
-        }
-        builder.append("}");
-        return builder.toString();
+        return "{" +
+                "id='" + id + '\'' +
+                "siteId='" + siteId + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
     }
+
 }

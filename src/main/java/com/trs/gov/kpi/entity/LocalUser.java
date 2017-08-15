@@ -20,5 +20,14 @@ public class LocalUser implements Serializable {
 
     private ArrayList<Map> groups;//所属组织
 
+    @Override
+    public String toString() {
+        return "LocalUser{" +
+                "userName='" + userName + '\'' +
+                ", lastLoginIP='" + lastLoginIP + '\'' +
+                ", trueName='" + trueName + '\'' +
+                ", groups=" + groups +
+                '}';
+    }
 }
 

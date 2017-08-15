@@ -32,4 +32,12 @@ public class DefaultUpdateFreq {
     public void setSetTime(Date setTime) {
         this.setTime = setTime;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "siteId=" + siteId +
+                ", value=" + value +
+                '}';
+    }
 }

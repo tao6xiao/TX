@@ -15,27 +15,10 @@ public class ChnlGroupChnlsAddRequest {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{");
-        if(siteId != null){
-            builder.append("siteId=");
-            builder.append(siteId);
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(groupId != null){
-            builder.append("groupId=");
-            builder.append(groupId);
-        }
-        if(builder.length() > 1){
-            builder.append(", ");
-        }
-        if(chnlIds != null){
-            builder.append("chnlIds=");
-            builder.append(Arrays.toString(chnlIds));
-        }
-        builder.append('}');
-        return builder.toString();
+        return "{" +
+                "siteId=" + siteId +
+                ", groupId=" + groupId +
+                ", chnlIds=" + Arrays.toString(chnlIds) +
+                '}';
     }
 }

@@ -8,10 +8,13 @@ import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.*;
+import com.trs.gov.kpi.utils.DBUtil;
+import com.trs.gov.kpi.utils.SpiderUtils;
+import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -67,75 +70,67 @@ public class HomePageCheckScheduler implements SchedulerTask {
     private Date startTime;//开始时间记录
 
     @Override
-    public void run() {
+    public void run() throws RemoteException {
 
-        log.info(SchedulerUtil.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
-
-        try {
-            final Site checkSite = siteApiService.getSiteById(siteId, null);
-            if (checkSite == null) {
-                log.error("site[" + siteId + "] is not exsit!");
-                return;
-            }
-
-            baseUrl = checkSite.getWebHttp();
-            if (StringUtil.isEmpty(baseUrl)) {
-                log.warn("site[" + siteId + "]'s web http is empty!");
-                return;
-            }
-
-            //监测开始(添加基本信息)
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
-            startTime = new Date();
-            insertStartMonitorRecord(startTime);
-
-            List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
-            if (unavailableUrls.contains(baseUrl)) {
-                homePageisAvailable = 1;
-                QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
-                queryFilter.addCond(IssueTableField.SITE_ID, siteId);
-                queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-                queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-                queryFilter.addCond(IssueTableField.DETAIL, baseUrl);
-                queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-                queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-                int count = issueMapper.count(queryFilter);
-                if (count < 1) {
-                    Issue issue = new Issue();
-                    issue.setSiteId(siteId);
-                    issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-                    issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-                    issue.setDetail(baseUrl);
-                    issue.setCustomer1(baseUrl);
-                    issue.setIssueTime(new Date());
-                    issueMapper.insert(DBUtil.toRow(issue));
-                }else {
-                    DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
-                    updater.addField(IssueTableField.CHECK_TIME, new Date());
-                    commonMapper.update(updater, queryFilter);
-                }
-            }
-            //监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime, homePageisAvailable, Status.MonitorStatusType.CHECK_DONE.value);
-            // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerUtil.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
-            performanceLogRecorder.recordAlways();
-        } catch (Exception e) {
-            //监测失败
-            insertEndMonitorRecord(startTime, homePageisAvailable, Status.MonitorStatusType.CHECK_ERROR.value);
-            String errorInfo = "首页可用性检测失败！[siteId=" + siteId + "]";
-            log.error(errorInfo, e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorInfo, e);
-        } finally {
-            String info = SchedulerUtil.getEndMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
-            log.info(info);
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
+        final Site checkSite = siteApiService.getSiteById(siteId, null);
+        if (checkSite == null) {
+            log.error("site[" + siteId + "] is not exsit!");
+            return;
         }
 
+        baseUrl = checkSite.getWebHttp();
+        if (StringUtil.isEmpty(baseUrl)) {
+            log.warn("site[" + siteId + "]'s web http is empty!");
+            return;
+        }
+
+        //监测开始(添加基本信息)
+            startTime = new Date();
+        insertStartMonitorRecord(startTime);
+
+            //首页可用性(状态记录；0可用，1不可用)
+        List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
+        if (unavailableUrls.contains(baseUrl)) {
+                homePageisAvailable = 1;
+            QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+            queryFilter.addCond(IssueTableField.SITE_ID, siteId);
+            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+            queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
+            queryFilter.addCond(IssueTableField.DETAIL, baseUrl);
+            queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+            queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+            int count = issueMapper.count(queryFilter);
+            if (count < 1) {
+                Issue issue = new Issue();
+                issue.setSiteId(siteId);
+                issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
+                issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                issue.setDetail(baseUrl);
+                issue.setCustomer1(baseUrl);
+                issue.setIssueTime(new Date());
+                issueMapper.insert(DBUtil.toRow(issue));
+            } else {
+                DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                updater.addField(IssueTableField.CHECK_TIME, new Date());
+                commonMapper.update(updater, queryFilter);
+            }
+        }
+        //监测完成(修改结果、结束时间、状态)
+            insertEndMonitorRecord(startTime, homePageisAvailable, Status.MonitorStatusType.CHECK_DONE.value);
+        // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerUtil.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
+            //监测失败
+            insertEndMonitorRecord(startTime, homePageisAvailable, Status.MonitorStatusType.CHECK_ERROR.value);
+
+    }
+
+    @Override
+    public String getName() {
+        return SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString();
     }
 
     /**
      * 插入检测记录
+     *
      * @param startTime
      */
     private void insertStartMonitorRecord(Date startTime) {
@@ -151,6 +146,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
 
     /**
      * 检测结束，记录入库
+     *
      * @param startTime
      */
     private void insertEndMonitorRecord(Date startTime, Integer isAvailable, Integer taskStatus) {
