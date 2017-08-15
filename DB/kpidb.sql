@@ -225,6 +225,18 @@ CREATE TABLE dutydept (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+-- ----------------------------
+-- Table structure for monitortime
+-- ----------------------------
+DROP TABLE IF EXISTS `monitortime`;
+CREATE TABLE `monitortime` (
+  `siteId` int(5) NOT NULL,
+  `typeId` int(5) NOT NULL COMMENT '0-->首页可用性；1-->网站可用性；2-->信息更新；3-->信息错误；11-->服务实用',
+  `startTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,
+  `endTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 
 

@@ -1,13 +1,10 @@
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.constant.EnumUrlType;
-import com.trs.gov.kpi.constant.Types;
-import com.trs.gov.kpi.constant.WebpageTableField;
+import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
-import com.trs.gov.kpi.entity.PageDepth;
-import com.trs.gov.kpi.entity.PageSpace;
-import com.trs.gov.kpi.entity.ReplySpeed;
-import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -16,7 +13,8 @@ import com.trs.gov.kpi.scheduler.CKMScheduler;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
-import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +36,7 @@ import us.codecraft.webmagic.utils.UrlUtils;
 import javax.annotation.Resource;
 import java.io.File;
 import java.lang.ref.SoftReference;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,13 +58,16 @@ public class SpiderUtils {
     private String locationDir;
 
     @Resource
-    private SiteApiService siteApiService;
-
-    @Resource
     private WebPageService webPageService;
 
     @Resource
+    private SiteChannelServiceHelper siteChannelServiceHelper;
+
+    @Resource
     private WebPageMapper webPageMapper;
+
+    @Resource
+    private CommonMapper commonMapper;
 
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
@@ -96,6 +98,10 @@ public class SpiderUtils {
     private Integer siteId;
 
     private String baseHost;
+
+    //失效链接计数
+    @Getter
+    private Integer count = 0;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -202,21 +208,34 @@ public class SpiderUtils {
 
             Integer chnlId = null;
             try {
-                chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl().intern(), siteId);
+                chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl(), siteId);
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "url=" + request.getUrl() + ", siteId=" + siteId, e);
             }
 
             if (!isUrlAvailable.get()) {
-                String unavailableUrl = request.getUrl().intern();
-                Set<String> parents = pageParentMap.get(request.getUrl().intern());
+                String unavailableUrl = request.getUrl();
+                Integer statusCode = (Integer) request.getExtras().get("statusCode");
+                Set<String> parents = pageParentMap.get(request.getUrl());
+
+                Integer deptId = null;
+                if (chnlId != null) {
+                    try {
+                        deptId = siteChannelServiceHelper.findRelatedDept(chnlId, "");
+                    } catch (RemoteException e) {
+                        String errorInfo = MessageFormat.format("查找栏目所属部门失败! [channelId={0}, url={1}, siteId={2}]", chnlId, request.getUrl(), siteId);
+                        log.error(errorInfo, e);
+                        LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, errorInfo, e);
+                    }
+                }
+
                 if (parents == null) {
-                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), new Date(), "", (Integer) request.getExtras().get("statusCode"));
+                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), chnlId, deptId, "", statusCode);
                 } else {
                     for (String parentUrl : parents) {
                         final SoftReference<String> parentContentSoftReference = pageContentMap.get(parentUrl);
-                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), new Date(), parentContentSoftReference.get(), (Integer) request.getExtras().get("statusCode"));
+                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), chnlId, deptId, parentContentSoftReference.get(), statusCode);
                     }
                 }
             } else {
@@ -272,19 +291,21 @@ public class SpiderUtils {
             isUrlAvailable.set(true);
         }
 
-        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Date checkTime, String parentContent, Integer statusCode) {
+        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Integer chnlId, Integer deptId, String parentContent, Integer statusCode) {
 
             try {
 
-                LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
-                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getValue());
-                linkAvailabilityResponse.setCheckTime(checkTime);
-                linkAvailabilityResponse.setSiteId(siteId);
-                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
-                final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
-                        linkAvailabilityResponse.getInvalidLink());
+                LinkAvailability linkAvailability = new LinkAvailability();
+                linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getValue());
+                linkAvailability.setCheckTime(new Date());
+                linkAvailability.setChnlId(chnlId);
+                linkAvailability.setDeptId(deptId);
+                linkAvailability.setSiteId(siteId);
+                linkAvailability.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
+                final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailability.getIssueTypeId(),
+                        linkAvailability.getInvalidLink());
                 String absoluteDir = locationDir + File.separator + relativeDir;
-                linkAvailabilityResponse.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
+                linkAvailability.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
                 if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
 
                     CKMScheduler.createDir(absoluteDir);
@@ -310,12 +331,25 @@ public class SpiderUtils {
 
                     // 创建首页
                     CKMScheduler.createIndexHtml(absoluteDir);
-                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+
+                    linkAvailabilityService.insertLinkAvailability(linkAvailability);
+                    count++;
+                } else {
+                    QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+                    queryFilter.addCond(IssueTableField.SITE_ID, siteId);
+                    queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                    queryFilter.addCond(IssueTableField.DETAIL, unavailableUrlAndParentUrl.getValue());
+                    queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+                    queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+                    DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                    updater.addField(IssueTableField.CHECK_TIME, new Date());
+                    commonMapper.update(updater, queryFilter);
                 }
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "插入失效链接，url=" + unavailableUrlAndParentUrl.getValue(), e);
             }
+
         }
 
         private String generateSourceLocHtmlText(Pair<String, String> unavailableUrlAndParentUrl, String parentUrlContent, Integer pageStatusCode) {

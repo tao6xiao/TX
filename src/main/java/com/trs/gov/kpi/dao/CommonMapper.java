@@ -18,12 +18,18 @@ public interface CommonMapper {
      */
     void insert(DBRow row);
 
-
     /**
      * 更新数据库数据
      * @param updater
      * @param filter
      */
     void update(@Param("updater") DBUpdater updater, @Param("filter") QueryFilter filter);
+
+    /**
+     *  统计记录数
+     * @param filter
+     * @return
+     */
+    int count(@Param("filter") QueryFilter filter);
 
 }

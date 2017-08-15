@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -32,6 +34,13 @@ public class ParamCheckUtil {
         }
     }
 
+    public static void siteIdCheck(Integer siteId) throws BizException {
+        if (siteId == null) {
+            log.error("Invalid parameter: 参数param的siteId为null");
+            throw new BizException(Constants.INVALID_PARAMETER);
+        }
+    }
+
     /**
      * 问题和预警的参数校验
      *
@@ -50,6 +59,7 @@ public class ParamCheckUtil {
         checkCommonTime(param.getEndDateTime());
 
     }
+
 
     /**
      * 工单的参数校验
@@ -95,8 +105,8 @@ public class ParamCheckUtil {
                 sdf.setLenient(false);
                 sdf.parse(time);
             } catch (ParseException e) {
-                log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss");
-                LogUtil.addSystemLog("Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss");
+                log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "Invalid parameter: 日期格式不满足 yyyy-MM-dd HH:mm:ss", e);
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }
@@ -110,7 +120,7 @@ public class ParamCheckUtil {
                 sdf.parse(time);
             } catch (ParseException e) {
                 log.error("Invalid parameter: 日期格式不满足 yyyy-MM-dd");
-                LogUtil.addSystemLog("Invalid parameter: 日期格式不满足 yyyy-MM-dd");
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "Invalid parameter: 日期格式不满足 yyyy-MM-dd", e);
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
         }

@@ -13,8 +13,15 @@ public class OperationType {
     public static final String UPDATE = "修改";
 
     public static final String REQUEST = "请求";
-	
-	private OperationType() {
-    }
 
+    public static final String MONITOR = "监测";
+
+    public static final String REMOTE = "接口调用";
+
+    public static final String TASK_SCHEDULE = "任务调度";
+
+    public static final String DOWNLOAD = "下载";
+
+    private OperationType() {
+    }
 }

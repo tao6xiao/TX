@@ -5,10 +5,9 @@
     <id column="siteId" jdbcType="INTEGER" property="siteId" />
     <result column="departmentName" jdbcType="VARCHAR" property="departmentName" />
     <result column="guarderId" jdbcType="INTEGER" property="guarderId" />
-    <result column="indexUrl" jdbcType="VARCHAR" property="indexUrl" />
   </resultMap>
   <sql id="Base_Column_List">
-    siteId, departmentName, guarderId, indexUrl
+    siteId, departmentName, guarderId
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -26,8 +25,8 @@
     where siteId = #{siteId,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.trs.gov.kpi.entity.MonitorSite">
-    insert into monitorsite (siteId, departmentName, guarderId, indexUrl)
-    values (#{siteId,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{guarderId,jdbcType=INTEGER},  #{indexUrl,jdbcType=VARCHAR})
+    insert into monitorsite (siteId, departmentName, guarderId)
+    values (#{siteId,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{guarderId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.trs.gov.kpi.entity.MonitorSite">
     insert into monitorsite
@@ -41,9 +40,6 @@
       <if test="guarderId != null">
         guarderId,
       </if>
-      <if test="indexUrl != null">
-        indexUrl,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="siteId != null">
@@ -54,9 +50,6 @@
       </if>
       <if test="guarderId != null">
         #{guarderId,jdbcType=INTEGER},
-      </if>
-      <if test="indexUrl != null">
-        #{indexUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -69,17 +62,13 @@
       <if test="guarderId != null">
         guarderId = #{guarderId,jdbcType=INTEGER},
       </if>
-      <if test="indexUrl != null">
-        indexUrl = #{indexUrl,jdbcType=VARCHAR},
-      </if>
     </set>
     where siteId = #{siteId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.trs.gov.kpi.entity.MonitorSite">
     update monitorsite
     set departmentName = #{departmentName,jdbcType=VARCHAR},
-      guarderId = #{guarderId,jdbcType=INTEGER},
-      indexUrl = #{indexUrl,jdbcType=VARCHAR}
+      guarderId = #{guarderId,jdbcType=INTEGER}
     where siteId = #{siteId,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -2,6 +2,8 @@ package com.trs.gov.kpi.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import lombok.extern.slf4j.Slf4j;
@@ -37,21 +39,21 @@ public class OuterApiUtil {
         String ret = response.body().string();
 
         ApiResult result = null;
+        final String invalidResult = "invalid result msg: ";
+        final String responseStr = ", response: ";
         try {
             result = OuterApiUtil.toResultObj(ret);
         } catch (Exception e) {
-            log.error("invalid result msg: " + ret + ", response: " + response, e);
-            LogUtil.addSystemLog("invalid result msg: " + ret + ", response: " + response, e);
+            log.error(invalidResult + ret + responseStr + response, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, invalidResult + ret + responseStr + response, e);
             throw new RemoteException(errMsg + "失败！");
         }
         if (result == null) {
-            log.error("invalid result msg: " + ret + ", response: " + response);
-            LogUtil.addSystemLog("invalid result msg: " + ret + ", response: " + response);
+            log.error(invalidResult + ret + responseStr + response);
             throw new RemoteException(errMsg + "失败！");
         }
         if (!result.isOk()) {
             log.error("fail result: " + result.getMsg());
-            LogUtil.addSystemLog("fail result: " + result.getMsg());
             throw new RemoteException(errMsg + "失败！[" + result.getMsg() + "]");
         }
         return result;

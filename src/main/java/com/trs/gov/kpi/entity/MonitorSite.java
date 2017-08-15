@@ -7,8 +7,6 @@ public class MonitorSite {
 
     private Integer guarderId;
 
-    private String indexUrl;
-
     public Integer getSiteId() {
         return siteId;
     }
@@ -31,14 +29,6 @@ public class MonitorSite {
 
     public void setGuarderId(Integer guarderId) {
         this.guarderId = guarderId;
-    }
-
-    public String getIndexUrl() {
-        return indexUrl;
-    }
-
-    public void setIndexUrl(String indexUrl) {
-        this.indexUrl = indexUrl == null ? null : indexUrl.trim();
     }
 
 }

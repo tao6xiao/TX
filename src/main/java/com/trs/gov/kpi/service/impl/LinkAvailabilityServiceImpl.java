@@ -11,7 +11,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -40,7 +40,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     private DeptApiService deptApiService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Resource
     private SiteApiService siteApiService;
@@ -88,8 +88,8 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
-        DateUtil.setDefaultDate(param);
+    public HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param) {
+        param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -105,7 +105,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
             list.add(historyStatistics);
         }
 
-        return new History(monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.LINK_AVAILABLE_ISSUE.value), list);
+        return new HistoryStatisticsResp(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value), list);
     }
 
     @Override
@@ -170,9 +170,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public void insertLinkAvailability(LinkAvailabilityResponse linkAvailabilityResponse) {
+    public void insertLinkAvailability(LinkAvailability linkAvailability) {
 
-        Issue issue = getIssueByLinkAvaliability(linkAvailabilityResponse);
+        Issue issue = getIssueByLinkAvaliability(linkAvailability);
         issueMapper.insert(DBUtil.toRow(issue));
     }
 
@@ -187,17 +187,19 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         return issueMapper.count(filter) > 0;
     }
 
-    private Issue getIssueByLinkAvaliability(LinkAvailabilityResponse linkAvailabilityResponse) {
+    private Issue getIssueByLinkAvaliability(LinkAvailability linkAvailability) {
 
         Issue issue = new Issue();
-        issue.setId(linkAvailabilityResponse.getId() == null ? null : linkAvailabilityResponse.getId());
-        issue.setSiteId(linkAvailabilityResponse.getSiteId());
+        issue.setId(linkAvailability.getId() == null ? null : linkAvailability.getId());
+        issue.setSiteId(linkAvailability.getSiteId());
         issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        issue.setSubTypeId(linkAvailabilityResponse.getIssueTypeId());
-        issue.setDetail(linkAvailabilityResponse.getInvalidLink());
-        issue.setIssueTime(linkAvailabilityResponse.getCheckTime());
-        issue.setCheckTime(linkAvailabilityResponse.getCheckTime());
-        issue.setCustomer1(linkAvailabilityResponse.getSnapshot());
+        issue.setSubTypeId(linkAvailability.getIssueTypeId());
+        issue.setDetail(linkAvailability.getInvalidLink());
+        issue.setIssueTime(linkAvailability.getCheckTime());
+        issue.setCheckTime(linkAvailability.getCheckTime());
+        issue.setCustomer1(linkAvailability.getSnapshot());
+        issue.setCustomer2(String.valueOf(linkAvailability.getChnlId()));
+        issue.setDeptId(linkAvailability.getDeptId());
         return issue;
     }
 
@@ -205,24 +207,25 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     public IndexPage showIndexAvailability(PageDataRequestParam param) throws RemoteException {
 
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
-        Date endTime = monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
+        Date endTime = monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
+        if (endTime == null) {
+            // TODO 如果一次都没有检测过，需要显示成其他的（还没有进行过一次完整的检测，就会出现记录不存在的情况）
+            IndexPage indexPage = new IndexPage();
+            indexPage.setIndexAvailable(true);
+            indexPage.setIndexUrl(indexUrl);
+            indexPage.setMonitorTime(DateUtil.toString(new Date()));
+            return indexPage;
+        }
+
         IndexPage indexPage = new IndexPage();
         indexPage.setIndexUrl(indexUrl);
         indexPage.setMonitorTime(DateUtil.toString(endTime));
-        QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
-        queryFilter.addCond(IssueTableField.SITE_ID, param.getSiteId());
-        queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-        queryFilter.addCond(IssueTableField.DETAIL, indexUrl);
-        queryFilter.addCond(IssueTableField.ISSUE_TIME, monitorTimeService.getMonitorStartTime(param.getSiteId(), Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value)).setRangeBegin(true);
-        queryFilter.addCond(IssueTableField.ISSUE_TIME, endTime).setRangeEnd(true);
-        queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        int count = issueMapper.count(queryFilter);
-        if (count > 0) {
-            indexPage.setIndexAvailable(false);
-        } else {
+
+        Integer result = monitorRecordService.getResultByLastEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value,endTime);
+        if (result == 0) {
             indexPage.setIndexAvailable(true);
+        } else {
+            indexPage.setIndexAvailable(false);
         }
         return indexPage;
     }

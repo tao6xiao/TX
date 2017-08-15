@@ -1,8 +1,9 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.Granularity;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.HistoryDate;
-import com.trs.gov.kpi.entity.requestdata.DateRequest;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -149,44 +150,7 @@ public class DateUtil {
         }
     }
 
-    /**
-     * 设置默认起止时间
-     *
-     * @param param
-     */
-    public static void setDefaultDate(DateRequest param) {
-        if (StringUtil.isEmpty(param.getBeginDateTime()) && StringUtil.isEmpty(param.getEndDateTime())) {
-            Date endDate = new Date();
-            param.setEndDateTime(toString(endDate));
-            String beginDateTime;
-            Calendar calendar = Calendar.getInstance();
-            try {
-                calendar.setTime(toDate(param.getEndDateTime()));
-            } catch (ParseException e) {
-                log.error("解析开始日期失败！", e);
-                LogUtil.addSystemLog("解析开始日期失败！", e);
-            }
 
-            if (Granularity.DAY.equals(param.getGranularity())) {
-                calendar.set(Calendar.DAY_OF_MONTH, 1);
-                beginDateTime = DateUtil.toString(calendar.getTime());
-            } else if (Granularity.WEEK.equals(param.getGranularity())) {
-                calendar.add(Calendar.WEEK_OF_YEAR, -11);
-                calendar.set(Calendar.DAY_OF_WEEK, 1);
-                beginDateTime = DateUtil.toString(calendar.getTime());
-            } else if (Granularity.YEAR.equals(param.getGranularity())) {
-                calendar.add(Calendar.YEAR, -5);
-                calendar.set(Calendar.MONTH, 0);
-                calendar.set(Calendar.DAY_OF_MONTH, 1);
-                beginDateTime = DateUtil.toString(calendar.getTime());
-            } else {//不设置，默认为月
-                calendar.set(Calendar.MONTH, 0);
-                calendar.set(Calendar.DAY_OF_MONTH, 1);
-                beginDateTime = DateUtil.toString(calendar.getTime());
-            }
-            param.setBeginDateTime(beginDateTime);
-        }
-    }
 
     /**
      * 分割日期
@@ -305,7 +269,7 @@ public class DateUtil {
             }
 
         } catch (ParseException e) {
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             return list;
         }
 

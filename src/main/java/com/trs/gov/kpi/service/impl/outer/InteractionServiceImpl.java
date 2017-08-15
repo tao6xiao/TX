@@ -4,21 +4,25 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.Granularity;
+import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.HistoryDate;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDHistoryRes;
-import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDPageDataResult;
-import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDRequestParam;
-import com.trs.gov.kpi.entity.outerapi.nbhd.NBHDStatisticsRes;
+import com.trs.gov.kpi.entity.outerapi.nbhd.*;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
 import com.trs.gov.kpi.service.outer.InteractionService;
+import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.trs.gov.kpi.utils.OuterApiServiceUtil.newServiceRequestBuilder;
@@ -40,7 +44,6 @@ public class InteractionServiceImpl implements InteractionService {
     @Override
     public NBHDPageDataResult getGovMsgBoxes(NBHDRequestParam param) throws RemoteException {
 
-
         Map<String, String> params = new HashMap<>();
         params.put(SITE_ID, String.valueOf(param.getSiteId()));
         if (param.getPageIndex() != null) {
@@ -49,18 +52,18 @@ public class InteractionServiceImpl implements InteractionService {
         if (param.getPageSize() != null) {
             params.put("pageSize", String.valueOf(param.getPageSize()));
         }
-        if (param.getSolveStatus() != null) {
-            params.put("solveStatus", String.valueOf(param.getSolveStatus()));
+        if (param.getSearchField() != null) {
+            params.put("searchField", param.getSearchField());
         }
-        if (param.getIsDeadLine() != null) {
-            params.put("isDeadLine", String.valueOf(param.getIsDeadLine()));
+        if (param.getSearchText() != null) {
+            params.put("searchText", param.getSearchText());
         }
         addCond(param, params);
 
         OkHttpClient client = new OkHttpClient();
         try {
             Response response = client.newCall(
-                    buildRequest("listGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
+                    buildRequest("listGovmsgboxs", GOVMSGBOX_SERVICE_NAME, null, params)).execute();
 
             if (response.isSuccessful()) {
                 String jsonResult = response.body().string();
@@ -74,7 +77,7 @@ public class InteractionServiceImpl implements InteractionService {
             }
         } catch (IOException e) {
             log.error("failed listGovmsgboxs", e);
-            LogUtil.addSystemLog("failed listGovmsgboxs", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed listGovmsgboxs", e);
             throw new RemoteException("获取咨询列表失败！", e);
         }
 
@@ -91,7 +94,7 @@ public class InteractionServiceImpl implements InteractionService {
         OkHttpClient client = new OkHttpClient();
         try {
             Response response = client.newCall(
-                    buildRequest("countGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
+                    buildRequest("countGovmsgboxs", GOVMSGBOX_SERVICE_NAME, null, params)).execute();
 
             if (response.isSuccessful()) {
                 String jsonResult = response.body().string();
@@ -105,53 +108,100 @@ public class InteractionServiceImpl implements InteractionService {
             }
         } catch (IOException e) {
             log.error("failed countGovmsgboxs", e);
-            LogUtil.addSystemLog("failed countGovmsgboxs", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countGovmsgboxs", e);
             throw new RemoteException("获取咨询统计失败！", e);
         }
     }
 
     @Override
-    public NBHDHistoryRes getGovMsgHistoryCount(NBHDRequestParam param) throws RemoteException {
-        Map<String, String> params = new HashMap<>();
+    public List<HistoryStatistics> getGovMsgHistoryCount(NBHDRequestParam param) throws RemoteException {
 
+        Map<String, String> params = new HashMap<>();
         params.put(SITE_ID, String.valueOf(param.getSiteId()));
-        params.put("solveStatus", String.valueOf(param.getSolveStatus()));
+        param.setDefaultDate();
         addCond(param, params);
         if (param.getGranularity() != null) {
             params.put("granularity", String.valueOf(param.getGranularity()));
         }
 
         OkHttpClient client = new OkHttpClient();
+        NBHDHistoryRes nbhdHistoryRes;
         try {
             Response response = client.newCall(
-                    buildRequest("countDetailGovmsgboxs", GOVMSGBOX_SERVICE_NAME, param.getUserName(), params)).execute();
+                    buildRequest("countDetailGovmsgboxs", GOVMSGBOX_SERVICE_NAME, null, params)).execute();
 
             if (response.isSuccessful()) {
                 String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
-                    return null;
+                    return new ArrayList<>();
                 }
-                return JSON.parseObject(jsonResult, NBHDHistoryRes.class);
+                nbhdHistoryRes = JSON.parseObject(jsonResult, NBHDHistoryRes.class);
             } else {
                 log.error("failed to countDetailGovmsgboxs, error: " + response);
                 throw new RemoteException("获取咨询统计历史记录失败！");
             }
         } catch (IOException e) {
             log.error("failed countDetailGovmsgboxs", e);
-            LogUtil.addSystemLog("failed countDetailGovmsgboxs", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countDetailGovmsgboxs", e);
             throw new RemoteException("获取咨询统计历史记录失败！", e);
+        }
+        List<NBHDHistory> datas = nbhdHistoryRes.getDatas();
+
+        List<HistoryStatistics> historyStatisticsList = new ArrayList<>();
+        List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
+        for (HistoryDate historyDate : dateList) {
+            Boolean isNotExits = true;
+            String kpiDate = historyDate.getDate();
+
+            HistoryStatistics historyStatistics = new HistoryStatistics();
+            historyStatistics.setTime(kpiDate);
+
+            for (NBHDHistory nbhdHistory : datas) {
+                String nbhdDate = nbhdHistory.getGranularity();
+                if (isEqual(kpiDate, nbhdDate, param.getGranularity())) {
+                    historyStatistics.setValue(nbhdHistory.getCount());
+                    isNotExits = false;
+                    break;
+                }
+            }
+            if (isNotExits || datas.isEmpty()) {
+                historyStatistics.setValue(0);
+            }
+            historyStatisticsList.add(historyStatistics);
+        }
+
+        return historyStatisticsList;
+    }
+
+    private Boolean isEqual(String kpiDate, String nbhdDate, Integer granularity) {
+
+        if (Granularity.WEEK.equals(granularity)) {
+            String[] week = kpiDate.split("-");
+            return week[1].equals(nbhdDate);
+        } else if (Granularity.YEAR.equals(granularity)) {
+            return kpiDate.equals(nbhdDate);
+        } else {
+            String date = kpiDate.replaceAll("-", "");
+            return date.equals(nbhdDate);
         }
     }
 
     private Request buildRequest(String methodName, String serviceName, String userName, Map<String, String> params) {
-        OuterApiServiceUtil.addUserNameParam(userName, params);
+        addUserNameParam(userName, params);
         return newServiceRequestBuilder()
                 .setUrlFormat("%s/fdy/%s.do?method=%s")
                 .setServiceUrl(nbhdServiceUrl)
                 .setServiceName(serviceName)
                 .setMethodName(methodName)
-//                .setUserName(userName)
                 .setParams(params).build();
+    }
+
+    private void addUserNameParam(String userName, Map<String, String> params) {
+        if (StringUtil.isEmpty(userName)) {
+            params.put("userName", "admin");
+        } else {
+            params.put("userName", userName);
+        }
     }
 
     private void addCond(NBHDRequestParam param, Map<String, String> params) {

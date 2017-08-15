@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 
 /**
@@ -8,15 +10,25 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
  */
 public interface SchedulerTask {
 
-    void run() throws RemoteException;
+    void run() throws RemoteException, BizException;
 
     Integer getSiteId();
-
-    void setBaseUrl(String baseUrl);
 
     void setSiteId(Integer siteId);
 
     Boolean getIsTimeNode();
 
     void setIsTimeNode(Boolean isTimeNode);
+
+    //站点监测状态（0：自动监测；1：手动监测）
+    void setMonitorType(Integer typeId);
+
+    Integer getMonitorType();
+
+    String getName();
+
+    EnumCheckJobType getCheckJobType();
+
+    Integer getMonitorResult();
+
 }

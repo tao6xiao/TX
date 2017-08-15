@@ -7,8 +7,6 @@ import com.trs.gov.kpi.entity.requestdata.FrequencySetupSetRequest;
 import com.trs.gov.kpi.entity.requestdata.FrequencySetupUpdateRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 
-import java.text.ParseException;
-
 /**
  * 栏目更新频率设置Service
  * Created by he.lang on 2017/5/16.
@@ -61,7 +59,7 @@ public interface FrequencySetupService {
      * @param frequencySetup
      * @return
      */
-    int insert(FrequencySetup frequencySetup) throws ParseException;
+    int insert(FrequencySetup frequencySetup);
 
     /**
      * 通过前段传入的frequencySetupSetRequestDetail对象获取想应的FrequencySetup对象

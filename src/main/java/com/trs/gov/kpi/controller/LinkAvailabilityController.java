@@ -2,20 +2,18 @@ package com.trs.gov.kpi.controller;
 
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.History;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsResp;
 import com.trs.gov.kpi.entity.responsedata.IndexPage;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,7 +26,7 @@ import java.util.List;
  * 链接可用性问题
  */
 @RestController
-@RequestMapping(UrlPath.LINK_AVAILABILITY_PATH)
+@RequestMapping("/gov/kpi/available/issue")
 public class LinkAvailabilityController extends IssueHandler {
 
     @Resource
@@ -45,13 +43,12 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询链接可用性待解决和已解决问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return linkAvailabilityService.getIssueCount(param);
+        String logDesc = "查询链接可用性待解决和已解决问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
+            return linkAvailabilityService.getIssueCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -63,13 +60,12 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     public int getUnhandledIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询链接可用性待解决问题数量", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return linkAvailabilityService.getUnhandledIssueCount(param);
+        String logDesc = "查询链接可用性待解决问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
+            return linkAvailabilityService.getUnhandledIssueCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
 
@@ -80,14 +76,13 @@ public class LinkAvailabilityController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public History getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.paramCheck(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询链接可用性历史纪录", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return linkAvailabilityService.getIssueHistoryCount(param);
+    public HistoryStatisticsResp getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        String logDesc = "查询链接可用性历史纪录" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
+            return linkAvailabilityService.getIssueHistoryCount(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -99,14 +94,12 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = linkAvailabilityService.getIssueList(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询链接可用性未解决问题列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return apiPageData;
+        String logDesc = "查询链接可用性未解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
+            return linkAvailabilityService.getIssueList(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
@@ -118,14 +111,12 @@ public class LinkAvailabilityController extends IssueHandler {
      */
     @RequestMapping(value = "/check/index", method = RequestMethod.GET)
     public IndexPage showIndexAvailability(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_AVAILABILITY_SEARCH) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_AVAILABILITY_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.paramCheck(param);
-        IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "首页可用性校验", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return indexPage;
+        String logDesc = "首页可用性校验" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_AVAILABILITY_SEARCH, param.getSiteId());
+            return linkAvailabilityService.showIndexAvailability(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
 }

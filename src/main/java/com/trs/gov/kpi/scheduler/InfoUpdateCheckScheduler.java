@@ -1,8 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.FrequencyPresetMapper;
 import com.trs.gov.kpi.dao.FrequencySetupMapper;
@@ -16,12 +14,13 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.MonitorSiteService;
-import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SchedulerUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -30,6 +29,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -46,31 +46,28 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private static final String BEGIN_CHECK_DAY = "2017-05-01 00:00:00";
 
     @Resource
-    SiteApiService siteApiService;
+    private SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
-    DocumentApiService documentApiService;
+    private SiteApiService siteApiService;
 
     @Resource
-    FrequencySetupMapper frequencySetupMapper;
+    private DocumentApiService documentApiService;
 
     @Resource
-    FrequencyPresetMapper frequencyPresetMapper;
+    private FrequencySetupMapper frequencySetupMapper;
 
     @Resource
-    MonitorSiteService monitorSiteService;
+    private FrequencyPresetMapper frequencyPresetMapper;
 
     @Resource
-    DefaultUpdateFreqService defaultUpdateFreqService;
+    private DefaultUpdateFreqService defaultUpdateFreqService;
 
     @Resource
-    IssueMapper issueMapper;
+    private IssueMapper issueMapper;
 
     @Resource
-    CommonMapper commonMapper;
-
-    @Resource
-    private MonitorTimeService monitorTimeService;
+    private CommonMapper commonMapper;
 
     @Getter
     @Setter
@@ -93,41 +90,48 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     // 缓存自查更新频率
     private DefaultUpdateFreq defaultUpdateFreq;
 
+    //信息(栏目)更新数量计数
+    @Getter
+    private Integer monitorResult = 0;
+
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    @Getter
+    private Integer monitorType;
+
+    @Getter
+    private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
+
     @Override
-    public void run() {
+    public void run() throws RemoteException {
+        log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
-        log.info("InfoUpdateCheckScheduler " + siteId + " start...");
-        Date startTime = new Date();
-        try {
-            List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
+        List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
-            // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
-            for (SimpleTree<CheckingChannel> tree : siteTrees) {
-                List<SimpleTree.Node<CheckingChannel>> children = tree.getRoot().getChildren();
-                if (children == null) {
-                    continue;
-                }
-                for (SimpleTree.Node<CheckingChannel> child : children) {
+        // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
+        for (SimpleTree<CheckingChannel> tree : siteTrees) {
+            List<SimpleTree.Node<CheckingChannel>> children = tree.getRoot().getChildren();
+            if (children == null) {
+                continue;
+            }
+            for (SimpleTree.Node<CheckingChannel> child : children) {
+                try {
                     checkChannelTreeUpdate(child);
+                } catch (ParseException e) {
+                    String errorInfo = "检查当前栏目channel[" + child + "]下的子栏目是否更新";
+                    log.error(errorInfo, e);
+                    LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
                 }
             }
-
-            insertIssueAndWarning(siteTrees);
-            Date endTime = new Date();
-            MonitorTime monitorTime = new MonitorTime();
-            monitorTime.setSiteId(siteId);
-            monitorTime.setTypeId(Types.IssueType.INFO_UPDATE_ISSUE.value);
-            monitorTime.setStartTime(startTime);
-            monitorTime.setEndTime(endTime);
-            monitorTimeService.insertMonitorTime(monitorTime);
-        } catch (Exception e) {
-            log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
-            LogUtil.addSystemLog("check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
-        } finally {
-            log.info("InfoUpdateCheckScheduler " + siteId + " end...");
         }
+        insertIssueAndWarning(siteTrees);
     }
 
+    @Override
+    public String getName() {
+        return SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString();
+    }
 
     private List<SimpleTree<CheckingChannel>> buildChannelTree() throws RemoteException {
 
@@ -187,7 +191,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(chnl, parent);
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "构建栏目检树失败，siteId[" + siteId + "]", e);
             }
         }
 
@@ -248,7 +252,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 recursiveBuildChannelTree(channel, parent);
             } catch (Exception e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, "递归构建channelId[" + curChnl.getChannelId() + "]子栏目检查树，siteId[" + siteId + "]", e);
             }
         }
     }
@@ -401,7 +405,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
             return ids != null && !ids.isEmpty();
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查一个栏目channelId[" + channelId + "]是否更新，siteId[" + siteId + "]", e);
         }
         // NOTE: 异常情况下，先暂时不判定为未更新，以免发生错误，等下次的检查的时候再判定
         return true;
@@ -412,7 +416,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      *
      * @param siteTrees
      */
-    private void insertIssueAndWarning(List<SimpleTree<CheckingChannel>> siteTrees) {
+    private void insertIssueAndWarning(List<SimpleTree<CheckingChannel>> siteTrees) throws RemoteException {
         if (siteTrees == null || siteTrees.isEmpty()) {
             return;
         }
@@ -433,7 +437,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      *
      * @param root
      */
-    private void recursiveInsertIssueAndWarning(SimpleTree.Node<CheckingChannel> root) {
+    private void recursiveInsertIssueAndWarning(SimpleTree.Node<CheckingChannel> root) throws RemoteException {
         if (root == null) {
             return;
         }
@@ -454,7 +458,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      *
      * @param node
      */
-    private void insertOneCheckingChannel(SimpleTree.Node<CheckingChannel> node) {
+    private void insertOneCheckingChannel(SimpleTree.Node<CheckingChannel> node) throws RemoteException {
         if (node == null || node.getData() == null || node.getData().getChannel() == null) {
             return;
         }
@@ -494,7 +498,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * @param checking
      * @param node
      */
-    private void insertUpdateIssue(CheckingChannel checking, SimpleTree.Node<CheckingChannel> node) {
+    private void insertUpdateIssue(CheckingChannel checking, SimpleTree.Node<CheckingChannel> node) throws RemoteException {
         if (checking.isIssue()) {
             // 查看子栏目是否更新了，如果子栏目更新，则父栏目也算更新了
             if (!isChildChannelUpdated(node)) {
@@ -526,6 +530,71 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         } else {
             // 父栏目有更新，无预警，不插入任何记录
         }
+        insertEmptyColumn(checking);
+    }
+
+    /**
+     * 插入空栏目
+     */
+    private void insertEmptyColumn(CheckingChannel checking) throws RemoteException {
+        List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
+        for (Integer chnlId : chnlIdList) {
+            QueryFilter filter = buildQueryFilter(chnlId,
+                    Types.IssueType.EMPTY_CHANNEL.value,
+                    Types.EmptyChannelType.EMPTY_COLUMN.value,
+                    checking.getBeginDateTime());
+            if (isExist(filter)) {
+                //若栏目记录已存在，则更新CHECK_TIME
+                DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                updater.addField(IssueTableField.CHECK_TIME, new Date());
+                commonMapper.update(updater, filter);
+                monitorResult++;
+            } else {
+                InfoUpdate update = new InfoUpdate();
+                update.setSiteId(siteId);
+                update.setChnlUrl("");
+                update.setTypeId(Types.IssueType.EMPTY_CHANNEL.value);
+                update.setSubTypeId(Types.EmptyChannelType.EMPTY_COLUMN.value);
+                Date curDate = new Date();
+                update.setIssueTime(curDate);
+                update.setCheckTime(curDate);
+                update.setChnlId(chnlId);
+                issueMapper.insert(DBUtil.toRow(update));
+                monitorResult++;
+            }
+        }
+        updateResolvedEmptyColumn(chnlIdList);
+    }
+
+    /**
+     * 更新已解决空栏目的状态
+     */
+    void updateResolvedEmptyColumn(List<Integer> chnlIdList) {
+        QueryFilter filter = buildQueryFilter(
+                Types.IssueType.EMPTY_CHANNEL.value,
+                Types.EmptyChannelType.EMPTY_COLUMN.value,
+                Status.Resolve.UN_RESOLVED.value);
+        List<Issue> issues = issueMapper.select(filter);
+        List<Integer> chnlIdListInDB = new ArrayList<>();
+        //获取数据库中空栏目记录的栏目ID集合
+        for (Issue issue : issues) {
+            try {
+                chnlIdListInDB.add(Integer.valueOf(issue.getCustomer2()));
+            } catch (Exception e) {
+                log.error("", e.getMessage());
+            }
+
+        }
+        //从数据库空栏目ID集合中去掉仍为空栏目的集合，余下为已处理的空栏目。
+        chnlIdListInDB.removeAll(chnlIdList);
+        for (Integer resolvedChnlId : chnlIdListInDB) {
+            filter = buildQueryFilter(Arrays.asList(resolvedChnlId),
+                    Types.IssueType.EMPTY_CHANNEL.value,
+                    Types.EmptyChannelType.EMPTY_COLUMN.value);
+            DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+            updater.addField(IssueTableField.IS_RESOLVED, IssueIndicator.SOLVED.value);
+            commonMapper.update(updater, filter);
+        }
     }
 
     /**
@@ -544,14 +613,25 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         update.setIssueTime(curDate);
         update.setCheckTime(curDate);
         update.setChnlId(channelId);
+
+        try {
+            final Integer deptId = siteChannelServiceHelper.findRelatedDept(channelId, "");
+            update.setDeptId(deptId);
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目所属部门失败！[chnnelId={0}, siteId={1}]", channelId, siteId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, errorInfo, e);
+        }
+
         try {
             update.setChnlUrl(siteApiService.getChannelPublishUrl("", 0, channelId));
         } catch (Exception e) {
-            log.error("", e);
-            LogUtil.addSystemLog("", e);
+            String errorInfo = MessageFormat.format("获取栏目发布URL失败！[chnnelId={0}, siteId={1}]", channelId, siteId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REMOTE_FAILED, errorInfo, e);
         }
-
         issueMapper.insert(DBUtil.toRow(update));
+        monitorResult++;
     }
 
     /**
@@ -584,6 +664,40 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     }
 
     /**
+     * 构造查询过滤器
+     *
+     * @param chnlIdList
+     * @param issueTypeId
+     * @param subIssueTypeId
+     * @return
+     */
+    private QueryFilter buildQueryFilter(List<Integer> chnlIdList, int issueTypeId, int subIssueTypeId) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.CUSTOMER2, chnlIdList);
+        filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
+        filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
+        return filter;
+    }
+
+    /**
+     * 构造查询过滤器
+     *
+     * @param issueTypeId
+     * @param issueTypeId
+     * @param subIssueTypeId
+     * @return
+     */
+    private QueryFilter buildQueryFilter(int issueTypeId, int subIssueTypeId, int isResolved) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
+        filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
+        filter.addCond(IssueTableField.IS_RESOLVED, isResolved);
+        return filter;
+    }
+
+    /**
      * 更新到数据库
      *
      * @param filter    查询条件
@@ -593,9 +707,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         String chnlUrl = null;
         try {
             chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息更新监测，siteId[" + siteId + "]", e);
         }
         DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
         if (chnlUrl != null) {
@@ -603,6 +717,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         }
         updater.addField(IssueTableField.CHECK_TIME, new Date());
         commonMapper.update(updater, filter);
+        monitorResult++;
     }
 
     /**

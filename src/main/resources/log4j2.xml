@@ -19,12 +19,33 @@
                 <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>-->
         </RollingFile>
+        <!-- 按日期每天生成log文件 -->
+        <RollingFile name="LogStashRollingFile" fileName="/opt/TRS/TRSWCMV7/wcmlogs/kpi/logstash.log"
+                     filePattern="/opt/TRS/TRSWCMV7/wcmlogs/kpi/logstash-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d %p %C{1.} [%t]: %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+
+            <!-- log文件只打印error级别信息 -->
+            <!--<Filters>
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>-->
+        </RollingFile>
     </Appenders>
     <Loggers>
+        <!-- 屏蔽掉warning：Going to buffer response body of large or unknown size输出，只输出error -->
+        <Logger name="org.apache.commons.httpclient.HttpMethodBase" level="ERROR" />
+
+        <Logger name="com.trs.mlf.simplelog.SimpleLogServer" level="DEBUG">
+            <AppenderRef ref="LogStashRollingFile" />
+        </Logger>
+
         <!-- 输出info级别信息 -->
         <Root level="INFO">
             <AppenderRef ref="Console" />
             <AppenderRef ref="RollingFile" />
         </Root>
+
     </Loggers>
 </Configuration>

@@ -38,7 +38,7 @@ public interface IssueMapper {
     List<InfoUpdate> selectInfoUpdate(QueryFilter filter);
 
     /**
-     * 查询InfoUpdate
+     * 查询InfoError
      *
      * @param filter
      * @return

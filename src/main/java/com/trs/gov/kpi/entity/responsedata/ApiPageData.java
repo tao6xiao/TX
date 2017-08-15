@@ -5,6 +5,7 @@ import lombok.Getter;
 import java.util.List;
 
 /**
+ * 返回列表数据的模板
  * Created by rw103 on 2017/5/13.
  */
 public class ApiPageData {

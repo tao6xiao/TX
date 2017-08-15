@@ -4,6 +4,7 @@ import com.trs.gov.kpi.constant.ReportTableField;
 import com.trs.gov.kpi.dao.ReportMapper;
 import com.trs.gov.kpi.entity.Report;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
@@ -14,9 +15,7 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class ReportServiceImpl implements ReportService {
     private SiteApiService siteApiService;
 
     @Override
-    public ApiPageData selectReportList(ReportRequestParam param, boolean isTimeNode) throws RemoteException, ParseException {
+    public ApiPageData selectReportList(ReportRequestParam param, boolean isTimeNode) throws RemoteException, BizException {
         QueryFilter filter = QueryFilterHelper.toReportFilter(param, isTimeNode);
         if (isTimeNode) {
             filter.addCond(ReportTableField.TYPE, 1);
@@ -57,7 +56,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public String getReportPath(ReportRequestParam param, boolean isTimeNode) throws ParseException {
+    public String getReportPath(ReportRequestParam param, boolean isTimeNode) throws BizException {
 
         QueryFilter filter = QueryFilterHelper.toReportFilter(param, isTimeNode);
         filter.addCond(ReportTableField.ID, param.getId());

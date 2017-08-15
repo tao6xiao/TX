@@ -1,18 +1,18 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.BizRuntimeException;
-import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.User;
 import com.trs.gov.kpi.ids.ContextHelper;
-import com.trs.gov.kpi.service.outer.UserApiService;
-import com.trs.idm.client.actor.SSOUser;
+import com.trs.gov.kpi.service.impl.outer.SiteApiServiceImpl;
 import com.trs.mlf.simplelog.LogUser;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
-
-import static com.trs.gov.kpi.ids.ContextHelper.CONTEXT_INDEX_IP;
 
 /**
  * trs日志工具类
@@ -21,29 +21,27 @@ import static com.trs.gov.kpi.ids.ContextHelper.CONTEXT_INDEX_IP;
 @Slf4j
 public class TRSLogUserUtil {
 
-    public static void main(String[] args){
-        LogUtil.addSystemLog("信息错误", new BizException());
+    public static void main(String[] args) {
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "siteId[1]", new BizException());
+        LogUtil.addOperationLog(OperationType.QUERY, "查询栏目", LogUtil.getSiteNameForLog(new SiteApiServiceImpl(), 1));
     }
 
-    private TRSLogUserUtil(){}
+    private TRSLogUserUtil() {
+    }
 
-    public static LogUser getLogUser() throws BizException, RemoteException, BizRuntimeException {
-        SSOUser localUser = ContextHelper.getLoginUser();
-        if(localUser == null){
-            log.error("当前用户未登录");
-            throw new BizException("当前用户未登录");
+    public static LogUser getLogUser() {
+        LocalUser localUser;
+        try {
+            localUser = ContextHelper.getLoginUser();
+        } catch (BizRuntimeException e) {
+            return getSystemUser();
         }
-        UserApiService userApiService = (UserApiService) SpringContextUtil.getBean(UserApiService.class);
-        User user = userApiService.finUserByUserName("", localUser.getUserName());
-        if(user == null){
-            log.error("当前用户未在采编中心找到");
-            throw new BizException("当前用户未在采编中心找到");
-        }
+
         StringBuilder buffer = new StringBuilder();
-        if(user.getGroups() != null && !user.getGroups().isEmpty()){
-            for(int i= 0; i < user.getGroups().size(); i++){
-                Map map = user.getGroups().get(i);
-                if(map.get("GNAME") == null){
+        if (localUser.getGroups() != null && !localUser.getGroups().isEmpty()) {
+            for (int i = 0; i < localUser.getGroups().size(); i++) {
+                Map map = localUser.getGroups().get(i);
+                if (map.get("GNAME") == null) {
                     continue;
                 }
                 buffer.append(map.get("GNAME"));
@@ -51,13 +49,22 @@ public class TRSLogUserUtil {
             }
         }
         String groupNames = "";
-        if(buffer.length() != 0){
+        if (buffer.length() != 0) {
             groupNames = buffer.deleteCharAt(buffer.lastIndexOf(",")).toString();
         }
-        String logIp = ContextHelper.getArg(CONTEXT_INDEX_IP).toString();
-        if (user.getTrueName() != null) {
-            return new LogUser(user.getTrueName(), logIp, groupNames);
+        if (!StringUtil.isEmpty(groupNames)) {
+            return new LogUser(localUser.getUserName(), localUser.getTrueName(), localUser.getLastLoginIP(), groupNames);
         }
-        return new LogUser(user.getUserName(), logIp, groupNames);
+        return new LogUser(localUser.getUserName(), localUser.getTrueName(), localUser.getLastLoginIP());
+    }
+
+    private static LogUser getSystemUser() {
+        String ip;
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            ip = "";
+        }
+        return new LogUser("SYSTEM", "SYSTEM", ip);
     }
 }

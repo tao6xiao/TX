@@ -1,11 +1,11 @@
 package com.trs.gov.kpi.service;
 
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -28,7 +28,7 @@ public interface InfoUpdateService {
      * @param param
      * @return
      */
-    History getIssueHistoryCount(PageDataRequestParam param);
+    HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param);
 
     /**
      * 获取栏目信息更新不及时问题的统计信息
@@ -36,7 +36,7 @@ public interface InfoUpdateService {
      * @param param
      * @return
      */
-    List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException;
+    List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws BizException, RemoteException;
 
     /**
      * 查询未解决问题的列表
@@ -64,10 +64,10 @@ public interface InfoUpdateService {
     InfoUpdateOrderRes getInfoUpdateOrderById(WorkOrderRequest request) throws RemoteException;
 
     /**
-     * 获取当前站点下面更新不及时栏目的月数以及空栏目
+     * 获取当前站点下面更新不及时栏目以及空栏目列表
      *
-     * @param siteId
+     * @param param
      * @return
      */
-    MonthUpdateResponse getNotInTimeCountMonth(int siteId) throws RemoteException;
+    MonthUpdateResponse getNotInTimeCountMonth(PageDataRequestParam param) throws RemoteException;
 }

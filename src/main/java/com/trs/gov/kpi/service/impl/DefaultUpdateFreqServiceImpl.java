@@ -6,7 +6,6 @@ import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.Date;
 
 /**
@@ -23,7 +22,7 @@ public class DefaultUpdateFreqServiceImpl implements DefaultUpdateFreqService {
     }
 
     @Override
-    public int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) throws ParseException {
+    public int addDefaultUpdateFreq(DefaultUpdateFreq defaultUpdateFreq) {
         defaultUpdateFreq.setSetTime(new Date());
         return defaultUpdateFreqMapper.insert(defaultUpdateFreq);
     }

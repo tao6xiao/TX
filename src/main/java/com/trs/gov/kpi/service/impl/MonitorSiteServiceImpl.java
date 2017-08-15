@@ -46,9 +46,9 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
     @Override
     public void addMonitorSite(MonitorSiteDeal monitorSiteDeal) throws BizException {
         MonitorSite monitorSite = getMonitorSiteFromMonitorSiteDealAndSiteIds(monitorSiteDeal);
+        Integer siteId = monitorSiteDeal.getSiteId();
         monitorSiteMapper.insert(monitorSite);
-        //保存站点信息后，注册报表生成等调度任务
-        Integer siteId = monitorSite.getSiteId();
+        //保存站点信息时，注册报表等调度任务
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
@@ -75,7 +75,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSite.setSiteId(monitorSiteDeal.getSiteId());
         monitorSite.setDepartmentName(monitorSiteDeal.getDepartmentName());
         monitorSite.setGuarderId(monitorSiteDeal.getGuarderId());
-        monitorSite.setIndexUrl(monitorSiteDeal.getIndexUrl());
         return monitorSite;
     }
 
@@ -90,7 +89,6 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         monitorSiteDeal.setGuarderName(userApiService.findUserById("", monitorSite.getGuarderId()).getTrueName());
         monitorSiteDeal.setGuarderAccount(userApiService.findUserById("", monitorSite.getGuarderId()).getUserName());
         monitorSiteDeal.setGuarderPhone(userApiService.findUserById("", monitorSite.getGuarderId()).getMobile());
-        monitorSiteDeal.setIndexUrl(monitorSite.getIndexUrl());
         return monitorSiteDeal;
     }
 

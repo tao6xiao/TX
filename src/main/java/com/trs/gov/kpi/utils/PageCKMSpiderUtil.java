@@ -1,7 +1,9 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.EnumUrlType;
+import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.scheduler.CKMScheduler;
+import com.trs.gov.kpi.service.LinkContentStatsService;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +17,7 @@ import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +34,12 @@ public class PageCKMSpiderUtil {
     @Getter
     private String baseUrl;
 
+    private Integer siteId;
+
     private CKMScheduler ckmScheduler;
+
+    @Resource
+    private LinkContentStatsService linkContentStatsService;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -101,6 +109,7 @@ public class PageCKMSpiderUtil {
                 isUrlAvailable.set(false);
                 Page result = super.download(request, task);
                 if (isUrlAvailable.get()) {
+                    linkContentStatsService.insertLinkContent(siteId, Types.IssueType.INFO_ERROR_ISSUE.value,request.getUrl().intern(), result.getRawText().intern());
                     ckmScheduler.insert(new CKMPage(request.getUrl().intern(), result.getRawText()));
                     return result;
                 } else {
@@ -130,9 +139,10 @@ public class PageCKMSpiderUtil {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler) {
+    public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler, Integer siteId) {
 
         log.info("fetch ckm pages started!");
+        this.siteId = siteId;
         this.ckmScheduler = ckmScheduler;
         init(baseUrl);
         if (StringUtils.isBlank(baseUrl)) {

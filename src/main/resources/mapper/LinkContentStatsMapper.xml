@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trs.gov.kpi.dao.LinkContentStatsMapper">
+
+    <select id="selectThisTimeMD5" resultType="java.lang.String">
+        select
+          md5
+        from linkcontentstats
+          where siteId = #{siteId}
+          and typeId = #{typeId}
+          and url = #{url}
+          order by checkTime desc
+          limit 0,1
+    </select>
+
+    <select id="selectLastTimeMD5" resultType="java.lang.String">
+        select
+          md5
+        from linkcontentstats
+          where siteId = #{siteId}
+          and typeId = #{typeId}
+          and url = #{url}
+          order by checkTime desc
+          limit 1,1
+    </select>
+
+</mapper>

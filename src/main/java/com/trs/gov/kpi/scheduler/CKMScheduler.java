@@ -1,22 +1,20 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.IssueTableField;
-import com.trs.gov.kpi.constant.Status;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.MonitorTime;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.LinkContentStatsService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,6 +30,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -66,6 +66,9 @@ public class CKMScheduler implements SchedulerTask {
     private ContentCheckApiService contentCheckApiService;
 
     @Resource
+    private SiteChannelServiceHelper siteChannelServiceHelper;
+
+    @Resource
     private IssueMapper issueMapper;
 
     @Resource
@@ -75,37 +78,35 @@ public class CKMScheduler implements SchedulerTask {
     SiteApiService siteApiService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private LinkContentStatsService linkContentStatsService;
+
+    //错误信息计数
+    @Getter
+    Integer monitorResult = 0;
+
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    @Getter
+    private Integer monitorType;
+
+    @Getter
+    private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_CONTENT;
 
     @Override
     public void run() throws RemoteException {
-        log.info("CKMScheduler " + siteId + " start...");
-        Date startTime = new Date();
-
         final Site checkSite = siteApiService.getSiteById(siteId, null);
-        if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exist!");
-            LogUtil.addSystemLog("site[" + siteId + "] is not exist!");
-            return;
+        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
+        if(StringUtil.isEmpty(baseUrl))
+        {
+            return ;
         }
-
-        baseUrl = checkSite.getWebHttp();
-        if (StringUtil.isEmpty(baseUrl)) {
-            log.warn("site[" + siteId + "]'s web http is empty!");
-            return;
-        }
-
-        spider.fetchPages(5, baseUrl, this);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
-        log.info("CKMScheduler " + siteId + " end...");
-        Date endTime = new Date();
-        MonitorTime monitorTime = new MonitorTime();
-        monitorTime.setSiteId(siteId);
-        monitorTime.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
-        monitorTime.setStartTime(startTime);
-        monitorTime.setEndTime(endTime);
-        monitorTimeService.insertMonitorTime(monitorTime);
+        spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
     }
 
+    @Override
+    public String getName() {
+        return SchedulerType.CKM_SCHEDULER.toString();
+    }
 
     private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList) throws RemoteException {
         List<Issue> issueList = new ArrayList<>();
@@ -117,16 +118,22 @@ public class CKMScheduler implements SchedulerTask {
 
         ContentCheckResult result = null;
         try {
-            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+            String thisTimeMd5 = linkContentStatsService.getThisTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
+            String lastTimeMd5 = linkContentStatsService.getLastTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
+            if (lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)) {//第一次检查或链接内容发生变化
+                //检测爬取内容
+                result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+            } else {//内容较上一次没有变化
+                return issueList;
+            }
         } catch (Exception e) {
             log.error("failed to check content " + checkContent, e);
-            LogUtil.addSystemLog("failed to check content " + checkContent, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to check content " + checkContent, e);
             return issueList;
         }
 
         if (!result.isOk()) {
             log.error("return error: " + result.getMessage());
-            LogUtil.addSystemLog("return error: " + result.getMessage());
             return issueList;
         }
 
@@ -136,7 +143,7 @@ public class CKMScheduler implements SchedulerTask {
         return issueList;
     }
 
-    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) throws RemoteException {
+    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) {
         List<Issue> issueList = new ArrayList<>();
         for (String checkType : checkTypeList) {
             Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
@@ -168,13 +175,15 @@ public class CKMScheduler implements SchedulerTask {
             } catch (IOException e) {
                 log.error("error content: " + errorContent);
                 log.error("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
-                LogUtil.addSystemLog("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
             }
 
             Issue issue = new Issue();
             issue.setSiteId(siteId);
-            if (ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId) != null) {
-                issue.setCustomer2(String.valueOf(ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId)));
+            Integer chnlId = getChnlId(page);
+            if (chnlId != null) {
+                issue.setCustomer2(String.valueOf(chnlId));
+                setDeptId(issue, chnlId);
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
@@ -187,6 +196,30 @@ public class CKMScheduler implements SchedulerTask {
         }
         return issueList;
     }
+
+    private void setDeptId(Issue issue, Integer chnlId) {
+        try {
+            issue.setDeptId(siteChannelServiceHelper.findRelatedDept(chnlId, ""));
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目所属部门失败! [siteId={0}, chnlId={1}]", siteId, chnlId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+        }
+    }
+
+    @Nullable
+    private Integer getChnlId(PageCKMSpiderUtil.CKMPage page) {
+        Integer chnlId = null;
+        try {
+            chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId);
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目Id失败! [siteId={0}, url={1}]", siteId, page.getUrl());
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+        }
+        return chnlId;
+    }
+
 
     public static void createIndexHtml(String dir) throws IOException {
         String htmlText = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
@@ -255,18 +288,11 @@ public class CKMScheduler implements SchedulerTask {
         }
         StringBuilder sb = new StringBuilder();
         // 给网站增加base标签
-        sb.append("<base href=\"" + url + "\" />");
-        sb.append(LINE_SP);
-        sb.append(content.intern());
-        // 在源码中增加定位用的脚本定义
-        sb.append(LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+        sb.append("<base href=\"" + url + "\" />")
+                .append(LINE_SP);
+        sb.append(content.intern())
+                .append(LINE_SP);
+        sb.append(addScriptDef());
         return sb.toString();
     }
 
@@ -399,26 +425,26 @@ public class CKMScheduler implements SchedulerTask {
         // 将html标签转义
         String sourceEscape = StringEscapeUtils.escapeHtml4(content);
         StringBuilder sb = new StringBuilder();
-        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-        sb.append(LINE_SP);
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append(LINE_SP);
-        sb.append("	<head>");
-        sb.append(LINE_SP);
-        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
-        sb.append(LINE_SP);
-        sb.append("		<title>源码定位</title>");
-        sb.append(LINE_SP);
-        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("	</head>");
-        sb.append(LINE_SP);
-        sb.append("	<body> ");
-        sb.append(LINE_SP);
-        sb.append("		<div class=\"sh_code\">");
-        sb.append(LINE_SP);
-        sb.append("			<ol start=\"1\">");
-        sb.append(LINE_SP);
+        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
+                .append(LINE_SP);
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">")
+                .append(LINE_SP);
+        sb.append("	<head>")
+                .append(LINE_SP);
+        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>")
+                .append(LINE_SP);
+        sb.append("		<title>源码定位</title>")
+                .append(LINE_SP);
+        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("	</head>")
+                .append(LINE_SP);
+        sb.append("	<body> ")
+                .append(LINE_SP);
+        sb.append("		<div class=\"sh_code\">")
+                .append(LINE_SP);
+        sb.append("			<ol start=\"1\">")
+                .append(LINE_SP);
         sourceEscape = sourceEscape.replaceAll("\r", "");
         sourceEscape = sourceEscape.replaceAll("\n", LINE_SP);
         sourceEscape = sourceEscape.replaceAll(" ", "&nbsp;");
@@ -433,26 +459,34 @@ public class CKMScheduler implements SchedulerTask {
             }
             sb.append(LINE_SP);
         }
-        sb.append("			</ol>");
+        sb.append("			</ol>")
+                .append(LINE_SP);
+        sb.append("		</div>")
+                .append(LINE_SP);
+        sb.append("	</body>")
+                .append(LINE_SP);
+        sb.append(HTML_SUF)
+                .append(LINE_SP);
         sb.append(LINE_SP);
-        sb.append("		</div>");
-        sb.append(LINE_SP);
-        sb.append("	</body>");
-        sb.append(LINE_SP);
-        sb.append(HTML_SUF);
-        sb.append(LINE_SP);
-
-        // 在源码中增加定位用的脚本定义
-        sb.append(LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
-
+        sb.append(addScriptDef());
         return sb.toString();
+    }
+
+    /**
+     * 在源码中增加定位用的脚本定义
+     * @param sb
+     * @return
+     */
+    public static StringBuilder addScriptDef(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+        return sb;
     }
 
 
@@ -477,10 +511,11 @@ public class CKMScheduler implements SchedulerTask {
                 List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
+                    monitorResult++;
                 }
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "插入信息错误数据失败，siteId[" + siteId + "]", e);
             }
         }
         log.info("buildCheckContent insert error count: " + issueList.size());
@@ -492,7 +527,8 @@ public class CKMScheduler implements SchedulerTask {
             insert(buildList(page, checkTypeList));
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
         }
     }
+
 }

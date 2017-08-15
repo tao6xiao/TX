@@ -9,13 +9,12 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.responsedata.*;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.ReportApiService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
@@ -42,6 +41,8 @@ public class DocReportController {
     public static final String KEY_TOTAL_COUNT = "totalCount";
     public static final String KEY_DATA = "data";
     public static final String SITE_YIFA_DOC_BYDAY = "site_yifa_doc_byday";
+    public static final String BEGIN_DATE_TIME = "beginDateTime";
+    public static final String END_DATE_TIME = "endDateTime";
     @Resource
     private ReportApiService reportApiService;
 
@@ -50,6 +51,9 @@ public class DocReportController {
 
     @Resource
     private ApplicationContext applicationContext;
+
+    @Resource
+    private SiteApiService siteApiService;
 
     private static final String PREX_EDIT_CENTER_REPORT = "editcenter_";
 
@@ -63,29 +67,29 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/bytype", method = RequestMethod.GET)
     @ResponseBody
     public List<DocTypeCounterResponse> getCurMonthCountByType(Integer siteId) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ReportApiService.ReportApiParam param = ReportApiService.ReportApiParamBuilder.newBuilder()
-                .setReportName("editcenter_doctype_new_bymonth")
-                .setDimensionFields("DocType")
-                .setBeginDate(DateUtil.curMonth())
-                .build();
-        String reportData = reportApiService.getReport(param);
-        if (StringUtil.isEmpty(reportData)) {
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档分类型统计查询", "").info();
-            return new ArrayList<>();
-        } else {
-            final ArrayList<DocTypeCounterResponse> responseList = new ArrayList<>();
-            final JSONArray objects = JSON.parseArray(reportData);
-            for (int index = 0; index < objects.size(); index++) {
-                JSONObject data = objects.getJSONObject(index);
-                responseList.add(new DocTypeCounterResponse(data.getInteger("DocType"), data.getLong("Count")));
+        String logDesc = "本月新增文档分类型统计查询" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
+            ReportApiService.ReportApiParam param = ReportApiService.ReportApiParamBuilder.newBuilder()
+                    .setReportName("editcenter_doctype_new_bymonth")
+                    .setDimensionFields("DocType")
+                    .setBeginDate(DateUtil.curMonth())
+                    .build();
+
+            String reportData = reportApiService.getReport(param);
+            if (StringUtil.isEmpty(reportData)) {
+                return new ArrayList<>();
+            } else {
+                final ArrayList<DocTypeCounterResponse> responseList = new ArrayList<>();
+                final JSONArray objects = JSON.parseArray(reportData);
+                for (int index = 0; index < objects.size(); index++) {
+                    JSONObject data = objects.getJSONObject(index);
+                    responseList.add(new DocTypeCounterResponse(data.getInteger("DocType"), data.getLong("Count")));
+                }
+                return responseList;
             }
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档分类型统计查询", "").info();
-            return responseList;
-        }
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -101,21 +105,24 @@ public class DocReportController {
      */
     @RequestMapping(value = "/bydepartment", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
+    public Map<String, Object> getCounterByDep(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException,
             BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
-        SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) -> counter.setDepartmentId(Long.valueOf(value));
-        List<DepDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
+        String logDesc = "查询按部门统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+            List<Pair<String, SetFunc<DepDocMultiCounterResponse, String>>> reports = getMultiReportList("department");
+            SetFunc<DepDocMultiCounterResponse, String> setDepIdFunc = (counter, value) -> counter.setDepartmentId(Long.valueOf(value));
+            List<DepDocMultiCounterResponse> allReports = null;
+            allReports = getMultiCounterReport(reports, "Department", beginDateTime, endDateTime, DepDocMultiCounterResponse.class, setDepIdFunc);
+            return getResult(allReports);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+    }
+
+    private Map<String, Object> getResult(List allReports) {
         Map<String, Object> result = new HashMap<>();
         result.put(KEY_TOTAL_COUNT, countAll(allReports));
         result.put(KEY_DATA, allReports);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按部门统计的稿件信息", "").info();
         return result;
-
     }
 
     /**
@@ -131,20 +138,18 @@ public class DocReportController {
      */
     @RequestMapping(value = "/bysite", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
-            BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
-        SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) -> counter.setSiteId(Long.valueOf(value));
-        final java.util.List<SiteDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class, setSiteIdFunc);
-        Map<String, Object> result = new HashMap<>();
-        result.put(KEY_TOTAL_COUNT, countAll(allReports));
-        result.put(KEY_DATA, allReports);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按站点统计的稿件信息", "").info();
-        return result;
+    public Map<String, Object> getCounterBySite(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, BizException {
+        String logDesc = "查询按站点统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
+            List<Pair<String, SetFunc<SiteDocMultiCounterResponse, String>>> reports = getMultiReportList("site");
+            SetFunc<SiteDocMultiCounterResponse, String> setSiteIdFunc = (counter, value) -> counter.setSiteId(Long.valueOf(value));
+            final List<SiteDocMultiCounterResponse> allReports;
+            allReports = getMultiCounterReport(reports, "Site", beginDateTime, endDateTime, SiteDocMultiCounterResponse.class,
+                        setSiteIdFunc);
+            return getResult(allReports);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -160,20 +165,17 @@ public class DocReportController {
      */
     @RequestMapping(value = "/byuser", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, InstantiationException, IllegalAccessException,
-            BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports = getMultiReportList("user");
-        SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) -> counter.setUserName(value);
-        final List<UserDocMultiCounterResponse> allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
-        Map<String, Object> result = new HashMap<>();
-        result.put(KEY_TOTAL_COUNT, countAll(allReports));
-        result.put(KEY_DATA, allReports);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询按个人统计的稿件信息", "").info();
-        return result;
+    public Map<String, Object> getCounterByUser(Integer siteId, String beginDateTime, String endDateTime) throws RemoteException, BizException {
+        String logDesc = "查询按个人统计的稿件信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, BEGIN_DATE_TIME, beginDateTime, END_DATE_TIME, endDateTime);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
+            List<Pair<String, SetFunc<UserDocMultiCounterResponse, String>>> reports = getMultiReportList("user");
+            SetFunc<UserDocMultiCounterResponse, String> setUserIdFunc = (counter, value) -> counter.setUserName(value);
+            final List<UserDocMultiCounterResponse> allReports;
+            allReports = getMultiCounterReport(reports, "User", beginDateTime, endDateTime, UserDocMultiCounterResponse.class, setUserIdFunc);
+            return getResult(allReports);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -186,29 +188,29 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/byday", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, String> getCurMonthCounterByDay(Integer siteId) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        Calendar now = Calendar.getInstance();// 当前起始日期
-        Date curDate = new Date();
-        now.setTime(curDate);
+        String logDesc = "查询本月每天发稿量统计信息" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
-        String monthPrefix = format.format(curDate);
-        final int curDay = now.get(Calendar.DAY_OF_MONTH);
-        Map<String, String> allMonthReport = new LinkedHashMap<>();
-        for (int index = 1; index <= curDay; index++) {
-            allMonthReport.put(monthPrefix + String.format("-%02d", index), "0");
-        }
-        now.add(Calendar.DAY_OF_MONTH, 1);
-        String endDay = DateUtil.toString(now.getTime());
-        now.set(Calendar.DAY_OF_MONTH, 1);
-        String beginDay = DateUtil.toString(now.getTime());
-        final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
-        allMonthReport.putAll(reportData);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询本月每天发稿量统计信息", "").info();
-        return allMonthReport;
+            Calendar now = Calendar.getInstance();// 当前起始日期
+            Date curDate = new Date();
+            now.setTime(curDate);
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+            String monthPrefix = format.format(curDate);
+            final int curDay = now.get(Calendar.DAY_OF_MONTH);
+            Map<String, String> allMonthReport = new LinkedHashMap<>();
+            for (int index = 1; index <= curDay; index++) {
+                allMonthReport.put(monthPrefix + String.format("-%02d", index), "0");
+            }
+            now.add(Calendar.DAY_OF_MONTH, 1);
+            String endDay = DateUtil.toString(now.getTime());
+            now.set(Calendar.DAY_OF_MONTH, 1);
+            String beginDay = DateUtil.toString(now.getTime());
+            final Map<String, String> reportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "CRDay", beginDay, endDay);
+            allMonthReport.putAll(reportData);
+            return allMonthReport;
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -222,36 +224,39 @@ public class DocReportController {
      */
     @RequestMapping(value = "/multi/onemonth", method = RequestMethod.GET)
     @ResponseBody
-    public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, ParseException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        if (StringUtil.isEmpty(month)) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        if (!DateUtil.isValidMonth(month)) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
+    public Map<String, Long> getMultiOfOneMonth(Integer siteId, String month) throws RemoteException, BizException {
+        String logDesc = "原稿，已发，上报，下达历史数据量统计查询" + LogUtil.paramsToLogString("siteId", siteId, "month", month);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+            if (StringUtil.isEmpty(month)) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            if (!DateUtil.isValidMonth(month)) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
 
-        Calendar nextMonthCalendar = Calendar.getInstance();// 当前起始日期
+            Calendar nextMonthCalendar = Calendar.getInstance();// 当前起始日期
+            String beginDay = month + "-01 00:00:00";
+            try {
+                nextMonthCalendar.setTime(DateUtil.toDate(beginDay));
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            nextMonthCalendar.set(Calendar.MONTH, nextMonthCalendar.get(Calendar.MONTH) + 1);
+            String endDay = DateUtil.toString(new Date(nextMonthCalendar.getTime().getTime() - 1000));
 
-        String beginDay = month + "-01 00:00:00";
-        nextMonthCalendar.setTime(DateUtil.toDate(beginDay));
-        nextMonthCalendar.set(Calendar.MONTH, nextMonthCalendar.get(Calendar.MONTH) + 1);
-        String endDay = DateUtil.toString(new Date(nextMonthCalendar.getTime().getTime() - 1000));
-
-        Map<String, Long> result = new HashMap<>();
-        final Map<String, String> newDocReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_new_doc_byday", "Site", beginDay, endDay);
-        result.put("newDoc", countMap(newDocReportData));
-        final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, endDay);
-        result.put("yifa", countMap(yifaReportData));
-        final Map<String, String> pushReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_push_doc_byday", "Site", beginDay, endDay);
-        result.put("push", countMap(pushReportData));
-        final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
-        result.put("distribute", countMap(distributeReportData));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "原稿，已发，上报，下达历史数据量统计查询", "").info();
-        return result;
+            Map<String, Long> result = new HashMap<>();
+            final Map<String, String> newDocReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_new_doc_byday", "Site", beginDay, endDay);
+            result.put("newDoc", countMap(newDocReportData));
+            final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, endDay);
+            result.put("yifa", countMap(yifaReportData));
+            final Map<String, String> pushReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_push_doc_byday", "Site", beginDay, endDay);
+            result.put("push", countMap(pushReportData));
+            final Map<String, String> distributeReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_distribute_doc_byday", "Site", beginDay, endDay);
+            result.put("distribute", countMap(distributeReportData));
+            return result;
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -264,22 +269,22 @@ public class DocReportController {
     @RequestMapping(value = "/curmonth/bystatus", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Long> getCurMonthDocStatusReport(Integer siteId) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_DOCUMENT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_STATISTICS_DOCUMENT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        String beginDay = DateUtil.curMonth();
-        Map<String, Long> result = new HashMap<>();
-        final Map<String, String> daibianReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daibian_doc_byday", "Site", beginDay, null);
-        result.put("daibian", countMap(daibianReportData));
-        final Map<String, String> daishenReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daishen_doc_byday", "Site", beginDay, null);
-        result.put("daishen", countMap(daishenReportData));
-        final Map<String, String> daiqianReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daiqian_doc_byday", "Site", beginDay, null);
-        result.put("daiqian", countMap(daiqianReportData));
-        final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
-        result.put("yifa", countMap(yifaReportData));
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "本月新增文档状态统计查询", "").info();
-        return result;
+        String logDesc = "本月新增文档状态统计" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            authorityService.checkRight(Authority.KPIWEB_STATISTICS_DOCUMENT, siteId);
+
+            String beginDay = DateUtil.curMonth();
+            Map<String, Long> result = new HashMap<>();
+            final Map<String, String> daibianReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daibian_doc_byday", "Site", beginDay, null);
+            result.put("daibian", countMap(daibianReportData));
+            final Map<String, String> daishenReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daishen_doc_byday", "Site", beginDay, null);
+            result.put("daishen", countMap(daishenReportData));
+            final Map<String, String> daiqianReportData = getDocReport(PREX_EDIT_CENTER_REPORT + "site_daiqian_doc_byday", "Site", beginDay, null);
+            result.put("daiqian", countMap(daiqianReportData));
+            final Map<String, String> yifaReportData = getDocReport(PREX_EDIT_CENTER_REPORT + SITE_YIFA_DOC_BYDAY, "Site", beginDay, null);
+            result.put("yifa", countMap(yifaReportData));
+            return result;
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     private <T extends DocMultiCounterResponse> Long countAll(List<T> counters) {
@@ -320,7 +325,7 @@ public class DocReportController {
     private <T> List<T> getMultiCounterReport(
             List<Pair<String, SetFunc<T, String>>> reports,
             String dimensionFields, String beginDateTime, String endDateTime,
-            Class<T> counterClass, SetFunc<T, String> setIdFunc) throws RemoteException, InstantiationException, IllegalAccessException {
+            Class<T> counterClass, SetFunc<T, String> setIdFunc) throws RemoteException, BizException {
         Map<String, T> counterMap = new HashMap<>();
         for (Pair<String, SetFunc<T, String>> report : reports) {
             Map<String, String> reportData = getDocReport(report.getKey(), dimensionFields, beginDateTime, endDateTime);
@@ -357,8 +362,7 @@ public class DocReportController {
         }
     }
 
-    private <T> void setCounter(Map<String, T> counterMap, Map<String, String> newDocReport, Class<T> counterClass, SetFunc<T, String> setIdFunc, SetFunc<T, String> setCounterFunc) throws
-            IllegalAccessException, InstantiationException {
+    private <T> void setCounter(Map<String, T> counterMap, Map<String, String> newDocReport, Class<T> counterClass, SetFunc<T, String> setIdFunc, SetFunc<T, String> setCounterFunc) {
         final Iterator<Map.Entry<String, String>> newDocIterator = newDocReport.entrySet().iterator();
         while (newDocIterator.hasNext()) {
             final Map.Entry<String, String> newDocEntry = newDocIterator.next();
@@ -366,7 +370,6 @@ public class DocReportController {
             T counter = counterMap.get(key);
             if (counter == null) {
                 counter = applicationContext.getBean(counterClass);
-//                counter = counterClass.newInstance();
                 setIdFunc.apply(counter, key);
                 counterMap.put(key, counter);
             }

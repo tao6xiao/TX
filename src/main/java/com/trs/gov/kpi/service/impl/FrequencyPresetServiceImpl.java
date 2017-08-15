@@ -40,19 +40,20 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
     @Override
     public int addFrequencyPreset(FrequencyPresetRequest presetRequest) throws BizException {
         FrequencyPreset preset = toFrequencyPresetByRequest(presetRequest);
-        if (isPresetExist(preset)) {
+        if (hasSamePresetRecord(preset)) {
             return 0;
         }
         return frequencyPresetMapper.insert(preset);
     }
 
-    private boolean isPresetExist(FrequencyPreset preset) {
+    private boolean hasSamePresetRecord(FrequencyPreset preset) {
         return frequencyPresetMapper.selectByPreset(preset) != null;
     }
 
     @Override
     public int updateBySiteIdAndId(FrequencyPreset preset) {
-        if (isPresetExist(preset)) {
+        // TODO REVIEW DO_he.lang FIXED 此处是判定是否已经存在预设值有相同的记录， 如果有， 就不能修改。 需要修改一下方法名
+        if (hasSamePresetRecord(preset)) {
             return 0;
         }
         return frequencyPresetMapper.updateBySiteIdAndId(preset);

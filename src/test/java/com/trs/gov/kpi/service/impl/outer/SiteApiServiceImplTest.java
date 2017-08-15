@@ -83,6 +83,11 @@ public class SiteApiServiceImplTest {
         }
 
         @Override
+        public List<Integer> findChannelPath(int channelId, String userName) throws RemoteException {
+            return null;
+        }
+
+        @Override
         public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException {
             return null;
         }

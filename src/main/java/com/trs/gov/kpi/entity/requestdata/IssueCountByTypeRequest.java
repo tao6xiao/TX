@@ -17,6 +17,24 @@ public class IssueCountByTypeRequest extends IssueCountRequest {
     // 信息错误
     public static final int TYPE_INFO_ERROR = 3;
 
+    //服务链接可用性
+    public static final int TYPE_SERVICE_LINK_AVAILABLE = 4;
+
     private int typeId;
 
+    @Override
+    public String toString() {
+        return "{" +
+                "typeId='" + typeId + '\'' +
+                "siteIds='" + getSiteIds() + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
+    }
 }

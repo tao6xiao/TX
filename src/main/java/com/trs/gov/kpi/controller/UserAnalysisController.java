@@ -5,14 +5,13 @@ import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
-import com.trs.gov.kpi.entity.responsedata.History;
-import com.trs.gov.kpi.ids.ContextHelper;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsResp;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +25,7 @@ import java.text.ParseException;
  */
 @RestController
 @RequestMapping(value = "/gov/kpi/analysis/user")
+@Slf4j
 public class UserAnalysisController {
 
     @Resource
@@ -37,8 +37,11 @@ public class UserAnalysisController {
     @Resource
     SiteApiService siteApiService;
 
+    private static final String BAS_REQUEST = "basRequest";
+
     /**
      * 访问量统计信息查询
+     *
      * @param basRequest
      * @return
      * @throws BizException
@@ -46,19 +49,25 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/access", method = RequestMethod.GET)
-    public Integer getVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        check(basRequest);
-        Integer value = basService.getVisits(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "访问量统计信息查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
-        return value;
+    public Integer getVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
+        String logDesc = "访问量统计信息查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            check(basRequest);
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
+            Integer value = null;
+            try {
+                value = basService.getVisits(basRequest);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
+            return value;
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     /**
      * 访问量历史记录查询
+     *
      * @param basRequest
      * @return
      * @throws BizException
@@ -66,19 +75,27 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/access/history", method = RequestMethod.GET)
-    public History getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_VIEWS) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_VIEWS)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        check(basRequest);
-        History history = basService.getHistoryVisits(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "访问量历史记录查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
-        return history;
+    public HistoryStatisticsResp getHistoryVisits(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
+        String logDesc = "访问量历史记录查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            check(basRequest);
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_VIEWS, basRequest.getSiteId());
+
+            HistoryStatisticsResp historyStatisticsResp = null;
+            try {
+                historyStatisticsResp = basService.getHistoryVisits(basRequest);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
+            return historyStatisticsResp;
+
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     /**
      * 最近一个月次均停留时间查询
+     *
      * @param basRequest
      * @return
      * @throws BizException
@@ -86,18 +103,17 @@ public class UserAnalysisController {
      */
     @RequestMapping(value = "/stay", method = RequestMethod.GET)
     public Integer getStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        check(basRequest);
-        Integer value = basService.getStayTime(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "最近一个月次均停留时间查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
-        return value;
+        String logDesc = "最近一个月次均停留时间查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            check(basRequest);
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
+            return basService.getStayTime(basRequest);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     /**
      * 停留时间历史记录查询
+     *
      * @param basRequest
      * @return
      * @throws BizException
@@ -105,15 +121,20 @@ public class UserAnalysisController {
      * @throws ParseException
      */
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
-    public History getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException, ParseException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), basRequest.getSiteId(), null, Authority.KPIWEB_ANALYSIS_STAYTIME) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_ANALYSIS_STAYTIME)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        check(basRequest);
-        History history = basService.getHistoryStayTime(basRequest);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "停留时间历史记录查询", siteApiService.getSiteById(basRequest.getSiteId(), "").getSiteName()).info();
-        return history;
+    public HistoryStatisticsResp getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
+        String logDesc = "停留时间历史记录查询";
+        return LogUtil.controlleFunctionWrapper(() -> {
+            check(basRequest);
+            authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
+            HistoryStatisticsResp historyStatisticsResp = null;
+            try {
+                historyStatisticsResp = basService.getHistoryStayTime(basRequest);
+            } catch (ParseException e) {
+                log.error("", e);
+                throw new BizException("");
+            }
+            return historyStatisticsResp;
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
     }
 
     private void check(BasRequest basRequest) throws BizException {

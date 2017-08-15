@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumChannelGroup;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.dao.ChnlGroupMapper;
 import com.trs.gov.kpi.entity.ChannelGroup;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -82,7 +84,7 @@ public class ChnlGroupServiceImp implements ChnlGroupService {
                 chnlNamCache.put(outerChannel.getChannelId(), outerChannel.getChnlDesc());
             } catch (RemoteException e) {
                 log.error("failed to get channel by id: " + channelGroup.getChnlId(), e);
-                LogUtil.addSystemLog("failed to get channel by id: " + channelGroup.getChnlId(), e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "failed to get channel by id: " + channelGroup.getChnlId(), e);
             }
         }
         return chnl;

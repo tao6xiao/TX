@@ -178,41 +178,53 @@
             <type>kpiweb.infoupdate</type>
         </operation>
 
+        <operation name="kpiweb.nbhd.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->互动回应-->查询</desc>
+            <index>477</index>
+            <type>kpiweb.nbhd</type>
+        </operation>
+        <operation name="kpiweb.nbhd.export">
+            <disp-name>导出</disp-name>
+            <desc>绩效考核-->互动回应-->导出</desc>
+            <index>478</index>
+            <type>kpiweb.nbhd</type>
+        </operation>
 
         <operation name="kpiweb.service.search">
             <disp-name>查询</disp-name>
             <desc>绩效考核-->服务实用-->查询</desc>
-            <index>477</index>
+            <index>479</index>
             <type>kpiweb.service</type>
         </operation>
         <operation name="kpiweb.service.handle">
             <disp-name>处理</disp-name>
             <desc>绩效考核-->服务实用-->处理</desc>
-            <index>478</index>
+            <index>480</index>
             <type>kpiweb.service</type>
         </operation>
         <operation name="kpiweb.service.ignore">
             <disp-name>忽略</disp-name>
             <desc>绩效考核-->服务实用-->忽略</desc>
-            <index>479</index>
+            <index>481</index>
             <type>kpiweb.service</type>
         </operation>
         <operation name="kpiweb.service.delete">
             <disp-name>删除</disp-name>
             <desc>绩效考核-->服务实用-->删除</desc>
-            <index>480</index>
+            <index>482</index>
             <type>kpiweb.service</type>
         </operation>
         <operation name="kpiweb.service.updatedept">
             <disp-name>更新所属部门</disp-name>
             <desc>绩效考核-->服务实用-->更新所属部门</desc>
-            <index>481</index>
+            <index>483</index>
             <type>kpiweb.service</type>
         </operation>
         <operation name="kpiweb.service.export">
             <disp-name>导出</disp-name>
             <desc>绩效考核-->服务实用-->导出</desc>
-            <index>482</index>
+            <index>484</index>
             <type>kpiweb.service</type>
         </operation>
 
@@ -220,37 +232,37 @@
         <operation name="kpiweb.infoerror.search">
             <disp-name>查询</disp-name>
             <desc>绩效考核-->信息错误-->查询</desc>
-            <index>483</index>
+            <index>485</index>
             <type>kpiweb.infoerror</type>
         </operation>
         <operation name="kpiweb.infoerror.handle">
             <disp-name>处理</disp-name>
             <desc>绩效考核-->信息错误-->处理</desc>
-            <index>484</index>
+            <index>486</index>
             <type>kpiweb.infoerror</type>
         </operation>
         <operation name="kpiweb.infoerror.ignore">
             <disp-name>忽略</disp-name>
             <desc>绩效考核-->信息错误-->忽略</desc>
-            <index>485</index>
+            <index>487</index>
             <type>kpiweb.infoerror</type>
         </operation>
         <operation name="kpiweb.infoerror.delete">
             <disp-name>删除</disp-name>
             <desc>绩效考核-->信息错误-->删除</desc>
-            <index>486</index>
+            <index>488</index>
             <type>kpiweb.infoerror</type>
         </operation>
         <operation name="kpiweb.infoerror.updatedept">
             <disp-name>更新所属部门</disp-name>
             <desc>绩效考核-->信息错误-->更新所属部门</desc>
-            <index>487</index>
+            <index>489</index>
             <type>kpiweb.infoerror</type>
         </operation>
         <operation name="kpiweb.infoerror.export">
             <disp-name>导出</disp-name>
             <desc>绩效考核-->信息错误-->导出</desc>
-            <index>488</index>
+            <index>490</index>
             <type>kpiweb.infoerror</type>
         </operation>
 
@@ -258,31 +270,31 @@
         <operation name="kpiweb.improve.search">
             <disp-name>查询</disp-name>
             <desc>绩效考核-->访问优化-->查询</desc>
-            <index>489</index>
+            <index>491</index>
             <type>kpiweb.improve</type>
         </operation>
         <operation name="kpiweb.improve.handle">
             <disp-name>批量处理</disp-name>
             <desc>绩效考核-->访问优化-->批量处理</desc>
-            <index>490</index>
+            <index>492</index>
             <type>kpiweb.improve</type>
         </operation>
         <operation name="kpiweb.improve.ignore">
             <disp-name>批量忽略</disp-name>
             <desc>绩效考核-->访问优化-->批量忽略</desc>
-            <index>491</index>
+            <index>493</index>
             <type>kpiweb.improve</type>
         </operation>
         <operation name="kpiweb.improve.delete">
             <disp-name>批量删除</disp-name>
             <desc>绩效考核-->访问优化-->批量删除</desc>
-            <index>492</index>
+            <index>494</index>
             <type>kpiweb.improve</type>
         </operation>
         <operation name="kpiweb.improve.export">
             <disp-name>导出</disp-name>
             <desc>绩效考核-->访问优化-->导出</desc>
-            <index>493</index>
+            <index>495</index>
             <type>kpiweb.improve</type>
         </operation>
 
@@ -290,13 +302,13 @@
         <operation name="kpiweb.analysis.views">
             <disp-name>访问量查询</disp-name>
             <desc>绩效考核-->用户分析-->访问量查询</desc>
-            <index>494</index>
+            <index>496</index>
             <type>kpiweb.analysis</type>
         </operation>
         <operation name="kpiweb.analysis.staytime">
             <disp-name>停留时间查询</disp-name>
             <desc>绩效考核-->用户分析-->停留时间查询</desc>
-            <index>495</index>
+            <index>497</index>
             <type>kpiweb.analysis</type>
         </operation>
 
@@ -304,19 +316,19 @@
         <operation name="kpiweb.statistics.issue">
             <disp-name>问题查询</disp-name>
             <desc>绩效考核-->统计分析-->问题查询</desc>
-            <index>496</index>
+            <index>498</index>
             <type>kpiweb.statistics</type>
         </operation>
         <operation name="kpiweb.statistics.issueexport">
             <disp-name>问题导出</disp-name>
             <desc>绩效考核-->统计分析-->问题导出</desc>
-            <index>497</index>
+            <index>499</index>
             <type>kpiweb.statistics</type>
         </operation>
         <operation name="kpiweb.statistics.document">
             <disp-name>稿件查询</disp-name>
             <desc>绩效考核-->统计分析-->稿件查询</desc>
-            <index>498</index>
+            <index>500</index>
             <type>kpiweb.statistics</type>
         </operation>
 
@@ -324,19 +336,19 @@
         <operation name="kpiweb.monitorsetup.search">
             <disp-name>查询</disp-name>
             <desc>绩效考核-->监测设置-->查询</desc>
-            <index>499</index>
+            <index>501</index>
             <type>kpiweb.monitorsetup</type>
         </operation>
         <operation name="kpiweb.monitorsetup.updateadmin">
             <disp-name>设置保障人员</disp-name>
             <desc>绩效考核-->监测设置-->设置保障人员</desc>
-            <index>500</index>
+            <index>502</index>
             <type>kpiweb.monitorsetup</type>
         </operation>
         <operation name="kpiweb.monitorsetup.save">
             <disp-name>保存监测参数</disp-name>
             <desc>绩效考核-->监测设置-->保存监测参数</desc>
-            <index>501</index>
+            <index>503</index>
             <type>kpiweb.monitorsetup</type>
         </operation>
 
@@ -344,98 +356,112 @@
         <operation name="kpiweb.indexsetup.search">
             <disp-name>查询</disp-name>
             <desc>绩效考核-->指标参数设置-->查询</desc>
-            <index>502</index>
+            <index>504</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.addprefreq">
             <disp-name>增加预设频率</disp-name>
             <desc>绩效考核-->指标参数设置-->增加预设频率</desc>
-            <index>503</index>
+            <index>505</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updateprefreq">
             <disp-name>更新预设频率</disp-name>
             <desc>绩效考核-->指标参数设置-->更新预设频率</desc>
-            <index>504</index>
+            <index>506</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.deleteprefreq">
             <disp-name>删除预设频率</disp-name>
             <desc>绩效考核-->指标参数设置-->删除预设频率</desc>
-            <index>505</index>
+            <index>507</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updatedemandfreq">
             <disp-name>修改按需更新频率</disp-name>
             <desc>绩效考核-->指标参数设置-->修改按需更新频率</desc>
-            <index>506</index>
+            <index>508</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.addmonitorchnl">
             <disp-name>添加监测栏目</disp-name>
             <desc>绩效考核-->指标参数设置-->添加监测栏目</desc>
-            <index>507</index>
+            <index>509</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updatemonitorchnl">
             <disp-name>修改监测栏目的频率</disp-name>
             <desc>绩效考核-->指标参数设置-->修改监测栏目的频率</desc>
-            <index>508</index>
+            <index>510</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.delmonitorchnl">
             <disp-name>删除监测栏目</disp-name>
             <desc>绩效考核-->指标参数设置-->删除监测栏目</desc>
-            <index>509</index>
+            <index>511</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.enabledmonitorchnl">
             <disp-name>栏目监测是否启用</disp-name>
             <desc>绩效考核-->指标参数设置-->栏目监测是否启用</desc>
-            <index>510</index>
+            <index>512</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.addchnltotype">
             <disp-name>栏目分配到所属分类</disp-name>
             <desc>绩效考核-->指标参数设置-->栏目分配到所属分类</desc>
-            <index>511</index>
+            <index>513</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.updatetypeofchnl">
             <disp-name>修改栏目所属分类</disp-name>
             <desc>绩效考核-->指标参数设置-->修改栏目所属分类</desc>
-            <index>512</index>
+            <index>514</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.delchnlfromtype">
             <disp-name>从分类中移除栏目</disp-name>
             <desc>绩效考核-->指标参数设置-->从分类中移除栏目</desc>
-            <index>513</index>
+            <index>515</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.dutydept">
             <disp-name>设置或修改栏目的责任部门</disp-name>
             <desc>绩效考核-->指标参数设置-->设置或修改栏目的责任部门</desc>
-            <index>514</index>
+            <index>516</index>
             <type>kpiweb.indexsetup</type>
         </operation>
         <operation name="kpiweb.indexsetup.deldutydept">
             <disp-name>删除栏目的责任部门</disp-name>
             <desc>绩效考核-->指标参数设置-->删除栏目的责任部门</desc>
-            <index>515</index>
+            <index>517</index>
             <type>kpiweb.indexsetup</type>
+        </operation>
+
+        <operation name="kpiweb.monitorrecord.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->日志监测-->查询</desc>
+            <index>518</index>
+            <type>kpiweb.monitorrecord</type>
+        </operation>
+
+        <operation name="kpiweb.manualmonitor.check">
+            <disp-name>监测</disp-name>
+            <desc>绩效考核-->手动监测-->监测</desc>
+            <index>519</index>
+            <type>kpiweb.manualmonitor</type>
         </operation>
 
         <operation name="kpiweb.report.search">
             <disp-name>查询</disp-name>
             <desc>绩效考核-->报表-->查询</desc>
-            <index>516</index>
+            <index>520</index>
             <type>kpiweb.report</type>
         </operation>
         <operation name="kpiweb.report.export">
             <disp-name>导出</disp-name>
             <desc>绩效考核-->报表-->导出</desc>
-            <index>517</index>
+            <index>521</index>
             <type>kpiweb.report</type>
         </operation>
 

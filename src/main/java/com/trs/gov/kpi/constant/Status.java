@@ -2,6 +2,9 @@ package com.trs.gov.kpi.constant;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by linwei on 2017/5/25.
  */
@@ -95,5 +98,76 @@ public class Status {
                 return HANDLING;
             }
         }
+    }
+
+    /**
+     * 站点监测状态类型
+     */
+    public enum MonitorStatusType {
+
+        INVALID(-1, "未知类型"),
+        DOING_CHECK(1, "正在检测"),
+        CHECK_DONE(2, "检测结束"),
+        CHECK_ERROR(3,"检测失败");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorStatusType(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public static MonitorStatusType valueOf(int value) {
+            if(value <= 0 ){
+                return INVALID;
+            }
+
+            MonitorStatusType[] types = MonitorStatusType.values();
+            for (MonitorStatusType type : types) {
+                if (type.value == value) {
+                    return type;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * 根据任务状态名称获取任务编号（支持模糊查询）
+         * @param searchText
+         * @return
+         */
+        public static List<Integer> getStatusByStatusName(String searchText){
+            MonitorStatusType[] values = MonitorStatusType.values();
+            List<Integer> statrsList = new ArrayList<>();
+            for (Status.MonitorStatusType type : values) {
+                if (type != INVALID && type.getName().contains(searchText)) {
+                    int taskStatus = type.value;
+                    statrsList.add(taskStatus);
+                }
+            }
+            return statrsList;
+        }
+    }
+
+    /**
+     * 站点监测类型
+     */
+    public enum MonitorType {
+        AUTO_MONITOR(0, "主动监测"),
+        MANUAL_MONITOR(1, "手动监测");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorType(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
     }
 }

@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.dao.CondDBField;
 import com.trs.gov.kpi.entity.dao.OrCondDBFields;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.*;
 import com.trs.gov.kpi.service.outer.DeptApiService;
@@ -14,6 +15,7 @@ import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.SpringContextUtil;
 import com.trs.gov.kpi.utils.StringUtil;
+import lombok.extern.log4j.Log4j;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +27,7 @@ import java.util.List;
 /**
  * Created by linwei on 2017/5/22.
  */
+@Log4j
 public class QueryFilterHelper {
 
     public static final String FREQ_SETUP_TABLE_FIELD_CHNL_ID = "chnlId";
@@ -356,7 +359,7 @@ public class QueryFilterHelper {
         return ids;
     }
 
-    public static QueryFilter toReportFilter(ReportRequestParam param, boolean isTimeNode) throws ParseException {
+    public static QueryFilter toReportFilter(ReportRequestParam param, boolean isTimeNode) throws BizException {
         QueryFilter filter = new QueryFilter(Table.REPORT);
         if (param.getSiteId() != null) {
             filter.addCond(ReportTableField.SITE_ID, param.getSiteId());
@@ -364,7 +367,13 @@ public class QueryFilterHelper {
         if (isTimeNode) {
             if (!StringUtil.isEmpty(param.getDay())) {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getDay()).setRangeBegin(true);
-                String endTime = initEndTime(param.getDay());
+                String endTime = null;
+                try {
+                    endTime = initEndTime(param.getDay());
+                } catch (ParseException e) {
+                    log.error(Constants.INVALID_PARAMETER + param.getDay(), e);
+                    throw new BizException(Constants.INVALID_PARAMETER, e);
+                }
                 filter.addCond(ReportTableField.REPORT_TIME, endTime).setRangeEnd(true);
             }
         } else {
@@ -372,7 +381,13 @@ public class QueryFilterHelper {
                 filter.addCond(ReportTableField.REPORT_TIME, param.getBeginDateTime()).setRangeBegin(true);
             }
             if (!StringUtil.isEmpty(param.getEndDateTime())) {
-                String endTime = initEndTime(param.getEndDateTime());
+                String endTime = null;
+                try {
+                    endTime = initEndTime(param.getEndDateTime());
+                } catch (ParseException e) {
+                    log.error(Constants.INVALID_PARAMETER + param.getEndDateTime(), e);
+                    throw new BizException(Constants.INVALID_PARAMETER, e);
+                }
                 filter.addCond(ReportTableField.REPORT_TIME, endTime).setRangeEnd(true);
             }
         }
@@ -433,6 +448,72 @@ public class QueryFilterHelper {
         } else {
             // 找不到符合条件的记录，构造一个不成立的条件
             orCondDBFields.addCond(DutyDeptTableField.DEPT_ID, -1);
+        }
+        return orCondDBFields;
+    }
+
+    /**
+     * 日志监测filter
+     * @param param
+     * @return
+     * @throws RemoteException
+     */
+    public static QueryFilter toMonitorRecordFilter(PageDataRequestParam param) throws BizException {
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, param.getSiteId());
+
+        if (param.getSearchText() != null) {
+            if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskName")) {
+                // TODO REVIEW LINWEI DO_li.hao 修改一下getStatusByStatusName 不要返回Invalid的情况
+                List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(param.getSearchText());
+                if(taskIds.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+                    filter.addCond(MonitorRecordTableField.TASK_ID, Types.MonitorRecordNameType.INVALID.value);
+                }else{
+                    filter.addCond(MonitorRecordTableField.TASK_ID, taskIds);
+                }
+            }else if(param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskStatusName")){
+                // TODO REVIEW LINWEI DO_li.hao 修改一下getStatusByStatusName 不要返回Invalid的情况
+                List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(param.getSearchText());
+                if(statusList.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+                    filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.INVALID.value);
+                }else{
+                    filter.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
+                }
+            } else if (StringUtil.isEmpty(param.getSearchField())) {
+                // TODO REVIEW LINWEI DO_li.hao  还有两种情况：searchField为空的情况(全部的情况)
+                filter.addOrConds(bulidByMonitorRecordParam(param.getSearchText()));
+            } else{
+                log.error("Invalid parameter: 检索类型错误，目前支持（任务名称（taskName），任务状态名称（taskStatusName）");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+        }
+
+        // sort field
+        if (!StringUtil.isEmpty(param.getSortFields())) {
+            String[] sortFields = param.getSortFields().trim().split(";");
+            addSort(filter, sortFields);
+        }
+        return filter;
+    }
+
+    /**
+     * 日志监测——全部查询条件拼接
+     * @param searchText
+     * @return
+     */
+    private static OrCondDBFields bulidByMonitorRecordParam(String searchText){
+        OrCondDBFields orCondDBFields = new OrCondDBFields();
+        List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(searchText);
+        if(taskIds.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_ID, Types.MonitorRecordNameType.INVALID.value);
+        }else{
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_ID, taskIds);
+        }
+        List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(searchText);
+        if(statusList.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.INVALID.value);
+        }else{
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
         }
         return orCondDBFields;
     }

@@ -35,11 +35,13 @@ public class WebConfigure extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AccessInterceptor(authorityService)).addPathPatterns("/**");
+        registry.addInterceptor(new PerformanceInterceptor()).addPathPatterns("/**");
         super.addInterceptors(registry);
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 添加问题定位的静态页面映射
         registry.addResourceHandler("/gov/kpi/loc/**").addResourceLocations("file:" + locationDir + File.separator);
         super.addResourceHandlers(registry);
     }

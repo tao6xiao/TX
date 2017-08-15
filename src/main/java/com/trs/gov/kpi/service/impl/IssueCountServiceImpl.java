@@ -95,9 +95,9 @@ public class IssueCountServiceImpl implements IssueCountService {
     }
 
     @Override
-    public History historyCountSort(IssueCountRequest request) {
+    public HistoryStatisticsResp historyCountSort(IssueCountRequest request) {
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
-        DateUtil.setDefaultDate(request);
+        request.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(request.getBeginDateTime(), request.getEndDateTime(), request.getGranularity());
 
@@ -115,7 +115,7 @@ public class IssueCountServiceImpl implements IssueCountService {
         historyResponse = buildHistoryResponse(IssueIndicator.UN_SOLVED_ALL, dateList, siteIds);
         historyResponseList.add(historyResponse);
 
-        return new History(new Date(), historyResponseList);
+        return new HistoryStatisticsResp(new Date(), historyResponseList);
     }
 
     @Override
@@ -308,6 +308,9 @@ public class IssueCountServiceImpl implements IssueCountService {
                 break;
             case IssueCountByTypeRequest.TYPE_INFO_ERROR:
                 filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
+                break;
+            case IssueCountByTypeRequest.TYPE_SERVICE_LINK_AVAILABLE:
+                filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE.value);
                 break;
             // TODO 在线服务和互动问题等待数据联调
             default:

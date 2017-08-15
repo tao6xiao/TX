@@ -2,8 +2,6 @@ package com.trs.gov.kpi.entity.responsedata;
 
 import lombok.Data;
 
-import java.util.Objects;
-
 /**
  * Created by linwei on 2017/6/15.
  */
@@ -20,26 +18,4 @@ public class DocMultiCounterResponse {
     private Long pushDocCount = 0L; // 上报数量
     private Long distributeDocCount = 0L; // 下达数量
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        DocMultiCounterResponse that = (DocMultiCounterResponse) o;
-        return Objects.equals(getDaibianDocCount(), that.getDaibianDocCount()) &&
-                Objects.equals(getDaishenDocCount(), that.getDaishenDocCount()) &&
-                Objects.equals(getDaiqianDocCount(), that.getDaiqianDocCount()) &&
-                Objects.equals(getYifaDocCount(), that.getYifaDocCount()) &&
-                Objects.equals(getNewDocCount(), that.getNewDocCount()) &&
-                Objects.equals(getQuoteDocCount(), that.getQuoteDocCount()) &&
-                Objects.equals(getMirrorDocCount(), that.getMirrorDocCount()) &&
-                Objects.equals(getCopyDocCount(), that.getCopyDocCount()) &&
-                Objects.equals(getPushDocCount(), that.getPushDocCount()) &&
-                Objects.equals(getDistributeDocCount(), that.getDistributeDocCount());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getDaibianDocCount(), getDaishenDocCount(), getDaiqianDocCount(), getYifaDocCount(), getNewDocCount(), getQuoteDocCount(), getMirrorDocCount(), getCopyDocCount(), getPushDocCount(), getDistributeDocCount());
-    }
 }

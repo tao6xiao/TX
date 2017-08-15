@@ -1,9 +1,9 @@
 package com.trs.gov.kpi.scheduler;
 
-import com.trs.gov.kpi.constant.IssueIndicator;
-import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.ReportMapper;
 import com.trs.gov.kpi.entity.Report;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
@@ -68,30 +68,37 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private int rowIndex = 0;//excel行的索引
     private int cellIndex = 0;//excel列的索引
 
-    @Override
-    public void run() throws RemoteException {
-        log.info("ReportGenerateScheduler " + siteId + " start...");
+    //错误信息计数
+    @Getter
+    Integer monitorResult = 0;
 
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    @Getter
+    private Integer monitorType;
+
+    @Override
+    public void run() throws BizException, RemoteException {
         IssueCountRequest request = new IssueCountRequest();
         request.setSiteIds(Integer.toString(siteId));
         Report report = new Report();
         report.setSiteId(siteId);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.HOUR,-1);//数据对应时间往前退一小时，使数据与时间对应
+        calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应
         report.setReportTime(calendar.getTime());
         Site site = null;
         try {
             site = siteApiService.getSiteById(siteId, "");
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "报表生成，siteId[" + siteId + "]", e);
         }
-        String title = "";
-        if (site != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
+        if (site == null) {
+            throw new BizException("站点不存在");
         }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
         report.setTitle(title);
 
         String granularity;
@@ -102,9 +109,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
             granularity = "month";
             report.setTypeId(2);
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
-        String fileDir = "/" + Integer.toString(siteId) + "/" + granularity + "/";
+        String fileDir = File.separator + Integer.toString(siteId) + File.separator + granularity + File.separator;
         String fileName = sdf.format(new Date()) + ".xlsx";
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("问题统计");// 创建工作表(Sheet)
@@ -244,14 +251,28 @@ public class ReportGenerateScheduler implements SchedulerTask {
         try (FileOutputStream out = new FileOutputStream(reportDir + fileDir + fileName)) {
             workbook.write(out);
         } catch (IOException e) {
+            monitorResult = 1;
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "报表生成，文件写入错误，siteId[" + siteId + "]", e);
         }
         report.setPath(fileDir + fileName);
         report.setCrTime(new Date());
         //入库
         reportMapper.insert(report);
-        log.info("ReportGenerateScheduler " + siteId + " end...");
+    }
+
+    @Override
+    public String getName() {
+        return SchedulerType.REPORT_GENERATE_SCHEDULER.toString();
+    }
+
+    @Override
+    public EnumCheckJobType getCheckJobType() {
+        if(isTimeNode){
+            return EnumCheckJobType.TIMENODE_REPORT_GENERATE;
+        }else {
+            return EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE;
+        }
     }
 
     private void addTitle(Sheet sheet, CellStyle style, String title) {
@@ -328,6 +349,5 @@ public class ReportGenerateScheduler implements SchedulerTask {
         rowIndex++;
         cellIndex = 0;
     }
-
 
 }

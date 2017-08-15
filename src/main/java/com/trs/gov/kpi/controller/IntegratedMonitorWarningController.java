@@ -1,29 +1,28 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
+import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IntegratedMonitorWarningService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 
 /**
  * 综合实时监测：预警提醒Controller
  * Created by he.lang on 2017/5/18.
  */
 @RestController
-@RequestMapping(UrlPath.INTEGRATED_MONITOR_WARNING_PATH)
+@RequestMapping("/gov/kpi/alert")
+@Slf4j
 public class IntegratedMonitorWarningController extends IssueHandler {
 
     @Resource
@@ -41,14 +40,12 @@ public class IntegratedMonitorWarningController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     @ResponseBody
-    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, ParseException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_WARNING_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_WARNING_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.paramCheck(param);
-        ApiPageData apiPageData = integratedMonitorWarningService.get(param);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询预警提醒的分页数据", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return apiPageData;
+    public ApiPageData getPageDataWaringList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+        String logDesc = "查询预警提醒的分页数据" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(param);
+            authorityService.checkRight(Authority.KPIWEB_WARNING_SEARCH, param.getSiteId());
+            return integratedMonitorWarningService.get(param);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 }

@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.entity.responsedata;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -10,7 +12,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Objects;
 
 /**
  * Created by linwei on 2017/6/15.
@@ -32,7 +33,6 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
     private String siteName;
 
 
-
     public void setSiteId(Long id) {
         this.siteId = id;
         try {
@@ -44,22 +44,17 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
             }
         } catch (RemoteException e) {
             log.error("调用外部接口 getSiteById 失败", e);
-            LogUtil.addSystemLog("调用外部接口 getSiteById 失败", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口 getSiteById 失败siteId[" + id + "]", e);
         }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        SiteDocMultiCounterResponse that = (SiteDocMultiCounterResponse) o;
-        return Objects.equals(getSiteId(), that.getSiteId()) &&
-                Objects.equals(getSiteName(), that.getSiteName());
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getSiteId(), getSiteName());
+        return super.hashCode();
     }
 }

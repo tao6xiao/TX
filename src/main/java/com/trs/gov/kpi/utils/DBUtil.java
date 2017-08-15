@@ -2,6 +2,8 @@ package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.annotation.DBField;
 import com.trs.gov.kpi.annotation.DBTable;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.dao.DBRow;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,7 +68,7 @@ public class DBUtil {
                 }
             } catch (IllegalAccessException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
             }
         }
 

@@ -4,10 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.Dept;
 import com.trs.gov.kpi.service.outer.DeptApiService;
+import com.trs.gov.kpi.service.outer.OuterApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.OuterApiUtil;
@@ -42,7 +45,8 @@ public class DeptApiServiceImpl implements DeptApiService {
             params.put("groupId", String.valueOf(groupId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findGroupById", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("findGroupById", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取部门");
@@ -59,7 +63,7 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "从采编中心获取部门", e);
             throw new RemoteException("获取部门失败！", e);
         }
     }
@@ -74,7 +78,8 @@ public class DeptApiServiceImpl implements DeptApiService {
             params.put("GNAME", deptName);
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("queryAllGroupsByName", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("queryAllGroupsByName", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取部门集合");
@@ -93,18 +98,8 @@ public class DeptApiServiceImpl implements DeptApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "从采编中心获取部门集合", e);
             throw new RemoteException("获取部门集合失败！", e);
         }
-    }
-
-    private Request buildRequest(String methodName, String userName, Map<String, String> params) {
-        OuterApiServiceUtil.addUserNameParam(userName, params);
-        return newServiceRequestBuilder()
-                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
-                .setServiceUrl(editCenterServiceUrl)
-                .setServiceName(SERVICE_NAME)
-                .setMethodName(methodName)
-                .setParams(params).build();
     }
 }

@@ -22,7 +22,6 @@ import com.trs.gov.kpi.utils.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -79,7 +78,7 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
     }
 
     @Override
-    public int insert(FrequencySetup frequencySetup) throws ParseException {
+    public int insert(FrequencySetup frequencySetup) {
         frequencySetup.setSetTime(new Date());
         frequencySetup.setIsOpen((byte) Status.Open.OPEN.value);
         return frequencySetupMapper.insert(frequencySetup);
@@ -133,7 +132,6 @@ public class FrequencySetupServiceImpl implements FrequencySetupService {
                 frequencySetupResponse.setAlertFreq(frequencyPreset.getAlertFreq());
             }
             frequencySetupResponse.setChnlId(frequencySetup.getChnlId());
-            //TODO add userName to validate
             Integer chnlId = frequencySetup.getChnlId();
             if (chnlId != null) {
                 Channel childChnl = siteApiService.getChannelById(chnlId, null);

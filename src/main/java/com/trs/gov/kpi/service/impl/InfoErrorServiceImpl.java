@@ -12,7 +12,7 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoErrorService;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -45,7 +45,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     private DeptApiService deptApiService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
@@ -80,8 +80,8 @@ public class InfoErrorServiceImpl implements InfoErrorService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
-        DateUtil.setDefaultDate(param);
+    public HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param) {
+        param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -96,7 +96,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new History(monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.INFO_ERROR_ISSUE.value), list);
+        return new HistoryStatisticsResp(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value), list);
     }
 
     @Override

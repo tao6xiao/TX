@@ -10,15 +10,13 @@ import com.trs.gov.kpi.entity.requestdata.FrequencyPresetRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.entity.responsedata.FrequencyPresetResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.FrequencyPresetService;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,21 +55,20 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.GET)
     @ResponseBody
     public ApiPageData getPageDataBySiteId(@RequestParam("siteId") Integer siteId, Integer pageSize, Integer pageIndex) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        if (siteId == null) {
-            log.error("Invalid parameter:  参数siteId存在null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        ParamCheckUtil.pagerCheck(pageIndex, pageSize);
-        int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
-        Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
-        List<FrequencyPresetResponse> responseList = frequencyPresetService.getPageDataBySiteId(
-                siteId, pager.getCurrPage() - 1, pager.getPageSize());
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "查询更新频率及预警初设数据", siteApiService.getSiteById(siteId, "").getSiteName()).info();
-        return new ApiPageData(pager, responseList);
+        String logDesc = "查询更新频率及预警初设数据" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "pageSize", pageSize, "pageIndex", pageIndex);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (siteId == null) {
+                log.error("Invalid parameter:  参数siteId存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            ParamCheckUtil.pagerCheck(pageIndex, pageSize);
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_SEARCH, siteId);
+            int itemCount = frequencyPresetService.getItemCountBySiteId(siteId);
+            Pager pager = PageInfoDeal.buildResponsePager(pageIndex, pageSize, itemCount);
+            List<FrequencyPresetResponse> responseList = frequencyPresetService.getPageDataBySiteId(
+                    siteId, pager.getCurrPage() - 1, pager.getPageSize());
+            return new ApiPageData(pager, responseList);
+        }, OperationType.QUERY, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
     /**
@@ -84,25 +81,25 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.POST)
     @ResponseBody
     public Object addFrequencyPreset(@ModelAttribute FrequencyPresetRequest request) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), request.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_ADDPREFREQ) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_ADDPREFREQ)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        if (request.getSiteId() == null || request.getUpdateFreq() == null || request.getAlertFreq() == null) {
-            log.error("Invalid parameter:  参数siteId、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        if (request.getAlertFreq() > request.getUpdateFreq()) {
-            log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        int num = frequencyPresetService.addFrequencyPreset(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.ADD, "添加预设记录", siteApiService.getSiteById(request.getSiteId(), "").getSiteName()).info();
-        if (num == 0) {
-            log.error("向站点siteId" + request.getSiteId() + "添加的预设记录已经存在");
-            throw new BizException("添加的预设记录已经存在");
-        }
-        return null;
+        String logDesc = "添加预设记录" + LogUtil.paramsToLogString("request", request);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (request.getSiteId() == null || request.getUpdateFreq() == null || request.getAlertFreq() == null) {
+                log.error("Invalid parameter:  参数siteId、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            if (request.getAlertFreq() > request.getUpdateFreq()) {
+                log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDPREFREQ, request.getSiteId());
+            int num = frequencyPresetService.addFrequencyPreset(request);
+            if (num == 0) {
+                String message = "添加的预设记录已经存在";
+                log.error("向站点siteId" + request.getSiteId() + message);
+                throw new BizException(message);
+            }
+            return null;
+        }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, request.getSiteId()));
     }
 
     /**
@@ -115,26 +112,26 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.PUT)
     @ResponseBody
     public Object updateFrequencyPresetBySiteIdAndId(@ModelAttribute FrequencyPreset preset) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), preset.getSiteId(), null, Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ) && !authorityService.hasRight
-                (ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        if (preset.getSiteId() == null || preset.getId() == null
-                || preset.getUpdateFreq() == null || preset.getAlertFreq() == null) {
-            log.error("Invalid parameter:  参数siteId、id（预设记录编号）、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        if (preset.getAlertFreq() > preset.getUpdateFreq()) {
-            log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        int num = frequencyPresetService.updateBySiteIdAndId(preset);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.UPDATE, "修改预设记录", siteApiService.getSiteById(preset.getSiteId(), "").getSiteName()).info();
-        if (num == 0) {
-            log.error("在站点siteId" + preset.getSiteId() + "修改的预设记录已经存在");
-            throw new BizException("修改的预设记录已经存在");
-        }
-        return null;
+        String logDesc = "修改预设记录" + LogUtil.paramsToLogString("preset", preset);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (preset.getSiteId() == null || preset.getId() == null
+                    || preset.getUpdateFreq() == null || preset.getAlertFreq() == null) {
+                log.error("Invalid parameter:  参数siteId、id（预设记录编号）、updateFreq（更新频率）、alertFreq（预警频率）中至少一个存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            if (preset.getAlertFreq() > preset.getUpdateFreq()) {
+                log.error("Invalid parameter:  参数alertFreq（预警频率)大于updateFreq（更新频率）");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_UPDATEPREFREQ, preset.getSiteId());
+            int num = frequencyPresetService.updateBySiteIdAndId(preset);
+            if (num == 0) {
+                String message = "修改的预设记录已经存在";
+                log.error("在站点siteId" + preset.getSiteId() + message);
+                throw new BizException(message);
+            }
+            return null;
+        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, preset.getSiteId()));
     }
 
     /**
@@ -148,21 +145,20 @@ public class FrequencyPresetController {
     @RequestMapping(value = "/presetfreq", method = RequestMethod.DELETE)
     @ResponseBody
     public Object deleteFrequencyPreset(@RequestParam("siteId") Integer siteId, @RequestParam("id") Integer id) throws BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), siteId, null, Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        if (siteId == null || id == null) {
-            log.error("Invalid parameter:  参数siteId或者id（预设记录编号）存在null值");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        if (!frequencySetupService.isPresetFeqUsed(siteId, id)) {
-            frequencyPresetService.deleteBySiteIdAndId(siteId, id);
-            SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.DELETE, "删除预设记录", siteApiService.getSiteById(siteId, "").getSiteName()).info();
-        } else {
-            log.error("Invalid parameter:  当前参数siteId和id下的记录已经被某一栏目所使用，无法删除");
-            throw new BizException("当前预设记录已经被某一栏目所使用，无法删除");
-        }
-        return null;
+        String logDesc = "删除预设记录" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.DB_FIELD_ID, id);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (siteId == null || id == null) {
+                log.error("Invalid parameter:  参数siteId或者id（预设记录编号）存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DELETEPREFREQ, siteId);
+            if (!frequencySetupService.isPresetFeqUsed(siteId, id)) {
+                frequencyPresetService.deleteBySiteIdAndId(siteId, id);
+            } else {
+                log.error("Invalid parameter:  当前参数siteId[" + siteId + "]和id[" + id + "]下的记录已经被某一栏目所使用，无法删除");
+                throw new BizException("当前预设记录已经被某一栏目所使用，无法删除");
+            }
+            return null;
+        }, OperationType.DELETE, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 }

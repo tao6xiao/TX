@@ -1,15 +1,19 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
+import com.trs.gov.kpi.constant.IssueTableField;
+import com.trs.gov.kpi.constant.SchedulerType;
 import com.trs.gov.kpi.constant.Types;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.MonitorTime;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
-import com.trs.gov.kpi.service.MonitorTimeService;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,16 +55,31 @@ public class ServiceLinkScheduler implements SchedulerTask {
     SGService sgService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private CommonMapper commonMapper;
+
+    //错误信息计数
+    @Getter
+    Integer monitorResult = 0;
+
+    //站点监测状态（0：自动监测；1：手动监测）
+    @Setter
+    @Getter
+    private Integer monitorType;
+
+    @Getter
+    private EnumCheckJobType checkJobType = EnumCheckJobType.SERVICE_LINK;
 
     @Override
-    public void run() {
+    public void run() throws RemoteException {
 
-        log.info("ServiceLinkScheduler " + siteId + " start...");
-        Date startTime = new Date();
-        try {
-            for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
-                if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
+        for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
+            if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
+                QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+                queryFilter.addCond(IssueTableField.SITE_ID, siteId);
+                queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.SERVICE_LINK_AVAILABLE);
+                queryFilter.addCond(IssueTableField.DETAIL, guide.getItemLink());
+                int issueCount = issueMapper.count(queryFilter);
+                if (issueCount < 1) {
                     Issue issue = new Issue();
                     issue.setSiteId(siteId);
                     issue.setSubTypeId(Types.ServiceLinkIssueType.INVALID_LINK.value);
@@ -71,21 +90,19 @@ public class ServiceLinkScheduler implements SchedulerTask {
                     issue.setIssueTime(nowTime);
                     issue.setCheckTime(nowTime);
                     issueMapper.insert(DBUtil.toRow(issue));
+                } else {
+                    DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                    updater.addField(IssueTableField.CHECK_TIME, new Date());
+                    commonMapper.update(updater, queryFilter);
                 }
+                monitorResult++;
             }
-            Date endTime = new Date();
-            MonitorTime monitorTime = new MonitorTime();
-            monitorTime.setSiteId(siteId);
-            monitorTime.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-            monitorTime.setStartTime(startTime);
-            monitorTime.setEndTime(endTime);
-            monitorTimeService.insertMonitorTime(monitorTime);
-        } catch (RemoteException e) {
-            log.error("", e);
-            LogUtil.addSystemLog("", e);
-        } finally {
-            log.info("ServiceLinkScheduler " + siteId + " end...");
         }
+    }
+
+    @Override
+    public String getName() {
+        return SchedulerType.SERVICE_LINK_SCHEDULER.toString();
     }
 
 }

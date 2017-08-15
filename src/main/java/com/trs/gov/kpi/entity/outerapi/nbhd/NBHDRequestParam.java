@@ -1,32 +1,31 @@
 package com.trs.gov.kpi.entity.outerapi.nbhd;
 
+import com.trs.gov.kpi.entity.requestdata.DateRequest;
 import lombok.Data;
 
 /**
  * Created by ranwei on 2017/6/9.
  */
 @Data
-public class NBHDRequestParam {
+public class NBHDRequestParam extends DateRequest {
 
     private int siteId;
 
-    private String userName;
+    private Integer solveStatus = 0;//0-->待解决
 
-    private Integer pageIndex;
-
-    private Integer pageSize;
-
-    private String searchField;
-
-    private String searchText;
-
-    private Integer solveStatus;
-
-    private Integer isDeadLine;
-
-    private String beginDateTime;
-
-    private String endDateTime;
-
-    private Integer granularity;
+    @Override
+    public String toString() {
+        return "{" +
+                "siteId='" + siteId + '\'' +
+                "solveStatus='" + solveStatus + '\'' +
+                "beginDateTime='" + getBeginDateTime() + '\'' +
+                ", endDateTime='" + getEndDateTime() + '\'' +
+                ", pageSize=" + getPageSize() +
+                ", pageIndex=" + getPageIndex() +
+                ", sortFields='" + getSortFields() + '\'' +
+                ", granularity=" + getGranularity() +
+                ", searchField='" + getSearchField() + '\'' +
+                ", searchText='" + getSearchText() + '\'' +
+                '}';
+    }
 }

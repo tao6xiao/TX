@@ -8,22 +8,21 @@ import com.trs.gov.kpi.entity.InfoUpdate;
 import com.trs.gov.kpi.entity.InfoUpdateOrder;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.InfoUpdateService;
-import com.trs.gov.kpi.service.MonitorTimeService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.PageInfoDeal;
-import com.trs.gov.kpi.utils.ResultCheckUtil;
-import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -55,7 +54,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     private DeptApiService deptApiService;
 
     @Resource
-    private MonitorTimeService monitorTimeService;
+    private MonitorRecordService monitorRecordService;
 
     @Override
     public List<Statistics> getIssueCount(PageDataRequestParam param) throws RemoteException {
@@ -103,8 +102,8 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public History getIssueHistoryCount(PageDataRequestParam param) {
-        DateUtil.setDefaultDate(param);
+    public HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param) {
+        param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
         List<HistoryStatistics> list = new ArrayList<>();
@@ -120,7 +119,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new History(monitorTimeService.getMonitorEndTime(param.getSiteId(), Types.IssueType.INFO_UPDATE_ISSUE.value), list);
+        return new HistoryStatisticsResp(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value), list);
     }
 
     /**
@@ -132,26 +131,20 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
      * @throws RemoteException
      */
     @Override
-    public List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws ParseException, RemoteException {
+    public List<Statistics> getUpdateNotInTimeCountList(PageDataRequestParam param) throws BizException, RemoteException {
         int count = 0;
         List<Statistics> statisticsList = new ArrayList<>();
 
-        QueryFilter filter = QueryFilterHelper.toFilter(param);
-        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
-        filter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
-        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        filter.addGroupField(IssueTableField.CUSTOMER2);
+        QueryFilter filter = buildUpdateNotInTimeFilter(param);
         //获取所有
         List<Map<Integer, Integer>> countList = issueMapper.countList(filter);
         for (Map map : countList) {
-            Set<Integer> keySet = map.keySet();
-            if (keySet.toArray()[0] == null) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
                 continue;
             }
             count++;
         }
-        Statistics statistics = getStatisticsByCount(EnumIndexUpdateType.ALL.getCode(), count);
+        Statistics statistics = getStatisticsByCount(EnumIndexUpdateType.ALL, count);
         statisticsList.add(statistics);
 
         //获取A类
@@ -170,13 +163,12 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         countList = issueMapper.countList(filter);
         count = 0;
         for (Map map : countList) {
-            Set<Integer> keySet = map.keySet();
-            if (keySet.toArray()[0] == null) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
                 continue;
             }
             count++;
         }
-        statistics = getStatisticsByCount(EnumIndexUpdateType.A_TYPE.getCode(), count);
+        statistics = getStatisticsByCount(EnumIndexUpdateType.A_TYPE, count);
         statisticsList.add(statistics);
 
         //获取首页
@@ -198,21 +190,30 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         countList = issueMapper.countList(filter);
         count = 0;
         for (Map map : countList) {
-            Set<Integer> keySet = map.keySet();
-            if (keySet.toArray()[0] == null) {
+            if(map.get(IssueTableField.CUSTOMER2) == null){
                 continue;
             }
             count++;
         }
-        statistics = getStatisticsByCount(EnumIndexUpdateType.HOMEPAGE.getCode(), count);
+        statistics = getStatisticsByCount(EnumIndexUpdateType.HOMEPAGE, count);
         statisticsList.add(statistics);
 
         //获取空白栏目
-        count = siteChannelServiceHelper.getEmptyChannel(param.getSiteId()).size();
-        statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL.getCode(), count);
+        count = getEmptyChnls(param).size();
+        statistics = getStatisticsByCount(EnumIndexUpdateType.NULL_CHANNEL, count);
         statisticsList.add(statistics);
 
         return statisticsList;
+    }
+
+    private QueryFilter buildUpdateNotInTimeFilter(PageDataRequestParam param) throws RemoteException {
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_UPDATE_ISSUE.value);
+        filter.addCond(IssueTableField.SUBTYPE_ID, Types.InfoUpdateIssueType.UPDATE_NOT_INTIME.value);
+        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
+        return filter;
     }
 
     private Set<Integer> getAllChildChnlIds(List<Integer> chnlIds, PageDataRequestParam param) throws RemoteException {
@@ -275,11 +276,11 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
         return responseList;
     }
 
-    private Statistics getStatisticsByCount(int i, int count) {
+    private Statistics getStatisticsByCount(EnumIndexUpdateType type, int count) {
         Statistics statistics = new Statistics();
         statistics.setCount(count);
-        statistics.setType(i);
-        statistics.setName(EnumIndexUpdateType.valueOf(i).getName());
+        statistics.setType(type.getCode());
+        statistics.setName(type.getName());
         return statistics;
     }
 
@@ -313,95 +314,93 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public MonthUpdateResponse getNotInTimeCountMonth(int siteId) throws RemoteException {
+    public MonthUpdateResponse getNotInTimeCountMonth(PageDataRequestParam param) throws RemoteException {
         MonthUpdateResponse monthUpdateResponse = new MonthUpdateResponse();
-        List<UpdateNotInTimeChnl> notInTimeChnls = new ArrayList<>();
-        List<EmptyChnl> emptyChnls = new ArrayList<>();
-        QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.SITE_ID, siteId);
-        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-        filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        filter.addGroupField(IssueTableField.CUSTOMER2);
-        List<InfoUpdate> updateList = issueMapper.selectInfoUpdate(filter);
-        for (InfoUpdate update : updateList) {
-            if (update.getChnlId() == null) {
-                continue;
-            }
-            buildNotInTimeChnls(update, siteId, notInTimeChnls);
-        }
-        monthUpdateResponse.setUpdateNotInTimeChnl(notInTimeChnls);
-        buildEmptyChnls(siteId, emptyChnls);
-        monthUpdateResponse.setEmptyChnl(emptyChnls);
+        monthUpdateResponse.setUpdateNotInTimeChnl(getUpdateNotInTimeChnls(param));
+        monthUpdateResponse.setEmptyChnl(getEmptyChnls(param));
         return monthUpdateResponse;
     }
 
-    private void buildEmptyChnls(int siteId, List<EmptyChnl> emptyChnls) throws RemoteException {
-        List<Integer> chnlIdList = siteChannelServiceHelper.getEmptyChannel(siteId);
-        for (Integer chnlId : chnlIdList) {
-            if (chnlId != null) {
-                Channel chnl = siteApiService.getChannelById(chnlId, "");
-                if (chnl != null) {
-                    EmptyChnl emptyChnl = new EmptyChnl();
-                    emptyChnl.setChnlId(chnlId);
-                    emptyChnl.setChnlName(chnl.getChnlDesc());
-                    emptyChnls.add(emptyChnl);
-                }
-            }
-        }
+    /**
+     * 获取更新不及时的栏目
+     * @param param
+     * @return
+     * @throws RemoteException
+     */
+    @NotNull
+    private List<UpdateNotInTimeChnl> getUpdateNotInTimeChnls(PageDataRequestParam param) throws RemoteException {
+        QueryFilter filter = buildUpdateNotInTimeFilter(param);
+        return createAllChnlResp(UpdateNotInTimeChnl.class, issueMapper.countList(filter));
     }
 
-    private void buildNotInTimeChnls(InfoUpdate update, int siteId, List<UpdateNotInTimeChnl> notInTimeChnls) throws RemoteException {
-        QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.SITE_ID, siteId);
-        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+    /**
+     * 获取空栏目
+     * @param param
+     * @return
+     * @throws RemoteException
+     */
+    private List<EmptyChnl> getEmptyChnls(PageDataRequestParam param) throws RemoteException {
+        QueryFilter filter = QueryFilterHelper.toFilter(param);
+        filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.EMPTY_CHANNEL.value);
+        filter.addCond(IssueTableField.SUBTYPE_ID, Types.EmptyChannelType.EMPTY_COLUMN.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
-        filter.addCond(IssueTableField.CUSTOMER2, update.getChnlId());
-        Date maxIssueTime = issueMapper.getMaxIssueTime(filter);
-        Date nowTime = new Date();
-        double countMonth;
-        Calendar c = Calendar.getInstance();
-
-        c.setTime(maxIssueTime);
-        int yearIssue = c.get(Calendar.YEAR);
-        int monthIssue = c.get(Calendar.MONTH);
-        int dayIssue = c.get(Calendar.DATE);
-
-        c.setTime(nowTime);
-        int yearNow = c.get(Calendar.YEAR);
-        int monthNow = c.get(Calendar.MONTH);
-        int dayNow = c.get(Calendar.DATE);
-
-        if (monthNow < monthIssue) {
-            return;
-        }
-        if (yearIssue == yearNow) {
-            countMonth = (double) (monthNow - monthIssue);
-        } else {
-            countMonth = (double) (12 * (yearNow - yearIssue) + monthNow - monthIssue);
-        }
-        if (dayNow > dayIssue) {
-            if (dayNow - dayIssue <= 15) {
-                countMonth += 0.5;
-            } else {
-                countMonth += 1;
-            }
-        } else if (dayNow < dayIssue) {
-            c.setTime(maxIssueTime);
-            int maxDayOfMonthIssue = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-            if ((maxDayOfMonthIssue - dayIssue + dayNow) <= 15) {
-                countMonth -= 0.5;
-            }
-        }
-        Channel chnl = siteApiService.getChannelById(update.getChnlId(), "");
-        if (chnl != null) {
-            UpdateNotInTimeChnl notInTimeChnl = new UpdateNotInTimeChnl();
-            notInTimeChnl.setChnlId(update.getChnlId());
-            notInTimeChnl.setChnlName(chnl.getChnlDesc());
-            notInTimeChnl.setCountMonth(countMonth);
-            notInTimeChnls.add(notInTimeChnl);
-        }
+        filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+        filter.addGroupField(IssueTableField.CUSTOMER2);
+        return createAllChnlResp(EmptyChnl.class, issueMapper.countList(filter));
     }
 
+    /**
+     * 转换为响应的栏目列表
+     * @param clazz
+     * @param chnlCountList
+     * @param <T>
+     * @return
+     */
+    private <T extends AbstractChnlResponse> List<T> createAllChnlResp(Class<T> clazz, List<Map<Integer, Integer>> chnlCountList) {
+        List<T> chnls = new ArrayList<>();
+        for (Map map : chnlCountList) {
+            final Object chnlIdObj = map.get(IssueTableField.CUSTOMER2);
+            if(chnlIdObj != null) {
+                Integer chnlId = Integer.valueOf(String.valueOf(chnlIdObj));
+                chnls.add(createChnlResponse(clazz, chnlId));
+            }
+        }
+        return chnls;
+    }
+
+    /**
+     * 创建用于响应的栏目实体类
+     * @param chnlId
+     * @return
+     */
+    private <T extends AbstractChnlResponse> T createChnlResponse(Class<T> clazz, Integer chnlId) {
+
+        // 实例化对象
+        T chnlResp;
+        try {
+            chnlResp = clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.error("class[" + clazz.getName() + "]不能创建实例", e);
+            throw new IllegalArgumentException("class[" + clazz.getName() + "]不能创建实例");
+        }
+
+        try {
+            chnlResp.setChnlId(chnlId);
+            Channel chnl = siteApiService.getChannelById(chnlId, "");
+            if (chnl != null) {
+                chnlResp.setChnlName(chnl.getChnlDesc());
+            } else {
+                // 不存在的情况
+                chnlResp.setChnlName("栏目已删除[chnlId=" + chnlId + "]");
+            }
+        }  catch (Exception e) {
+            String errorInfo = "获取栏目名称异常[chnlid=" + chnlId + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REQUEST_FAILED, errorInfo, e);
+            chnlResp.setChnlName("栏目获取失败[chnlId=" + chnlId + "]");
+        }
+        return chnlResp;
+    }
 
     private List<InfoUpdateOrderRes> toOrderResponse(List<InfoUpdateOrder> infoUpdateOrderList) {
         List<InfoUpdateOrderRes> responseList = new ArrayList<>();

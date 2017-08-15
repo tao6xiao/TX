@@ -1,8 +1,10 @@
 package com.trs.gov.kpi.ids;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.LocalUser;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.idm.client.actor.SSOUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ import java.io.IOException;
 @WebFilter(filterName = "TLFilter", urlPatterns = "/*")
 @Order(Integer.MAX_VALUE)
 @Slf4j
-public class TLFilter implements Filter{
+public class TLFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -30,16 +32,21 @@ public class TLFilter implements Filter{
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
-        if(req.getSession().getAttribute(IDSActor.LOGIN_FLAG) != null) {
-            ContextHelper.initContext((SSOUser) req.getSession().getAttribute(IDSActor.LOGIN_FLAG));
+        final LocalUser localUser = (LocalUser)req.getSession().getAttribute(IDSActor.LOGIN_FLAG);
+        if (localUser != null) {
+            ContextHelper.initContext(localUser);
             chain.doFilter(request, response);
-        }else {
+        } else {
+            //给其他模块提供的接口需要放行
+            if (req.getRequestURI().startsWith("/gov/kpi/opendata")) {
+                chain.doFilter(request, response);
+            }
             log.error("Invalid user: The current user in the logout state or IDS server is stopped");
             try {
                 throw new BizException("当前用户处于未登录状态或者IDS服务器已停止");
             } catch (BizException e) {
                 log.error("", e);
-                LogUtil.addSystemLog("", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.BIZ_EXCEPTION, "", e);
             }
             HttpServletResponse resp = (HttpServletResponse) response;
             resp.sendError(HttpServletResponse.SC_BAD_GATEWAY);

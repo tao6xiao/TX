@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ApiResult;
 import com.trs.gov.kpi.entity.outerapi.ChnlDoc;
@@ -49,7 +51,8 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("queryAllPublishedDocIds", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("queryAllPublishedDocIds", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = getValidResult(response, "获取发布文档ID");
@@ -68,7 +71,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
         } catch (IOException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "find document error", e);
             throw new RemoteException("获取发布文档ID失败！", e);
         }
 
@@ -82,12 +85,13 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             params.put("DocId", String.valueOf(documentId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findDocumentById", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("findDocumentById", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             return responseManger("findDocumentById", response);
         } catch (IOException e) {
             log.error("failed to getDocument, error: ", e);
-            LogUtil.addSystemLog("failed to getDocument, error: ", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to getDocument, error: ", e);
             throw new RemoteException("获取发布文档失败！", e);
         }
     }
@@ -105,13 +109,11 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             if (chnlId == null) {
                 continue;
             }
-            // TODO: 2017/5/24  set userName
             List<Integer> publishDocIds = getPublishDocIds(null, siteId, chnlId, null);
             for (Integer publishDocId : publishDocIds) {
                 if (publishDocId == null) {
                     continue;
                 }
-                // TODO: 2017/5/24  set userName
                 Document document = getDocument(null, chnlId, publishDocId);
                 document.setSiteId(siteId);
                 documentList.add(document);
@@ -127,7 +129,8 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             params.put("URL", url);
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findDocumentByUrl", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("findDocumentByUrl", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = getValidResult(response, "获取文档");
@@ -141,7 +144,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
         } catch (IOException e) {
             log.error("failed to findDocumentByUrl, error", e);
-            LogUtil.addSystemLog("failed to findDocumentByUrl, error", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to findDocumentByUrl, error", e);
             throw new RemoteException("通过url获取文档失败！", e);
         }
     }
@@ -171,15 +174,5 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             throw new RemoteException(errMsg + "失败！[" + result.getMsg() + "]");
         }
         return result;
-    }
-
-    private Request buildRequest(String methodName, String userName, Map<String, String> params) {
-        OuterApiServiceUtil.addUserNameParam(userName, params);
-        return newServiceRequestBuilder()
-                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
-                .setServiceUrl(editCenterServiceUrl)
-                .setServiceName(SERVICE_NAME)
-                .setMethodName(methodName)
-                .setParams(params).build();
     }
 }

@@ -5,6 +5,9 @@
  */
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -50,59 +53,59 @@ public class RemoteAddrUtil {
         return req.getRemoteAddr();
     }
 
-    public static final boolean isIPAddress(String s) {
-        if (s != null) {
-            s = s.trim();
-            int dot1 = s.indexOf('.');
+    public static final boolean isIPAddress(String address) {
+        if (address != null) {
+            String addr = address.trim();
+            int dot1 = addr.indexOf('.');
             if (dot1 <= 0) {
                 return false;
             }
             int temp;
             try {
-                temp = Integer.parseInt(s.substring(0, dot1++));
+                temp = Integer.parseInt(addr.substring(0, dot1++));
                 if (temp < 0 || temp > 255) {
                     return false;
                 }
             } catch (Exception ex) {
-                LogUtil.addSystemLog("", ex);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
                 return false;
             }
 
-            int dot2 = s.indexOf('.', dot1);
+            int dot2 = addr.indexOf('.', dot1);
             if (dot2 <= 0) {
                 return false;
             }
             try {
-                temp = Integer.parseInt(s.substring(dot1, dot2++));
+                temp = Integer.parseInt(addr.substring(dot1, dot2++));
                 if (temp < 0 || temp > 255) {
                     return false;
                 }
             } catch (Exception ex) {
-                LogUtil.addSystemLog("", ex);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
                 return false;
             }
 
-            int dot3 = s.indexOf('.', dot2);
+            int dot3 = addr.indexOf('.', dot2);
             if (dot3 <= 0) {
                 return false;
             }
             try {
-                temp = Integer.parseInt(s.substring(dot2, dot3++));
+                temp = Integer.parseInt(addr.substring(dot2, dot3++));
                 if (temp < 0 || temp > 255) {
                     return false;
                 }
             } catch (Exception ex) {
-                LogUtil.addSystemLog("", ex);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
                 return false;
             }
 
             try {
-                temp = Integer.parseInt(s.substring(dot3));
+                temp = Integer.parseInt(addr.substring(dot3));
                 if (temp < 0 || temp > 255) {
                     return false;
                 }
             } catch (Exception ex) {
-                LogUtil.addSystemLog("", ex);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
                 return false;
             }
 

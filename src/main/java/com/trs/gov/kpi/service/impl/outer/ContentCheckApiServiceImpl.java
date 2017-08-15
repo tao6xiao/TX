@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.service.impl.outer;
 
 import com.alibaba.fastjson.JSON;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
@@ -81,7 +83,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                 throw new RemoteException("bad code: " + code);
             }
         } catch (IOException e) {
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "检查信息错误信息", e);
             throw new RemoteException("fail to check!", e);
         } finally {
             if (httpClient != null) {
@@ -89,7 +91,7 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                     httpClient.close();
                 } catch (IOException e) {
                     log.error("", e);
-                    LogUtil.addSystemLog("", e);
+                    LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "检查信息错误信息", e);
                 }
             }
         }

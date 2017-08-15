@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumIndexUpdateType;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.SGStatistics;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -8,12 +9,10 @@ import com.trs.gov.kpi.entity.responsedata.IndexPage;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 import com.trs.gov.kpi.service.InfoUpdateService;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
-import com.trs.gov.kpi.service.outer.InteractionService;
 import com.trs.gov.kpi.service.outer.SGService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -25,8 +24,8 @@ import java.util.List;
  * 总分：37.5
  * <p>
  * 网站信息更新情况：
- * 网站中应更新但长期未更新的栏目数超过（含）10个，此项直接为0分；
- * 空白栏目数量超过（含）5个，此项直接为0分。
+ * 网站中应更新但长期未更新的栏目数，每发现一个扣10%分；空白栏目问题，每发现一个扣20%分。扣完为止。
+ * <p>
  * 总分：37.5
  * <p>
  * 办事指南要素的完整性、准确性：
@@ -56,10 +55,7 @@ public class PerformanceService {
     @Resource
     private SGService sgService;
 
-    @Resource
-    private InteractionService interactionService;
-
-    public Double calPerformanceIndex(Integer siteId) throws ParseException, RemoteException {
+    public Double calPerformanceIndex(Integer siteId) throws BizException, RemoteException {
 
         PageDataRequestParam param = new PageDataRequestParam();
         param.setSiteId(siteId);
@@ -98,10 +94,10 @@ public class PerformanceService {
                 blankChnlCount = statistics.getCount();
             }
         }
-        if (updateNotInTimeCount >= 10) {
-            infoUpdateScore = 0;
-        }
-        if (blankChnlCount >= 5) {
+        double percent = 1 - updateNotInTimeCount * 0.1 - blankChnlCount * 0.2;
+        if (percent > 0) {
+            infoUpdateScore *= percent;
+        } else {
             infoUpdateScore = 0;
         }
 

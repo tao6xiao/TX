@@ -2,20 +2,18 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.ReportRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.ReportService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -53,6 +51,7 @@ public class ReportController {
 
     /**
      * 按时间节点查询报表列表
+     *
      * @param param
      * @return
      * @throws RemoteException
@@ -60,20 +59,21 @@ public class ReportController {
      * @throws BizException
      */
     @RequestMapping(value = "/timenode", method = RequestMethod.GET)
-    public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
-        ParamCheckUtil.checkDayTime(param.getDay());
-        ApiPageData apiPageData = reportService.selectReportList(param, true);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return apiPageData;
+    public ApiPageData selectReportByNode(@ModelAttribute ReportRequestParam param) throws RemoteException, BizException {
+        String logDesc = "按时间节点查询报表列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+            ParamCheckUtil.checkDayTime(param.getDay());
+
+            authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
+            return reportService.selectReportList(param, true);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
+
     }
 
     /**
      * 按时间节点统计报表导出下载
+     *
      * @param param
      * @param response
      * @return
@@ -82,27 +82,27 @@ public class ReportController {
      * @throws RemoteException
      */
     @RequestMapping(value = "/timenode/export", method = RequestMethod.GET)
-    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_EXPORT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        if (param.getId() == null) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String path = reportService.getReportPath(param, true);
-        if (StringUtil.isEmpty(path)) {
+    public String exportReportByNode(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws BizException, RemoteException {
+        String logDesc = "按时间节点导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (param.getId() == null || param.getSiteId() == null) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
+            String path = reportService.getReportPath(param, true);
+            if (StringUtil.isEmpty(path)) {
+                String errorInfo = "时间节点报表文件不存在[siteId=" + param.getSiteId() + ",ID=" + param.getId() + "]";
+                log.error(errorInfo);
+                throw new BizException(errorInfo);
+            }
+            download(response, path);
             return null;
-        }
-        String[] str = path.split("/");
-
-        download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间节点导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return null;
+        }, OperationType.DOWNLOAD, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
      * 按时间区间查询报表列表
+     *
      * @param param
      * @return
      * @throws RemoteException
@@ -110,20 +110,21 @@ public class ReportController {
      * @throws BizException
      */
     @RequestMapping(value = "/timeinterval", method = RequestMethod.GET)
-    public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, ParseException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_SEARCH) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_SEARCH)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
-        ParamCheckUtil.checkDayTime(param.getBeginDateTime());
-        ParamCheckUtil.checkDayTime(param.getEndDateTime());
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间查询报表列表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return reportService.selectReportList(param, false);
+    public ApiPageData selectReportByInterval(@ModelAttribute ReportRequestParam param) throws RemoteException, BizException {
+        String logDesc = "按时间区间查询报表列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.pagerCheck(param.getPageIndex(), param.getPageSize());
+            ParamCheckUtil.checkDayTime(param.getBeginDateTime());
+            ParamCheckUtil.checkDayTime(param.getEndDateTime());
+
+            authorityService.checkRight(Authority.KPIWEB_REPORT_SEARCH, param.getSiteId());
+            return reportService.selectReportList(param, false);
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
     /**
      * 按时间区间统计报表导出下载
+     *
      * @param param
      * @param response
      * @return
@@ -132,31 +133,31 @@ public class ReportController {
      * @throws RemoteException
      */
     @RequestMapping(value = "/timeinterval/export", method = RequestMethod.GET)
-    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws ParseException, BizException, RemoteException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), param.getSiteId(), null, Authority.KPIWEB_REPORT_EXPORT) && !authorityService.hasRight(ContextHelper
-                .getLoginUser().getUserName(), null, null, Authority.KPIWEB_REPORT_EXPORT)) {
-            throw new BizException(Authority.NO_AUTHORITY);
-        }
-        if (param.getId() == null) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        String path = reportService.getReportPath(param, false);
-        if (StringUtil.isEmpty(path)) {
+    public String exportReportByInterval(@ModelAttribute ReportRequestParam param, HttpServletResponse response) throws BizException, RemoteException {
+        String logDesc = "按时间区间导出下载统计报表" + LogUtil.paramsToLogString(Constants.PARAM, param);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (param.getId() == null) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_REPORT_EXPORT, param.getSiteId());
+            String path = reportService.getReportPath(param, false);
+            if (StringUtil.isEmpty(path)) {
+                String errorInfo = "时间区间报表文件不存在[siteId=" + param.getSiteId() + ",ID=" + param.getId() + "]";
+                log.error(errorInfo);
+                throw new BizException(errorInfo);
+            }
+            download(response, path);
             return null;
-        }
-        String[] str = path.split("/");
-
-        download(response, "/" + str[1] + "/" + str[2] + "/", str[3]);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "按时间区间导出下载统计报表", siteApiService.getSiteById(param.getSiteId(), "").getSiteName()).info();
-        return null;
+        }, OperationType.DOWNLOAD, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
-    private void download(HttpServletResponse response, String relativePath, String fileName) {
-        File file = new File(reportDir + relativePath, fileName);
+    private void download(HttpServletResponse response, String fileName) {
+        File file = new File(reportDir + fileName);
+        int index = fileName.lastIndexOf(File.separator);
         if (file.exists()) {
-            response.setContentType("application/force-download");// 设置强制下载不打开
+            response.setContentType("application/x-download");
             response.addHeader("Content-Disposition",
-                    "attachment;fileName=" + fileName);// 设置文件名
+                    "attachment;fileName=" + fileName.substring(index + 1));// 设置文件名
             byte[] buffer = new byte[1024];
             try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
                 OutputStream os = response.getOutputStream();
@@ -168,7 +169,7 @@ public class ReportController {
 
             } catch (Exception e) {
                 log.error(fileName + " download fail!", e);
-                LogUtil.addSystemLog(fileName + " download failed!", e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, fileName + " download failed!", e);
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.utils;
 
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Dept;
@@ -27,7 +29,7 @@ public class ResultCheckUtil {
             channel = siteApiService.getChannelById(channelId, null);
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "获取栏目名称，channelId[" + channelId + "]", e);
         }
         return checkChannelName(channel);
     }
@@ -40,7 +42,7 @@ public class ResultCheckUtil {
     }
 
     public static String getSiteName(Integer siteId, SiteApiService siteApiService) {
-        if(siteId == null){
+        if (siteId == null) {
             return "";
         }
         try {
@@ -52,13 +54,13 @@ public class ResultCheckUtil {
             }
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "获取站点名称，siteId[" + siteId + "]", e);
             return "站点[id=" + siteId + "]";
         }
     }
 
     public static String getDeptName(Integer deptId, DeptApiService deptApiService) {
-        if(deptId == null){
+        if (deptId == null) {
             return "";
         }
         try {
@@ -70,7 +72,7 @@ public class ResultCheckUtil {
             }
         } catch (RemoteException e) {
             log.error("", e);
-            LogUtil.addSystemLog("", e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "获取部门名称，deptId[" + deptId + "]", e);
             return "部门[id=" + deptId + "]";
         }
     }

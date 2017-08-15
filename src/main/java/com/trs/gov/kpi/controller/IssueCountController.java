@@ -5,8 +5,6 @@ import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Role;
-import com.trs.gov.kpi.entity.outerapi.User;
 import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
@@ -14,11 +12,9 @@ import com.trs.gov.kpi.ids.ContextHelper;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.service.outer.UserApiService;
+import com.trs.gov.kpi.utils.LogUtil;
 import com.trs.gov.kpi.utils.ParamCheckUtil;
 import com.trs.gov.kpi.utils.StringUtil;
-import com.trs.gov.kpi.utils.TRSLogUserUtil;
-import com.trs.mlf.simplelog.SimpleLogServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +39,7 @@ public class IssueCountController {
     @Resource
     private SiteApiService siteApiService;
 
-    @Resource
-    private UserApiService userApiService;
+    private static final String REQUEST = "request";
 
     /**
      * 分类查询问题数量统计
@@ -56,18 +51,19 @@ public class IssueCountController {
     @RequestMapping(value = "/count", method = RequestMethod.GET)
     @ResponseBody
     public List<Statistics> countSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        checkAuthority(request);
-        ParamCheckUtil.paramCheck(request);
-        List<Statistics> list = countService.countSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中分类查询问题数量统计", getSystemName(request)).info();
-        return list;
+        String logDesc = "问题统计中分类查询问题数量统计" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
+            return countService.countSort(request);
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
-    private String getSystemName(IssueCountRequest request) throws RemoteException {
+    private String getSystemName(IssueCountRequest request) {
         StringBuilder builder = new StringBuilder();
         Integer[] siteIds = StringUtil.stringToIntegerArray(request.getSiteIds());
         for (int i = 0; i < siteIds.length; i++) {
-            builder.append(siteApiService.getSiteById(siteIds[i], "").getSiteName());
+            builder.append(LogUtil.getSiteNameForLog(siteApiService, siteIds[i]));
             builder.append(",");
         }
         if (builder.length() != 0) {
@@ -84,12 +80,13 @@ public class IssueCountController {
      */
     @RequestMapping(value = "/count/history", method = RequestMethod.GET)
     @ResponseBody
-    public History historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        checkAuthority(request);
-        ParamCheckUtil.paramCheck(request);
-        History history = countService.historyCountSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中分类查询统计历史数量", getSystemName(request)).info();
-        return history;
+    public HistoryStatisticsResp historyCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
+        String logDesc = "问题统计中分类查询统计历史数量" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
+            return countService.historyCountSort(request);
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
     /**
@@ -101,11 +98,12 @@ public class IssueCountController {
     @RequestMapping(value = "/bydept/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCountResponse> deptCountSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        checkAuthority(request);
-        ParamCheckUtil.paramCheck(request);
-        List<DeptCountResponse> deptCountResponses = countService.deptCountSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中部门分类查询统计数量", getSystemName(request)).info();
-        return deptCountResponses;
+        String logDesc = "问题统计中部门分类查询统计数量" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
+            return countService.deptCountSort(request);
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
     /**
@@ -117,14 +115,15 @@ public class IssueCountController {
     @RequestMapping(value = "/unhandled/count", method = RequestMethod.GET)
     @ResponseBody
     public List<DeptCount> getDeptIssueCountByType(@ModelAttribute IssueCountByTypeRequest request) throws BizException, RemoteException {
-        checkAuthority(request);
-        ParamCheckUtil.paramCheck(request);
-        if (request.getTypeId() > 5 || request.getTypeId() < 1) {
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        List<DeptCount> deptCountList = countService.getDeptCountByType(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中根据问题类型部门分类查询统计数量", getSystemName(request)).info();
-        return deptCountList;
+        String logDesc = "问题统计中根据问题类型部门分类查询统计数量" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            if (request.getTypeId() > 5 || request.getTypeId() < 1) {
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            checkAuthority(request);
+            return countService.getDeptCountByType(request);
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
 
@@ -137,19 +136,21 @@ public class IssueCountController {
     @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
     @ResponseBody
     public DeptInductionResponse[] deptInductionSort(@ModelAttribute IssueCountRequest request) throws BizException, RemoteException {
-        checkAuthority(request);
-        ParamCheckUtil.paramCheck(request);
-        DeptInductionResponse[] inductionResponseArray = countService.deptInductionSort(request);
-        SimpleLogServer.getInstance(TRSLogUserUtil.getLogUser()).operation(OperationType.QUERY, "问题统计中部门分类归纳统计数量查询", getSystemName(request)).info();
-        return inductionResponseArray;
+        String logDesc = "问题统计中部门分类归纳统计数量查询" + LogUtil.paramsToLogString(REQUEST, request);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            ParamCheckUtil.paramCheck(request);
+            checkAuthority(request);
+            return countService.deptInductionSort(request);
+        }, OperationType.QUERY, logDesc, getSystemName(request));
     }
 
 
     private void checkAuthority(IssueCountRequest request) throws RemoteException, BizException {
-        if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), null, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+        String userName = ContextHelper.getLoginUser().getUserName();
+        if (!authorityService.hasRight(userName, null, Authority.KPIWEB_STATISTICS_ISSUE)) {
             String[] siteIds = request.getSiteIds().split(",");
-            for (int i = 0; i < siteIds.length; i++) {
-                if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), Integer.parseInt(siteIds[i]), null, Authority.KPIWEB_STATISTICS_ISSUE)) {
+            for (String siteId : siteIds) {
+                if (!authorityService.hasRight(ContextHelper.getLoginUser().getUserName(), Integer.parseInt(siteId), Authority.KPIWEB_STATISTICS_ISSUE)) {
                     throw new BizException(Authority.NO_AUTHORITY);
                 }
             }

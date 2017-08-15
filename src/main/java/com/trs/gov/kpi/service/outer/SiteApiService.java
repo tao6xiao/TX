@@ -44,6 +44,14 @@ public interface SiteApiService extends OuterApiService {
      */
     Channel getChannelById(int channelId, String userName) throws RemoteException;
 
+    /**
+     * 查找从根栏目一直到指定栏目的路径
+     * @param channelId
+     * @param userName
+     * @return 返回路径上的所有栏目id
+     * @throws RemoteException
+     */
+    List<Integer> findChannelPath(int channelId, String userName) throws RemoteException;
 
     /**
      * 获取站点或者栏目的发布地址
@@ -115,4 +123,5 @@ public interface SiteApiService extends OuterApiService {
      * @throws RemoteException
      */
     Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException;
+
 }
