@@ -99,7 +99,7 @@ public class SpiderUtils {
 
     //失效链接计数
     @Getter
-    int count = 0;
+    private Integer count = 0;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
