@@ -82,7 +82,7 @@ public class CheckJob implements Job {
         Date endTime = new Date();
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, task.getSiteId());
-        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_HOME_PAGE.value);
+        filter.addCond(MonitorRecordTableField.TASK_ID, task.getCheckJobType().value);
         filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
 
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());

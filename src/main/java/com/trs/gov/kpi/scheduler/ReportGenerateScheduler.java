@@ -1,13 +1,8 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.*;
-import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.ReportMapper;
-import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.Report;
-import com.trs.gov.kpi.entity.dao.DBUpdater;
-import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
@@ -15,7 +10,6 @@ import com.trs.gov.kpi.entity.requestdata.IssueCountByTypeRequest;
 import com.trs.gov.kpi.entity.requestdata.IssueCountRequest;
 import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.IssueCountService;
-import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
 import lombok.Getter;
@@ -74,23 +68,17 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private int rowIndex = 0;//excel行的索引
     private int cellIndex = 0;//excel列的索引
 
+    //错误信息计数
+    @Getter
+    Integer monitorResult = 0;
+
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
+    @Getter
     private Integer monitorType;
-
-    @Resource
-    private MonitorRecordService monitorRecordService;
-
-    @Resource
-    private CommonMapper commonMapper;
 
     @Override
     public void run() throws BizException, RemoteException {
-
-        Date startTime = new Date();
-        //报表生成——监测开始(添加基本信息)
-        insertStartMonitorRecord(startTime);
-
         IssueCountRequest request = new IssueCountRequest();
         request.setSiteIds(Integer.toString(siteId));
         Report report = new Report();
@@ -259,10 +247,6 @@ public class ReportGenerateScheduler implements SchedulerTask {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-
-        //
-        int monitorResult = 0;
-
         //写入文件
         try (FileOutputStream out = new FileOutputStream(reportDir + fileDir + fileName)) {
             workbook.write(out);
@@ -271,21 +255,24 @@ public class ReportGenerateScheduler implements SchedulerTask {
             log.error("", e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "报表生成，文件写入错误，siteId[" + siteId + "]", e);
         }
-
-        Date endTime = new Date();
-        //报表生成——监测完成(修改结果、结束时间、状态)
-        insertEndMonitorRecord(startTime, monitorResult, endTime);
-
         report.setPath(fileDir + fileName);
         report.setCrTime(new Date());
         //入库
         reportMapper.insert(report);
-
     }
 
     @Override
     public String getName() {
         return SchedulerType.REPORT_GENERATE_SCHEDULER.toString();
+    }
+
+    @Override
+    public EnumCheckJobType getCheckJobType() {
+        if(isTimeNode){
+            return EnumCheckJobType.TIMENODE_REPORT_GENERATE;
+        }else {
+            return EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE;
+        }
     }
 
     private void addTitle(Sheet sheet, CellStyle style, String title) {
@@ -361,50 +348,6 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private void changeIndex() {
         rowIndex++;
         cellIndex = 0;
-    }
-
-    /**
-     * 插入检测记录
-     *
-     * @param startTime
-     */
-    private void insertStartMonitorRecord(Date startTime) {
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTypeId(monitorType);
-        if (isTimeNode) {
-            monitorRecord.setTaskId(EnumCheckJobType.TIMENODE_REPORT_GENERATE.value);
-        } else {
-            monitorRecord.setTaskId(EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE.value);
-        }
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
-    }
-
-    /**
-     * 检测完成，修改结果、结束时间、状态
-     *
-     * @param startTime
-     * @param result
-     * @param endTime
-     */
-    private void insertEndMonitorRecord(Date startTime, Integer result, Date endTime) {
-
-        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-        if (isTimeNode) {
-            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.TIMENODE_REPORT_GENERATE.value);
-        } else {
-            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE.value);
-        }
-        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
-
-        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-        updater.addField(MonitorRecordTableField.RESULT, result);
-        updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
-        commonMapper.update(updater, filter);
     }
 
 }
