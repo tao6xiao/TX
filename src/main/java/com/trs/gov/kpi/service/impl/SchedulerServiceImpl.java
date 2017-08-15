@@ -104,7 +104,7 @@ public class SchedulerServiceImpl implements SchedulerService {
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             JobKey jobKey = JobKey.jobKey(getJobName(siteId, checkType), getJobGroupName(checkType));
-            TriggerKey triggerKey = TriggerKey.triggerKey(getJobTrigger(siteId, checkType), getJobGroupName(checkType));
+            TriggerKey triggerKey = TriggerKey.triggerKey(getJobTriggerName(siteId, checkType), getJobGroupName(checkType));
             while (scheduler.checkExists(triggerKey)) {
                 scheduler.unscheduleJob(triggerKey);
             }
@@ -122,28 +122,34 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     @Override
     public void doCheckJobOnce(int siteId, EnumCheckJobType checkJobType) throws BizException, RemoteException {
-        MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
-        if (monitorSite == null) {
-            log.error("Invalid parameter: 当前站点不是监测中的站点");
-            throw new BizException(Constants.INVALID_PARAMETER);
-        }
-        switch (checkJobType) {
-            case CHECK_HOME_PAGE://首页可用性检测
-                doCheckJobNow(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-                break;
-            case CHECK_CONTENT://内容检测
-                doCheckJobNow(siteId, EnumCheckJobType.CHECK_CONTENT);
-                break;
-            case CHECK_INFO_UPDATE://信息更新检测
-                doCheckJobNow(siteId, EnumCheckJobType.CHECK_INFO_UPDATE);
-                break;
-            case CHECK_LINK://链接可用性检测
-                doCheckJobNow(siteId, EnumCheckJobType.CHECK_LINK);
-                break;
-            case SERVICE_LINK://服务链接可用性检测
-                doCheckJobNow(siteId, EnumCheckJobType.SERVICE_LINK);
-                break;
-            default:
+        try{
+            MonitorSite monitorSite = monitorSiteService.getMonitorSiteBySiteId(siteId);
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            if (monitorSite == null) {
+                log.error("Invalid parameter: 当前站点不是监测中的站点");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            switch (checkJobType) {
+                case CHECK_HOME_PAGE://首页可用性检测
+                    doCheckJobNow(scheduler,siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+                    break;
+                case CHECK_CONTENT://内容检测
+                    doCheckJobNow(scheduler, siteId, EnumCheckJobType.CHECK_CONTENT);
+                    break;
+                case CHECK_INFO_UPDATE://信息更新检测
+                    doCheckJobNow(scheduler, siteId, EnumCheckJobType.CHECK_INFO_UPDATE);
+                    break;
+                case CHECK_LINK://链接可用性检测
+                    doCheckJobNow(scheduler, siteId, EnumCheckJobType.CHECK_LINK);
+                    break;
+                case SERVICE_LINK://服务链接可用性检测
+                    doCheckJobNow(scheduler,siteId, EnumCheckJobType.SERVICE_LINK);
+                    break;
+                default:
+            }
+        }catch (SchedulerException e){
+            log.error("", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "手动检测——任务调度失败，siteId[" + siteId + "]", e);
         }
     }
 
@@ -434,11 +440,10 @@ public class SchedulerServiceImpl implements SchedulerService {
         }
         job.getJobDataMap().put("task", task);
 
-
         // TODO: 2017/8/14 he.lang 手动检测实现后，startNow()将删除
         // 每天执行一次
         Trigger trigger = newTrigger()
-                .withIdentity(getJobTrigger(site.getSiteId(), jobType), getJobGroupName(jobType))
+                .withIdentity(getJobTriggerName(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .startNow()
                 .forJob(job.getKey())
                 .withSchedule(builder)
@@ -455,27 +460,57 @@ public class SchedulerServiceImpl implements SchedulerService {
      * @param checkJobType
      * @throws RemoteException
      */
-    private void doCheckJobNow(Integer siteId, EnumCheckJobType checkJobType) throws RemoteException, BizException {
+    private void doCheckJobNow(Scheduler scheduler,Integer siteId, EnumCheckJobType checkJobType) throws RemoteException, BizException {
 
         SchedulerTask task = newTask(checkJobType);
         if (task == null) {
             throw new BizException("手动检测失败：检测站点siteId[" + siteId + "]，检测任务类型type[" + checkJobType.name() + "]");
         }
+
+        JobDetail job = newJob(CheckJob.class)
+                .withIdentity(getOnceJobName(siteId, checkJobType), getOnceJobGroupName(checkJobType))
+                .build();
+
         task.setSiteId(siteId);
         task.setMonitorType(Status.MonitorType.MANUAL_MONITOR.value);
-        task.run();
+        job.getJobDataMap().put("task", task);
+
+        Trigger trigger = newTrigger()
+                .withIdentity(getOnceJobTriggerName(siteId, checkJobType), getOnceJobGroupName(checkJobType))
+                .startNow()
+                .forJob(job.getKey())
+                .build();
+
+        try {
+            scheduler.scheduleJob(job, trigger);
+        } catch (SchedulerException e) {
+            log.error("failed to doCheckJobNow! [siteId=" + siteId + ", checkJobType= " + checkJobType + "]", e);
+            throw new BizException("手动检测失败!", e);
+        }
     }
 
     private String getJobName(int siteId, EnumCheckJobType checkType) {
         return checkType.name() + "CheckJob" + siteId;
     }
 
+    private String getOnceJobName(int siteId, EnumCheckJobType checkType) {
+        return checkType.name() + "OnceCheckJob" + siteId;
+    }
+
     private String getJobGroupName(EnumCheckJobType checkType) {
         return "group-" + checkType.name() + "-check";
     }
 
-    private String getJobTrigger(int siteId, EnumCheckJobType jobType) {
+    private String getOnceJobGroupName(EnumCheckJobType checkType) {
+        return "group-once-" + checkType.name() + "-check";
+    }
+
+    private String getJobTriggerName(int siteId, EnumCheckJobType jobType) {
         return jobType.name() + "CheckJobTrigger" + siteId;
+    }
+
+    private String getOnceJobTriggerName(int siteId, EnumCheckJobType jobType) {
+        return jobType.name() + "OnceCheckJobTrigger" + siteId;
     }
 
     private SchedulerTask newTask(EnumCheckJobType jobType) {

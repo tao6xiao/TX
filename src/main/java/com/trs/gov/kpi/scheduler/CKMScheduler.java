@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.LinkContentStatsService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
@@ -74,6 +75,9 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private LinkContentStatsService linkContentStatsService;
 
+    @Resource
+    private MonitorRecordService monitorRecordService;
+
     //错误信息计数
     @Getter
     Integer monitorResult = 0;
@@ -82,6 +86,8 @@ public class CKMScheduler implements SchedulerTask {
     @Setter
     @Getter
     private Integer monitorType;
+
+    boolean contentCheck = false;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_CONTENT;
@@ -95,6 +101,16 @@ public class CKMScheduler implements SchedulerTask {
             return ;
         }
         spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
+
+        if(contentCheck == false){
+            //获取上一次检查完成的时间
+            Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
+            if(endTime != null){
+                //根据上一次完成时间获取上一次检查结果
+                monitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
+            }
+        }
+
     }
 
     @Override
@@ -117,6 +133,7 @@ public class CKMScheduler implements SchedulerTask {
             if (lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)) {//第一次检查或链接内容发生变化
                 //检测爬取内容
                 result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+                contentCheck = true;
             } else {//内容较上一次没有变化
                 return issueList;
             }
@@ -134,6 +151,7 @@ public class CKMScheduler implements SchedulerTask {
         if (result.getResult() != null) {
             issueList = toIssueList(page, checkTypeList, result);
         }
+//        monitorResult += issueList.size();
         return issueList;
     }
 
