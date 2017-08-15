@@ -96,6 +96,7 @@ public class IDSActor extends StdHttpSessionBasedActor {
     public void logout(HttpSession session) {
         try {
             session.invalidate();
+            log.info(" user exit : " + session.getAttribute(IDSActor.LOGIN_FLAG));
         } catch (IllegalStateException e) {
             // this can be ignored
         }
