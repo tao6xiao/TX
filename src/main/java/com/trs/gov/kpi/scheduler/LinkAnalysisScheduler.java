@@ -32,9 +32,6 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Resource
     SpiderUtils spider;
 
-    @Resource
-    WebPageMapper webPageMapper;
-
     @Setter
     @Getter
     private Integer siteId;
