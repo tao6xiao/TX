@@ -51,7 +51,8 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             }
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("queryAllPublishedDocIds", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("queryAllPublishedDocIds", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = getValidResult(response, "获取发布文档ID");
@@ -84,7 +85,8 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             params.put("DocId", String.valueOf(documentId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findDocumentById", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("findDocumentById", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             return responseManger("findDocumentById", response);
         } catch (IOException e) {
@@ -127,7 +129,8 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             params.put("URL", url);
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findDocumentByUrl", userName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("findDocumentByUrl", userName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = getValidResult(response, "获取文档");
@@ -171,15 +174,5 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             throw new RemoteException(errMsg + "失败！[" + result.getMsg() + "]");
         }
         return result;
-    }
-
-    private Request buildRequest(String methodName, String userName, Map<String, String> params) {
-        OuterApiServiceUtil.addUserNameParam(userName, params);
-        return newServiceRequestBuilder()
-                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
-                .setServiceUrl(editCenterServiceUrl)
-                .setServiceName(SERVICE_NAME)
-                .setMethodName(methodName)
-                .setParams(params).build();
     }
 }

@@ -1,5 +1,6 @@
 package com.trs.gov.kpi.scheduler;
 
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.SchedulerType;
 import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
@@ -62,8 +63,23 @@ public class PerformanceScheduler implements SchedulerTask {
     }
 
     @Override
+    public Integer getMonitorType() {
+        return null;
+    }
+
+    @Override
     public String getName() {
         return SchedulerType.PERFORMANCE_SCHEDULER.toString();
+    }
+
+    @Override
+    public EnumCheckJobType getCheckJobType() {
+        return null;
+    }
+
+    @Override
+    public Integer getMonitorResult() {
+        return null;
     }
 
 }

@@ -72,22 +72,7 @@ public class AccessInterceptor extends HandlerInterceptorAdapter {
         requestInfo.append(" method: ").append(request.getMethod()).append(", ");
         requestInfo.append(" Content-type: ").append(request.getContentType()).append(", ");
         requestInfo.append(" parameter: ");
-        Map<String, String[]> params = request.getParameterMap();
-        if (params != null && !params.isEmpty()) {
-            Iterator<String> iter = params.keySet().iterator();
-            while (iter.hasNext()) {
-                String paramKey = iter.next();
-                requestInfo.append(paramKey).append("=");
-
-                String[] paramValues = params.get(paramKey);
-                if (paramValues == null || paramValues.length == 0) {
-                    requestInfo.append("NULL");
-                } else {
-                    requestInfo.append(Arrays.toString(paramValues));
-                }
-                requestInfo.append(" ");
-            }
-        }
+        requestInfo.append(request.getQueryString());
         log.info(requestInfo.toString());
 
         checkAuthority(request);

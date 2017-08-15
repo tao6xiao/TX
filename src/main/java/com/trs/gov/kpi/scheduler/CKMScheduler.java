@@ -1,20 +1,15 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.*;
-import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
-import com.trs.gov.kpi.entity.MonitorRecord;
-import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
-import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.LinkContentStatsService;
-import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
@@ -77,20 +72,19 @@ public class CKMScheduler implements SchedulerTask {
     SiteApiService siteApiService;
 
     @Resource
-    private MonitorRecordService monitorRecordService;
-
-    @Resource
-    private CommonMapper commonMapper;
-
-    @Resource
     private LinkContentStatsService linkContentStatsService;
 
     //错误信息计数
-    private Integer ckmCount = 0;
+    @Getter
+    Integer monitorResult = 0;
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
+    @Getter
     private Integer monitorType;
+
+    @Getter
+    private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_CONTENT;
 
     @Override
     public void run() throws RemoteException {
@@ -100,16 +94,7 @@ public class CKMScheduler implements SchedulerTask {
         {
             return ;
         }
-
-
-        //监测开始(添加基本信息)
-        Date startTime = new Date();
-        insertStartMonitorRecord(startTime);
-
         spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
-
-        //监测完成(修改结果、结束时间、状态)
-        insertEndMonitorRecord(startTime);
     }
 
     @Override
@@ -275,14 +260,7 @@ public class CKMScheduler implements SchedulerTask {
                 .append(LINE_SP);
         sb.append(content.intern())
                 .append(LINE_SP);
-        // 在源码中增加定位用的脚本定义
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
-                .append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>")
-                .append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>")
-                .append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+        sb.append(addScriptDef());
         return sb.toString();
     }
 
@@ -415,26 +393,26 @@ public class CKMScheduler implements SchedulerTask {
         // 将html标签转义
         String sourceEscape = StringEscapeUtils.escapeHtml4(content);
         StringBuilder sb = new StringBuilder();
-        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-        sb.append(LINE_SP);
-        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-        sb.append(LINE_SP);
-        sb.append("	<head>");
-        sb.append(LINE_SP);
-        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
-        sb.append(LINE_SP);
-        sb.append("		<title>源码定位</title>");
-        sb.append(LINE_SP);
-        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("	</head>");
-        sb.append(LINE_SP);
-        sb.append("	<body> ");
-        sb.append(LINE_SP);
-        sb.append("		<div class=\"sh_code\">");
-        sb.append(LINE_SP);
-        sb.append("			<ol start=\"1\">");
-        sb.append(LINE_SP);
+        sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">")
+                .append(LINE_SP);
+        sb.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">")
+                .append(LINE_SP);
+        sb.append("	<head>")
+                .append(LINE_SP);
+        sb.append("		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>")
+                .append(LINE_SP);
+        sb.append("		<title>源码定位</title>")
+                .append(LINE_SP);
+        sb.append("		<link href=\"http://gov.trs.cn/jsp/cis4/css/SyntaxHighlighter.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("	</head>")
+                .append(LINE_SP);
+        sb.append("	<body> ")
+                .append(LINE_SP);
+        sb.append("		<div class=\"sh_code\">")
+                .append(LINE_SP);
+        sb.append("			<ol start=\"1\">")
+                .append(LINE_SP);
         sourceEscape = sourceEscape.replaceAll("\r", "");
         sourceEscape = sourceEscape.replaceAll("\n", LINE_SP);
         sourceEscape = sourceEscape.replaceAll(" ", "&nbsp;");
@@ -449,26 +427,34 @@ public class CKMScheduler implements SchedulerTask {
             }
             sb.append(LINE_SP);
         }
-        sb.append("			</ol>");
+        sb.append("			</ol>")
+                .append(LINE_SP);
+        sb.append("		</div>")
+                .append(LINE_SP);
+        sb.append("	</body>")
+                .append(LINE_SP);
+        sb.append(HTML_SUF)
+                .append(LINE_SP);
         sb.append(LINE_SP);
-        sb.append("		</div>");
-        sb.append(LINE_SP);
-        sb.append("	</body>");
-        sb.append(LINE_SP);
-        sb.append(HTML_SUF);
-        sb.append(LINE_SP);
-
-        // 在源码中增加定位用的脚本定义
-        sb.append(LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
-
+        sb.append(addScriptDef());
         return sb.toString();
+    }
+
+    /**
+     * 在源码中增加定位用的脚本定义
+     * @param sb
+     * @return
+     */
+    public static StringBuilder addScriptDef(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
+        return sb;
     }
 
 
@@ -493,7 +479,7 @@ public class CKMScheduler implements SchedulerTask {
                 List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
-                    ckmCount++;
+                    monitorResult++;
                 }
             } catch (RemoteException e) {
                 log.error("", e);
@@ -512,41 +498,5 @@ public class CKMScheduler implements SchedulerTask {
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
         }
     }
-
-    /**
-     * 插入检测记录
-     *
-     * @param startTime
-     */
-    private void insertStartMonitorRecord(Date startTime) {
-        MonitorRecord monitorRecord = new MonitorRecord();
-        monitorRecord.setSiteId(siteId);
-        monitorRecord.setTypeId(monitorType);
-        monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
-        monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        monitorRecordService.insertMonitorRecord(monitorRecord);
-
-    }
-
-    /**
-     * 检测结束，记录入库
-     *
-     * @param startTime
-     */
-    private void insertEndMonitorRecord(Date startTime) {
-        Date endTime = new Date();
-        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_CONTENT.value);
-        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
-
-        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-        updater.addField(MonitorRecordTableField.RESULT, ckmCount);
-        updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
-        commonMapper.update(updater, filter);
-    }
-
 
 }

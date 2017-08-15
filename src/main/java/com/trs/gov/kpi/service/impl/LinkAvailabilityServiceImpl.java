@@ -170,9 +170,9 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public void insertLinkAvailability(LinkAvailabilityResponse linkAvailabilityResponse) {
+    public void insertLinkAvailability(LinkAvailability linkAvailability) {
 
-        Issue issue = getIssueByLinkAvaliability(linkAvailabilityResponse);
+        Issue issue = getIssueByLinkAvaliability(linkAvailability);
         issueMapper.insert(DBUtil.toRow(issue));
     }
 
@@ -187,17 +187,17 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         return issueMapper.count(filter) > 0;
     }
 
-    private Issue getIssueByLinkAvaliability(LinkAvailabilityResponse linkAvailabilityResponse) {
+    private Issue getIssueByLinkAvaliability(LinkAvailability linkAvailability) {
 
         Issue issue = new Issue();
-        issue.setId(linkAvailabilityResponse.getId() == null ? null : linkAvailabilityResponse.getId());
-        issue.setSiteId(linkAvailabilityResponse.getSiteId());
+        issue.setId(linkAvailability.getId() == null ? null : linkAvailability.getId());
+        issue.setSiteId(linkAvailability.getSiteId());
         issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
-        issue.setSubTypeId(linkAvailabilityResponse.getIssueTypeId());
-        issue.setDetail(linkAvailabilityResponse.getInvalidLink());
-        issue.setIssueTime(linkAvailabilityResponse.getCheckTime());
-        issue.setCheckTime(linkAvailabilityResponse.getCheckTime());
-        issue.setCustomer1(linkAvailabilityResponse.getSnapshot());
+        issue.setSubTypeId(linkAvailability.getIssueTypeId());
+        issue.setDetail(linkAvailability.getInvalidLink());
+        issue.setIssueTime(linkAvailability.getCheckTime());
+        issue.setCheckTime(linkAvailability.getCheckTime());
+        issue.setCustomer1(linkAvailability.getSnapshot());
         return issue;
     }
 

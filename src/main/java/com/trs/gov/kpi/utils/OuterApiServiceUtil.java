@@ -99,7 +99,16 @@ public class OuterApiServiceUtil {
 
         return new Request.Builder().url(url.toString()).build();
     }
-
+    public static Request buildRequest(String methodName, String userName,
+                                       Map<String, String> params, String serviceName, String editCenterServiceUrl) {
+        OuterApiServiceUtil.addUserNameParam(userName, params);
+        return newServiceRequestBuilder()
+                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
+                .setServiceUrl(editCenterServiceUrl)
+                .setServiceName(serviceName)
+                .setMethodName(methodName)
+                .setParams(params).build();
+    }
     /**
      * 检查站点和url是否存在，存在则返回url
      * @param siteId

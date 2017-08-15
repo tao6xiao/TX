@@ -17,6 +17,7 @@ import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.PageInfoDeal;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -48,7 +49,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
 
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-        filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.CHECK_DONE.value);
         filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
 
         return monitorRecordMapper.getLastMonitorEndTime(filter);
@@ -68,10 +69,10 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
     public ApiPageData selectMonitorRecordList(PageDataRequestParam param) throws BizException {
 
         QueryFilter filter = QueryFilterHelper.toMonitorRecordFilter(param);
-        if(param.getBeginDateTime() != null){
+        if (param.getBeginDateTime() != null) {
             filter.addCond(MonitorRecordTableField.BEGIN_TIME, param.getBeginDateTime()).setRangeBegin(true);
         }
-        if(param.getEndDateTime() != null){
+        if (param.getEndDateTime() != null) {
             filter.addCond(MonitorRecordTableField.BEGIN_TIME, param.getEndDateTime()).setRangeEnd(true);
         }
         int itemCount = commonMapper.count(filter);
@@ -79,23 +80,26 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         filter.setPager(pager);
 
         List<MonitorRecord> monitorRecordList = monitorRecordMapper.selectMonitorRecordList(filter);
-        if(!monitorRecordList.isEmpty()){
-            List<MonitorRecordResponse> monitorRecordResponseList = new ArrayList<>();
-            for (MonitorRecord monitorRecord : monitorRecordList) {
-                MonitorRecordResponse monitorRecordResponse = new MonitorRecordResponse();
-                monitorRecordResponse.setTaskId(monitorRecord.getTaskId());
-                monitorRecordResponse.setTaskName(Types.MonitorRecordNameType.valueOf(monitorRecord.getTaskId()).getName());
-                monitorRecordResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecord.getTaskStatus()).getName());
-                monitorRecordResponse.setBeginDateTime(monitorRecord.getBeginTime());
-                monitorRecordResponse.setEndDateTime(monitorRecord.getEndTime());
-                monitorRecordResponse.setResult(monitorRecord.getResult());
-
-                monitorRecordResponseList.add(monitorRecordResponse);
-            }
-            return new ApiPageData(pager, monitorRecordResponseList);
-        }else{
-            List<MonitorRecordResponse> emptyMonitorRecordList = Collections.emptyList();
-            return new ApiPageData(pager, emptyMonitorRecordList);
+        List<MonitorRecordResponse> monitorRecordResponseList = new ArrayList<>();
+        for (MonitorRecord monitorRecord : monitorRecordList) {
+            MonitorRecordResponse monitorRecordResponse = toMonitorRecordResponse(monitorRecord);
+            monitorRecordResponseList.add(monitorRecordResponse);
         }
+        return new ApiPageData(pager, monitorRecordResponseList);
+    }
+
+    @NotNull
+    private MonitorRecordResponse toMonitorRecordResponse(MonitorRecord monitorRecord) {
+        MonitorRecordResponse monitorRecordResponse = new MonitorRecordResponse();
+        monitorRecordResponse.setTaskId(monitorRecord.getTaskId());
+        monitorRecordResponse.setTaskName(Types.MonitorRecordNameType.valueOf(monitorRecord.getTaskId()).getName());
+        monitorRecordResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecord.getTaskStatus()).getName());
+        monitorRecordResponse.setBeginDateTime(monitorRecord.getBeginTime());
+        monitorRecordResponse.setEndDateTime(monitorRecord.getEndTime());
+        //如果任务状态为检测失败就不返回检测结果
+        if (monitorRecord.getTaskStatus() != Status.MonitorStatusType.CHECK_ERROR.value) {
+            monitorRecordResponse.setResult(monitorRecord.getResult());
+        }
+        return monitorRecordResponse;
     }
 }
