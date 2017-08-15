@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.ids.IDSActor;
 import com.trs.gov.kpi.service.IssueService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -43,6 +44,7 @@ public class IntegratedMonitorIssueController extends IssueHandler {
      */
     @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
     public ApiPageData getAllIssueList(@ModelAttribute PageDataRequestParam param, HttpServletRequest request) throws BizException, RemoteException {
+        log.info(request.getSession().getAttribute(IDSActor.LOGIN_FLAG).toString());
         String logDesc = "查询所有未解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
