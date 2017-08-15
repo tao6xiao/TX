@@ -42,7 +42,7 @@ public class InfoErrorController extends IssueHandler {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
+    @RequestMapping(value = "/bytype/count", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误待解决和已解决问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
