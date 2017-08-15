@@ -2,8 +2,6 @@ package com.trs.gov.kpi.entity.requestdata;
 
 import lombok.Data;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
