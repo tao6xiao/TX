@@ -578,7 +578,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     }
 
     /**
-     * TODO
      * 更新已解决空栏目的状态
      */
     void updateResolvedEmptyColumn(List<Integer> chnlIdList){
@@ -674,7 +673,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      */
     private QueryFilter buildQueryFilter(List<Integer> chnlIdList, int issueTypeId, int subIssueTypeId) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
-        // TODO DONE_tao.xiao FIXED 站点编号不能写死
         filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.CUSTOMER2, chnlIdList);
         filter.addCond(IssueTableField.TYPE_ID, issueTypeId);

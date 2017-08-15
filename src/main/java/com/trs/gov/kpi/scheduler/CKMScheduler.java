@@ -286,17 +286,17 @@ public class CKMScheduler implements SchedulerTask {
         }
         StringBuilder sb = new StringBuilder();
         // 给网站增加base标签
-        sb.append("<base href=\"" + url + "\" />");
-        sb.append(LINE_SP);
-        sb.append(content.intern());
+        sb.append("<base href=\"" + url + "\" />")
+                .append(LINE_SP);
+        sb.append(content.intern())
+                .append(LINE_SP);
         // 在源码中增加定位用的脚本定义
-        sb.append(LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(LINE_SP);
+        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>")
+                .append(LINE_SP);
         sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
         return sb.toString();
     }
