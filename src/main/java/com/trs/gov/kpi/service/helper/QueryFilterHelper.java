@@ -466,13 +466,22 @@ public class QueryFilterHelper {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskName")) {
                 // TODO REVIEW LINWEI DO_li.hao 修改一下getStatusByStatusName 不要返回Invalid的情况
                 List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(param.getSearchText());
-                filter.addCond(MonitorRecordTableField.TASK_ID, taskIds);
+                if(taskIds.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+                    filter.addCond(MonitorRecordTableField.TASK_ID, Types.MonitorRecordNameType.INVALID.value);
+                }else{
+                    filter.addCond(MonitorRecordTableField.TASK_ID, taskIds);
+                }
             }else if(param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskStatusName")){
                 // TODO REVIEW LINWEI DO_li.hao 修改一下getStatusByStatusName 不要返回Invalid的情况
                 List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(param.getSearchText());
-                filter.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
+                if(statusList.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+                    filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.INVALID.value);
+                }else{
+                    filter.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
+                }
             } else if (StringUtil.isEmpty(param.getSearchField())) {
                 // TODO REVIEW LINWEI DO_li.hao  还有两种情况：searchField为空的情况(全部的情况)
+                filter.addOrConds(bulidByMonitorRecordParam(param.getSearchText()));
             } else{
                 log.error("Invalid parameter: 检索类型错误，目前支持（任务名称（taskName），任务状态名称（taskStatusName）");
                 throw new BizException(Constants.INVALID_PARAMETER);
@@ -486,4 +495,27 @@ public class QueryFilterHelper {
         }
         return filter;
     }
+
+    /**
+     * 日志监测——全部查询条件拼接
+     * @param searchText
+     * @return
+     */
+    private static OrCondDBFields bulidByMonitorRecordParam(String searchText){
+        OrCondDBFields orCondDBFields = new OrCondDBFields();
+        List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(searchText);
+        if(taskIds.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_ID, Types.MonitorRecordNameType.INVALID.value);
+        }else{
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_ID, taskIds);
+        }
+        List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(searchText);
+        if(statusList.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.INVALID.value);
+        }else{
+            orCondDBFields.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
+        }
+        return orCondDBFields;
+    }
+
 }
