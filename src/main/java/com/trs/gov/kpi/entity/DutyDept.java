@@ -11,6 +11,16 @@ import lombok.Data;
 @DBTable
 @Data
 public class DutyDept {
+
+    // 不包含子栏目
+    public static final Byte NOT_CONTAIN = 0;
+
+    // 包含子栏目
+    public static final Byte CONTAIN = 1;
+
+    // 所有情况
+    public static final Byte CONTAIN_ALL = 2;
+
     @DBField
     private Integer chnlId;//栏目编号
 

@@ -126,6 +126,39 @@ public class SiteApiServiceImpl implements SiteApiService {
     }
 
     @Override
+    public List<Integer> findChannelPath(int channelId, String userName) throws RemoteException {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("CHANNELID", String.valueOf(channelId));
+
+            OkHttpClient client = new OkHttpClient();
+            Response response = client.newCall(buildRequest("findChannelPath", userName, params, SERVICE_NAME_CHANNEL)).execute();
+
+            if (response.isSuccessful()) {
+                ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目路径");
+                if (StringUtil.isEmpty(result.getData())) {
+                    return new ArrayList<>();
+                }
+
+                List<Integer> ids = new ArrayList<>();
+                String[] strIds = result.getData().split(",");
+                for (String id : strIds) {
+                    ids.add(Integer.valueOf(id));
+                }
+                return ids;
+            } else {
+                log.error("failed to findChannelPath, chnnelId=" + channelId + ", error: " + response);
+                throw new RemoteException("获取栏目路径失败！[chnnelId=" + channelId + "]");
+            }
+        } catch (IOException e) {
+            String errorInfo = "failed findChannelPath! [chnnelId=" + channelId + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取栏目路径失败！[chnnelId=" + channelId + "]", e);
+        }
+    }
+
+    @Override
     public String getChannelPublishUrl(String userName, int siteId, int channelId) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
@@ -214,6 +247,7 @@ public class SiteApiServiceImpl implements SiteApiService {
 
     @Override
     public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
+        // TODO 该方法未实现， 需要确认一下是否使用了
         return new ArrayList<>();
     }
 

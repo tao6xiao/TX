@@ -198,6 +198,8 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         issue.setIssueTime(linkAvailability.getCheckTime());
         issue.setCheckTime(linkAvailability.getCheckTime());
         issue.setCustomer1(linkAvailability.getSnapshot());
+        issue.setCustomer2(String.valueOf(linkAvailability.getChnlId()));
+        issue.setDeptId(linkAvailability.getDeptId());
         return issue;
     }
 

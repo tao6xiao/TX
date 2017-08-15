@@ -13,6 +13,7 @@ import com.trs.gov.kpi.scheduler.CKMScheduler;
 import com.trs.gov.kpi.service.LinkAvailabilityService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -35,6 +36,7 @@ import us.codecraft.webmagic.utils.UrlUtils;
 import javax.annotation.Resource;
 import java.io.File;
 import java.lang.ref.SoftReference;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,6 +59,9 @@ public class SpiderUtils {
 
     @Resource
     private WebPageService webPageService;
+
+    @Resource
+    private SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
     private WebPageMapper webPageMapper;
@@ -209,18 +214,28 @@ public class SpiderUtils {
                 LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "url=" + request.getUrl() + ", siteId=" + siteId, e);
             }
 
-            
-
             if (!isUrlAvailable.get()) {
                 String unavailableUrl = request.getUrl();
                 Integer statusCode = (Integer) request.getExtras().get("statusCode");
                 Set<String> parents = pageParentMap.get(request.getUrl());
+
+                Integer deptId = null;
+                if (chnlId != null) {
+                    try {
+                        deptId = siteChannelServiceHelper.findRelatedDept(chnlId, "");
+                    } catch (RemoteException e) {
+                        String errorInfo = MessageFormat.format("查找栏目所属部门失败! [channelId={0}, url={1}, siteId={2}]", chnlId, request.getUrl(), siteId);
+                        log.error(errorInfo, e);
+                        LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, errorInfo, e);
+                    }
+                }
+
                 if (parents == null) {
-                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), chnlId, "", statusCode);
+                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), chnlId, deptId, "", statusCode);
                 } else {
                     for (String parentUrl : parents) {
                         final SoftReference<String> parentContentSoftReference = pageContentMap.get(parentUrl);
-                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), chnlId, parentContentSoftReference.get(), statusCode);
+                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), chnlId, deptId, parentContentSoftReference.get(), statusCode);
                     }
                 }
             } else {
@@ -276,7 +291,7 @@ public class SpiderUtils {
             isUrlAvailable.set(true);
         }
 
-        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Integer chnlId, String parentContent, Integer statusCode) {
+        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Integer chnlId, Integer deptId, String parentContent, Integer statusCode) {
 
             try {
 
@@ -284,6 +299,7 @@ public class SpiderUtils {
                 linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getValue());
                 linkAvailability.setCheckTime(new Date());
                 linkAvailability.setChnlId(chnlId);
+                linkAvailability.setDeptId(deptId);
                 linkAvailability.setSiteId(siteId);
                 linkAvailability.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
                 final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailability.getIssueTypeId(),

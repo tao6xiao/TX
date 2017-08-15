@@ -14,6 +14,7 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
 import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -61,6 +64,9 @@ public class CKMScheduler implements SchedulerTask {
 
     @Resource
     private ContentCheckApiService contentCheckApiService;
+
+    @Resource
+    private SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
     private IssueMapper issueMapper;
@@ -137,7 +143,7 @@ public class CKMScheduler implements SchedulerTask {
         return issueList;
     }
 
-    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) throws RemoteException {
+    private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) {
         List<Issue> issueList = new ArrayList<>();
         for (String checkType : checkTypeList) {
             Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
@@ -174,8 +180,10 @@ public class CKMScheduler implements SchedulerTask {
 
             Issue issue = new Issue();
             issue.setSiteId(siteId);
-            if (ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId) != null) {
-                issue.setCustomer2(String.valueOf(ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId)));
+            Integer chnlId = getChnlId(page);
+            if (chnlId != null) {
+                issue.setCustomer2(String.valueOf(chnlId));
+                setDeptId(issue, chnlId);
             }
             issue.setTypeId(Types.IssueType.INFO_ERROR_ISSUE.value);
             issue.setSubTypeId(subIssueType.value);
@@ -188,6 +196,30 @@ public class CKMScheduler implements SchedulerTask {
         }
         return issueList;
     }
+
+    private void setDeptId(Issue issue, Integer chnlId) {
+        try {
+            issue.setDeptId(siteChannelServiceHelper.findRelatedDept(chnlId, ""));
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目所属部门失败! [siteId={0}, chnlId={1}]", siteId, chnlId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+        }
+    }
+
+    @Nullable
+    private Integer getChnlId(PageCKMSpiderUtil.CKMPage page) {
+        Integer chnlId = null;
+        try {
+            chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", page.getUrl(), siteId);
+        } catch (RemoteException e) {
+            String errorInfo = MessageFormat.format("获取栏目Id失败! [siteId={0}, url={1}]", siteId, page.getUrl());
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+        }
+        return chnlId;
+    }
+
 
     public static void createIndexHtml(String dir) throws IOException {
         String htmlText = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +

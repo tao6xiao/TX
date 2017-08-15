@@ -3,6 +3,7 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.entity.DutyDept;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.DutyDeptRequest;
@@ -55,7 +56,7 @@ public class DutyDeptController {
             }
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DUTYDEPT, deptRequest.getSiteId());
 
-            if (deptService.getByChnlId(deptRequest.getChnlId()) == null) {
+            if (deptService.getByChnlId(deptRequest.getChnlId(), DutyDept.CONTAIN_ALL) == null) {
                 add(deptRequest);
             } else {
                 update(deptRequest);
