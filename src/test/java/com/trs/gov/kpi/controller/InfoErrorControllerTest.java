@@ -42,7 +42,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.datasource.url=jdbc:mysql://59.110.25.145:3306/kpidb?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true",
         "spring.datasource.username=admin",
         "spring.datasource.password=trs@mlf.028"})
-@Transactional
 public class InfoErrorControllerTest {
 
     @MockBean
@@ -61,7 +60,6 @@ public class InfoErrorControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @Rollback
     public void getIssueCount() throws Exception {
         PageDataRequestParam param = new PageDataRequestParam();
         param.setSiteId(11);
