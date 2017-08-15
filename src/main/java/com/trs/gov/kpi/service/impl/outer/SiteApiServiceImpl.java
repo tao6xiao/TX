@@ -135,7 +135,8 @@ public class SiteApiServiceImpl implements SiteApiService {
             params.put("CHANNELID", String.valueOf(channelId));
 
             OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(buildRequest("findChannelPath", userName, params, SERVICE_NAME_CHANNEL)).execute();
+            Response response = client.newCall(OuterApiServiceUtil.buildRequest("findChannelPath", userName,
+                    params, SERVICE_NAME_CHANNEL, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目路径");
