@@ -111,7 +111,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         monitorRecord.setTypeId(monitorType);
         monitorRecord.setTaskId(EnumCheckJobType.CHECK_LINK.value);
         monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
     }
 
@@ -130,7 +130,7 @@ public class LinkAnalysisScheduler implements SchedulerTask {
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
         updater.addField(MonitorRecordTableField.RESULT, spider.getCount());
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.CHECK_DONE.value);
         commonMapper.update(updater, filter);
     }
 
