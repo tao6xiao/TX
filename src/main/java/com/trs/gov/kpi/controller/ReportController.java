@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.text.ParseException;
 
 /**
@@ -150,10 +153,11 @@ public class ReportController {
 
     private void download(HttpServletResponse response, String fileName) {
         File file = new File(reportDir + fileName);
+        int index = fileName.lastIndexOf(File.separator);
         if (file.exists()) {
             response.setContentType("application/x-download");
             response.addHeader("Content-Disposition",
-                    "attachment;fileName=" + fileName);// 设置文件名
+                    "attachment;fileName=" + fileName.substring(index + 1));// 设置文件名
             byte[] buffer = new byte[1024];
             try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
                 OutputStream os = response.getOutputStream();
