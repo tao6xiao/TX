@@ -9,7 +9,7 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsResp;
 import com.trs.gov.kpi.service.InfoErrorService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -42,7 +42,7 @@ public class InfoErrorController extends IssueHandler {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/bytype/count", method = RequestMethod.GET)
+    @RequestMapping(value = "/bytype/count", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public List getIssueCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误待解决和已解决问题数量" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
@@ -59,7 +59,7 @@ public class InfoErrorController extends IssueHandler {
      * @return
      */
     @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
-    public HistoryStatisticsRes getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
+    public HistoryStatisticsResp getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误历史记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);

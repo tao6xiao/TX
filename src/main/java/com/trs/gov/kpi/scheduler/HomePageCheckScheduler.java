@@ -11,10 +11,7 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.SpiderUtils;
-import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -60,9 +57,6 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
-    //首页可用性(状态记录；0可用，1不可用)
-    int isAvailable = 0;
-
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     private Integer monitorType;
@@ -70,8 +64,8 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Override
     public void run() {
 
-        log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+        log.info(SchedulerUtil.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId));
 
         try {
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -87,16 +81,12 @@ public class HomePageCheckScheduler implements SchedulerTask {
             }
 
             //监测开始(添加基本信息)
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
-            MonitorRecord monitorRecord = new MonitorRecord();
-            monitorRecord.setSiteId(siteId);
-            monitorRecord.setTypeId(monitorType);
-            monitorRecord.setTaskId(EnumCheckJobType.CHECK_HOME_PAGE.value);
-            monitorRecord.setBeginTime(startTime);
-            monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-            monitorRecordService.insertMonitorRecord(monitorRecord);
+            insertStartMonitorRecord(startTime);
 
+            //首页可用性(状态记录；0可用，1不可用)
+            int isAvailable = 0;
             List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
             if (unavailableUrls.contains(baseUrl)) {
                 isAvailable = 1;
@@ -125,30 +115,53 @@ public class HomePageCheckScheduler implements SchedulerTask {
             }
 
             //监测完成(修改结果、结束时间、状态)
-            Date endTime = new Date();
-            QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-            filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_HOME_PAGE.value);
-            filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
+            insertEndMonitorRecord(startTime, isAvailable);
 
-            DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-            updater.addField(MonitorRecordTableField.RESULT, isAvailable);
-            updater.addField(MonitorRecordTableField.END_TIME, endTime);
-            updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
-            commonMapper.update(updater, filter);
 
-            // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
+            // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerUtil.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
             String errorInfo = "首页可用性检测失败！[siteId=" + siteId + "]";
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorInfo, e);
         } finally {
-            // TODO REVIEW LINWEI DONE_he.lang FIXED SchedulerRelated.getEndMessage(SchedulerRelated.HOMEPAGE_CHECK_SCHEDULER, siteId) 代码重复了
-            String info = SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
+            String info = SchedulerUtil.getEndMessage(SchedulerType.HOMEPAGE_CHECK_SCHEDULER.toString(), siteId);
             log.info(info);
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
 
+    }
+
+    /**
+     * 插入检测记录
+     * @param startTime
+     */
+    private void insertStartMonitorRecord(Date startTime) {
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTypeId(monitorType);
+        monitorRecord.setTaskId(EnumCheckJobType.CHECK_HOME_PAGE.value);
+        monitorRecord.setBeginTime(startTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecordService.insertMonitorRecord(monitorRecord);
+
+    }
+
+    /**
+     * 检测结束，记录入库
+     * @param startTime
+     */
+    private void insertEndMonitorRecord(Date startTime, Integer isAvailable) {
+        Date endTime = new Date();
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+        filter.addCond(MonitorRecordTableField.TASK_ID, EnumCheckJobType.CHECK_HOME_PAGE.value);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
+
+        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+        updater.addField(MonitorRecordTableField.RESULT, isAvailable);
+        updater.addField(MonitorRecordTableField.END_TIME, endTime);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        commonMapper.update(updater, filter);
     }
 }

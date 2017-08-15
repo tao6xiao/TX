@@ -18,7 +18,6 @@ public interface CommonMapper {
      */
     void insert(DBRow row);
 
-
     /**
      * 更新数据库数据
      * @param updater

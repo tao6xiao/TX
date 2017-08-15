@@ -18,6 +18,7 @@ import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SchedulerUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -85,16 +86,16 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private CommonMapper commonMapper;
 
     @Override
-    public void run() throws RemoteException, BizException {
+    public void run() {
         try {
 
-            log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+            log.info(SchedulerUtil.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
 
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER + "[siteId=" + siteId + "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.REPORT_GENERATE_SCHEDULER + "[siteId=" + siteId + "]");
             Date startTime = new Date();
             //报表生成——监测开始(添加基本信息)
-            insertStartMonitorRecord();
+            insertStartMonitorRecord(startTime);
 
             IssueCountRequest request = new IssueCountRequest();
             request.setSiteIds(Integer.toString(siteId));
@@ -128,7 +129,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             }
             sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
-            String fileDir = "/" + Integer.toString(siteId) + "/" + granularity + "/";
+            String fileDir = File.separator + Integer.toString(siteId) + File.separator + granularity + File.separator;
             String fileName = sdf.format(new Date()) + ".xlsx";
             Workbook workbook = new XSSFWorkbook();
             Sheet sheet = workbook.createSheet("问题统计");// 创建工作表(Sheet)
@@ -279,16 +280,19 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
             Date endTime = new Date();
             //报表生成——监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime,monitorResult);
+            insertEndMonitorRecord(startTime, monitorResult, endTime);
 
             report.setPath(fileDir + fileName);
             report.setCrTime(new Date());
             //入库
             reportMapper.insert(report);
             performanceLogRecorder.recordAlways();
-        } finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+        }catch (Exception e){
+            log.error("", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "报表生成任务调度运行失败，站点siteId[" + siteId + "]", e);
+        }finally {
+            log.info(SchedulerUtil.getEndMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerUtil.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
         }
 
     }
@@ -369,10 +373,10 @@ public class ReportGenerateScheduler implements SchedulerTask {
     }
 
     /**
-     * 报表生成任务开始，基本信息入库
+     * 插入检测记录
+     * @param startTime
      */
-    private void insertStartMonitorRecord(){
-        Date startTime = new Date();
+    private void insertStartMonitorRecord(Date startTime){
         MonitorRecord monitorRecord = new MonitorRecord();
         monitorRecord.setSiteId(siteId);
         monitorRecord.setTypeId(monitorType);
@@ -387,12 +391,13 @@ public class ReportGenerateScheduler implements SchedulerTask {
     }
 
     /**
-     * 报表生成任务结束，修改结果、结束时间、状态
+     * 检测完成，修改结果、结束时间、状态
      * @param startTime
      * @param result
+     * @param endTime
      */
-    private void insertEndMonitorRecord(Date startTime, Integer result){
-        Date endTime = new Date();
+    private void insertEndMonitorRecord(Date startTime, Integer result, Date endTime){
+
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
         if(isTimeNode){

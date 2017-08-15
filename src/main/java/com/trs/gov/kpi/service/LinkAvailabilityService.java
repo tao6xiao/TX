@@ -18,7 +18,7 @@ public interface LinkAvailabilityService {
      * @param param
      * @return
      */
-    HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param);
+    HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param);
 
     /**
      * 查询未解决问题的列表

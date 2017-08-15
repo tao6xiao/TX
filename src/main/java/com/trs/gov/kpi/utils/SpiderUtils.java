@@ -317,11 +317,11 @@ public class SpiderUtils {
 
                     linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
                     count++;
-                }else {
+                } else {
                     QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
                     queryFilter.addCond(IssueTableField.SITE_ID, siteId);
-                    queryFilter.addCond(IssueTableField.TYPE_ID,Types.IssueType.LINK_AVAILABLE_ISSUE);
-                    queryFilter.addCond(IssueTableField.DETAIL,unavailableUrlAndParentUrl.getValue());
+                    queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                    queryFilter.addCond(IssueTableField.DETAIL, unavailableUrlAndParentUrl.getValue());
                     queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
                     queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
                     DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());

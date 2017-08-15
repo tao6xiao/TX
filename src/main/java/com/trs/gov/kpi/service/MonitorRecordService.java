@@ -19,8 +19,6 @@ public interface MonitorRecordService {
      */
     void insertMonitorRecord(MonitorRecord monitorRecord);
 
-
-    // TODO REVIEW LINWEI DO_li.hao FIXED 函数名称体现不出来是最近一次检测任务，容易产生误解
     /**
      * 查询最近的监测任务的结束时间
      *
@@ -31,7 +29,7 @@ public interface MonitorRecordService {
     Date getLastMonitorEndTime(Integer siteId, Integer taskId);
 
     /**
-     * 根据最后一次监测完成时间获取首页可用性的状态
+     * 获取最后一次监测完成的结果
      * @param siteId
      * @param taskId
      * @param endTime

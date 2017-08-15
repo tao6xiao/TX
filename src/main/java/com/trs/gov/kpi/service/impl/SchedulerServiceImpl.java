@@ -273,7 +273,6 @@ public class SchedulerServiceImpl implements SchedulerService {
 
         for (MonitorSite site : allMonitorSites) {
             // 每个月1日凌晨0点执行一次
-            // TODO REVIEW LINWEI DONE_he.lang FIXED 这个地方没有记录日志
             scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, FIRST_DAY_OF_MONTH);
         }
     }
@@ -376,7 +375,7 @@ public class SchedulerServiceImpl implements SchedulerService {
     private void scheduleJob(Scheduler scheduler, EnumCheckJobType jobType, MonitorSite site, String cronExpress) {
         try {
             scheduleJob(scheduler, jobType, site, cronSchedule(cronExpress));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务成功：任务类型:" + jobType.name() + "，间隔时间：" + cronSchedule(cronExpress));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务成功：任务类型:" + jobType.name() + "，间隔时间：cornExpress = " + cronExpress);
         } catch (SchedulerException e) {
             addSchedulerExceptionLog(jobType, site, e);
         }

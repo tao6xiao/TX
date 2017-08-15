@@ -13,6 +13,7 @@ import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.WebPageService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SchedulerUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
@@ -73,8 +74,8 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Override
     public void run() {
 
-        log.info(SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerRelated.getStartMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
+        log.info(SchedulerUtil.getStartMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
 
         try {
             final Site checkSite = siteApiService.getSiteById(siteId, null);
@@ -90,7 +91,7 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             }
 
             //监测开始(添加基本信息)
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER + "[siteId=" + siteId + "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER + "[siteId=" + siteId + "]");
 
             // 插入检测记录
             Date startTime = new Date();
@@ -107,8 +108,8 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
         } finally {
-            log.info(SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerRelated.getEndMessage(SchedulerRelated.SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
+            log.info(SchedulerUtil.getEndMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerUtil.getEndMessage(SchedulerType.LINK_ANALYSIS_SCHEDULER.toString(), siteId));
 
         }
     }

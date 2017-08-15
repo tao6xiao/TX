@@ -30,14 +30,6 @@ public interface MonitorRecordMapper {
     Date getLastMonitorEndTime(QueryFilter filter);
 
     /**
-     * 根据filter中的条件查询数据数量
-     * @param filter
-     * @return
-     */
-    // TODO REVIEW LINWEI DO_li.hao FIXED 在CommonMap里面弄一个通用的Count方法
-    int selectMonitorRecordCount(QueryFilter filter);
-
-    /**
      * 根据filter中的条件查询数据列表
      * @param filter
      * @return

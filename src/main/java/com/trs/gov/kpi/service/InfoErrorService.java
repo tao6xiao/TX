@@ -4,7 +4,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsRes;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsResp;
 import com.trs.gov.kpi.entity.responsedata.InfoErrorOrderRes;
 import com.trs.gov.kpi.entity.responsedata.Statistics;
 
@@ -30,7 +30,7 @@ public interface InfoErrorService {
      * @param param
      * @return
      */
-    HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param);
+    HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param);
 
     /**
      * 查询未解决问题的列表

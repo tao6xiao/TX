@@ -102,7 +102,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
     }
 
     @Override
-    public HistoryStatisticsRes getIssueHistoryCount(PageDataRequestParam param) {
+    public HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param) {
         param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
@@ -119,7 +119,7 @@ public class InfoUpdateServiceImpl implements InfoUpdateService {
             historyStatistics.setTime(date.getDate());
             list.add(historyStatistics);
         }
-        return new HistoryStatisticsRes(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value), list);
+        return new HistoryStatisticsResp(monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value), list);
     }
 
     /**

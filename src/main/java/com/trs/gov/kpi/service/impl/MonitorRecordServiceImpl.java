@@ -72,8 +72,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
             filter.addCond(MonitorRecordTableField.BEGIN_TIME, param.getBeginDateTime()).setRangeBegin(true);
         }
         if(param.getEndDateTime() != null){
-            filter.addCond(MonitorRecordTableField.END_TIME, param.getEndDateTime()).setRangeEnd(true);
-
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME, param.getEndDateTime()).setRangeEnd(true);
         }
         int itemCount = commonMapper.count(filter);
         Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
