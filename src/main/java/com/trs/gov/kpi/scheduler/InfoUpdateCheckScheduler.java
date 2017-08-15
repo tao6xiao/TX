@@ -104,43 +104,42 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private Integer monitorType;
 
     @Override
-    public void run() {
-        try {
-            log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+    public void run() throws RemoteException {
+        log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.INFO_UPDATE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
+        //监测开始(添加基本信息)
+        Date startTime = new Date();
+        insertStartMonitorRecord(startTime);
 
-            //监测开始(添加基本信息)
-            Date startTime = new Date();
-            insertStartMonitorRecord(startTime);
+        List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
-            List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
-
-            // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
-            for (SimpleTree<CheckingChannel> tree : siteTrees) {
-                List<SimpleTree.Node<CheckingChannel>> children = tree.getRoot().getChildren();
-                if (children == null) {
-                    continue;
-                }
-                for (SimpleTree.Node<CheckingChannel> child : children) {
+        // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
+        for (SimpleTree<CheckingChannel> tree : siteTrees) {
+            List<SimpleTree.Node<CheckingChannel>> children = tree.getRoot().getChildren();
+            if (children == null) {
+                continue;
+            }
+            for (SimpleTree.Node<CheckingChannel> child : children) {
+                try {
                     checkChannelTreeUpdate(child);
+                } catch (ParseException e) {
+                    String errorInfo = "检查当前栏目channel[" + child + "]下的子栏目是否更新";
+                    log.error(errorInfo, e);
+                    LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
                 }
             }
-
-            insertIssueAndWarning(siteTrees);
-
-            //监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime);
-
-            performanceLogRecorder.recordAlways();
-        } catch (Exception e) {
-            log.error("check link:{}, siteId:{} info update error!", baseUrl, siteId, e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} info update error!", e);
-        } finally {
-            log.info(SchedulerUtil.getEndMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, SchedulerUtil.getEndMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         }
+
+        insertIssueAndWarning(siteTrees);
+
+        //监测完成(修改结果、结束时间、状态)
+        insertEndMonitorRecord(startTime);
+    }
+
+    @Override
+    public String getName() {
+        return SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString();
     }
 
 
@@ -581,7 +580,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * TODO
      * 更新已解决空栏目的状态
      */
-    void updateResolvedEmptyColumn(List<Integer> chnlIdList){
+    void updateResolvedEmptyColumn(List<Integer> chnlIdList) {
         QueryFilter filter = buildQueryFilter(
                 Types.IssueType.EMPTY_CHANNEL.value,
                 Types.EmptyChannelType.EMPTY_COLUMN.value,
@@ -589,17 +588,17 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         List<Issue> issues = issueMapper.select(filter);
         List<Integer> chnlIdListInDB = new ArrayList<>();
         //获取数据库中空栏目记录的栏目ID集合
-        for(Issue issue :issues ){
+        for (Issue issue : issues) {
             try {
                 chnlIdListInDB.add(Integer.valueOf(issue.getCustomer2()));
-            }catch (Exception e){
-                log.error("",e.getMessage());
+            } catch (Exception e) {
+                log.error("", e.getMessage());
             }
 
         }
         //从数据库空栏目ID集合中去掉仍为空栏目的集合，余下为已处理的空栏目。
         chnlIdListInDB.removeAll(chnlIdList);
-        for(Integer resolvedChnlId : chnlIdListInDB){
+        for (Integer resolvedChnlId : chnlIdListInDB) {
             filter = buildQueryFilter(Arrays.asList(resolvedChnlId),
                     Types.IssueType.EMPTY_CHANNEL.value,
                     Types.EmptyChannelType.EMPTY_COLUMN.value);
@@ -690,7 +689,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * @param subIssueTypeId
      * @return
      */
-    private QueryFilter buildQueryFilter(int issueTypeId, int subIssueTypeId, int isResolved ) {
+    private QueryFilter buildQueryFilter(int issueTypeId, int subIssueTypeId, int isResolved) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
@@ -755,6 +754,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 插入检测记录
+     *
      * @param startTime
      */
     private void insertStartMonitorRecord(Date startTime) {
@@ -770,6 +770,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 检测结束，记录入库
+     *
      * @param startTime
      */
     private void insertEndMonitorRecord(Date startTime) {
