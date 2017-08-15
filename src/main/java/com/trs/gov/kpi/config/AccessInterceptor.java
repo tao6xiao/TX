@@ -1,7 +1,6 @@
 package com.trs.gov.kpi.config;
 
 import com.trs.gov.kpi.constant.Authority;
-import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.outer.AuthorityService;
