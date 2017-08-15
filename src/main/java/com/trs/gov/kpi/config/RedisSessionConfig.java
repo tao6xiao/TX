@@ -1,8 +1,5 @@
 package com.trs.gov.kpi.config;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-
 /**
  * Created by linwei on 2017/8/8.
  */
