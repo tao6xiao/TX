@@ -15,9 +15,7 @@ import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.PageInfoDeal;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 

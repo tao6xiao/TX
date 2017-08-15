@@ -3,7 +3,6 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -22,7 +21,7 @@ import javax.annotation.Resource;
  * Created by he.lang on 2017/5/18.
  */
 @RestController
-@RequestMapping(UrlPath.INTEGRATED_MONITOR_WARNING_PATH)
+@RequestMapping("/gov/kpi/alert")
 @Slf4j
 public class IntegratedMonitorWarningController extends IssueHandler {
 

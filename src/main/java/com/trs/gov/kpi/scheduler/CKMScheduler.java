@@ -93,43 +93,32 @@ public class CKMScheduler implements SchedulerTask {
     private Integer monitorType;
 
     @Override
-    public void run() {
-        try {
-            log.info(SchedulerUtil.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId));
-
-            final Site checkSite = siteApiService.getSiteById(siteId, null);
-            if (checkSite == null) {
-                log.warn("site[" + siteId + "] is not exist!");
-                return;
-            }
-
-            baseUrl = checkSite.getWebHttp();
-            if (StringUtil.isEmpty(baseUrl)) {
-                log.warn("site[" + siteId + "]'s web http is empty!");
-                return;
-            }
-
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER + "[siteId=" + siteId + "]");
-
-            //监测开始(添加基本信息)
-            Date startTime = new Date();
-            insertStartMonitorRecord(startTime);
-
-            spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
-
-            //监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime);
-
-            performanceLogRecorder.recordAlways();
-        } catch (RemoteException e) {
-            log.error("");
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息错误监测，siteId[" + siteId + "]，url[" + baseUrl + "]", e);
-        } finally {
-            String info = SchedulerUtil.getEndMessage(SchedulerType.CKM_SCHEDULER.toString(), siteId);
-            log.info(info);
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
+    public void run() throws RemoteException {
+        final Site checkSite = siteApiService.getSiteById(siteId, null);
+        if (checkSite == null) {
+            log.warn("site[" + siteId + "] is not exist!");
+            return;
         }
+
+        baseUrl = checkSite.getWebHttp();
+        if (StringUtil.isEmpty(baseUrl)) {
+            log.warn("site[" + siteId + "]'s web http is empty!");
+            return;
+        }
+
+        //监测开始(添加基本信息)
+        Date startTime = new Date();
+        insertStartMonitorRecord(startTime);
+
+        spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
+
+        //监测完成(修改结果、结束时间、状态)
+        insertEndMonitorRecord(startTime);
+    }
+
+    @Override
+    public String getName() {
+        return SchedulerType.CKM_SCHEDULER.toString();
     }
 
     private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList) throws RemoteException {
@@ -286,17 +275,17 @@ public class CKMScheduler implements SchedulerTask {
         }
         StringBuilder sb = new StringBuilder();
         // 给网站增加base标签
-        sb.append("<base href=\"" + url + "\" />");
-        sb.append(LINE_SP);
-        sb.append(content.intern());
+        sb.append("<base href=\"" + url + "\" />")
+                .append(LINE_SP);
+        sb.append(content.intern())
+                .append(LINE_SP);
         // 在源码中增加定位用的脚本定义
-        sb.append(LINE_SP);
-        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>");
-        sb.append(LINE_SP);
-        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>");
-        sb.append(LINE_SP);
+        sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.js\"></script>")
+                .append(LINE_SP);
+        sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/jquery.qtip.min.js\"></script>")
+                .append(LINE_SP);
         sb.append("<script type=\"text/javascript\" src=\"http://gov.trs.cn/jsp/cis4/js/trsposition.js\"></script>");
         return sb.toString();
     }

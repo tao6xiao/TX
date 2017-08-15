@@ -148,9 +148,6 @@ public class Status {
                     statrsList.add(taskStatus);
                 }
             }
-            if(statrsList.isEmpty()){
-                statrsList.add(INVALID.value);
-            }
             return statrsList;
         }
     }

@@ -2,7 +2,6 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -23,7 +22,7 @@ import javax.annotation.Resource;
  * Created by he.lang on 2017/5/17.
  */
 @RestController
-@RequestMapping(UrlPath.SERVICE_LINK_PATH)
+@RequestMapping("/gov/kpi/service/link/issue")
 public class ServiceLinkController extends IssueHandler {
     @Resource
     private LinkAvailabilityService linkAvailabilityService;

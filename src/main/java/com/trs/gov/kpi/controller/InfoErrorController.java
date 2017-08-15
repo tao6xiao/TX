@@ -4,7 +4,6 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -27,7 +26,7 @@ import java.util.List;
  * 信息错误问题
  */
 @RestController
-@RequestMapping(UrlPath.INFO_ERROR_PATH)
+@RequestMapping("/gov/kpi/content/issue")
 public class InfoErrorController extends IssueHandler {
 
     @Resource
