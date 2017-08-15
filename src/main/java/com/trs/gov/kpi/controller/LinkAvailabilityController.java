@@ -27,7 +27,7 @@ import java.util.List;
  * 链接可用性问题
  */
 @RestController
-@RequestMapping(UrlPath.LINK_AVAILABILITY_PATH)
+@RequestMapping("/gov/kpi/available/issue")
 public class LinkAvailabilityController extends IssueHandler {
 
     @Resource

@@ -27,7 +27,7 @@ import java.util.List;
  * 信息错误问题
  */
 @RestController
-@RequestMapping(UrlPath.INFO_ERROR_PATH)
+@RequestMapping("/gov/kpi/content/issue")
 public class InfoErrorController extends IssueHandler {
 
     @Resource

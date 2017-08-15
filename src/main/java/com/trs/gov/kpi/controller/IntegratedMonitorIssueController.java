@@ -23,7 +23,7 @@ import javax.annotation.Resource;
  * 综合实时监测：待解决问题Controller
  */
 @RestController
-@RequestMapping(UrlPath.INTEGRATED_MONITOR_ISSUE_PATH)
+@RequestMapping("/gov/kpi/issue")
 public class IntegratedMonitorIssueController extends IssueHandler {
 
     @Resource

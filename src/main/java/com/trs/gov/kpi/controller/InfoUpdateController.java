@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping(UrlPath.INFO_UPDATE_PATH)
+@RequestMapping("/gov/kpi/channel/issue")
 public class InfoUpdateController extends IssueHandler {
 
     @Resource

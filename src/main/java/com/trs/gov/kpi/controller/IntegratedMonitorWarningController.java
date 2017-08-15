@@ -22,7 +22,7 @@ import javax.annotation.Resource;
  * Created by he.lang on 2017/5/18.
  */
 @RestController
-@RequestMapping(UrlPath.INTEGRATED_MONITOR_WARNING_PATH)
+@RequestMapping("/gov/kpi/alert")
 @Slf4j
 public class IntegratedMonitorWarningController extends IssueHandler {
 

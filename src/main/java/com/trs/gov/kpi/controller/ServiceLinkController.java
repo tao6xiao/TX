@@ -23,7 +23,7 @@ import javax.annotation.Resource;
  * Created by he.lang on 2017/5/17.
  */
 @RestController
-@RequestMapping(UrlPath.SERVICE_LINK_PATH)
+@RequestMapping("/gov/kpi/service/link/issue")
 public class ServiceLinkController extends IssueHandler {
     @Resource
     private LinkAvailabilityService linkAvailabilityService;
