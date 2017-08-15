@@ -47,10 +47,6 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Getter
     private Boolean isTimeNode;
 
-    //错误信息计数
-    @Getter
-    Integer monitorResult = spider.getCount();
-
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     @Getter
@@ -73,5 +69,10 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     @Override
     public String getName() {
         return SchedulerType.LINK_ANALYSIS_SCHEDULER.toString();
+    }
+
+    @Override
+    public Integer getMonitorResult() {
+        return spider.getCount();
     }
 }
