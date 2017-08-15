@@ -82,6 +82,4 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     public String getName() {
         return SchedulerType.LINK_ANALYSIS_SCHEDULER.toString();
     }
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
 }
