@@ -61,6 +61,11 @@ public class HomePageCheckScheduler implements SchedulerTask {
     @Setter
     private Integer monitorType;
 
+    //首页可用性(状态记录；0可用，1不可用)
+    private Integer homePageisAvailable = 0;
+
+    private Date startTime;//开始时间记录
+
     @Override
     public void run() {
 
@@ -82,14 +87,12 @@ public class HomePageCheckScheduler implements SchedulerTask {
 
             //监测开始(添加基本信息)
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.HOMEPAGE_CHECK_SCHEDULER + "[siteId=" + siteId + "]");
-            Date startTime = new Date();
+            startTime = new Date();
             insertStartMonitorRecord(startTime);
 
-            //首页可用性(状态记录；0可用，1不可用)
-            int isAvailable = 0;
             List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);
             if (unavailableUrls.contains(baseUrl)) {
-                isAvailable = 1;
+                homePageisAvailable = 1;
                 QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
                 queryFilter.addCond(IssueTableField.SITE_ID, siteId);
                 queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
@@ -113,14 +116,13 @@ public class HomePageCheckScheduler implements SchedulerTask {
                     commonMapper.update(updater, queryFilter);
                 }
             }
-
             //监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime, isAvailable);
-
-
+            insertEndMonitorRecord(startTime, homePageisAvailable, Status.MonitorStatusType.CHECK_DONE.value);
             // TODO REVIEW LINWEI DO_he.lang  性能日志的operationType有没有规范？要不然会冲突。 SchedulerUtil.HOMEPAGE_CHECK_SCHEDULER.intern() intern不需要
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
+            //监测失败
+            insertEndMonitorRecord(startTime, homePageisAvailable, Status.MonitorStatusType.CHECK_ERROR.value);
             String errorInfo = "首页可用性检测失败！[siteId=" + siteId + "]";
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, errorInfo, e);
@@ -142,7 +144,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
         monitorRecord.setTypeId(monitorType);
         monitorRecord.setTaskId(EnumCheckJobType.CHECK_HOME_PAGE.value);
         monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
 
     }
@@ -151,7 +153,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
      * 检测结束，记录入库
      * @param startTime
      */
-    private void insertEndMonitorRecord(Date startTime, Integer isAvailable) {
+    private void insertEndMonitorRecord(Date startTime, Integer isAvailable, Integer taskStatus) {
         Date endTime = new Date();
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
@@ -161,7 +163,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
         updater.addField(MonitorRecordTableField.RESULT, isAvailable);
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
         commonMapper.update(updater, filter);
     }
 }

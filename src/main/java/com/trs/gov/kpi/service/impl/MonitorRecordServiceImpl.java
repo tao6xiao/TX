@@ -48,7 +48,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
 
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
-        filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.CHECK_DONE.value);
         filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
 
         return monitorRecordMapper.getLastMonitorEndTime(filter);
@@ -88,8 +88,10 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
                 monitorRecordResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecord.getTaskStatus()).getName());
                 monitorRecordResponse.setBeginDateTime(monitorRecord.getBeginTime());
                 monitorRecordResponse.setEndDateTime(monitorRecord.getEndTime());
-                monitorRecordResponse.setResult(monitorRecord.getResult());
-
+                //如果任务状态为检测失败就不返回检测结果
+                if(monitorRecord.getTaskStatus() != Status.MonitorStatusType.CHECK_ERROR.value) {
+                    monitorRecordResponse.setResult(monitorRecord.getResult());
+                }
                 monitorRecordResponseList.add(monitorRecordResponse);
             }
             return new ApiPageData(pager, monitorRecordResponseList);

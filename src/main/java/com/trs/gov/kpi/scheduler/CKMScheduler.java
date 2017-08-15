@@ -92,6 +92,8 @@ public class CKMScheduler implements SchedulerTask {
     @Setter
     private Integer monitorType;
 
+    private Date startTime;//开始时间记录
+
     @Override
     public void run() {
         try {
@@ -113,16 +115,16 @@ public class CKMScheduler implements SchedulerTask {
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.CKM_SCHEDULER + "[siteId=" + siteId + "]");
 
             //监测开始(添加基本信息)
-            Date startTime = new Date();
+            startTime = new Date();
             insertStartMonitorRecord(startTime);
 
             spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
-
             //监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime);
-
+            insertEndMonitorRecord(startTime, Status.MonitorStatusType.CHECK_DONE.value, ckmCount);
             performanceLogRecorder.recordAlways();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
+            //监测失败
+            insertEndMonitorRecord(startTime, Status.MonitorStatusType.CHECK_ERROR.value, 0);
             log.error("");
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息错误监测，siteId[" + siteId + "]，url[" + baseUrl + "]", e);
         } finally {
@@ -539,7 +541,7 @@ public class CKMScheduler implements SchedulerTask {
         monitorRecord.setTypeId(monitorType);
         monitorRecord.setTaskId(EnumCheckJobType.CHECK_CONTENT.value);
         monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
 
     }
@@ -549,7 +551,7 @@ public class CKMScheduler implements SchedulerTask {
      *
      * @param startTime
      */
-    private void insertEndMonitorRecord(Date startTime) {
+    private void insertEndMonitorRecord(Date startTime, Integer taskStatus, Integer ckmCount) {
         Date endTime = new Date();
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
@@ -559,7 +561,7 @@ public class CKMScheduler implements SchedulerTask {
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
         updater.addField(MonitorRecordTableField.RESULT, ckmCount);
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
         commonMapper.update(updater, filter);
     }
 

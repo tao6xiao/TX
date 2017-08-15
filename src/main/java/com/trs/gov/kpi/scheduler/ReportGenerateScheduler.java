@@ -85,6 +85,12 @@ public class ReportGenerateScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    private Date endTime;
+    private Date startTime;
+
+    //报表生成结果（0：完成：1：失败）
+    private Integer monitorResult = 0;
+
     @Override
     public void run() {
         try {
@@ -93,7 +99,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.REPORT_GENERATE_SCHEDULER.toString(), siteId));
 
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.REPORT_GENERATE_SCHEDULER + "[siteId=" + siteId + "]");
-            Date startTime = new Date();
+            startTime = new Date();
             //报表生成——监测开始(添加基本信息)
             insertStartMonitorRecord(startTime);
 
@@ -266,9 +272,6 @@ public class ReportGenerateScheduler implements SchedulerTask {
                 dir.mkdirs();
             }
 
-            //
-            int monitorResult = 0;
-
             //写入文件
             try (FileOutputStream out = new FileOutputStream(reportDir + fileDir + fileName)) {
                 workbook.write(out);
@@ -277,10 +280,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
                 log.error("", e);
                 LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "报表生成，文件写入错误，siteId[" + siteId + "]", e);
             }
-
-            Date endTime = new Date();
+            endTime = new Date();
             //报表生成——监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime, monitorResult, endTime);
+            insertEndMonitorRecord(startTime, monitorResult, endTime ,Status.MonitorStatusType.CHECK_DONE.value);
 
             report.setPath(fileDir + fileName);
             report.setCrTime(new Date());
@@ -288,6 +290,8 @@ public class ReportGenerateScheduler implements SchedulerTask {
             reportMapper.insert(report);
             performanceLogRecorder.recordAlways();
         }catch (Exception e){
+            //检测失败
+            insertEndMonitorRecord(startTime, monitorResult, endTime, Status.MonitorStatusType.CHECK_ERROR.value);
             log.error("", e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "报表生成任务调度运行失败，站点siteId[" + siteId + "]", e);
         }finally {
@@ -386,7 +390,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             monitorRecord.setTaskId(EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE.value);
         }
         monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
     }
 
@@ -396,7 +400,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
      * @param result
      * @param endTime
      */
-    private void insertEndMonitorRecord(Date startTime, Integer result, Date endTime){
+    private void insertEndMonitorRecord(Date startTime, Integer result, Date endTime, Integer taskStatus){
 
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
@@ -410,7 +414,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
         updater.addField(MonitorRecordTableField.RESULT,result);
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
         commonMapper.update(updater, filter);
     }
 

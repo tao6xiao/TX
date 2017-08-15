@@ -71,6 +71,8 @@ public class LinkAnalysisScheduler implements SchedulerTask{
     @Setter
     private Integer monitorType;
 
+    private Date startTime;
+
     @Override
     public void run() {
 
@@ -94,17 +96,17 @@ public class LinkAnalysisScheduler implements SchedulerTask{
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, SchedulerType.LINK_ANALYSIS_SCHEDULER + "[siteId=" + siteId + "]");
 
             // 插入检测记录
-            Date startTime = new Date();
+            startTime = new Date();
             insertStartMonitorRecord(startTime);
-
             spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
 
             //监测完成(修改结果、结束时间、状态)
-            insertEndMonitorRecord(startTime);
-
+            insertEndMonitorRecord(startTime, Status.MonitorStatusType.CHECK_DONE.value, spider.getCount());
             // 记录性能日志
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
+            //检测失败
+            insertEndMonitorRecord(startTime, Status.MonitorStatusType.CHECK_ERROR.value, 0);
             log.error("check link:{}, siteId:{} availability error!", baseUrl, siteId, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.REQUEST_FAILED, "check link:{" + baseUrl + "}, siteId:{" + siteId + "} availability error!", e);
         } finally {
@@ -124,7 +126,7 @@ public class LinkAnalysisScheduler implements SchedulerTask{
         monitorRecord.setTypeId(monitorType);
         monitorRecord.setTaskId(EnumCheckJobType.CHECK_LINK.value);
         monitorRecord.setBeginTime(startTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING.value);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
     }
 
@@ -132,7 +134,7 @@ public class LinkAnalysisScheduler implements SchedulerTask{
      * 检测结束，记录入库
      * @param startTime
      */
-    private void insertEndMonitorRecord(Date startTime) {
+    private void insertEndMonitorRecord(Date startTime, Integer taskStatus, Integer LinkAnalysisCount) {
         Date endTime = new Date();
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
@@ -140,9 +142,9 @@ public class LinkAnalysisScheduler implements SchedulerTask{
         filter.addCond(MonitorRecordTableField.BEGIN_TIME,startTime);
 
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-        updater.addField(MonitorRecordTableField.RESULT,spider.getCount());
+        updater.addField(MonitorRecordTableField.RESULT,LinkAnalysisCount);
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DONE.value);
+        updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
         commonMapper.update(updater, filter);
     }
 
