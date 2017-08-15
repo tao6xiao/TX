@@ -11,10 +11,9 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.MonitorRecordService;
+import com.trs.gov.kpi.service.outer.OuterApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.SpiderUtils;
-import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,16 +67,12 @@ public class HomePageCheckScheduler implements SchedulerTask {
     public void run() throws RemoteException {
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
-        if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exsit!");
-            return;
+        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
+        if(StringUtil.isEmpty(baseUrl))
+        {
+            return ;
         }
 
-        baseUrl = checkSite.getWebHttp();
-        if (StringUtil.isEmpty(baseUrl)) {
-            log.warn("site[" + siteId + "]'s web http is empty!");
-            return;
-        }
 
         //监测开始(添加基本信息)
         Date startTime = new Date();

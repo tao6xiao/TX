@@ -95,16 +95,12 @@ public class CKMScheduler implements SchedulerTask {
     @Override
     public void run() throws RemoteException {
         final Site checkSite = siteApiService.getSiteById(siteId, null);
-        if (checkSite == null) {
-            log.warn("site[" + siteId + "] is not exist!");
-            return;
+        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
+        if(StringUtil.isEmpty(baseUrl))
+        {
+            return ;
         }
 
-        baseUrl = checkSite.getWebHttp();
-        if (StringUtil.isEmpty(baseUrl)) {
-            log.warn("site[" + siteId + "]'s web http is empty!");
-            return;
-        }
 
         //监测开始(添加基本信息)
         Date startTime = new Date();

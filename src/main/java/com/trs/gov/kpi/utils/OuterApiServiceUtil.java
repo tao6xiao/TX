@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.squareup.okhttp.Request;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Iterator;
@@ -97,5 +98,24 @@ public class OuterApiServiceUtil {
         }
 
         return new Request.Builder().url(url.toString()).build();
+    }
+
+    /**
+     * 检查站点和url是否存在，存在则返回url
+     * @param siteId
+     * @param checkSite
+     * @return
+     */
+    public static String checkSiteAndGetUrl(Integer siteId, Site checkSite){
+        if (checkSite == null) {
+            log.error("site[" + siteId + "] is not exsit!");
+            return null;
+        }
+        String baseUrl = checkSite.getWebHttp();
+        if (StringUtil.isEmpty(baseUrl)) {
+            log.warn("site[" + siteId + "]'s web http is empty!");
+            return null;
+        }
+        return baseUrl;
     }
 }
