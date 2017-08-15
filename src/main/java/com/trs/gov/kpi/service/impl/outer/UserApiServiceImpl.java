@@ -43,7 +43,8 @@ public class UserApiServiceImpl implements UserApiService {
             params.put("userId", String.valueOf(userId));
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findUserById", currUserName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("findUserById", currUserName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取用户");
@@ -72,7 +73,8 @@ public class UserApiServiceImpl implements UserApiService {
             params.put("userName", userName);
             OkHttpClient client = new OkHttpClient();
             Response response = client.newCall(
-                    buildRequest("findUserByUserName", currUserName, params)).execute();
+                    OuterApiServiceUtil.buildRequest("findUserByUserName", currUserName,
+                            params, SERVICE_NAME, editCenterServiceUrl)).execute();
 
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取用户");
@@ -89,15 +91,5 @@ public class UserApiServiceImpl implements UserApiService {
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed get user by userName from edit center", e);
             throw new RemoteException("获取用户失败！", e);
         }
-    }
-
-    private Request buildRequest(String methodName, String userName, Map<String, String> params) {
-        OuterApiServiceUtil.addUserNameParam(userName, params);
-        return newServiceRequestBuilder()
-                .setUrlFormat("%s/gov/opendata.do?serviceId=%s&methodname=%s")
-                .setServiceUrl(editCenterServiceUrl)
-                .setServiceName(SERVICE_NAME)
-                .setMethodName(methodName)
-                .setParams(params).build();
     }
 }
