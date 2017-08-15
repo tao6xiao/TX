@@ -106,9 +106,9 @@ public class Status {
     public enum MonitorStatusType {
 
         INVALID(-1, "未知类型"),
-        NO(0,"未提交监测"),
-        DOING(1, "正在运行"),
-        DONE(2, "运行结束");
+        DOING_CHECK(1, "正在检测"),
+        CHECK_DONE(2, "检测结束"),
+        CHECK_ERROR(3,"检测失败");
 
         public final int value;
 

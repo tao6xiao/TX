@@ -3,10 +3,7 @@ package com.trs.gov.kpi.utils;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.WebPageMapper;
-import com.trs.gov.kpi.entity.PageDepth;
-import com.trs.gov.kpi.entity.PageSpace;
-import com.trs.gov.kpi.entity.ReplySpeed;
-import com.trs.gov.kpi.entity.UrlLength;
+import com.trs.gov.kpi.entity.*;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
@@ -99,7 +96,7 @@ public class SpiderUtils {
 
     //失效链接计数
     @Getter
-    int count = 0;
+    private Integer count = 0;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -206,21 +203,24 @@ public class SpiderUtils {
 
             Integer chnlId = null;
             try {
-                chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl().intern(), siteId);
+                chnlId = ChnlDocumentServiceHelper.getChnlIdByUrl("", request.getUrl(), siteId);
             } catch (RemoteException e) {
                 log.error("", e);
-                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "url=" + request.getUrl().intern() + ", siteId=" + siteId, e);
+                LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "url=" + request.getUrl() + ", siteId=" + siteId, e);
             }
 
+            
+
             if (!isUrlAvailable.get()) {
-                String unavailableUrl = request.getUrl().intern();
-                Set<String> parents = pageParentMap.get(request.getUrl().intern());
+                String unavailableUrl = request.getUrl();
+                Integer statusCode = (Integer) request.getExtras().get("statusCode");
+                Set<String> parents = pageParentMap.get(request.getUrl());
                 if (parents == null) {
-                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), new Date(), "", (Integer) request.getExtras().get("statusCode"));
+                    insertInvalidLink(new ImmutablePair<>(unavailableUrl, unavailableUrl), chnlId, "", statusCode);
                 } else {
                     for (String parentUrl : parents) {
                         final SoftReference<String> parentContentSoftReference = pageContentMap.get(parentUrl);
-                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), new Date(), parentContentSoftReference.get(), (Integer) request.getExtras().get("statusCode"));
+                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), chnlId, parentContentSoftReference.get(), statusCode);
                     }
                 }
             } else {
@@ -276,19 +276,20 @@ public class SpiderUtils {
             isUrlAvailable.set(true);
         }
 
-        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Date checkTime, String parentContent, Integer statusCode) {
+        private void insertInvalidLink(Pair<String, String> unavailableUrlAndParentUrl, Integer chnlId, String parentContent, Integer statusCode) {
 
             try {
 
-                LinkAvailabilityResponse linkAvailabilityResponse = new LinkAvailabilityResponse();
-                linkAvailabilityResponse.setInvalidLink(unavailableUrlAndParentUrl.getValue());
-                linkAvailabilityResponse.setCheckTime(checkTime);
-                linkAvailabilityResponse.setSiteId(siteId);
-                linkAvailabilityResponse.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
-                final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailabilityResponse.getIssueTypeId(),
-                        linkAvailabilityResponse.getInvalidLink());
+                LinkAvailability linkAvailability = new LinkAvailability();
+                linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getValue());
+                linkAvailability.setCheckTime(new Date());
+                linkAvailability.setChnlId(chnlId);
+                linkAvailability.setSiteId(siteId);
+                linkAvailability.setIssueTypeId(getTypeByLink(unavailableUrlAndParentUrl.getValue()).value);
+                final String relativeDir = CKMScheduler.getRelativeDir(siteId, Types.IssueType.LINK_AVAILABLE_ISSUE.value, linkAvailability.getIssueTypeId(),
+                        linkAvailability.getInvalidLink());
                 String absoluteDir = locationDir + File.separator + relativeDir;
-                linkAvailabilityResponse.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
+                linkAvailability.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
                 if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
 
                     CKMScheduler.createDir(absoluteDir);
@@ -315,7 +316,7 @@ public class SpiderUtils {
                     // 创建首页
                     CKMScheduler.createIndexHtml(absoluteDir);
 
-                    linkAvailabilityService.insertLinkAvailability(linkAvailabilityResponse);
+                    linkAvailabilityService.insertLinkAvailability(linkAvailability);
                     count++;
                 } else {
                     QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
