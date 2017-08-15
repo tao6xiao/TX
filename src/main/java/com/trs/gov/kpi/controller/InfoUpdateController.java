@@ -3,7 +3,6 @@ package com.trs.gov.kpi.controller;
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
 import com.trs.gov.kpi.constant.OperationType;
-import com.trs.gov.kpi.constant.UrlPath;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -27,7 +26,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping(UrlPath.INFO_UPDATE_PATH)
+@RequestMapping("/gov/kpi/channel/issue")
 public class InfoUpdateController extends IssueHandler {
 
     @Resource
