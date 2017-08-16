@@ -14,7 +14,6 @@ import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.springframework.context.annotation.Scope;
 
 import java.util.Date;
 
@@ -24,7 +23,6 @@ import java.util.Date;
  * Created by linwei on 2017-05-24.
  */
 @Slf4j
-@Scope("prototype")
 public class CheckJob implements Job {
 
     private MonitorRecordService monitorRecordService;

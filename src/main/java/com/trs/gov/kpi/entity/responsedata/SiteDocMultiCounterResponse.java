@@ -43,6 +43,7 @@ public class SiteDocMultiCounterResponse extends DocMultiCounterResponse {
                 this.siteName = "SiteId[" + id + "]";
             }
         } catch (RemoteException e) {
+            this.siteName = "SiteId[" + id + "]";
             log.error("调用外部接口 getSiteById 失败", e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "调用外部接口 getSiteById 失败siteId[" + id + "]", e);
         }

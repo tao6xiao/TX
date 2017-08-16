@@ -38,12 +38,8 @@ public class IDSActor extends StdHttpSessionBasedActor {
      * @see StdHttpSessionBasedActor#checkLocalLogin(javax.servlet.http.HttpSession)
      */
     public boolean checkLocalLogin(HttpSession session) {
-        try {
-            return session.getAttribute(LOGIN_FLAG) != null;
-        } catch (IllegalStateException e) {
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", e);
-            return false;
-        }
+        // 本地应用不做任何判定，完全交由ids来判定
+        return false;
     }
 
     /**
@@ -55,9 +51,18 @@ public class IDSActor extends StdHttpSessionBasedActor {
     public void loadLoginUser(HttpServletRequest request, SSOUser loginUser) {
         HttpSession session = request.getSession();
 
+        // 判定是否和之前的用户相同，如果相同，直接返回
+        LocalUser existUser = (LocalUser) session.getAttribute(LOGIN_FLAG);
+        if (existUser != null && existUser.getUserName().equals(loginUser.getUserName())) {
+            return;
+        }
+
         LocalUser localUser = new LocalUser();
         localUser.setUserName(loginUser.getUserName());
         localUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
+
+        session.setAttribute(LOGIN_FLAG, localUser);
+        ContextHelper.initContext(localUser);
 
         UserApiService userApiService = (UserApiService) SpringContextUtil.getBean(UserApiService.class);
         User user;
@@ -65,14 +70,12 @@ public class IDSActor extends StdHttpSessionBasedActor {
         try {
             user = userApiService.finUserByUserName("", loginUser.getUserName());
         } catch (RemoteException e) {
-            ContextHelper.initContext(localUser);
             log.error(message, e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, message, e);
             LogUtil.addSecurityLog("登录失败");
             return;
         }
         if (user == null) {
-            ContextHelper.initContext(localUser);
             log.error(message);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, message, new RemoteException(message));
             LogUtil.addSecurityLog("登录失败");
