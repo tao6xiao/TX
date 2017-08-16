@@ -49,6 +49,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         Integer siteId = monitorSiteDeal.getSiteId();
         monitorSiteMapper.insert(monitorSite);
         //保存站点信息时，注册报表等调度任务
+        // TODO 1. 新添加的站点，移除失败，不应该影响添加。2. 如果任务调度添加失败，应该不能添加上站点， 要回滚。或者存在一个机制，后续一直添加，直到成功。
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.CALCULATE_PERFORMANCE);
         schedulerService.removeCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
