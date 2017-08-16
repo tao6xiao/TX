@@ -59,6 +59,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
         filter.addCond(MonitorRecordTableField.END_TIME, endTime);
+        filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.CHECK_DONE.value);
         filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
 
         return monitorRecordMapper.getResultByLastEndTime(filter);

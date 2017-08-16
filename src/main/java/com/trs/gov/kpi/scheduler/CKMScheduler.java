@@ -116,23 +116,22 @@ public class CKMScheduler implements SchedulerTask {
         spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
         if(contentCheck == false){
-            //获取上一次检查完成的时间
-            Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
-            if(endTime != null){
-                //根据上一次完成时间获取上一次检查结果
-                monitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
-            }
+            monitorResult = getLastTimeMonitorResult();
         }else {
-            int lastTimeMonitorResultCount = 0;
-            //获取上一次检查完成的时间
-            Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
-            if(endTime != null){
-                //根据上一次完成时间获取上一次检查结果
-                lastTimeMonitorResultCount = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
-            }
+            int lastTimeMonitorResultCount = getLastTimeMonitorResult();
             monitorResult = (int)(lastTimeMonitorResultCount + allChangeCount);
         }
+    }
 
+    private int getLastTimeMonitorResult() {
+        //获取上一次检查完成的时间
+        Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
+        if(endTime != null){
+            //根据上一次完成时间获取上一次检查结果
+           int lastTimemonitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
+        return lastTimemonitorResult;
+        }
+        return 0;
     }
 
     @Override
@@ -178,7 +177,7 @@ public class CKMScheduler implements SchedulerTask {
             filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
             int lastTimIssueCount = commonMapper.count(filter);
-            changeCount = issueList.size() - lastTimIssueCount;
+            changeCount = (double) (issueList.size() - lastTimIssueCount);
         }
         allChangeCount += changeCount;
         return issueList;
