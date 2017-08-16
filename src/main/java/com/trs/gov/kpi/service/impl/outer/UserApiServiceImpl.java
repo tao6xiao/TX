@@ -2,7 +2,6 @@ package com.trs.gov.kpi.service.impl.outer;
 
 import com.alibaba.fastjson.JSON;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.trs.gov.kpi.constant.ErrorType;
 import com.trs.gov.kpi.constant.OperationType;
@@ -21,8 +20,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.trs.gov.kpi.utils.OuterApiServiceUtil.newServiceRequestBuilder;
 
 /**
  * Created by he.lang on 2017/6/27.

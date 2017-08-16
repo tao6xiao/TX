@@ -74,7 +74,7 @@ public class SiteChannelServiceHelper {
     public Integer findRelatedDept(Integer chnlId, String userName) throws RemoteException {
 
         // 先直接查找一下当前栏目是否对应了部门
-        final DutyDept dept = dutyDeptService.getByChnlId(chnlId, DutyDept.CONTAIN_ALL);
+        final DutyDept dept = dutyDeptService.getByChnlId(chnlId, DutyDept.ALL_CONTAIN_COND);
         if (dept != null) {
             return dept.getDeptId();
         }
@@ -88,7 +88,7 @@ public class SiteChannelServiceHelper {
             // 不包含自己
             int index = channelPath.get(channelPath.size() - 2);
             for (; index >= 0; index--) {
-                final DutyDept dutyDept = dutyDeptService.getByChnlId(channelPath.get(index), DutyDept.CONTAIN);
+                final DutyDept dutyDept = dutyDeptService.getByChnlId(channelPath.get(index), DutyDept.CONTAIN_CHILD);
                 if (dutyDept != null) {
                     return dutyDept.getDeptId();
                 }

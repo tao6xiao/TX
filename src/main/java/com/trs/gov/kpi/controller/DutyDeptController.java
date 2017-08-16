@@ -56,7 +56,7 @@ public class DutyDeptController {
             }
             authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_DUTYDEPT, deptRequest.getSiteId());
 
-            if (deptService.getByChnlId(deptRequest.getChnlId(), DutyDept.CONTAIN_ALL) == null) {
+            if (deptService.getByChnlId(deptRequest.getChnlId(), DutyDept.ALL_CONTAIN_COND) == null) {
                 add(deptRequest);
             } else {
                 update(deptRequest);

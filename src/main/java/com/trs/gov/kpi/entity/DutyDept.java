@@ -13,13 +13,13 @@ import lombok.Data;
 public class DutyDept {
 
     // 不包含子栏目
-    public static final Byte NOT_CONTAIN = 0;
+    public static final Byte NOT_CONTAIN_CHILD = 0;
 
     // 包含子栏目
-    public static final Byte CONTAIN = 1;
+    public static final Byte CONTAIN_CHILD = 1;
 
     // 所有情况
-    public static final Byte CONTAIN_ALL = 2;
+    public static final Byte ALL_CONTAIN_COND = 2;
 
     @DBField
     private Integer chnlId;//栏目编号
