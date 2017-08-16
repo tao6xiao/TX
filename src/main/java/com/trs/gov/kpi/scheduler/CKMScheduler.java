@@ -123,7 +123,6 @@ public class CKMScheduler implements SchedulerTask {
                 monitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
             }
         }else {
-
             int lastTimeMonitorResultCount = 0;
             //获取上一次检查完成的时间
             Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
@@ -516,7 +515,6 @@ public class CKMScheduler implements SchedulerTask {
 
     /**
      * 在源码中增加定位用的脚本定义
-     * @param sb
      * @return
      */
     public static StringBuilder addScriptDef(){
