@@ -62,7 +62,7 @@ public class DutyDeptServiceImpl implements DutyDeptService {
     public DutyDept getByChnlId(int chnlId, Byte containChildValue) {
         QueryFilter filter = new QueryFilter(Table.DUTY_DEPT);
         filter.addCond(DutyDeptTableField.CHNL_ID, chnlId);
-        if (containChildValue == DutyDept.CONTAIN || containChildValue == DutyDept.NOT_CONTAIN) {
+        if (containChildValue == DutyDept.CONTAIN_CHILD || containChildValue == DutyDept.NOT_CONTAIN_CHILD) {
             filter.addCond(DutyDeptTableField.CONTAIN, containChildValue);
         }
         final List<DutyDept> depts = deptMapper.select(filter);

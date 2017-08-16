@@ -133,9 +133,7 @@ public class CKMScheduler implements SchedulerTask {
         Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
         if(endTime != null){
             //根据上一次完成时间获取上一次检查结果
-            int lastTimeMonitorResult = 0;
-            lastTimeMonitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
-            return lastTimeMonitorResult;
+           return monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
         }
         return 0;
     }
