@@ -2,7 +2,6 @@ package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.SchedulerType;
-import com.trs.gov.kpi.dao.WebPageMapper;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
