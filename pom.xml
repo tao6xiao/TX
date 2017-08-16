@@ -31,18 +31,6 @@
 		</repository>
 	</repositories>
 
-	<!--<dependencyManagement>-->
-		<!--<dependencies>-->
-			<!--<dependency>-->
-				<!--<groupId>org.springframework.cloud</groupId>-->
-				<!--<artifactId>spring-cloud-consul-dependencies</artifactId>-->
-				<!--<version>1.0.1.RELEASE</version>-->
-				<!--<type>pom</type>-->
-				<!--<scope>import</scope>-->
-			<!--</dependency>-->
-		<!--</dependencies>-->
-	<!--</dependencyManagement>-->
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,11 +42,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<!--<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>-->
 
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
@@ -91,16 +74,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.boot</groupId>-->
-			<!--<artifactId>spring-boot-starter-actuator</artifactId>-->
-			<!--<version>1.5.4.RELEASE</version>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.cloud</groupId>-->
-			<!--<artifactId>spring-cloud-starter-consul-all</artifactId>-->
-		<!--</dependency>-->
 
 		<!-- 数据库 -->
 		<dependency>
@@ -189,27 +162,6 @@
 			<version>1.2.16</version>
 		</dependency>
 
-		<!--<dependency>-->
-			<!--<groupId>com.ids.agent</groupId>-->
-			<!--<artifactId>trsids-agent</artifactId>-->
-			<!--<version>1.0.0</version>-->
-			<!--<scope>system</scope>-->
-			<!--<systemPath>${project.basedir}/trsids-agent.jar</systemPath>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>com.ids.filter</groupId>-->
-			<!--<artifactId>trsids-filter</artifactId>-->
-			<!--<version>1.0.0</version>-->
-			<!--<scope>system</scope>-->
-			<!--<systemPath>${project.basedir}/trsids-filter.jar</systemPath>-->
-		<!--</dependency>-->
-		<!--<dependency>-->
-			<!--<groupId>trs.com.cn</groupId>-->
-			<!--<artifactId>wcm-core</artifactId>-->
-			<!--<version>8.0-SNAPSHOT</version>-->
-			<!--<scope>system</scope>-->
-			<!--<systemPath>${project.basedir}/wcm-core-8.0-SNAPSHOT-classes.jar</systemPath>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>com.trs.idm</groupId>
 			<artifactId>trsids-agent</artifactId>
@@ -264,11 +216,11 @@
 			<version>1.5.6.RELEASE</version>
 		</dependency>
 
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.session</groupId>-->
-			<!--<artifactId>spring-session-data-redis</artifactId>-->
-			<!--<version>1.3.1.RELEASE</version>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-data-redis</artifactId>
+			<version>1.3.1.RELEASE</version>
+		</dependency>
 
 	</dependencies>
 

@@ -12,12 +12,14 @@ import com.trs.gov.kpi.service.MonitorSiteService;
 import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.utils.DateUtil;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -36,7 +38,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 @Slf4j
 @Service
-public class SchedulerServiceImpl implements SchedulerService {
+public class SchedulerServiceImpl implements SchedulerService, ApplicationContextAware {
 
     private static final String FIRST_DAY_OF_MONTH = "0 0 0 1 * ?";
 
@@ -44,13 +46,22 @@ public class SchedulerServiceImpl implements SchedulerService {
     private String locationDir;
 
     @Resource
-    MonitorSiteService monitorSiteService;
+    private MonitorSiteService monitorSiteService;
 
     @Resource
-    MonitorFrequencyMapper monitorFrequencyMapper;
+    private MonitorFrequencyMapper monitorFrequencyMapper;
 
     @Resource
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
+
+    @Resource
+    private SpringContextUtil springContextUtil;
+
+    //设置上下文
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        springContextUtil.setApplicationContext(applicationContext);
+    }
 
     @Override
     public void addCheckJob(int siteId, EnumCheckJobType checkType) throws BizException {
