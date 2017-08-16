@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -60,6 +59,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
         filter.addCond(MonitorRecordTableField.END_TIME, endTime);
+        filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.CHECK_DONE.value);
         filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
 
         return monitorRecordMapper.getResultByLastEndTime(filter);

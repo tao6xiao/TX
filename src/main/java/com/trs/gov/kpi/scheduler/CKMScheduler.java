@@ -1,15 +1,18 @@
 package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.service.LinkContentStatsService;
+import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
@@ -80,6 +83,12 @@ public class CKMScheduler implements SchedulerTask {
     @Resource
     private LinkContentStatsService linkContentStatsService;
 
+    @Resource
+    private MonitorRecordService monitorRecordService;
+
+    @Resource
+    private CommonMapper commonMapper;
+
     //错误信息计数
     @Getter
     Integer monitorResult = 0;
@@ -88,6 +97,10 @@ public class CKMScheduler implements SchedulerTask {
     @Setter
     @Getter
     private Integer monitorType;
+
+    boolean contentCheck = false;
+    double changeCount = 0;
+    double allChangeCount = 0;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_CONTENT;
@@ -101,6 +114,24 @@ public class CKMScheduler implements SchedulerTask {
             return ;
         }
         spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
+
+        if(contentCheck == false){
+            monitorResult = getLastTimeMonitorResult();
+        }else {
+            int lastTimeMonitorResultCount = getLastTimeMonitorResult();
+            monitorResult = (int)(lastTimeMonitorResultCount + allChangeCount);
+        }
+    }
+
+    private int getLastTimeMonitorResult() {
+        //获取上一次检查完成的时间
+        Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
+        if(endTime != null){
+            //根据上一次完成时间获取上一次检查结果
+           int lastTimemonitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
+        return lastTimemonitorResult;
+        }
+        return 0;
     }
 
     @Override
@@ -115,7 +146,6 @@ public class CKMScheduler implements SchedulerTask {
         if (checkContent.length() <= 0) {
             return issueList;
         }
-
         ContentCheckResult result = null;
         try {
             String thisTimeMd5 = linkContentStatsService.getThisTimeMD5(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, page.getUrl());
@@ -123,6 +153,7 @@ public class CKMScheduler implements SchedulerTask {
             if (lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)) {//第一次检查或链接内容发生变化
                 //检测爬取内容
                 result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+                contentCheck = true;
             } else {//内容较上一次没有变化
                 return issueList;
             }
@@ -139,7 +170,16 @@ public class CKMScheduler implements SchedulerTask {
 
         if (result.getResult() != null) {
             issueList = toIssueList(page, checkTypeList, result);
+            QueryFilter filter = new QueryFilter(Table.ISSUE);
+            filter.addCond(IssueTableField.SITE_ID, siteId);
+            filter.addCond(IssueTableField.DETAIL, page.getUrl());
+            filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
+            filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+
+            int lastTimIssueCount = commonMapper.count(filter);
+            changeCount = (double) (issueList.size() - lastTimIssueCount);
         }
+        allChangeCount += changeCount;
         return issueList;
     }
 
@@ -474,7 +514,6 @@ public class CKMScheduler implements SchedulerTask {
 
     /**
      * 在源码中增加定位用的脚本定义
-     * @param sb
      * @return
      */
     public static StringBuilder addScriptDef(){
