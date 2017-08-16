@@ -92,75 +92,76 @@ public class CacheLayer {
 			logger.debug("clear cache Layer");
 		}
 	}
-}
-
-/**
- * 用于作为CacheLay的key信息
- * 
- * @author huxiejin
- *
- */
-class CacheKey {
-	// 方法的名称，如：get，lindex，lrange
-	private String methodName;
-
-	// 方法的参数信息，第一个参数一般都是key
-	private Object[] arguments;
-
-	public CacheKey(String methodName, Object... arguments) {
-		this.methodName = methodName;
-		this.arguments = arguments;
-	}
 
 	/**
-	 * 返还真是的key信息
-	 * 
+	 * 用于作为CacheLay的key信息
+	 *
+	 * @author huxiejin
+	 *
 	 */
-	public Object getKey() {
-		return arguments[0];
-	}
+	class CacheKey {
+		// 方法的名称，如：get，lindex，lrange
+		private String methodName;
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof CacheKey)) {
-			return false;
+		// 方法的参数信息，第一个参数一般都是key
+		private Object[] arguments;
+
+		public CacheKey(String methodName, Object... arguments) {
+			this.methodName = methodName;
+			this.arguments = arguments;
 		}
 
-		CacheKey another = (CacheKey) obj;
-		if (!methodName.equals(another.methodName)) {
-			return false;
+		/**
+		 * 返还真是的key信息
+		 *
+		 */
+		public Object getKey() {
+			return arguments[0];
 		}
 
-		for (int i = 0; i < arguments.length; i++) {
-			if (!arguments[i].equals(another.arguments[i])) {
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof CacheKey)) {
 				return false;
 			}
-		}
-		return true;
-	}
 
-	@Override
-	public int hashCode() {
-		int hashCode = methodName.hashCode();
-
-		for (int i = 0; i < arguments.length; i++) {
-			hashCode = hashCode | arguments[i].hashCode();
-		}
-
-		return hashCode;
-	}
-
-	public String toString() {
-		StringBuilder sb = new StringBuilder(methodName);
-		sb.append("(");
-		for (int i = 0; i < arguments.length; i++) {
-			sb.append(arguments[i]);
-			if (i < (arguments.length - 1)) {
-				sb.append(",");
+			CacheKey another = (CacheKey) obj;
+			if (!methodName.equals(another.methodName)) {
+				return false;
 			}
-		}
-		sb.append(")");
 
-		return sb.toString();
+			for (int i = 0; i < arguments.length; i++) {
+				if (!arguments[i].equals(another.arguments[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int hashCode = methodName.hashCode();
+
+			for (int i = 0; i < arguments.length; i++) {
+				hashCode = hashCode | arguments[i].hashCode();
+			}
+
+			return hashCode;
+		}
+
+		public String toString() {
+			StringBuilder sb = new StringBuilder(methodName);
+			sb.append("(");
+			for (int i = 0; i < arguments.length; i++) {
+				sb.append(arguments[i]);
+				if (i < (arguments.length - 1)) {
+					sb.append(",");
+				}
+			}
+			sb.append(")");
+
+			return sb.toString();
+		}
 	}
 }
+
