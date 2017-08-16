@@ -24,4 +24,15 @@
           limit 1,1
     </select>
 
+    <select id="getLastCheckTimeByUrl" resultType="java.util.Date">
+        select
+        checkTime
+        from issue
+        where siteId = #{siteId}
+        and customer3 = #{customer3}
+        group by checkTime
+        order by checkTime desc
+        limit 1,1
+    </select>
+
 </mapper>

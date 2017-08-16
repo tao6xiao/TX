@@ -25,14 +25,14 @@ public class LinkContentStatsServiceImpl implements LinkContentStatsService {
 
 
     @Override
-    public void insertLinkContent(Integer siteId, Integer typeId,String url, String content) {
+    public void insertLinkContent(Integer siteId, Integer typeId,String url, String content, Date linkContentStatsCheckTime) {
 
         LinkContentStats linkContent = new LinkContentStats();
         linkContent.setSiteId(siteId);
         linkContent.setTypeId(typeId);
         linkContent.setUrl(url);
         linkContent.setMd5(DigestUtils.md5Hex(content));
-        linkContent.setCheckTime(new Date());
+        linkContent.setCheckTime(linkContentStatsCheckTime);
 
         commonMapper.insert(DBUtil.toRow(linkContent));
     }

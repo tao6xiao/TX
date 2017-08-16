@@ -3,6 +3,7 @@ package com.trs.gov.kpi.scheduler;
 import com.trs.gov.kpi.constant.*;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
+import com.trs.gov.kpi.dao.LinkContentStatsMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
@@ -85,6 +86,9 @@ public class CKMScheduler implements SchedulerTask {
     private LinkContentStatsService linkContentStatsService;
 
     @Resource
+    private LinkContentStatsMapper linkContentStatsMapper;
+
+    @Resource
     private MonitorRecordService monitorRecordService;
 
     @Resource
@@ -102,6 +106,8 @@ public class CKMScheduler implements SchedulerTask {
     int isCheck = 0;
     double changeCount = 0;
     double allChangeCount = 0;
+
+    private Date ckmCheckTime;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_CONTENT;
@@ -178,11 +184,11 @@ public class CKMScheduler implements SchedulerTask {
         if (result.getResult() != null) {
             issueList = toIssueList(page, checkTypeList, result);
 
+            Date lastcheckTime = linkContentStatsMapper.getLastCheckTimeByUrl(siteId, page.getUrl());
             QueryFilter filter = new QueryFilter(Table.ISSUE);
             filter.addCond(IssueTableField.SITE_ID, siteId);
-            filter.addCond(IssueTableField.DETAIL, page.getUrl());
-            filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
-            filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
+            filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
+            filter.addCond(IssueTableField.CHECK_TIME,lastcheckTime);
 
             lastTimIssueCount = commonMapper.count(filter);
             changeCount = (double) (issueList.size() - lastTimIssueCount);
@@ -198,18 +204,12 @@ public class CKMScheduler implements SchedulerTask {
      * @param page
      */
     private void toUpdateCheckTime(PageCKMSpiderUtil.CKMPage page,List<String> checkTypeList) {
-        for (String checkType : checkTypeList) {
-            Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
-            final String relativeDir = getRelativeDir(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, subIssueType.value, page.getUrl());
-
-            String detail = "gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html";
             QueryFilter filter = new QueryFilter(Table.ISSUE);
-            filter.addCond(IssueTableField.DETAIL, detail);
+            filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
 
             DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
-            updater.addField(IssueTableField.CHECK_TIME, new Date());
+            updater.addField(IssueTableField.CHECK_TIME, ckmCheckTime);
             commonMapper.update(updater, filter);
-        }
     }
 
     private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) {
@@ -259,8 +259,9 @@ public class CKMScheduler implements SchedulerTask {
             issue.setDetail("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
             Date nowTime = new Date();
             issue.setIssueTime(nowTime);
-            issue.setCheckTime(nowTime);
+            issue.setCheckTime(ckmCheckTime);
             issue.setCustomer1(errorContent);
+            issue.setCustomer3(page.getUrl());//原始页面
             issueList.add(issue);
         }
         return issueList;
@@ -582,7 +583,7 @@ public class CKMScheduler implements SchedulerTask {
                     monitorResult++;
                 }else {
                     DBUpdater update = new DBUpdater(Table.ISSUE.getTableName());
-                    update.addField(IssueTableField.CHECK_TIME , new Date());
+                    update.addField(IssueTableField.CHECK_TIME , ckmCheckTime);
                     commonMapper.update(update, queryFilter);
                 }
             } catch (RemoteException e) {
@@ -593,7 +594,8 @@ public class CKMScheduler implements SchedulerTask {
         log.info("buildCheckContent insert error count: " + issueList.size());
     }
 
-    public void insert(PageCKMSpiderUtil.CKMPage page) {
+    public void insert(PageCKMSpiderUtil.CKMPage page, Date checkTime) {
+        ckmCheckTime = checkTime;
         List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
         try {
             insert(buildList(page, checkTypeList));

@@ -1,5 +1,7 @@
 package com.trs.gov.kpi.service;
 
+import java.util.Date;
+
 /**
  * Created by li.hao on 2017/8/11.
  */
@@ -12,7 +14,7 @@ public interface LinkContentStatsService {
      * @param typeId
      * @param content
      */
-    void insertLinkContent(Integer siteId, Integer typeId,String url, String content);
+    void insertLinkContent(Integer siteId, Integer typeId,String url, String content, Date linkContentStatsCheckTime);
 
     /**
      * 获取当前检测的链接内容的md5编码
@@ -31,4 +33,5 @@ public interface LinkContentStatsService {
      * @return
      */
     String getLastTimeMD5(Integer siteId, Integer typeId, String url);
+
 }

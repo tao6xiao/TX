@@ -38,6 +38,8 @@ public class PageCKMSpiderUtil {
 
     private CKMScheduler ckmScheduler;
 
+    private Date checkTime;
+
     @Resource
     private LinkContentStatsService linkContentStatsService;
 
@@ -109,8 +111,11 @@ public class PageCKMSpiderUtil {
                 isUrlAvailable.set(false);
                 Page result = super.download(request, task);
                 if (isUrlAvailable.get()) {
-                    linkContentStatsService.insertLinkContent(siteId, Types.IssueType.INFO_ERROR_ISSUE.value,request.getUrl().intern(), result.getRawText().intern());
-                    ckmScheduler.insert(new CKMPage(request.getUrl().intern(), result.getRawText()));
+                    checkTime = new Date();
+                    linkContentStatsService.insertLinkContent(siteId, Types.IssueType.INFO_ERROR_ISSUE.value,request.getUrl().intern(),
+                            result.getRawText().intern(),
+                            checkTime);
+                    ckmScheduler.insert(new CKMPage(request.getUrl().intern(), result.getRawText()), checkTime);
                     return result;
                 } else {
                     return null;
