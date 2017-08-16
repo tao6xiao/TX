@@ -86,7 +86,7 @@ public class SiteChannelServiceHelper {
             return null;
         } else {
             // 不包含自己
-            int index = channelPath.get(channelPath.size() - 2);
+            int index = channelPath.size() - 2;
             for (; index >= 0; index--) {
                 final DutyDept dutyDept = dutyDeptService.getByChnlId(channelPath.get(index), DutyDept.CONTAIN_CHILD);
                 if (dutyDept != null) {
