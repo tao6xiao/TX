@@ -14,22 +14,22 @@ public class SpringContextUtil implements ApplicationContextAware {
 
     //设置上下文
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public synchronized void setApplicationContext(ApplicationContext applicationContext) {
         SpringContextUtil.applicationContext = applicationContext;
     }
 
     //获取上下文
-    public static ApplicationContext getApplicationContext() {
+    public static synchronized ApplicationContext getApplicationContext() {
         return applicationContext;
     }
 
     //通过名字获取上下文中的bean
-    public static Object getBean(String name) {
+    public static synchronized Object getBean(String name) {
         return getApplicationContext().getBean(name);
     }
 
     //通过类型获取上下文中的bean
-    public static Object getBean(Class requiredType) {
+    public static synchronized Object getBean(Class requiredType) {
         return getApplicationContext().getBean(requiredType);
     }
 
