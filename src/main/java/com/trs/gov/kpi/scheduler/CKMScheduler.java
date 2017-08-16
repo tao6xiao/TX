@@ -5,6 +5,7 @@ import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.IssueMapper;
 import com.trs.gov.kpi.entity.InfoError;
 import com.trs.gov.kpi.entity.Issue;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
@@ -98,7 +99,7 @@ public class CKMScheduler implements SchedulerTask {
     @Getter
     private Integer monitorType;
 
-    boolean contentCheck = false;
+    int isCheck = 0;
     double changeCount = 0;
     double allChangeCount = 0;
 
@@ -115,7 +116,7 @@ public class CKMScheduler implements SchedulerTask {
         }
         spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
-        if(contentCheck == false){
+        if(isCheck == 0){
             monitorResult = getLastTimeMonitorResult();
         }else {
             int lastTimeMonitorResultCount = getLastTimeMonitorResult();
@@ -123,13 +124,18 @@ public class CKMScheduler implements SchedulerTask {
         }
     }
 
+    /**
+     * 获取上一次完成检测的结果
+     * @return
+     */
     private int getLastTimeMonitorResult() {
         //获取上一次检查完成的时间
         Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
         if(endTime != null){
             //根据上一次完成时间获取上一次检查结果
-           int lastTimemonitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
-        return lastTimemonitorResult;
+            int lastTimeMonitorResult = 0;
+            lastTimeMonitorResult = monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
+            return lastTimeMonitorResult;
         }
         return 0;
     }
@@ -153,8 +159,10 @@ public class CKMScheduler implements SchedulerTask {
             if (lastTimeMd5 == null || !thisTimeMd5.equals(lastTimeMd5)) {//第一次检查或链接内容发生变化
                 //检测爬取内容
                 result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                contentCheck = true;
+                isCheck = 1;
             } else {//内容较上一次没有变化
+                //更新checkTime
+                toUpdateCheckTime(page, checkTypeList);
                 return issueList;
             }
         } catch (Exception e) {
@@ -168,19 +176,42 @@ public class CKMScheduler implements SchedulerTask {
             return issueList;
         }
 
+        int lastTimIssueCount = 0;
         if (result.getResult() != null) {
             issueList = toIssueList(page, checkTypeList, result);
+
             QueryFilter filter = new QueryFilter(Table.ISSUE);
             filter.addCond(IssueTableField.SITE_ID, siteId);
             filter.addCond(IssueTableField.DETAIL, page.getUrl());
             filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
             filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
 
-            int lastTimIssueCount = commonMapper.count(filter);
+            lastTimIssueCount = commonMapper.count(filter);
             changeCount = (double) (issueList.size() - lastTimIssueCount);
+        }else {
+            changeCount = (double)(0 - lastTimIssueCount);
         }
         allChangeCount += changeCount;
         return issueList;
+    }
+
+    /**
+     * 更新issue的checkTime
+     * @param page
+     */
+    private void toUpdateCheckTime(PageCKMSpiderUtil.CKMPage page,List<String> checkTypeList) {
+        for (String checkType : checkTypeList) {
+            Types.InfoErrorIssueType subIssueType = Types.InfoErrorIssueType.valueOfCheckType(checkType);
+            final String relativeDir = getRelativeDir(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, subIssueType.value, page.getUrl());
+
+            String detail = "gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html";
+            QueryFilter filter = new QueryFilter(Table.ISSUE);
+            filter.addCond(IssueTableField.DETAIL, detail);
+
+            DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+            updater.addField(IssueTableField.CHECK_TIME, new Date());
+            commonMapper.update(updater, filter);
+        }
     }
 
     private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) {
@@ -551,6 +582,10 @@ public class CKMScheduler implements SchedulerTask {
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
                     monitorResult++;
+                }else {
+                    DBUpdater update = new DBUpdater(Table.ISSUE.getTableName());
+                    update.addField(IssueTableField.CHECK_TIME , new Date());
+                    commonMapper.update(update, queryFilter);
                 }
             } catch (RemoteException e) {
                 log.error("", e);
