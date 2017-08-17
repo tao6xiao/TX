@@ -44,11 +44,11 @@ public class LogUtil {
      *
      * @param operationType
      * @param errorType
-     * @param message
+     * @param logDesc
      * @param ex
      */
-    public static void addErrorLog(String operationType, String errorType, String message, Throwable ex) {
-        SimpleLogServer.error(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, message, ex);
+    public static void addErrorLog(String operationType, String errorType, String logDesc, Throwable ex) {
+        SimpleLogServer.error(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, logDesc, ex);
     }
 
     /**
@@ -68,10 +68,10 @@ public class LogUtil {
      *
      * @param operationType
      * @param errorType
-     * @param desc
+     * @param logDesc
      */
-    public static void addInfoLog(String operationType, String errorType, String desc) {
-        SimpleLogServer.info(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, desc);
+    public static void addInfoLog(String operationType, String errorType, String logDesc) {
+        SimpleLogServer.info(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, logDesc);
     }
 
     /**
@@ -79,10 +79,10 @@ public class LogUtil {
      *
      * @param operationType
      * @param errorType
-     * @param desc
+     * @param logDesc
      */
-    public static void addWarnLog(String operationType, String errorType, String desc) {
-        SimpleLogServer.warn(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, desc);
+    public static void addWarnLog(String operationType, String errorType, String logDesc) {
+        SimpleLogServer.warn(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, logDesc);
     }
 
     /**
@@ -90,11 +90,11 @@ public class LogUtil {
      *
      * @param operationType
      * @param errorType
-     * @param desc
+     * @param logDesc
      * @param e
      */
-    public static void addWarnLog(String operationType, String errorType, String desc, Throwable e) {
-        SimpleLogServer.warn(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, desc, e);
+    public static void addWarnLog(String operationType, String errorType, String logDesc, Throwable e) {
+        SimpleLogServer.warn(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, errorType, logDesc, e);
     }
 
 
@@ -104,10 +104,10 @@ public class LogUtil {
      *
      * @param operationType
      * @param debugType
-     * @param desc
+     * @param logDesc
      */
-    public static void addDebugLog(String operationType, String debugType, String desc) {
-        SimpleLogServer.debug(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, debugType, desc);
+    public static void addDebugLog(String operationType, String debugType, String logDesc) {
+        SimpleLogServer.debug(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, debugType, logDesc);
     }
 
     /**
@@ -180,13 +180,13 @@ public class LogUtil {
     /**
      * Controller的操作封装函数，对于异常处理情况记录，操作失败日志
      */
-    public static <R> R controlleFunctionWrapper(ControllorFunction<R> func, String type, String desc, String systemName) throws RemoteException, BizException {
+    public static <R> R controlleFunctionWrapper(ControllorFunction<R> func, String type, String logDesc, String systemName) throws RemoteException, BizException {
         try {
             R r = func.apply();
-            LogUtil.addOperationLog(type, desc, systemName);
+            LogUtil.addOperationLog(type, logDesc, systemName);
             return r;
         } catch (Exception e) {
-            LogUtil.addFailOperationLog(type, LogUtil.buildFailOperationLogDesc(desc + e.getLocalizedMessage()), systemName);
+            LogUtil.addFailOperationLog(type, LogUtil.buildFailOperationLogDesc(logDesc + e.getLocalizedMessage()), systemName);
             throw e;
         }
     }
@@ -245,11 +245,11 @@ public class LogUtil {
          * 添加性能日志
          *
          * @param operationType
-         * @param desc
+         * @param logDesc
          * @param timeUsed
          */
-        private static void addElapseLog(String operationType, String desc, long timeUsed) {
-            SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, desc, timeUsed);
+        private static void addElapseLog(String operationType, String logDesc, long timeUsed) {
+            SimpleLogServer.elapse(MODULE_NAME, TRSLogUserUtil.getLogUser(), operationType, logDesc, timeUsed);
         }
     }
 
