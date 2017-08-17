@@ -4,8 +4,10 @@ import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.MonitorOnceResponse;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by li.hao on 2017/8/4.
@@ -43,4 +45,12 @@ public interface MonitorRecordService {
      * @return
      */
     ApiPageData selectMonitorRecordList(PageDataRequestParam param) throws BizException;
+
+    /**
+     * 获取本次检测记录结果
+     * @param siteId
+     * @param checkJobValues
+     * @return
+     */
+    List<MonitorOnceResponse> selectMonitorResulrOnce(Integer siteId, List<Integer> checkJobValues);
 }

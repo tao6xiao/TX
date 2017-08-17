@@ -11,6 +11,7 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.MonitorOnceResponse;
 import com.trs.gov.kpi.entity.responsedata.MonitorRecordResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.MonitorRecordService;
@@ -86,6 +87,30 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
             monitorRecordResponseList.add(monitorRecordResponse);
         }
         return new ApiPageData(pager, monitorRecordResponseList);
+    }
+
+    @Override
+    public List<MonitorOnceResponse> selectMonitorResulrOnce(Integer siteId, List<Integer> checkJobValues) {
+        List<MonitorOnceResponse> monitorOnceResponseList = new ArrayList<>();
+        for (int i=0; i < checkJobValues.size(); i++){
+            MonitorRecord monitorRecord = monitorRecordMapper.selectMonitorRecordByByTaskIdAndSiteId(siteId, checkJobValues.get(i));
+            MonitorOnceResponse monitorOnceResponse = new MonitorOnceResponse();
+
+            if(monitorRecord == null){
+                monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.WAIT_CHECK.getName());
+                monitorOnceResponseList.add(monitorOnceResponse);
+            }else {
+                monitorOnceResponse.setTaskId(monitorRecord.getTaskId());
+                monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecord.getTaskStatus()).getName());
+                monitorOnceResponse.setBeginDateTime(monitorRecord.getBeginTime());
+                monitorOnceResponse.setEndDateTime(monitorRecord.getEndTime());
+                if (monitorRecord.getTaskStatus() != Status.MonitorStatusType.CHECK_ERROR.value) {
+                    monitorOnceResponse.setResult(monitorRecord.getResult());
+                }
+                monitorOnceResponseList.add(monitorOnceResponse);
+            }
+        }
+        return monitorOnceResponseList;
     }
 
     @NotNull

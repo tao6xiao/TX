@@ -3,6 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -35,4 +36,6 @@ public interface MonitorRecordMapper {
      * @return
      */
     List<MonitorRecord> selectMonitorRecordList(QueryFilter filter);
+
+    MonitorRecord selectMonitorRecordByByTaskIdAndSiteId(@Param("siteId")Integer SiteId, @Param("taskId")Integer taskId);
 }

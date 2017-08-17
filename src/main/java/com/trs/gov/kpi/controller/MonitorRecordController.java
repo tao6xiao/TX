@@ -2,12 +2,15 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.MonitorOnceResponse;
 import com.trs.gov.kpi.service.MonitorRecordService;
+import com.trs.gov.kpi.service.SchedulerService;
 import com.trs.gov.kpi.service.outer.AuthorityService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
@@ -15,9 +18,12 @@ import com.trs.gov.kpi.utils.ParamCheckUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 日志监测记录
@@ -25,7 +31,7 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @RestController
-@RequestMapping(value = "/gov/kpi/monitor/record")
+@RequestMapping(value = "/gov/kpi/monitor")
 public class MonitorRecordController {
 
     @Resource
@@ -37,6 +43,9 @@ public class MonitorRecordController {
     @Resource
     private AuthorityService authorityService;
 
+    @Resource
+    SchedulerService schedulerService;
+
 
     /**
      * 查询日志监测（支持按照时间查询、任务名和任务状态模糊查询）
@@ -45,8 +54,8 @@ public class MonitorRecordController {
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/select", method = RequestMethod.GET)
-    public ApiPageData selectMonitorRecord(PageDataRequestParam param) throws BizException, RemoteException {
+    @RequestMapping(value = "/record/select", method = RequestMethod.GET)
+    public ApiPageData selectMonitorRecordList(PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询日志监测记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(param);
@@ -55,4 +64,38 @@ public class MonitorRecordController {
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
     }
 
+    /**
+     * 网站手动监测
+     *
+     * @param siteId
+     * @return
+     */
+    @RequestMapping(value = "/manual/check", method = RequestMethod.GET)
+    @ResponseBody
+    public List<MonitorOnceResponse> manualMonitoring(Integer siteId, Integer checkJobValue) throws BizException, RemoteException {
+        String logDesc = "网站手动监测——开始执行" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "checkJobValue", checkJobValue);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (siteId == null || checkJobValue == null) {
+                log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
+            schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
+            return monitorRecordService.selectMonitorResulrOnce(siteId, Arrays.asList(checkJobValue));
+        }, OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+    }
+
+    @RequestMapping(value = "/manual/result", method = RequestMethod.GET)
+    @ResponseBody
+    public List<MonitorOnceResponse> selectMonitorResultOnce(Integer siteId, Integer[] checkJobValues) throws RemoteException, BizException {
+        String logDesc = "网站手动监测——结果查询" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "checkJobValues", checkJobValues);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            if (siteId == null || checkJobValues == null) {
+                log.error("Invalid parameter: 参数siteId或者checkJobTypeValues存在null值");
+                throw new BizException(Constants.INVALID_PARAMETER);
+            }
+            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_SEARCH, siteId);
+            return monitorRecordService.selectMonitorResulrOnce(siteId, Arrays.asList(checkJobValues));
+        }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+    }
 }

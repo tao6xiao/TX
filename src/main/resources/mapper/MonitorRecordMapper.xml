@@ -35,6 +35,16 @@
         <include refid="all_conditions_sql"/>
     </select>
 
+    <select id="selectMonitorRecordByByTaskIdAndSiteId" resultMap="MonitorRecordMap">
+        select
+        *
+        from monitorrecord
+        where siteId = #{siteId}
+        and taskId = #{taskId}
+        order by beginTime desc
+        limit 0,1
+    </select>
+
     <sql id="all_conditions_sql">
         <include refid="where_sql"/>
         <include refid="group_sql"/>
