@@ -29,4 +29,7 @@ public class LinkContentStats {
     @DBField
     private Date checkTime;//检测入库时间
 
+    @DBField
+    private Integer infoErrorCount;//信息错误个数
+
 }
