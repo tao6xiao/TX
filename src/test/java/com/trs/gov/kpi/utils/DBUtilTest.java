@@ -127,7 +127,7 @@ public class DBUtilTest {
     @Test
     public void getAllDBFieldNames_linkcontentstats_table() {
 
-        List<String> fields = Arrays.asList(Constants.DB_FIELD_SITE_ID, "typeId", "url", "md5", "checkTime", "infoErrorCount");
+        List<String> fields = Arrays.asList(Constants.DB_FIELD_SITE_ID, "typeId", "url", "md5", "checkTime", "infoErrorCount", "state");
         final List<String> allDBFieldNames = DBUtil.getAllDBFieldNames(LinkContentStats.class);
 
         assertTrue(fields.containsAll(allDBFieldNames));
