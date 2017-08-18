@@ -54,7 +54,7 @@ public class UserApiServiceImpl implements UserApiService {
                 return JSON.parseObject(result.getData(), User.class);
             } else {
                 log.error("failed to findUserById, error: " + response);
-                throw new RemoteException("通过用户id获取用户对象失败！");
+                throw new RemoteException("通过用户id获取用户对象失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("", e);
@@ -81,7 +81,7 @@ public class UserApiServiceImpl implements UserApiService {
                 return JSON.parseObject(result.getData(), User.class);
             } else {
                 log.error("failed to finUserByUserName, error: " + response);
-                throw new RemoteException("通过用户账号获取用户对象失败！");
+                throw new RemoteException("通过用户账号获取用户对象失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("", e);

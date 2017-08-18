@@ -62,7 +62,7 @@ public class AuthorityServiceImpl implements AuthorityService {
                 return JSON.parseObject(result.getData(), Boolean.class);
             } else {
                 log.error("failed to findRight, error: " + response);
-                throw new RemoteException("查找指定oprkeys的权限失败！");
+                throw new RemoteException("查找指定oprkeys的权限失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("failed findRight", e);

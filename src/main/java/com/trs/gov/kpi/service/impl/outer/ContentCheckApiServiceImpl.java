@@ -77,10 +77,11 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                 ContentCheckResult checkResult = JSON.parseObject(resultText, ContentCheckResult.class);
                 if (!checkResult.isOk()) {
                     log.warn("CKM check return error: " + resultText);
+                    throw new RemoteException("内容信息校对失败！原因：" + checkResult.getMessage());
                 }
                 return checkResult;
             } else {
-                throw new RemoteException("bad code: " + code);
+                throw new RemoteException("内容信息校对失败！返回：" + response);
             }
         } catch (IOException e) {
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "检查信息错误信息", e);

@@ -64,7 +64,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
                 return ids;
             } else {
                 log.error("error: " + response);
-                throw new RemoteException("获取发布文档ID失败！");
+                throw new RemoteException("获取发布文档ID失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("", e);
@@ -137,7 +137,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
                 return null;
             } else {
                 log.error("failed to findDocumentByUrl, error: " + response);
-                throw new RemoteException("获取文档失败！");
+                throw new RemoteException("获取文档失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("failed to findDocumentByUrl, error", e);
@@ -155,7 +155,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             return null;
         } else {
             log.error("failed to " + method + ", error: " + response);
-            throw new RemoteException("获取文档失败！");
+            throw new RemoteException("获取文档失败！返回：" + response);
         }
     }
 
@@ -168,7 +168,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
         }
         if (!result.isOk()) {
             log.error("fail result: " + result.getMsg());
-            throw new RemoteException(errMsg + "失败！[" + result.getMsg() + "]");
+            throw new RemoteException(errMsg + "原因：" + result.getMsg());
         }
         return result;
     }

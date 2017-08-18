@@ -55,11 +55,11 @@ public class DeptApiServiceImpl implements DeptApiService {
                 return JSON.parseObject(result.getData(), Dept.class);
             } else {
                 log.error("failed to findDeptById, error: " + response);
-                throw new RemoteException("通过部门id获取部门对象失败！");
+                throw new RemoteException("通过部门id获取部门对象失败！返回：" + response);
             }
         } catch (IOException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "从采编中心获取部门", e);
+            log.error("failed to get dept ! [userName=" + userName + ", groupId=" + groupId + "]", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "通过部门Id获取部门失败！", e);
             throw new RemoteException("获取部门失败！", e);
         }
     }
@@ -90,7 +90,7 @@ public class DeptApiServiceImpl implements DeptApiService {
                 return idList;
             } else {
                 log.error("failed to queryDeptsByName, error: " + response);
-                throw new RemoteException("通过部门名称获取部门对象集合失败！");
+                throw new RemoteException("通过部门名称获取部门对象集合失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("", e);

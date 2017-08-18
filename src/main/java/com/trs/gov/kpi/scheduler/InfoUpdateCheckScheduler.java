@@ -103,6 +103,8 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
+
+        // TODO REVIEW 首先需要检查站点是否还存在
         log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
