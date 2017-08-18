@@ -27,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -612,22 +611,16 @@ public class CKMScheduler implements SchedulerTask {
      * @param runtimeResult
      */
     private void toUpdateLinkContentInfoErrorCount(PageCKMSpiderUtil.CKMPage page, CheckRuntimeResult runtimeResult) {
-        QueryFilter filter = getQueryFilter(page, runtimeResult);
-
-        DBUpdater updater = new DBUpdater(Table.LINK_CONTENT_STATS.getTableName());
-        updater.addField(LinkContentStatsTableFileld.INFO_ERROR_COUNT, runtimeResult.getIssueCount());
-        updater.addField(LinkContentStatsTableFileld.STATE, runtimeResult.getIsException());
-        commonMapper.update(updater,filter);
-    }
-
-    @NotNull
-    private QueryFilter getQueryFilter(PageCKMSpiderUtil.CKMPage page, CheckRuntimeResult runtimeResult) {
         QueryFilter filter = new QueryFilter(Table.LINK_CONTENT_STATS);
         filter.addCond(LinkContentStatsTableFileld.SITE_ID, siteId);
         filter.addCond(LinkContentStatsTableFileld.TYPE_ID, Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
         filter.addCond(LinkContentStatsTableFileld.URL, page.getUrl());
         filter.addCond(LinkContentStatsTableFileld.CHECK_TIME, runtimeResult.getCheckTime());
-        return filter;
+
+        DBUpdater updater = new DBUpdater(Table.LINK_CONTENT_STATS.getTableName());
+        updater.addField(LinkContentStatsTableFileld.INFO_ERROR_COUNT, runtimeResult.getIssueCount());
+        updater.addField(LinkContentStatsTableFileld.STATE, runtimeResult.getIsException());
+        commonMapper.update(updater,filter);
     }
 
     /**
