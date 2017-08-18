@@ -100,8 +100,9 @@ public class IDSActor extends StdHttpSessionBasedActor {
      */
     public void logout(HttpSession session) {
         try {
-            session.invalidate();
             log.info(" user logout : " + session.getAttribute(IDSActor.LOGIN_FLAG));
+            LogUtil.addSecurityLog("退出成功");
+            session.invalidate();
         } catch (IllegalStateException e) {
             // this can be ignored
         }
@@ -109,7 +110,7 @@ public class IDSActor extends StdHttpSessionBasedActor {
 
     @Override
     public boolean userExist(SSOUser ssoUser) {
-        log.info(" user exit : " + ssoUser.getUserName());
+        log.warn("user exit : " + ssoUser.getUserName());
         return false;
     }
 
