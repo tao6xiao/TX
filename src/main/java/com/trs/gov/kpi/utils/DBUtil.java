@@ -8,6 +8,7 @@ import com.trs.gov.kpi.entity.dao.DBRow;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * Created by linwei on 2017/6/7.
@@ -75,5 +76,50 @@ public class DBUtil {
         return row;
     }
 
+    /**
+     * 通过持久化对象获取所有数据库字段名
+     * @param clazz
+     * @return
+     */
+    public static List<String> getAllDBFieldNames(Class<?> clazz) {
+        List<String> fieldNames = new ArrayList<>();
+        if (!clazz.isAnnotationPresent(DBTable.class)) {
+            return fieldNames;
+        }
+
+        Field[] fields = clazz.getDeclaredFields();
+        for(Field field :fields){
+            if (!field.isAnnotationPresent(DBField.class)) {
+                continue;
+            }
+
+            // 获取db字段名
+            DBField dbField = field.getAnnotation(DBField.class);
+            String fieldName;
+            if (StringUtil.isEmpty(dbField.value())) {
+                // 直接使用field的名字作为字段名
+                fieldName = field.getName();
+            } else {
+                fieldName = dbField.value();
+            }
+            fieldNames.add(fieldName);
+        }
+        return fieldNames;
+    }
+
+    /**
+     * 综合多个持久化类的字段
+     * @param clazzes
+     * @return
+     */
+    public static List<String> collectAllDBFieldNames(Class<?> ...clazzes) {
+        Set<String> fieldSet = new HashSet<>();
+
+        for (Class<?> clazz : clazzes) {
+            final List<String> allDBFieldNames = getAllDBFieldNames(clazz);
+            fieldSet.addAll(allDBFieldNames);
+        }
+        return new ArrayList<>(fieldSet);
+    }
 
 }

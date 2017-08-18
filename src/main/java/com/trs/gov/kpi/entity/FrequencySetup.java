@@ -1,18 +1,29 @@
 package com.trs.gov.kpi.entity;
 
+import com.trs.gov.kpi.annotation.DBField;
+import com.trs.gov.kpi.annotation.DBTable;
+
 import java.util.Date;
 
+@DBTable("frequencysetup")
 public class FrequencySetup {
+
+    @DBField(autoInc = true)
     private Integer id;
 
+    @DBField
     private Integer siteId;
 
+    @DBField
     private Integer presetFeqId;
 
+    @DBField
     private Integer chnlId;
 
+    @DBField
     private Date setTime;
 
+    @DBField
     private Byte isOpen;
 
     public Integer getId() {
