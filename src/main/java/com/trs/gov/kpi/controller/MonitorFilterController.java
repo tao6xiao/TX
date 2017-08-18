@@ -1,12 +1,9 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.ErrorType;
-import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.MonitorSiteService;
-import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
