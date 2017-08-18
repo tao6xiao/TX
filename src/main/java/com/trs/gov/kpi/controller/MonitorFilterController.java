@@ -1,9 +1,12 @@
 package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.constant.ErrorType;
+import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.service.FrequencySetupService;
 import com.trs.gov.kpi.service.MonitorSiteService;
+import com.trs.gov.kpi.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,12 +42,14 @@ public class MonitorFilterController {
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         if (siteService.getMonitorSiteBySiteId(siteId) == null) {
-            log.error("当前站点不是监测站点，请设置！");
-            throw new BizException("当前站点不是监测站点，请设置！");
+            String errorInfo = "进入绩效考核，当前站点site[" + siteId + "]不是监测站点，请设置！";
+            log.error(errorInfo);
+            throw new BizException(errorInfo);
         }
-        if(setupService.getCountFrequencySetupBySite(siteId) == 0){
-            log.error("当前站点没有设置栏目更新频率，请设置！");
-            throw new BizException("当前站点没有设置栏目更新频率，请设置！");
+        if (setupService.getCountFrequencySetupBySite(siteId) == 0) {
+            String errorInfo = "进入绩效考核，当前站点site[" + siteId + "]没有设置栏目更新频率，请设置！";
+            log.error(errorInfo);
+            throw new BizException(errorInfo);
         }
         return null;
     }

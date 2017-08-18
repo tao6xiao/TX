@@ -93,7 +93,7 @@ public class ReportController {
             if (StringUtil.isEmpty(path)) {
                 String errorInfo = "时间节点报表文件不存在[siteId=" + param.getSiteId() + ",ID=" + param.getId() + "]";
                 log.error(errorInfo);
-                throw new BizException(errorInfo);
+                throw new BizException("时间节点报表文件不存在");
             }
             download(response, path);
             return null;
@@ -144,7 +144,7 @@ public class ReportController {
             if (StringUtil.isEmpty(path)) {
                 String errorInfo = "时间区间报表文件不存在[siteId=" + param.getSiteId() + ",ID=" + param.getId() + "]";
                 log.error(errorInfo);
-                throw new BizException(errorInfo);
+                throw new BizException("时间区间报表文件不存在");
             }
             download(response, path);
             return null;
@@ -169,7 +169,7 @@ public class ReportController {
 
             } catch (Exception e) {
                 log.error(fileName + " download fail!", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, fileName + " download failed!", e);
+                LogUtil.addErrorLog(OperationType.DOWNLOAD, ErrorType.DOWNLOAD_FAILED, fileName + " download failed!", e);
             }
         }
     }

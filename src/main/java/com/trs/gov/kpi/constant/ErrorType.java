@@ -16,5 +16,7 @@ public class ErrorType {
 
     public static final String TASK_SCHEDULE_FAILED = "任务调度失败";
 
+    public static final String DOWNLOAD_FAILED = "下载失败";
+
     private ErrorType(){}
 }

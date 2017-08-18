@@ -84,7 +84,7 @@ public class FrequencySetupController {
         String logDesc = "添加更新频率（添加和修改）" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest);
         return LogUtil.controlleFunctionWrapper(() -> {
             checkSetupParam(frequencySetupSetRequest);
-            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL, frequencySetupSetRequest.getSiteId());
+//            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL, frequencySetupSetRequest.getSiteId());
             int siteId = frequencySetupSetRequest.getSiteId();
             int presetFeqId = frequencySetupSetRequest.getPresetFeqId();
             if (!frequencyPresetService.isPresetFeqIdExist(siteId, presetFeqId)) {
@@ -96,21 +96,37 @@ public class FrequencySetupController {
         }, OperationType.ADD + "," + OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
     }
 
-    private void addOrUpdateFrequency(FrequencySetupSetRequest frequencySetupSetRequest) {
+    private void addOrUpdateFrequency(FrequencySetupSetRequest frequencySetupSetRequest) throws RemoteException, BizException {
         Integer[] chnlIds = frequencySetupSetRequest.getChnlIds();
         for (int i = 0; i < chnlIds.length; i++) {
             FrequencySetup frequencySetup = frequencySetupService.getFrequencySetupBySiteIdAndChnlId(frequencySetupSetRequest.getSiteId(), chnlIds[i]);
             if (frequencySetup == null) {//当前站点的当前栏目未设置过更新频率，需要新增
-                frequencySetup = frequencySetupService.toFrequencySetupBySetupRequest(frequencySetupSetRequest, chnlIds[i]);
-                frequencySetupService.insert(frequencySetup);
-                LogUtil.addOperationLog(OperationType.ADD, "添加更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
-            } else {//当前站点的当前栏目设置过更新频率，需要修改
+                addFrequency(frequencySetupSetRequest, chnlIds[i]);
 
-                frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
-                frequencySetupService.updateFrequencySetupById(frequencySetup);
-                LogUtil.addOperationLog(OperationType.UPDATE, "修改更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest), LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
+            } else {//当前站点的当前栏目设置过更新频率，需要修改
+                updateFrequency(frequencySetup, frequencySetupSetRequest);
+
             }
         }
+    }
+
+    private Integer updateFrequency(FrequencySetup frequencySetup, FrequencySetupSetRequest frequencySetupSetRequest) throws RemoteException, BizException {
+
+        String logDesc = "修改更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            frequencySetup.setPresetFeqId(frequencySetupSetRequest.getPresetFeqId());
+            frequencySetupService.updateFrequencySetupById(frequencySetup);
+            return null;
+        }, OperationType.UPDATE, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
+    }
+
+    private Integer addFrequency(FrequencySetupSetRequest frequencySetupSetRequest, Integer chnlId) throws RemoteException, BizException {
+        String logDesc = "添加更新频率" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest);
+        return LogUtil.controlleFunctionWrapper(() -> {
+            FrequencySetup frequencySetup = frequencySetupService.toFrequencySetupBySetupRequest(frequencySetupSetRequest, chnlId);
+            frequencySetupService.insert(frequencySetup);
+            return null;
+        }, OperationType.ADD, logDesc, LogUtil.getSiteNameForLog(siteApiService, frequencySetupSetRequest.getSiteId()));
     }
 
     private void checkSetupParam(FrequencySetupSetRequest frequencySetupSetRequest) throws BizException {
