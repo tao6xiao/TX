@@ -171,4 +171,24 @@ public class Status {
         }
 
     }
+
+
+    /**
+     * 检测状态
+     */
+    public enum MonitorState {
+        NORMAL(1, "正常"),
+        ABNORMAL(2, "异常");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorState(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+    }
 }

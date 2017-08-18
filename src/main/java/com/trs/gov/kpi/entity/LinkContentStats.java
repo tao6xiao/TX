@@ -32,4 +32,7 @@ public class LinkContentStats {
     @DBField
     private Integer infoErrorCount;//信息错误个数
 
+    @DBField
+    private Integer state;//检测状态
+
 }

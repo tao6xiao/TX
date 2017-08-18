@@ -2,37 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.trs.gov.kpi.dao.LinkContentStatsMapper">
 
-    <select id="selectThisTimeMD5" resultType="java.lang.String">
-        select
-          md5
-        from linkcontentstats
-          where siteId = #{siteId}
-          and typeId = #{typeId}
-          and url = #{url}
-          order by checkTime desc
-          limit 0,1
-    </select>
+    <resultMap id="LinkContentStatsMap" type="com.trs.gov.kpi.entity.LinkContentStats">
+        <result column="siteId" jdbcType="INTEGER" property="siteId" />
+        <result column="typeId" jdbcType="INTEGER" property="typeId" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="md5" jdbcType="VARCHAR" property="md5" />
+        <result column="checkTime" jdbcType="TIMESTAMP" property="checkTime" />
+        <result column="infoErrorCount" jdbcType="INTEGER" property="infoErrorCount"/>
+        <result column="state" jdbcType="INTEGER" property="state" />
+    </resultMap>
 
-    <select id="selectLastTimeMD5" resultType="java.lang.String">
-        select
-          md5
-        from linkcontentstats
-          where siteId = #{siteId}
-          and typeId = #{typeId}
-          and url = #{url}
-          order by checkTime desc
-          limit 1,1
-    </select>
-
-    <select id="getLastCheckTimeByUrl" resultType="java.util.Date">
-        select
-        checkTime
-        from issue
+    <select id="getLastLinkContentStats" resultMap="LinkContentStatsMap">
+        select * from link‏contentstats
         where siteId = #{siteId}
-        and customer3 = #{customer3}
-        group by checkTime
-        order by checkTime desc
-        limit 1,1
+        and typeId = #{typeId}
+        and url = #{url}
+        and checkTime =
+        (select max(checkTime) from link‏contentstats where checkTime not in
+        (select max(checkTime) from link‏contentstats where siteId = #{siteId} and typeId = #{typeId} and url = #{url} )
+        where siteId = #{siteId}
+        and typeId = #{typeId}
+        and url = #{url}
+        )
     </select>
 
 </mapper>

@@ -17,6 +17,9 @@ public class LinkContentStatsTableFileld {
 
     public static final String INFO_ERROR_COUNT =  "infoErrorCount";
 
+    public static final String STATE =  "state";
+
+
     private LinkContentStatsTableFileld() {
     }
 }

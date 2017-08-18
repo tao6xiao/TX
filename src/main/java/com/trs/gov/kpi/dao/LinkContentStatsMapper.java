@@ -1,9 +1,8 @@
 package com.trs.gov.kpi.dao;
 
+import com.trs.gov.kpi.entity.LinkContentStats;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.Date;
 
 /**
  * Created by li.hao on 2017/8/11.
@@ -12,28 +11,11 @@ import java.util.Date;
 public interface LinkContentStatsMapper {
 
     /**
-     * 获取当前检测的链接内容的md5编码
-     *
-     * @param siteId
-     * @param typeId
-     * @return
-     */
-    String selectThisTimeMD5(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId, @Param("url") String url);
-
-    /**
-     * 获取上一次检测的链接内容的md5编码
-     *
-     * @param siteId
-     * @param typeId
-     * @return
-     */
-    String selectLastTimeMD5(@Param("siteId") Integer siteId, @Param("typeId") Integer typeId, @Param("url") String url);
-
-    /**
-     * 获取上一次
+     * 获取上一次检测内容
      * @param siteId
      * @param customer3
      * @return
      */
-    Date getLastCheckTimeByUrl(@Param("siteId") int siteId, @Param("customer3")String customer3);
+    LinkContentStats getLastLinkContentStats(@Param("siteId") int siteId, @Param("typeId")Integer typeId, @Param("customer3")String customer3);
+
 }
