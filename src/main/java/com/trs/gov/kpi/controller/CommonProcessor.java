@@ -40,7 +40,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizException.class)
     @ResponseBody
     public ResponseTemplate handBizException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZEXCEPTION_MESSAGE : ex.getMessage(),
@@ -50,7 +50,7 @@ public class CommonProcessor {
     @ExceptionHandler(RemoteException.class)
     @ResponseBody
     public ResponseTemplate handRemoteException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? REMOTEEXCEPTION_MESSAGE : ex.getMessage(),
@@ -60,7 +60,7 @@ public class CommonProcessor {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseTemplate handCommonException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false, SYSTEMEXCEPTION_MESSAGE, null);
     }
@@ -68,7 +68,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizRuntimeException.class)
     @ResponseBody
     public ResponseTemplate handBizRuntimeException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZRUNTIMEEXCEPTION_MESSAGE : ex.getMessage(),

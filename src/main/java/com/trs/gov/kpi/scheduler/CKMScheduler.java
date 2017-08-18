@@ -116,30 +116,30 @@ public class CKMScheduler implements SchedulerTask {
     public void run() throws RemoteException {
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
-        if(StringUtil.isEmpty(baseUrl))
-        {
-            return ;
+        if (StringUtil.isEmpty(baseUrl)) {
+            return;
         }
         spider.fetchPages(5, baseUrl, this, siteId);//测试url："http://www.55zxx.net/#jzl_kwd=20988652540&jzl_ctv=7035658676&jzl_mtt=2&jzl_adt=clg1"
 
-        if(isCheck == 0){
+        if (isCheck == 0) {
             monitorResult = getLastTimeMonitorResult();
-        }else {
+        } else {
             int lastTimeMonitorResultCount = getLastTimeMonitorResult();
-            monitorResult = (int)(lastTimeMonitorResultCount + allChangeCount);
+            monitorResult = (int) (lastTimeMonitorResultCount + allChangeCount);
         }
     }
 
     /**
      * 获取上一次完成检测的结果
+     *
      * @return
      */
     private int getLastTimeMonitorResult() {
         //获取上一次检查完成的时间
         Date endTime = monitorRecordService.getLastMonitorEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value);
-        if(endTime != null){
+        if (endTime != null) {
             //根据上一次完成时间获取上一次检查结果
-           return monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
+            return monitorRecordService.getResultByLastEndTime(siteId, Types.IssueType.INFO_ERROR_ISSUE.value, endTime);
         }
         return 0;
     }
@@ -170,13 +170,14 @@ public class CKMScheduler implements SchedulerTask {
                 return issueList;
             }
         } catch (Exception e) {
-            log.error("failed to check content " + checkContent, e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to check content " + checkContent, e);
+            String errorInfo = "siteId[" + siteId + "], url[" + baseUrl + "], failed to check content " + checkContent;
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
             return issueList;
         }
 
         if (!result.isOk()) {
-            log.error("return error: " + result.getMessage());
+            log.error("siteId[" + siteId + "], url[" + baseUrl + "]return error: " + result.getMessage());
             return issueList;
         }
 
@@ -188,12 +189,12 @@ public class CKMScheduler implements SchedulerTask {
             QueryFilter filter = new QueryFilter(Table.ISSUE);
             filter.addCond(IssueTableField.SITE_ID, siteId);
             filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
-            filter.addCond(IssueTableField.CHECK_TIME,lastcheckTime);
+            filter.addCond(IssueTableField.CHECK_TIME, lastcheckTime);
 
             lastTimIssueCount = commonMapper.count(filter);
             changeCount = (double) (issueList.size() - lastTimIssueCount);
-        }else {
-            changeCount = (double)(0 - lastTimIssueCount);
+        } else {
+            changeCount = (double) (0 - lastTimIssueCount);
         }
         allChangeCount += changeCount;
         return issueList;
@@ -201,15 +202,16 @@ public class CKMScheduler implements SchedulerTask {
 
     /**
      * 更新issue的checkTime
+     *
      * @param page
      */
-    private void toUpdateCheckTime(PageCKMSpiderUtil.CKMPage page,List<String> checkTypeList) {
-            QueryFilter filter = new QueryFilter(Table.ISSUE);
-            filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
+    private void toUpdateCheckTime(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
 
-            DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
-            updater.addField(IssueTableField.CHECK_TIME, ckmCheckTime);
-            commonMapper.update(updater, filter);
+        DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+        updater.addField(IssueTableField.CHECK_TIME, ckmCheckTime);
+        commonMapper.update(updater, filter);
     }
 
     private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result) {
@@ -242,9 +244,9 @@ public class CKMScheduler implements SchedulerTask {
                 createIndexHtml(absoluteDir);
 
             } catch (IOException e) {
-                log.error("error content: " + errorContent);
-                log.error("failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ", e);
+                String errorInfo = "failed to generate file of " + page.getUrl() + ", siteid[" + siteId + "] ";
+                log.error(errorInfo, e);
+                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
             }
 
             Issue issue = new Issue();
@@ -544,9 +546,10 @@ public class CKMScheduler implements SchedulerTask {
 
     /**
      * 在源码中增加定位用的脚本定义
+     *
      * @return
      */
-    public static StringBuilder addScriptDef(){
+    public static StringBuilder addScriptDef() {
         StringBuilder sb = new StringBuilder();
         sb.append("<link href=\"http://gov.trs.cn/jsp/cis4/css/jquery.qtip.min.css\" rel=\"stylesheet\" type=\"text/css\">")
                 .append(LINE_SP);
@@ -581,9 +584,9 @@ public class CKMScheduler implements SchedulerTask {
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
                     monitorResult++;
-                }else {
+                } else {
                     DBUpdater update = new DBUpdater(Table.ISSUE.getTableName());
-                    update.addField(IssueTableField.CHECK_TIME , ckmCheckTime);
+                    update.addField(IssueTableField.CHECK_TIME, ckmCheckTime);
                     commonMapper.update(update, queryFilter);
                 }
             } catch (RemoteException e) {

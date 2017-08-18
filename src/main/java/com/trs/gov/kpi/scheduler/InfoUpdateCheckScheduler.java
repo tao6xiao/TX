@@ -118,7 +118,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 try {
                     checkChannelTreeUpdate(child);
                 } catch (ParseException e) {
-                    String errorInfo = "检查当前栏目channel[" + child + "]下的子栏目是否更新";
+                    String errorInfo = "任务调度[" + getName() + "]，检查站点siteId[" + siteId + "]，栏目channel[" + child + "]下的子栏目是否更新";
                     log.error(errorInfo, e);
                     LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
                 }
@@ -707,8 +707,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         try {
             chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
         } catch (RemoteException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息更新监测，siteId[" + siteId + "]", e);
+            String errorInfo = MessageFormat.format("任务调度[" + getName() + "]，[siteId={0}, channelId={1}]", siteId, channelId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, errorInfo, e);
         }
         DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
         if (chnlUrl != null) {
