@@ -130,7 +130,7 @@ public class PageCKMSpiderUtil {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler, Integer siteId) {
+    public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler) {
 
         log.info("fetch ckm pages started!");
         this.ckmScheduler = ckmScheduler;
