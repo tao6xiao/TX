@@ -238,6 +238,14 @@ public class SpiderUtils {
                     }
                 }
             } else {
+
+                // 不是同域名的页面，就不处理。
+                String curHost = UrlUtils.getHost(request.getUrl());
+                if (!StringUtils.equals(curHost, baseHost)) {
+                    return result;
+                }
+
+                // 不是HTML页面，不处理
                 EnumUrlType urlType = WebPageUtil.getUrlType(request.getUrl());
                 if (urlType != EnumUrlType.HTML) {
                     return result;
