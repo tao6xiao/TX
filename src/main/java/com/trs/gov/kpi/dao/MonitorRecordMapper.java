@@ -37,5 +37,11 @@ public interface MonitorRecordMapper {
      */
     List<MonitorRecord> selectMonitorRecordList(QueryFilter filter);
 
-    MonitorRecord selectMonitorRecordByByTaskIdAndSiteId(@Param("siteId")Integer SiteId, @Param("taskId")Integer taskId);
+    /**
+     * 根据网站编号和任务编号查询监测记录
+     * @param siteId
+     * @param taskId
+     * @return
+     */
+    MonitorRecord selectMonitorRecordByByTaskIdAndSiteId(@Param("siteId")Integer siteId, @Param("taskId")Integer taskId);
 }
