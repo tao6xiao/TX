@@ -1,6 +1,8 @@
 package com.trs.gov.kpi.entity.dao;
 
 import com.trs.gov.kpi.constant.Constants;
+import com.trs.gov.kpi.entity.*;
+import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 
@@ -12,17 +14,14 @@ import java.util.List;
  */
 public enum Table {
 
-    ISSUE("issue", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "typeId", "subTypeId",
-            "detail", "issueTime", "checkTime", "isResolved", "isDel", "workOrderStatus", "deptId", "customer1", "customer2", "customer3")),
-    WEB_PAGE("webpage", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "typeId", Constants.DB_FIELD_CHNL_ID,
-            "pageLink", "replySpeed", "pageSpace", "pageDepth", "repeatPlace", "repeatDegree", "updateTime", "urlLength", "checkTime", "isResolved", "isDel")),
-    FREQ_SETUP("frequencysetup", Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "presetFeqId", Constants.DB_FIELD_CHNL_ID, "setTime", "isOpen")),
-    REPORT("report", Arrays.asList("id", "siteId", "title", "reportTime", "crTime", "type", "path")),
-    DUTY_DEPT("dutydept", Arrays.asList(Constants.DB_FIELD_CHNL_ID, "siteId", "deptId", "contain")),
-    // TODO REVIEW LINWEI DO_li.hao 可以通过持久化对象，获取数据库字段，这样就更容易维护
-    MONITOR_RECORD("monitorrecord",Arrays.asList(Constants.DB_FIELD_ID, Constants.DB_FIELD_SITE_ID, "taskId", "taskStatus", "result", "beginTime", "endTime")),
-    LINK_CONTENT_STATS("linkcontentstats",Arrays.asList(Constants.DB_FIELD_SITE_ID, "typeId", "url", "md5", "checkTime", "infoErrorCount"));
-
+    ISSUE("issue", Issue.class),
+    WEB_PAGE("webpage", PageIssue.class, UrlLength.class, PageDepth.class,
+            PageSpace.class, ReplySpeed.class, RepeatCode.class),
+    FREQ_SETUP("frequencysetup", FrequencySetup.class),
+    DUTY_DEPT("dutydept", DutyDept.class),
+    REPORT("report", Report.class),
+    MONITOR_RECORD("monitorrecord", MonitorRecord.class),
+    LINK_CONTENT_STATS("linkcontentstats", LinkContentStats.class);
 
     // 表名
     @Getter
@@ -32,9 +31,9 @@ public enum Table {
     @Getter
     private final List<String> fields;
 
-    Table(String tableName, List<String> fieldNames) {
+    Table(String tableName, Class<?> ...poClass) {
         this.tableName = tableName;
-        this.fields = fieldNames;
+        this.fields = DBUtil.collectAllDBFieldNames(poClass);
     }
 
     /**
