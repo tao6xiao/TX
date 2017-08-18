@@ -67,7 +67,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     @Getter
-    private Integer monitorType;
+    private Integer monitorType = 0;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_HOME_PAGE;

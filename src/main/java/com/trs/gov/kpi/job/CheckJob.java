@@ -25,14 +25,11 @@ import java.util.Date;
 @Slf4j
 public class CheckJob implements Job {
 
-    private MonitorRecordService monitorRecordService;
-
     private CommonMapper commonMapper;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
-        monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
-        commonMapper = (CommonMapper)SpringContextUtil.getBean(CommonMapper.class);
+
         SchedulerTask task = (SchedulerTask) jobExecutionContext.getMergedJobDataMap().get("task");
 
         Date startTime = new Date();
@@ -72,7 +69,7 @@ public class CheckJob implements Job {
         monitorRecord.setTaskId(task.getCheckJobType().value);
         monitorRecord.setBeginTime(startTime);
         monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
-
+        MonitorRecordService monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
         monitorRecordService.insertMonitorRecord(monitorRecord);
     }
 
@@ -87,6 +84,7 @@ public class CheckJob implements Job {
         updater.addField(MonitorRecordTableField.RESULT, task.getMonitorResult());
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
         updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
+        CommonMapper commonMapper = (CommonMapper)SpringContextUtil.getBean(CommonMapper.class);
         commonMapper.update(updater, filter);
     }
 }
