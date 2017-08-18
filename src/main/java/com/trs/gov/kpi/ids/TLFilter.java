@@ -41,15 +41,12 @@ public class TLFilter implements Filter {
             if (req.getRequestURI().startsWith("/gov/kpi/opendata")) {
                 chain.doFilter(request, response);
             }
-            log.error("Invalid user: The current user in the logout state or IDS server is stopped");
-            try {
-                throw new BizException("当前用户处于未登录状态或者IDS服务器已停止");
-            } catch (BizException e) {
-                log.error("", e);
-                LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.BIZ_EXCEPTION, "", e);
-            }
+
+            final BizException ex = new BizException("当前用户处于未登录状态或者IDS服务器已停止");
+            log.error("", ex);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.BIZ_EXCEPTION, ex.getMessage(), ex);
             HttpServletResponse resp = (HttpServletResponse) response;
-            resp.sendError(HttpServletResponse.SC_BAD_GATEWAY);
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
         }
     }
 
