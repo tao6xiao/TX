@@ -464,23 +464,11 @@ public class QueryFilterHelper {
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskName")) {
-                // TODO REVIEW LINWEI DO_li.hao 修改一下getStatusByStatusName 不要返回Invalid的情况
-                List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(param.getSearchText());
-                if(taskIds.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
-                    filter.addCond(MonitorRecordTableField.TASK_ID, Types.MonitorRecordNameType.INVALID.value);
-                }else{
-                    filter.addCond(MonitorRecordTableField.TASK_ID, taskIds);
-                }
+                taskNameCond(param, filter);
+
             }else if(param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskStatusName")){
-                // TODO REVIEW LINWEI DO_li.hao 修改一下getStatusByStatusName 不要返回Invalid的情况
-                List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(param.getSearchText());
-                if(statusList.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
-                    filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.INVALID.value);
-                }else{
-                    filter.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
-                }
+                taskStatusNameCond(param, filter);
             } else if (StringUtil.isEmpty(param.getSearchField())) {
-                // TODO REVIEW LINWEI DO_li.hao  还有两种情况：searchField为空的情况(全部的情况)
                 filter.addOrConds(bulidByMonitorRecordParam(param.getSearchText()));
             } else{
                 log.error("Invalid parameter: 检索类型错误，目前支持（任务名称（taskName），任务状态名称（taskStatusName）");
@@ -494,6 +482,24 @@ public class QueryFilterHelper {
             addSort(filter, sortFields);
         }
         return filter;
+    }
+
+    private static void taskStatusNameCond(PageDataRequestParam param, QueryFilter filter) {
+        List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(param.getSearchText());
+        if(statusList.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+            filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.INVALID.value);
+        }else{
+            filter.addCond(MonitorRecordTableField.TASK_STATUS, statusList);
+        }
+    }
+
+    private static void taskNameCond(PageDataRequestParam param, QueryFilter filter) {
+        List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(param.getSearchText());
+        if(taskIds.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
+            filter.addCond(MonitorRecordTableField.TASK_ID, Types.MonitorRecordNameType.INVALID.value);
+        }else{
+            filter.addCond(MonitorRecordTableField.TASK_ID, taskIds);
+        }
     }
 
     /**
