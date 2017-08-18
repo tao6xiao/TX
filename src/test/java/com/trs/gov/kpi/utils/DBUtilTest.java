@@ -48,7 +48,6 @@ public class DBUtilTest {
         final List<String> allDBFieldNames = DBUtil.getAllDBFieldNames(Issue.class);
 
         assertTrue(fields.containsAll(allDBFieldNames));
-        assertTrue(allDBFieldNames.containsAll(fields));
     }
 
     @Test
