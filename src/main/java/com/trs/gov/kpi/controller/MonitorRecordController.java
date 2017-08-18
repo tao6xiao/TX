@@ -79,7 +79,7 @@ public class MonitorRecordController {
                 log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-//            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
+            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
             schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
             return monitorRecordService.selectMonitorResulrOnce(siteId, Arrays.asList(checkJobValue));
         }, OperationType.MONITOR, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));

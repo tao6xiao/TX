@@ -84,7 +84,7 @@ public class FrequencySetupController {
         String logDesc = "添加更新频率（添加和修改）" + LogUtil.paramsToLogString(SETREQUEST, frequencySetupSetRequest);
         return LogUtil.controlleFunctionWrapper(() -> {
             checkSetupParam(frequencySetupSetRequest);
-//            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL, frequencySetupSetRequest.getSiteId());
+            authorityService.checkRight(Authority.KPIWEB_INDEXSETUP_ADDMONITORCHNL, frequencySetupSetRequest.getSiteId());
             int siteId = frequencySetupSetRequest.getSiteId();
             int presetFeqId = frequencySetupSetRequest.getPresetFeqId();
             if (!frequencyPresetService.isPresetFeqIdExist(siteId, presetFeqId)) {

@@ -40,6 +40,8 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
     @Value("${service.outer.ckm.url}")
     private String cmkUrl;
 
+    private static final String INFO_ERROR = "检查信息错误信息";
+
     @Override
     public ContentCheckResult check(String text, String type) throws RemoteException {
         CloseableHttpClient httpClient = null;
@@ -84,15 +86,15 @@ public class ContentCheckApiServiceImpl implements ContentCheckApiService {
                 throw new RemoteException("内容信息校对失败！返回：" + response);
             }
         } catch (IOException e) {
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "检查信息错误信息", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, INFO_ERROR, e);
             throw new RemoteException("fail to check!", e);
         } finally {
             if (httpClient != null) {
                 try {
                     httpClient.close();
                 } catch (IOException e) {
-                    log.error("", e);
-                    LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "检查信息错误信息", e);
+                    log.error(INFO_ERROR, e);
+                    LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, INFO_ERROR, e);
                 }
             }
         }
