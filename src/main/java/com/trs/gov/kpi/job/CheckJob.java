@@ -25,8 +25,6 @@ import java.util.Date;
 @Slf4j
 public class CheckJob implements Job {
 
-    private CommonMapper commonMapper;
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
 
