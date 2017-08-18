@@ -606,7 +606,7 @@ public class CKMScheduler implements SchedulerTask {
     }
 
     /**
-     * 链接内容统计——更新链接错误数量
+     * 链接内容统计——更新链接检测记录
      * @param page
      * @param runtimeResult
      */
