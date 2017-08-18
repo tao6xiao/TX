@@ -70,7 +70,7 @@ public class AuthorityServiceImpl implements AuthorityService {
             String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1}]", siteId, oprkeys);
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
-            throw new RemoteException("查找指定oprkeys的权限失败！", e);
+            throw new RemoteException(errorInfo, e);
         }
     }
 
