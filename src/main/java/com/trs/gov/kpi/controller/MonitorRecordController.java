@@ -65,7 +65,7 @@ public class MonitorRecordController {
     }
 
     /**
-     * 网站手动监测
+     * 手动监测——执行检测任务
      *
      * @param siteId
      * @return
@@ -79,12 +79,20 @@ public class MonitorRecordController {
                 log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
+//            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
             schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
             return monitorRecordService.selectMonitorResulrOnce(siteId, Arrays.asList(checkJobValue));
-        }, OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
+        }, OperationType.MONITOR, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 
+    /**
+     * 手动检测——查询监测结果
+     * @param siteId
+     * @param checkJobValues
+     * @return
+     * @throws RemoteException
+     * @throws BizException
+     */
     @RequestMapping(value = "/manual/result", method = RequestMethod.GET)
     @ResponseBody
     public List<MonitorOnceResponse> selectMonitorResultOnce(Integer siteId, Integer[] checkJobValues) throws RemoteException, BizException {

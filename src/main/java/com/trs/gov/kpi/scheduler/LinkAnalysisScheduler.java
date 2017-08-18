@@ -55,9 +55,8 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     public void run() throws RemoteException {
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
-        if(StringUtil.isEmpty(baseUrl))
-        {
-            return ;
+        if (StringUtil.isEmpty(baseUrl)) {
+            return;
         }
         spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
     }
