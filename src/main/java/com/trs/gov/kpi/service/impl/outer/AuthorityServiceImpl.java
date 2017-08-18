@@ -62,15 +62,15 @@ public class AuthorityServiceImpl implements AuthorityService {
                 }
                 return JSON.parseObject(result.getData(), Boolean.class);
             } else {
-                String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1}], error: " + response, siteId, oprkeys);
+                String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1}], error:{2}", siteId, oprkeys, response);
                 log.error(errorInfo);
-                throw new RemoteException(errorInfo);
+                throw new RemoteException("获取权限失败！[siteId=" + siteId + ", oprkeys=" + oprkeys + "]");
             }
         } catch (IOException e) {
             String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1}]", siteId, oprkeys);
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
-            throw new RemoteException(errorInfo, e);
+            throw new RemoteException("获取权限失败！[siteId=" + siteId + ", oprkeys=" + oprkeys + "]", e);
         }
     }
 

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,13 +73,14 @@ public class InteractionServiceImpl implements InteractionService {
                 }
                 return JSON.parseObject(jsonResult, NBHDPageDataResult.class);
             } else {
-                log.error("failed to listGovmsgboxs, error: " + response);
-                throw new RemoteException("获取咨询列表失败！返回：" + response);
+                String errorInfo = MessageFormat.format("failed to listGovmsgboxs, [siteId={0}], error:{1}", param.getSiteId(), response);
+                log.error(errorInfo);
+                throw new RemoteException("获取咨询列表失败！[siteId=" + param.getSiteId() + "]，返回：" + response);
             }
         } catch (IOException e) {
-            log.error("failed listGovmsgboxs", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed listGovmsgboxs", e);
-            throw new RemoteException("获取咨询列表失败！", e);
+            log.error("failed listGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed listGovmsgboxs,  [siteId=" + param.getSiteId() + "]", e);
+            throw new RemoteException("获取咨询列表失败！[siteId=" + param.getSiteId() + "]", e);
         }
 
     }
@@ -103,13 +105,13 @@ public class InteractionServiceImpl implements InteractionService {
                 }
                 return JSON.parseObject(jsonResult, NBHDStatisticsRes.class);
             } else {
-                log.error("failed to countGovmsgboxs, error: " + response);
-                throw new RemoteException("获取咨询统计失败！返回：" + response);
+                log.error("failed to countGovmsgboxs,  [siteId=" + param.getSiteId() + "], error: " + response);
+                throw new RemoteException("获取咨询统计失败！ [siteId=" + param.getSiteId() + "], 返回：" + response);
             }
         } catch (IOException e) {
-            log.error("failed countGovmsgboxs", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countGovmsgboxs", e);
-            throw new RemoteException("获取咨询统计失败！", e);
+            log.error("failed countGovmsgboxs,  [siteId=" + param.getSiteId() + "]", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
+            throw new RemoteException("获取咨询统计失败！[siteId=" + param.getSiteId() + "]", e);
         }
     }
 
@@ -137,13 +139,13 @@ public class InteractionServiceImpl implements InteractionService {
                 }
                 nbhdHistoryRes = JSON.parseObject(jsonResult, NBHDHistoryRes.class);
             } else {
-                log.error("failed to countDetailGovmsgboxs, error: " + response);
-                throw new RemoteException("获取咨询统计历史记录失败！");
+                log.error("failed to countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "], error: " + response);
+                throw new RemoteException("获取咨询统计历史记录失败！ [siteId=" + param.getSiteId() + "]");
             }
         } catch (IOException e) {
-            log.error("failed countDetailGovmsgboxs", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countDetailGovmsgboxs", e);
-            throw new RemoteException("获取咨询统计历史记录失败！", e);
+            log.error("failed countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
+            throw new RemoteException("获取咨询统计历史记录失败！[siteId=" + param.getSiteId() + "]", e);
         }
         List<NBHDHistory> datas = nbhdHistoryRes.getDatas();
 

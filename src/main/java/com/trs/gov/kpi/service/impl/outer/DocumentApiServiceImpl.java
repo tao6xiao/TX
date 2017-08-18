@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -63,13 +64,14 @@ public class DocumentApiServiceImpl implements DocumentApiService {
 
                 return ids;
             } else {
-                log.error("error: " + response);
-                throw new RemoteException("获取发布文档ID失败！返回：" + response);
+                log.error(MessageFormat.format("failed queryAllPublishedDocIds, [siteId={0}, channelId={1}], error: {2}", siteId, channelId, response));
+                throw new RemoteException("获取发布文档ID失败！[siteId=" + siteId + ", channelId=" + channelId + "]，返回：" + response);
             }
         } catch (IOException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "find document error", e);
-            throw new RemoteException("获取发布文档ID失败！", e);
+            String errorInfo = MessageFormat.format("failed queryAllPublishedDocIds, [siteId={0}, channelId={1}]", siteId, channelId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取发布文档ID失败！[siteId=" + siteId + ", channelId=" + channelId + "]", e);
         }
 
     }
@@ -87,9 +89,10 @@ public class DocumentApiServiceImpl implements DocumentApiService {
 
             return responseManger("findDocumentById", response);
         } catch (IOException e) {
-            log.error("failed to getDocument, error: ", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to getDocument, error: ", e);
-            throw new RemoteException("获取发布文档失败！", e);
+            String errorInfo = MessageFormat.format("failed to getDocument, [channelId={0}, documentId={1}]", channelId, documentId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取发布文档失败！[channelId=" + channelId + ", documentId=" + documentId + "]", e);
         }
     }
 
@@ -136,13 +139,15 @@ public class DocumentApiServiceImpl implements DocumentApiService {
                 }
                 return null;
             } else {
-                log.error("failed to findDocumentByUrl, error: " + response);
-                throw new RemoteException("获取文档失败！返回：" + response);
+                String errorInfo = MessageFormat.format("failed to findDocumentByUrl, [url={0}], error:{1}", url, response);
+                log.error(errorInfo);
+                throw new RemoteException("获取文档失败！[url=" + url + "]，返回：" + response);
             }
         } catch (IOException e) {
-            log.error("failed to findDocumentByUrl, error", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to findDocumentByUrl, error", e);
-            throw new RemoteException("通过url获取文档失败！", e);
+            String errorInfo = MessageFormat.format("failed to findDocumentByUrl, [url={0}]", url);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("通过url[" + url + "]获取文档失败！", e);
         }
     }
 
@@ -155,7 +160,7 @@ public class DocumentApiServiceImpl implements DocumentApiService {
             return null;
         } else {
             log.error("failed to " + method + ", error: " + response);
-            throw new RemoteException("获取文档失败！返回：" + response);
+            throw new RemoteException("获取文档失败！返回：" + response.request());
         }
     }
 
@@ -164,11 +169,11 @@ public class DocumentApiServiceImpl implements DocumentApiService {
         ApiResult result = OuterApiUtil.toResultObj(response.body().string());
         if (result == null) {
             log.error("invalid result: " + response);
-            throw new RemoteException(errMsg + "失败！");
+            throw new RemoteException(errMsg + "失败！" + response.request());
         }
         if (!result.isOk()) {
             log.error("fail result: " + result.getMsg());
-            throw new RemoteException(errMsg + "原因：" + result.getMsg());
+            throw new RemoteException(errMsg + "原因：" + result.getMsg() + response.request());
         }
         return result;
     }
