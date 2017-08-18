@@ -5,9 +5,6 @@
  */
 package com.trs.gov.kpi.utils;
 
-import com.trs.gov.kpi.constant.ErrorType;
-import com.trs.gov.kpi.constant.OperationType;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
