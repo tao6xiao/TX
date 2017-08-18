@@ -28,7 +28,7 @@ public class WorkOrderRequest extends DateRequest {
     public String toString() {
         return "{" +
                 "id='" + id + '\'' +
-                "siteId='" + Arrays.asList(siteId) + '\'' +
+                "siteId='" + Arrays.toString(siteId) + '\'' +
                 "workOrderStatus='" + workOrderStatus + '\'' +
                 "solveStatus='" + solveStatus + '\'' +
                 "beginDateTime='" + getBeginDateTime() + '\'' +
