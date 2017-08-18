@@ -138,7 +138,7 @@ public class BasServiceImpl implements BasService {
                 basPVResponse = JSON.parseObject(jsonResult, BasPVResponse.class);
             } else {
                 log.error("failed to getVisits, error: " + response);
-                throw new RemoteException("获取访问量失败！");
+                throw new RemoteException("获取访问量失败！返回：" + response);
             }
         } catch (Exception e) {
             log.error("getVisits failed ", e);
@@ -271,7 +271,7 @@ public class BasServiceImpl implements BasService {
                 summaryResponse = JSON.parseObject(jsonResult, SummaryResponse.class);
             } else {
                 log.error("failed to getStayTime, error: " + response);
-                throw new RemoteException("获取停留时间失败！");
+                throw new RemoteException("获取停留时间失败！返回：" + response);
             }
         } catch (Exception e) {
             log.error("getStayTime failed ", e);

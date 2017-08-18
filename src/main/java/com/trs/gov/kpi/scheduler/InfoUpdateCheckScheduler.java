@@ -12,6 +12,7 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -103,6 +104,14 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException {
+
+        // TODO REVIEW 首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断
+        final Site checkSite = siteApiService.getSiteById(siteId, null);
+        if (checkSite == null) {
+            log.error("site[" + siteId + "] is not exsit!");
+            return;
+        }
+
         log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
@@ -707,7 +716,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         try {
             chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
         } catch (RemoteException e) {
-            String errorInfo = MessageFormat.format("任务调度[" + getName() + "]，[siteId={0}, channelId={1}]", siteId, channelId);
+            String errorInfo = MessageFormat.format("任务调度[{0}]，[siteId={1}, channelId={2}]", getName(), siteId, channelId);
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, errorInfo, e);
         }

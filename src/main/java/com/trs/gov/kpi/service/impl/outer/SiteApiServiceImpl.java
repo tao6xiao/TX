@@ -56,12 +56,12 @@ public class SiteApiServiceImpl implements SiteApiService {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取站点");
                 if (StringUtil.isEmpty(result.getData())) {
                     log.error("site[id=" + siteId + "] result is empty, response: " + response);
-                    throw new RemoteException(FAIL_GET_SITE);
+                    throw new RemoteException(FAIL_GET_SITE + "，结果不存在！");
                 }
                 return JSON.parseObject(result.getData(), Site.class);
             } else {
                 log.error("failed to get site[id=" + siteId + "], error: " + response);
-                throw new RemoteException(FAIL_GET_SITE);
+                throw new RemoteException(FAIL_GET_SITE + "，返回：" + response);
             }
         } catch (IOException e) {
             log.error("failed get site[id=" + siteId + "]", e);
@@ -97,7 +97,7 @@ public class SiteApiServiceImpl implements SiteApiService {
                 return JSON.parseArray(pageData.getData(), Channel.class);
             } else {
                 log.error("error: " + response);
-                throw new RemoteException("获取子栏目失败！");
+                throw new RemoteException("获取子栏目失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("", e);

@@ -77,8 +77,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
-        if(StringUtil.isEmpty(baseUrl))
-        {
+        if(StringUtil.isEmpty(baseUrl)) {
             return ;
         }
 

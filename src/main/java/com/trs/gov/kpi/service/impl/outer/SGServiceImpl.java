@@ -107,13 +107,13 @@ public class SGServiceImpl implements SGService {
             if (response.isSuccessful()) {
                 String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
-                    throw new RemoteException(msg);
+                    throw new RemoteException(msg + " 结果不存在！");
                 }
                 ApiResult result = JSON.parseObject(jsonResult, ApiResult.class);
                 return JSON.parseObject(result.getData(), clazz);
             } else {
                 log.error("failed to getSGService, error: " + response);
-                throw new RemoteException(msg);
+                throw new RemoteException(msg + " 返回：" + response);
             }
         } catch (Exception e) {
             log.error("getSGService failed ", e);

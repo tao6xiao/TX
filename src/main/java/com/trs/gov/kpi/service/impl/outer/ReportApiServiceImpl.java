@@ -72,12 +72,12 @@ public class ReportApiServiceImpl implements ReportApiService {
             if (response.isSuccessful()) {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取统计数据");
                 if (!result.isOk()) {
-                    throw new RemoteException(result.getMsg());
+                    throw new RemoteException("获取统计数据失败！原因：" + result.getMsg());
                 }
                 return result.getData();
             } else {
                 log.error("failed to get report, error: " + response);
-                throw new RemoteException("获取统计数据失败！");
+                throw new RemoteException("获取统计数据失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("failed get report", e);

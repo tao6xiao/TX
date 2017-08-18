@@ -62,7 +62,7 @@ public class AuthorityServiceImpl implements AuthorityService {
                 }
                 return JSON.parseObject(result.getData(), Boolean.class);
             } else {
-                String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1,}], error: " + response, siteId, oprkeys);
+                String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1}], error: " + response, siteId, oprkeys);
                 log.error(errorInfo);
                 throw new RemoteException(errorInfo);
             }

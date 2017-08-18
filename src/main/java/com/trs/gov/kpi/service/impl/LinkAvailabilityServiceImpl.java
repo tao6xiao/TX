@@ -210,6 +210,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         Date endTime = monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
         if (endTime == null) {
             // TODO 如果一次都没有检测过，需要显示成其他的（还没有进行过一次完整的检测，就会出现记录不存在的情况）
+            //考虑返回时间留为空，前端判断并显示尚无检测记录
             IndexPage indexPage = new IndexPage();
             indexPage.setIndexAvailable(true);
             indexPage.setIndexUrl(indexUrl);

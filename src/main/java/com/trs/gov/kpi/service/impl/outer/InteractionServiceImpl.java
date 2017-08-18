@@ -73,7 +73,7 @@ public class InteractionServiceImpl implements InteractionService {
                 return JSON.parseObject(jsonResult, NBHDPageDataResult.class);
             } else {
                 log.error("failed to listGovmsgboxs, error: " + response);
-                throw new RemoteException("获取咨询列表失败！");
+                throw new RemoteException("获取咨询列表失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("failed listGovmsgboxs", e);
@@ -104,7 +104,7 @@ public class InteractionServiceImpl implements InteractionService {
                 return JSON.parseObject(jsonResult, NBHDStatisticsRes.class);
             } else {
                 log.error("failed to countGovmsgboxs, error: " + response);
-                throw new RemoteException("获取咨询统计失败！");
+                throw new RemoteException("获取咨询统计失败！返回：" + response);
             }
         } catch (IOException e) {
             log.error("failed countGovmsgboxs", e);
