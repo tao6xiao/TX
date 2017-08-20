@@ -573,6 +573,7 @@ public class CKMScheduler implements SchedulerTask {
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
         } finally {
             toUpdateLinkContentInfoErrorCount(page, runtimeResult);
+            monitorResult += runtimeResult.getIssueCount();
         }
     }
 
