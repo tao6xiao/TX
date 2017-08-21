@@ -13,8 +13,6 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.ContentCheckResult;
 import com.trs.gov.kpi.entity.outerapi.Site;
-import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
-import com.trs.gov.kpi.service.helper.QueryFilterHelper;
 import com.trs.gov.kpi.service.outer.ChnlDocumentServiceHelper;
 import com.trs.gov.kpi.service.outer.ContentCheckApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -520,9 +518,8 @@ public class CKMScheduler implements SchedulerTask {
         for (Issue issue : issueList) {
 
             try {
-                PageDataRequestParam param = new PageDataRequestParam();
-                param.setSiteId(siteId);
-                QueryFilter queryFilter = QueryFilterHelper.toFilter(param);
+                QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
+                queryFilter.addCond(IssueTableField.SITE_ID, siteId);
                 queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.INFO_ERROR_ISSUE.value);
                 queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
                 queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
@@ -543,8 +540,7 @@ public class CKMScheduler implements SchedulerTask {
                     commonMapper.update(update, queryFilter);
                     insertIssueInfoErrorCount ++;
                 }
-
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
                 log.error("", e);
                 LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "插入信息错误数据失败，siteId[" + siteId + "]", e);
@@ -617,6 +613,8 @@ public class CKMScheduler implements SchedulerTask {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
         filter.addCond(IssueTableField.CHECK_TIME, lastCheckTime);
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.TYPE_ID, Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
 
         DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
         updater.addField(IssueTableField.CHECK_TIME, runtimeResult.getCheckTime());
