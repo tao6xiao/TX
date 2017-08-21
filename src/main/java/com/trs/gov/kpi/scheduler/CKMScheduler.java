@@ -127,8 +127,10 @@ public class CKMScheduler implements SchedulerTask {
             //获取上一次检测内容
             LinkContentStats linkTimeContentStats = linkContentStatsMapper.getLastLinkContentStats(siteId,
                     Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-
-            if(linkTimeContentStats != null){
+            //获取上一次检测的Issue的checkTime
+            Date lastTimeIssueCheckTime = issueMapper.grtLastTimeIssueCheckTime(siteId,
+                    Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
+            if(linkTimeContentStats != null || !lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
                 //上一次检测状态为——异常
             if(linkTimeContentStats.getState() == Status.MonitorState.ABNORMAL.value){
                     //检测爬取内容

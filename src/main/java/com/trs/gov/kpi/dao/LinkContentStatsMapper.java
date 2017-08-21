@@ -13,9 +13,10 @@ public interface LinkContentStatsMapper {
     /**
      * 获取上一次检测内容
      * @param siteId
-     * @param customer3
+     * @param typeId
+     * @param url
      * @return
      */
-    LinkContentStats getLastLinkContentStats(@Param("siteId") int siteId, @Param("typeId")Integer typeId, @Param("customer3")String customer3);
+    LinkContentStats getLastLinkContentStats(@Param("siteId") int siteId, @Param("typeId")Integer typeId, @Param("url")String url);
 
 }
