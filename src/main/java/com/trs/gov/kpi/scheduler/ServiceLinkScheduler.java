@@ -12,7 +12,6 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -77,8 +76,7 @@ public class ServiceLinkScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException, BizException {
-        Site checkSite = siteApiService.getSiteById(siteId, "");
-        if (checkSite == null) {
+        if (siteApiService.getSiteById(siteId, "") == null) {
             String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
             log.error(errorInfo);
             throw new BizException(errorInfo);

@@ -13,7 +13,6 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
@@ -107,8 +106,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     public void run() throws RemoteException, BizException {
 
         // TODO REVIEW  首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断 FIXED 在所有scheduler开始时都进行站点判断
-        final Site checkSite = siteApiService.getSiteById(siteId, null);
-        if (checkSite == null) {
+        if (siteApiService.getSiteById(siteId, null) == null) {
             String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
             log.error(errorInfo);
             throw new BizException(errorInfo);
