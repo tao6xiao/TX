@@ -209,12 +209,10 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
         Date endTime = monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
         if (endTime == null) {
-            // TODO 如果一次都没有检测过，需要显示成其他的（还没有进行过一次完整的检测，就会出现记录不存在的情况）
-            //考虑返回时间留为空，前端判断并显示尚无检测记录
+            // TODO FIXED 如果一次都没有检测过，需要显示成其他的（还没有进行过一次完整的检测，就会出现记录不存在的情况）
+            //返回时间留为空，前端判断并显示尚未监测
             IndexPage indexPage = new IndexPage();
-            indexPage.setIndexAvailable(true);
             indexPage.setIndexUrl(indexUrl);
-            indexPage.setMonitorTime(DateUtil.toString(new Date()));
             return indexPage;
         }
 
@@ -222,7 +220,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         indexPage.setIndexUrl(indexUrl);
         indexPage.setMonitorTime(DateUtil.toString(endTime));
 
-        Integer result = monitorRecordService.getResultByLastEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value,endTime);
+        Integer result = monitorRecordService.getResultByLastEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value, endTime);
         if (result == 0) {
             indexPage.setIndexAvailable(true);
         } else {
