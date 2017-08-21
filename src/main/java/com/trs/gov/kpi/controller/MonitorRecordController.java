@@ -1,9 +1,7 @@
 package com.trs.gov.kpi.controller;
 
-import com.trs.gov.kpi.constant.Authority;
-import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.EnumCheckJobType;
-import com.trs.gov.kpi.constant.OperationType;
+import com.trs.gov.kpi.constant.*;
+import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -79,11 +78,21 @@ public class MonitorRecordController {
                 log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
-            schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
-            return monitorRecordService.selectMonitorResulrOnce(siteId, Arrays.asList(checkJobValue));
+//            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
+            //如果当前任务为正在检查或是等待检测，再次请求的时候就不在执行检测,直接返回当前结果
+            List<MonitorRecord> monitorRecordList = monitorRecordService.selectNewestMonitorRecord(siteId, checkJobValue);
+            if (!monitorRecordList.isEmpty() && monitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.DOING_CHECK.value){
+                return monitorRecordService.getMonitorOnceResponse(monitorRecordList);
+            }else {
+                //执行监测任务开始之前因先生成初始记录
+                monitorRecordService.insertBeginManualMonitorRecord(siteId, checkJobValue, Status.MonitorType.MANUAL_MONITOR.value, new Date());
+                schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
+                List<MonitorRecord> monitorRecordListAfterCheck = monitorRecordService.selectNewestMonitorRecord(siteId, checkJobValue);
+                return monitorRecordService.getMonitorOnceResponse(monitorRecordListAfterCheck);
+            }
         }, OperationType.MONITOR, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
+
 
     /**
      * 手动检测——查询监测结果

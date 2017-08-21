@@ -23,6 +23,13 @@ public interface MonitorRecordMapper {
     Integer getResultByLastEndTime(QueryFilter filter);
 
     /**
+     * 获取手动监测最新的开始时间
+     * @param filter
+     * @return
+     */
+    Date getLastManualMonitorBeginTime(QueryFilter filter);
+
+    /**
      * 查询最近的监测任务的结束时间
      *
      * @param filter
@@ -38,10 +45,11 @@ public interface MonitorRecordMapper {
     List<MonitorRecord> selectMonitorRecordList(QueryFilter filter);
 
     /**
-     * 根据网站编号和任务编号查询监测记录
+     * 获取最新一次的检测记录
      * @param siteId
      * @param taskId
      * @return
      */
-    MonitorRecord selectMonitorRecordByByTaskIdAndSiteId(@Param("siteId")Integer siteId, @Param("taskId")Integer taskId);
+    List<MonitorRecord> selectNewestMonitorRecord(@Param("siteId")Integer siteId, @Param("taskId")Integer taskId);
+
 }

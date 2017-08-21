@@ -25,18 +25,27 @@ import java.util.Date;
 @Slf4j
 public class CheckJob implements Job {
 
+    private MonitorRecordService monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
+
+    private CommonMapper commonMapper = (CommonMapper)SpringContextUtil.getBean(CommonMapper.class);
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
 
         SchedulerTask task = (SchedulerTask) jobExecutionContext.getMergedJobDataMap().get("task");
 
-        Date startTime = new Date();
-        //检测开始
-        insertBeginMonitorRecord(task, startTime);
 
         log.info(SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
+        Date startTime = new Date();
         try {
+            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+                Date manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
+                updateMonitorRecordStatu(task, manualMonitorBeginTime);
+            }else {
+                //检测开始
+                insertBeginMonitorRecord(task, startTime);
+            }
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, task.getName() + "[siteId=" + task.getSiteId()+ "]");
 
@@ -59,6 +68,20 @@ public class CheckJob implements Job {
         }
     }
 
+    /**
+     * 获取手动监测最新一次开始的开始时间
+     * @param task
+     * @return
+     */
+    private Date toGetManualMonitorBeginTime(SchedulerTask task) {
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, task.getSiteId());
+        filter.addCond(MonitorRecordTableField.TASK_ID, task.getCheckJobType().value);
+        filter.addCond(MonitorRecordTableField.TYPE_ID, task.getMonitorType());
+        filter.addSortField(MonitorRecordTableField.BEGIN_TIME, false);
+        return monitorRecordService.getLastManualMonitorBeginTime(filter);
+    }
+
     //检测开始，插入日志检测基本信息
     private void insertBeginMonitorRecord(SchedulerTask task, Date startTime) {
         MonitorRecord monitorRecord = new MonitorRecord();
@@ -67,8 +90,18 @@ public class CheckJob implements Job {
         monitorRecord.setTaskId(task.getCheckJobType().value);
         monitorRecord.setBeginTime(startTime);
         monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
-        MonitorRecordService monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
         monitorRecordService.insertMonitorRecord(monitorRecord);
+    }
+
+    private void updateMonitorRecordStatu(SchedulerTask task, Date startTime) {
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, task.getSiteId());
+        filter.addCond(MonitorRecordTableField.TASK_ID, task.getCheckJobType().value);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
+
+        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DOING_CHECK.value);
+        commonMapper.update(updater, filter);
     }
 
     private void insertEndMonitorRecord(SchedulerTask task, Date startTime, Integer taskStatus) {
@@ -82,7 +115,6 @@ public class CheckJob implements Job {
         updater.addField(MonitorRecordTableField.RESULT, task.getMonitorResult());
         updater.addField(MonitorRecordTableField.END_TIME, endTime);
         updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
-        CommonMapper commonMapper = (CommonMapper)SpringContextUtil.getBean(CommonMapper.class);
         commonMapper.update(updater, filter);
     }
 }

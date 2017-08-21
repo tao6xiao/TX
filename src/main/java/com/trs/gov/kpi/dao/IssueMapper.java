@@ -151,10 +151,9 @@ public interface IssueMapper {
 
     /**
      * 获取当前栏目最近一条记录的发现问题时间
-     *
      * @param filter
      * @return
      */
-    Date getMaxIssueTime(QueryFilter filter);
+    List<Issue> getLastTimeCheckIssueList(QueryFilter filter);
 
 }
