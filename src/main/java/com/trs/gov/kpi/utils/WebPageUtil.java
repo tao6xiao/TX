@@ -77,27 +77,32 @@ public class WebPageUtil {
                 pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
             }
             Set<String> parentUrlSet = pageParentMap.get(targetUrl);
-            if (!targetUrl.equals(pageUrl.intern())) {
-
-                boolean isEqual = false;
-                if (targetUrl.startsWith(pageUrl)) {
-                    String remainStr = targetUrl.substring(pageUrl.length());
-                    if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                        isEqual = true;
-                    }
-                }
-                if (pageUrl.startsWith(targetUrl)) {
-                    String remainStr = pageUrl.substring(targetUrl.length());
-                    if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                        isEqual = true;
-                    }
-                }
-
-                if (!isEqual) {
-                    parentUrlSet.add(pageUrl.intern());
-                }
+            if (!targetUrl.equals(pageUrl.intern()) && !isEqual(targetUrl, pageUrl)) {
+                parentUrlSet.add(pageUrl.intern());
             }
         }
+    }
+
+    /**
+     * 判断是否为同一url
+     * @param targetUrl
+     * @param pageUrl
+     * @return
+     */
+    private static Boolean isEqual(String targetUrl, String pageUrl) {
+        if (targetUrl.startsWith(pageUrl)) {
+            String remainStr = targetUrl.substring(pageUrl.length());
+            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                return true;
+            }
+        }
+        if (pageUrl.startsWith(targetUrl)) {
+            String remainStr = pageUrl.substring(targetUrl.length());
+            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
