@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * Created by wangxuan on 2017/5/10.
  * 该类用于统一异常处理
- * TODO：日志打印规范未完成
  */
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)

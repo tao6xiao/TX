@@ -52,7 +52,6 @@ public class FrequencyPresetServiceImpl implements FrequencyPresetService {
 
     @Override
     public int updateBySiteIdAndId(FrequencyPreset preset) {
-        // TODO REVIEW DO_he.lang FIXED 此处是判定是否已经存在预设值有相同的记录， 如果有， 就不能修改。 需要修改一下方法名
         if (hasSamePresetRecord(preset)) {
             return 0;
         }

@@ -209,8 +209,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         String indexUrl = siteApiService.getSiteById(param.getSiteId(), null).getWebHttp();
         Date endTime = monitorRecordService.getLastMonitorEndTime(param.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
         if (endTime == null) {
-            // TODO FIXED 如果一次都没有检测过，需要显示成其他的（还没有进行过一次完整的检测，就会出现记录不存在的情况）
-            //返回时间留为空，前端判断并显示尚未监测
+            //返回时间留为空，前端判断并显示尚未监测，只返回首页网址，不返回状态和时间
             IndexPage indexPage = new IndexPage();
             indexPage.setIndexUrl(indexUrl);
             return indexPage;
