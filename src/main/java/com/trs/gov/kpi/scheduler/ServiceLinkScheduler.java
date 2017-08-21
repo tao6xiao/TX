@@ -16,6 +16,7 @@ import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
 import com.trs.gov.kpi.service.outer.SGService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -76,11 +77,8 @@ public class ServiceLinkScheduler implements SchedulerTask {
 
     @Override
     public void run() throws RemoteException, BizException {
-        if (siteApiService.getSiteById(siteId, "") == null) {
-            String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
-            log.error(errorInfo);
-            throw new BizException(errorInfo);
-        }
+        OuterApiServiceUtil.checkSite(siteId, siteApiService.getSiteById(siteId, ""));
+
         for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
             if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
                 QueryFilter queryFilter = new QueryFilter(Table.ISSUE);

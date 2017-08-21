@@ -17,10 +17,7 @@ import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.SchedulerUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -106,11 +103,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     public void run() throws RemoteException, BizException {
 
         // TODO REVIEW  首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断 FIXED 在所有scheduler开始时都进行站点判断
-        if (siteApiService.getSiteById(siteId, null) == null) {
-            String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
-            log.error(errorInfo);
-            throw new BizException(errorInfo);
-        }
+        OuterApiServiceUtil.checkSite(siteId, siteApiService.getSiteById(siteId, null));
 
         log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
