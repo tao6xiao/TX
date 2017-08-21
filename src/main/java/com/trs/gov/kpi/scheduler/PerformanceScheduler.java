@@ -6,7 +6,9 @@ import com.trs.gov.kpi.dao.PerformanceMapper;
 import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.impl.PerformanceService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,9 @@ public class PerformanceScheduler implements SchedulerTask {
     @Resource
     private PerformanceMapper performanceMapper;
 
+    @Resource
+    private SiteApiService siteApiService;
+
     @Setter
     @Getter
     private Boolean isTimeNode;
@@ -50,7 +55,12 @@ public class PerformanceScheduler implements SchedulerTask {
 
     @Override
     public void run() throws BizException, RemoteException {
-
+        final Site checkSite = siteApiService.getSiteById(siteId, null);
+        if (checkSite == null) {
+            String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
+            log.error(errorInfo);
+            throw new BizException(errorInfo);
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应

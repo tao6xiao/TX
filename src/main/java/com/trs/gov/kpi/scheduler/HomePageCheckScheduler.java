@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.MonitorRecordService;
@@ -73,9 +74,14 @@ public class HomePageCheckScheduler implements SchedulerTask {
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_HOME_PAGE;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() throws RemoteException, BizException {
 
         final Site checkSite = siteApiService.getSiteById(siteId, null);
+        if (checkSite == null) {
+            String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
+            log.error(errorInfo);
+            throw new BizException(errorInfo);
+        }
         baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
         if(StringUtil.isEmpty(baseUrl)) {
             return ;

@@ -10,6 +10,7 @@ import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Site;
@@ -103,13 +104,14 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() throws RemoteException, BizException {
 
-        // TODO REVIEW 首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断
+        // TODO REVIEW  首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断 FIXED 在所有scheduler开始时都进行站点判断
         final Site checkSite = siteApiService.getSiteById(siteId, null);
         if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exsit!");
-            return;
+            String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
+            log.error(errorInfo);
+            throw new BizException(errorInfo);
         }
 
         log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));

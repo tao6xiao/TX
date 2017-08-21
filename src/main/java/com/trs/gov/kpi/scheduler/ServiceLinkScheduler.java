@@ -10,9 +10,12 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
+import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
 import com.trs.gov.kpi.service.outer.SGService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
 import lombok.Getter;
@@ -57,6 +60,9 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    @Resource
+    private SiteApiService siteApiService;
+
     //错误信息计数
     @Getter
     Integer monitorResult = 0;
@@ -70,8 +76,13 @@ public class ServiceLinkScheduler implements SchedulerTask {
     private EnumCheckJobType checkJobType = EnumCheckJobType.SERVICE_LINK;
 
     @Override
-    public void run() throws RemoteException {
-
+    public void run() throws RemoteException, BizException {
+        Site checkSite = siteApiService.getSiteById(siteId, "");
+        if (checkSite == null) {
+            String errorInfo = "任务调度[" + getName() + "]，站点[" + siteId + "]不存在";
+            log.error(errorInfo);
+            throw new BizException(errorInfo);
+        }
         for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
             if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
                 QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
