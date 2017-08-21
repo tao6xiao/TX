@@ -3,6 +3,8 @@ package com.trs.gov.kpi.utils;
 import com.trs.gov.kpi.constant.EnumUrlType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.*;
+
 /**
  * Created by he.lang on 2017/7/11.
  */
@@ -60,6 +62,42 @@ public class WebPageUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * 缓存父链接
+     *
+     * @param targetUrls
+     * @param pageParentMap
+     * @param pageUrl
+     */
+    public static void addParentUrl(List<String> targetUrls, Map<String, Set<String>> pageParentMap, String pageUrl) {
+        for (String targetUrl : targetUrls) {
+            if (!pageParentMap.containsKey(targetUrl)) {
+                pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
+            }
+            Set<String> parentUrlSet = pageParentMap.get(targetUrl);
+            if (!targetUrl.equals(pageUrl.intern())) {
+
+                boolean isEqual = false;
+                if (targetUrl.startsWith(pageUrl)) {
+                    String remainStr = targetUrl.substring(pageUrl.length());
+                    if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                        isEqual = true;
+                    }
+                }
+                if (pageUrl.startsWith(targetUrl)) {
+                    String remainStr = pageUrl.substring(targetUrl.length());
+                    if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
+                        isEqual = true;
+                    }
+                }
+
+                if (!isEqual) {
+                    parentUrlSet.add(pageUrl.intern());
+                }
+            }
+        }
     }
 
 }

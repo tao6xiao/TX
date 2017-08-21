@@ -133,32 +133,7 @@ public class SpiderUtils {
             }
 
             synchronized (pageParentMap) {
-                for (String targetUrl : targetUrls) {
-                    if (!pageParentMap.containsKey(targetUrl)) {
-                        pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
-                    }
-                    Set<String> parentUrlSet = pageParentMap.get(targetUrl);
-                    if (!targetUrl.equals(page.getUrl().get().intern())) {
-
-                        boolean isEqual = false;
-                        if (targetUrl.startsWith(page.getUrl().get())) {
-                            String remainStr = targetUrl.substring(page.getUrl().get().length());
-                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                                isEqual = true;
-                            }
-                        }
-                        if (page.getUrl().get().startsWith(targetUrl)) {
-                            String remainStr = page.getUrl().get().substring(targetUrl.length());
-                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                                isEqual = true;
-                            }
-                        }
-
-                        if (!isEqual) {
-                            parentUrlSet.add(page.getUrl().get().intern());
-                        }
-                    }
-                }
+                WebPageUtil.addParentUrl(targetUrls, pageParentMap, page.getUrl().get());
             }
             page.addTargetRequests(targetUrls);
         }
