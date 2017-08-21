@@ -625,8 +625,6 @@ public class CKMScheduler implements SchedulerTask {
         linkContentStats.setInfoErrorCount(runtimeResult.getIssueCount());
         linkContentStats.setState(runtimeResult.getIsException());
         commonMapper.insert(DBUtil.toRow(linkContentStats));
-     *
-     *
     }
 
     @Data
