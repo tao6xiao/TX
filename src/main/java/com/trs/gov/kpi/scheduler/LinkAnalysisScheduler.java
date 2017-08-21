@@ -2,8 +2,8 @@ package com.trs.gov.kpi.scheduler;
 
 import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.SchedulerType;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
@@ -52,9 +52,8 @@ public class LinkAnalysisScheduler implements SchedulerTask {
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_LINK;
 
     @Override
-    public void run() throws RemoteException {
-        final Site checkSite = siteApiService.getSiteById(siteId, null);
-        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
+    public void run() throws RemoteException, BizException {
+        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, siteApiService.getSiteById(siteId, null));
         if (StringUtil.isEmpty(baseUrl)) {
             return;
         }

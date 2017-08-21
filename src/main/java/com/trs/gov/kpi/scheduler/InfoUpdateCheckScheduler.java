@@ -10,17 +10,14 @@ import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
-import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.SchedulerUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -103,14 +100,10 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() throws RemoteException, BizException {
 
-        // TODO REVIEW 首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断
-        final Site checkSite = siteApiService.getSiteById(siteId, null);
-        if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exsit!");
-            return;
-        }
+        // TODO REVIEW  首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断 FIXED 在所有scheduler开始时都进行站点判断
+        OuterApiServiceUtil.checkSite(siteId, siteApiService.getSiteById(siteId, null));
 
         log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
