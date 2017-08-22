@@ -124,13 +124,13 @@ public class CKMScheduler implements SchedulerTask {
         ContentCheckResult result = null;
 
         try {
-            //获取上一次检测内容
+            //获取上一次检测内容（数据库当前最新的记录）
             LinkContentStats linkTimeContentStats = linkContentStatsMapper.getLastLinkContentStats(siteId,
                     Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-            //获取上一次检测的Issue的checkTime
+            //获取上一次检测的Issue的checkTime（数据库当前最新的记录）
             Date lastTimeIssueCheckTime = issueMapper.grtLastTimeIssueCheckTime(siteId,
                     Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-            if(linkTimeContentStats != null || !lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
+            if(linkTimeContentStats != null || lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
                 //上一次检测状态为——异常
             if(linkTimeContentStats.getState() == Status.MonitorState.ABNORMAL.value){
                     //检测爬取内容
@@ -585,6 +585,7 @@ public class CKMScheduler implements SchedulerTask {
 
     /**
      * 链接内容没有发生变化，添加或者更新Issue表中的数据
+     * 未处理，未删除的数据——更新，其他情况的数据重新添加
      * @param page
      * @param runtimeResult
      * @param lastCheckTime
