@@ -7,7 +7,6 @@ import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.impl.PerformanceService;
-import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,9 +40,6 @@ public class PerformanceScheduler implements SchedulerTask {
 
     @Resource
     private PerformanceMapper performanceMapper;
-
-    @Resource
-    private SiteApiService siteApiService;
 
     @Setter
     @Getter
