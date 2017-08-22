@@ -585,8 +585,22 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         }
         //从数据库空栏目ID集合中去掉仍为空栏目的集合，余下为已处理的空栏目。
         chnlIdListInDB.removeAll(chnlIdList);
-        for (Integer resolvedChnlId : chnlIdListInDB) {
-            filter = buildQueryFilter(Arrays.asList(resolvedChnlId),
+
+        resolveOldEmptyChnlIssue(chnlIdListInDB);
+    }
+
+    /**
+     * 把已经不是空栏目的问题，变成resolved
+     * @param chnlIdListInDB
+     */
+    private void resolveOldEmptyChnlIssue(List<Integer> chnlIdListInDB) {
+        QueryFilter filter;
+        if (!chnlIdListInDB.isEmpty()) {
+            List<String> resolvedChnlIds = new ArrayList<>();
+            for (Integer resolvedChnlId : chnlIdListInDB) {
+                resolvedChnlIds.add(String.valueOf(resolvedChnlId));
+            }
+            filter = buildQueryFilter(resolvedChnlIds,
                     Types.IssueType.EMPTY_CHANNEL.value,
                     Types.EmptyChannelType.EMPTY_COLUMN.value);
             DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
@@ -654,7 +668,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private QueryFilter buildQueryFilter(int channelId, int issueTypeId, int subIssueTypeId, String beginDateTime) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.SITE_ID, siteId);
-        filter.addCond(IssueTableField.CUSTOMER2, channelId);
+        filter.addCond(IssueTableField.CUSTOMER2, String.valueOf(channelId));
         filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
         filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
         filter.addCond(IssueTableField.CHECK_TIME, beginDateTime).setRangeBegin(true);
@@ -669,7 +683,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * @param subIssueTypeId
      * @return
      */
-    private QueryFilter buildQueryFilter(List<Integer> chnlIdList, int issueTypeId, int subIssueTypeId) {
+    private QueryFilter buildQueryFilter(List<String> chnlIdList, int issueTypeId, int subIssueTypeId) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.CUSTOMER2, chnlIdList);
