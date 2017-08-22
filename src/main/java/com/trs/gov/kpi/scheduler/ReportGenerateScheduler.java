@@ -12,7 +12,6 @@ import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +88,6 @@ public class ReportGenerateScheduler implements SchedulerTask {
         calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应
         report.setReportTime(calendar.getTime());
         Site site = siteApiService.getSiteById(siteId, "");
-        OuterApiServiceUtil.checkSite(siteId, site);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
         report.setTitle(title);

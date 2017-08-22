@@ -101,7 +101,7 @@ public class CKMScheduler implements SchedulerTask {
     @Override
     public void run() throws RemoteException, BizException {
 
-        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, siteApiService.getSiteById(siteId, null));
+        baseUrl = OuterApiServiceUtil.getUrl(siteApiService.getSiteById(siteId, null));
         if (StringUtil.isEmpty(baseUrl)) {
             return;
         }

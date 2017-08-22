@@ -102,9 +102,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     @Override
     public void run() throws RemoteException, BizException {
 
-        // TODO REVIEW  首先需要检查站点是否还存在, PerformanceScheduler是否也需要判断 FIXED 在所有scheduler开始时都进行站点判断
-        OuterApiServiceUtil.checkSite(siteId, siteApiService.getSiteById(siteId, null));
-
         log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
