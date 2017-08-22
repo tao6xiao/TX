@@ -51,7 +51,7 @@ public class PerformanceScheduler implements SchedulerTask {
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
-    private Integer monitorType;
+    private int monitorType;
 
     @Override
     public void run() throws BizException, RemoteException {
@@ -68,8 +68,8 @@ public class PerformanceScheduler implements SchedulerTask {
     }
 
     @Override
-    public Integer getMonitorType() {
-        return null;
+    public int getMonitorType() {
+        return 0;
     }
 
     @Override
