@@ -42,23 +42,30 @@ public class CheckJob implements Job {
         log.info(SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         Date startTime = new Date();
+        Date manualMonitorBeginTime = null;
         try {
             OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
 
             if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
-                Date manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
-                updateMonitorRecordStatu(task, manualMonitorBeginTime);
+                manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
             } else {
                 //检测开始
                 insertBeginMonitorRecord(task, startTime);
             }
+
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, task.getName() + "[siteId=" + task.getSiteId() +
                     "]");
 
             task.run();
+
             //检测结束
-            insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
+            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+                insertEndMonitorRecord(task, manualMonitorBeginTime, Status.MonitorStatusType.CHECK_DONE.value);
+            }else {
+                insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
+            }
+
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
             //TODO REVIEW  ran.wei DO_he.lang FIXED 日志描述错误 应该为任务调度
@@ -99,17 +106,6 @@ public class CheckJob implements Job {
         monitorRecord.setBeginTime(startTime);
         monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
         monitorRecordService.insertMonitorRecord(monitorRecord);
-    }
-
-    private void updateMonitorRecordStatu(SchedulerTask task, Date startTime) {
-        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
-        filter.addCond(MonitorRecordTableField.SITE_ID, task.getSiteId());
-        filter.addCond(MonitorRecordTableField.TASK_ID, task.getCheckJobType().value);
-        filter.addCond(MonitorRecordTableField.BEGIN_TIME, startTime);
-
-        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
-        updater.addField(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.DOING_CHECK.value);
-        commonMapper.update(updater, filter);
     }
 
     private void insertEndMonitorRecord(SchedulerTask task, Date startTime, Integer taskStatus) {
