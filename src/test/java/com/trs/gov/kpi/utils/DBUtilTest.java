@@ -82,6 +82,7 @@ public class DBUtilTest {
                 PageSpace.class, ReplySpeed.class, RepeatCode.class);
 
         assertTrue(fields.containsAll(allDBFieldNames));
+        assertTrue(allDBFieldNames.containsAll(fields));
     }
 
     @Test

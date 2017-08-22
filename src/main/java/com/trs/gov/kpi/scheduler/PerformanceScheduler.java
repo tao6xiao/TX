@@ -55,7 +55,6 @@ public class PerformanceScheduler implements SchedulerTask {
 
     @Override
     public void run() throws BizException, RemoteException {
-        OuterApiServiceUtil.checkSite(siteId, siteApiService.getSiteById(siteId, null));
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());

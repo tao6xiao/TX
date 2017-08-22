@@ -113,23 +113,28 @@ public class OuterApiServiceUtil {
     }
 
     /**
-     * 检查站点和url是否存在，存在则返回url
+     * 检查url是否存在，存在则返回url
      *
-     * @param siteId
      * @param checkSite
      * @return
      */
-    public static String checkSiteAndGetUrl(Integer siteId, Site checkSite) throws BizException {
-        checkSite(siteId, checkSite);
+    public static String getUrl(Site checkSite) throws BizException {
         String baseUrl = checkSite.getWebHttp();
         if (StringUtil.isEmpty(baseUrl)) {
-            log.warn("site[" + siteId + "]'s web http is empty!");
+            log.warn("site[" + checkSite.getSiteId() + "]'s web http is empty!");
             return null;
         }
         return baseUrl;
     }
 
 
+    /**
+     * 检查站点是否存在
+     *
+     * @param siteId
+     * @param checkSite
+     * @throws BizException
+     */
     public static void checkSite(Integer siteId, Site checkSite) throws BizException {
         if (checkSite == null) {
             String errorInfo = "site[" + siteId + "] is not exsit!";

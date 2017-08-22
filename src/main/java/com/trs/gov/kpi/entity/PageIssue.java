@@ -28,4 +28,10 @@ public class PageIssue {
 
     @DBField
     Date checkTime;//监测时间
+
+    @DBField
+    Integer isResolved;//处理状态
+
+    @DBField
+    Integer isDel;//删除状态
 }

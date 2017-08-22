@@ -8,7 +8,9 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.scheduler.SchedulerTask;
 import com.trs.gov.kpi.service.MonitorRecordService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.SchedulerUtil;
 import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,9 @@ public class CheckJob implements Job {
 
     private MonitorRecordService monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
 
-    private CommonMapper commonMapper = (CommonMapper)SpringContextUtil.getBean(CommonMapper.class);
+    private CommonMapper commonMapper = (CommonMapper) SpringContextUtil.getBean(CommonMapper.class);
+
+    private SiteApiService siteApiService = (SiteApiService) SpringContextUtil.getBean(SiteApiService.class);
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
@@ -39,15 +43,18 @@ public class CheckJob implements Job {
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         Date startTime = new Date();
         try {
-            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+            OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
+
+            if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
                 Date manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
                 updateMonitorRecordStatu(task, manualMonitorBeginTime);
-            }else {
+            } else {
                 //检测开始
                 insertBeginMonitorRecord(task, startTime);
             }
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, task.getName() + "[siteId=" + task.getSiteId()+ "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, task.getName() + "[siteId=" + task.getSiteId() +
+                    "]");
 
             task.run();
             //检测结束
@@ -70,6 +77,7 @@ public class CheckJob implements Job {
 
     /**
      * 获取手动监测最新一次开始的开始时间
+     *
      * @param task
      * @return
      */
