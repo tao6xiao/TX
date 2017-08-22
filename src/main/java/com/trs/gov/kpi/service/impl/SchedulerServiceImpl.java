@@ -68,7 +68,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
 
         final MonitorSite site = monitorSiteService.getMonitorSiteBySiteId(siteId);
         if (site == null) {
-            log.error("Invalid parameter: 当前站点不是监测中的站点");
+            log.error("Invalid parameter: 当前站点siteId[" + siteId + "]不是监测中的站点");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
         Scheduler scheduler;

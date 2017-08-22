@@ -107,8 +107,9 @@ public class Status {
 
         INVALID(-1, "未知类型"),
         DOING_CHECK(1, "正在检测"),
-        CHECK_DONE(2, "检测结束"),
-        CHECK_ERROR(3,"检测失败");
+        CHECK_DONE(2, "检测完成"),
+        CHECK_ERROR(3,"检测失败"),
+        WAIT_CHECK(4,"等待检测");
 
         public final int value;
 
@@ -165,6 +166,26 @@ public class Status {
         private final String name;
 
         MonitorType(int value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+    }
+
+
+    /**
+     * 检测状态
+     */
+    public enum MonitorState {
+        NORMAL(1, "正常"),
+        ABNORMAL(2, "异常");
+
+        public final int value;
+
+        @Getter
+        private final String name;
+
+        MonitorState(int value, String name) {
             this.value = value;
             this.name = name;
         }

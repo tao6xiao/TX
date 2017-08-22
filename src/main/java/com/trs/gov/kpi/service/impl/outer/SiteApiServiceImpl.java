@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -56,17 +57,17 @@ public class SiteApiServiceImpl implements SiteApiService {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取站点");
                 if (StringUtil.isEmpty(result.getData())) {
                     log.error("site[id=" + siteId + "] result is empty, response: " + response);
-                    throw new RemoteException(FAIL_GET_SITE);
+                    throw new RemoteException(FAIL_GET_SITE + "，site[id=" + siteId + "]，结果不存在！");
                 }
                 return JSON.parseObject(result.getData(), Site.class);
             } else {
                 log.error("failed to get site[id=" + siteId + "], error: " + response);
-                throw new RemoteException(FAIL_GET_SITE);
+                throw new RemoteException(FAIL_GET_SITE + "，site[id=" + siteId + "]，返回：" + response);
             }
         } catch (IOException e) {
             log.error("failed get site[id=" + siteId + "]", e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed get site[id=" + siteId + "]", e);
-            throw new RemoteException(FAIL_GET_SITE, e);
+            throw new RemoteException(FAIL_GET_SITE + "site[id=" + siteId + "]", e);
         }
     }
 
@@ -96,13 +97,15 @@ public class SiteApiServiceImpl implements SiteApiService {
 
                 return JSON.parseArray(pageData.getData(), Channel.class);
             } else {
-                log.error("error: " + response);
-                throw new RemoteException("获取子栏目失败！");
+                String errorInfo = MessageFormat.format("failed find channel child, [siteId={0}, parentChannelId={1}], error:{2}", siteId, parentId, response);
+                log.error(errorInfo);
+                throw new RemoteException("获取子栏目失败！[siteId=" + siteId + ", parentChannelId=" + parentId + "]，返回：" + response);
             }
         } catch (IOException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "find channel child failed", e);
-            throw new RemoteException("获取子栏目失败！", e);
+            String errorInfo = MessageFormat.format("failed find channel child, [siteId={0}, parentChannelId={1}]", siteId, parentId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取子栏目失败！[siteId=" + siteId + ", parentChannelId=" + parentId + "]", e);
         }
     }
 
@@ -119,9 +122,10 @@ public class SiteApiServiceImpl implements SiteApiService {
 
             return responseManager("findChannelById", response);
         } catch (IOException e) {
-            log.error("failed getChannelById", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed getChannelById", e);
-            throw new RemoteException("获取栏目失败！", e);
+            String errorInfo = MessageFormat.format("failed find channel, [channelId={0}]", channelId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取栏目失败！[channelId=" + channelId + "]", e);
         }
     }
 
@@ -173,13 +177,15 @@ public class SiteApiServiceImpl implements SiteApiService {
                 ApiResult result = OuterApiUtil.getValidResult(response, "获取栏目发布地址");
                 return result.getData();
             } else {
-                log.error("failed to get channel publish url, error: " + response);
-                throw new RemoteException("获取栏目发布地址失败！");
+                String errorInfo = MessageFormat.format("failed to get channel publish url, [siteId={0}, channelId={1}], error:{2}", siteId, channelId, response);
+                log.error(errorInfo);
+                throw new RemoteException("获取栏目发布地址失败！[siteId=" + siteId + ", channelId=" + channelId + "]");
             }
         } catch (IOException e) {
-            log.error("failed to get channel publish url", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed to get channel publish url", e);
-            throw new RemoteException("获取栏目发布地址失败！", e);
+            String errorInfo = MessageFormat.format("failed to get channel publish url, [siteId={0}, channelId={1}]", siteId, channelId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取栏目发布地址失败！[siteId=" + siteId + ", channelId=" + channelId + "]", e);
         }
     }
 
@@ -238,19 +244,21 @@ public class SiteApiServiceImpl implements SiteApiService {
                 }
                 return JSON.parseArray(result.getData(), Integer.class);
             } else {
-                log.error("failed to findChnlIds, error: " + response);
-                throw new RemoteException("通过栏目名称获取栏目编号失败！");
+                String errorInfo = MessageFormat.format("failed findChnlIds, [siteId={0}, chnlName={1}], error:{2}", siteId, chnlName, response);
+                log.error(errorInfo);
+                throw new RemoteException("通过栏目名称获取栏目编号失败！[siteId=" + siteId + ", chnlName=" + chnlName + "]");
             }
         } catch (IOException e) {
-            log.error("failed findChnlIds", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed findChnlIds", e);
-            throw new RemoteException("通过栏目名称获取栏目编号失败！", e);
+            String errorInfo = MessageFormat.format("failed findChnlIds, [siteId={0}, chnlName={1}]", siteId, chnlName);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("通过栏目名称获取栏目编号失败！[siteId=" + siteId + ", chnlName=" + chnlName + "]", e);
         }
     }
 
     @Override
     public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
-        // TODO 该方法未实现， 需要确认一下是否使用了
+        // TODO FIXED 该方法未实现， 需要确认一下是否使用了 （此方法已确认未使用）
         return new ArrayList<>();
     }
 
@@ -267,9 +275,10 @@ public class SiteApiServiceImpl implements SiteApiService {
 
             return responseManager("findChannelByUrl", response);
         } catch (IOException e) {
-            log.error("failed findChannelByUrl", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed findChannelByUrl", e);
-            throw new RemoteException("通过url获取栏目！", e);
+            String errorInfo = MessageFormat.format("failed findChannelByUrl, [siteId={0}, url={1}]", siteId, url);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("通过url获取栏目！[siteId=" + siteId + ", url=" + url + "]", e);
         }
     }
 
@@ -282,7 +291,7 @@ public class SiteApiServiceImpl implements SiteApiService {
             return JSON.parseObject(result.getData(), Channel.class);
         } else {
             log.error("failed to " + method + ", error: " + response);
-            throw new RemoteException("通过url获取栏目！");
+            throw new RemoteException("通过url获取栏目！" + response.request());
         }
     }
 }

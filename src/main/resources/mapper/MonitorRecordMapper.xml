@@ -20,6 +20,14 @@
         <include refid="all_conditions_sql"/>
     </select>
 
+    <select id="getLastManualMonitorBeginTime" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="Date">
+        SELECT
+        max(beginTime)
+        FROM monitorrecord
+        WHERE  1 = 1
+        <include refid="all_conditions_sql"/>
+    </select>
+
     <select id="getLastMonitorEndTime" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultType="Date">
         SELECT
         max(endTime)
@@ -33,6 +41,13 @@
         *
         FROM monitorrecord WHERE 1=1
         <include refid="all_conditions_sql"/>
+    </select>
+
+    <select id="selectNewestMonitorRecord" resultMap="MonitorRecordMap">
+        select * from monitorrecord
+        where siteId = #{siteId}
+        and taskId = #{taskId}
+        and beginTime = (SELECT max(beginTime) FROM monitorrecord where siteId = #{siteId} and taskId = #{taskId} order by beginTime DESC)
     </select>
 
     <sql id="all_conditions_sql">

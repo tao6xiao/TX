@@ -143,7 +143,7 @@ public class WorkOrderController {
         String logDesc = "修改问题工单处理状态（为工单模块提供）" + LogUtil.paramsToLogString("workOrderStatus", workOrderStatus, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
             if (workOrderStatus == null) {
-                throw new BizException("参数不合法！");
+                throw new BizException(Constants.INVALID_PARAMETER);
             }
             issueService.updateOrderByIds(workOrderStatus, Arrays.asList(ids));
             return null;

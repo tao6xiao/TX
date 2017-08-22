@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,18 +49,19 @@ public class UserApiServiceImpl implements UserApiService {
                 if (StringUtil.isEmpty(result.getData())) {
                     return new User();
                 }
-                if(JSON.parseObject(result.getData(), User.class).getTrueName() == null){
+                if (JSON.parseObject(result.getData(), User.class).getTrueName() == null) {
                     return new User();
                 }
                 return JSON.parseObject(result.getData(), User.class);
             } else {
-                log.error("failed to findUserById, error: " + response);
-                throw new RemoteException("通过用户id获取用户对象失败！");
+                log.error("failed to findUserById, [userId=" + userId + "], error: " + response);
+                throw new RemoteException("通过用户id获取用户对象失败！[userId=" + userId + "]，返回：" + response);
             }
         } catch (IOException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed get user by id from edit center", e);
-            throw new RemoteException("获取用户失败！", e);
+            String errorInfo = MessageFormat.format("failed get user by id from edit center, [userId={0}]", userId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取用户失败！[userId=" + userId + "]", e);
         }
     }
 
@@ -80,13 +82,14 @@ public class UserApiServiceImpl implements UserApiService {
                 }
                 return JSON.parseObject(result.getData(), User.class);
             } else {
-                log.error("failed to finUserByUserName, error: " + response);
-                throw new RemoteException("通过用户账号获取用户对象失败！");
+                log.error("failed to finUserByUserName, [userName=" + userName + "], error: " + response);
+                throw new RemoteException("通过用户账号获取用户对象失败！[userName=" + userName + "]，返回：" + response);
             }
         } catch (IOException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed get user by userName from edit center", e);
-            throw new RemoteException("获取用户失败！", e);
+            String errorInfo = MessageFormat.format("failed get user by userName from edit center, [userName={0}]", userName);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取用户失败！[userName=" + userName + "]", e);
         }
     }
 }

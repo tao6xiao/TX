@@ -75,7 +75,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     @Getter
-    private Integer monitorType;
+    private int monitorType;
 
     @Override
     public void run() throws BizException, RemoteException {
@@ -87,16 +87,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
         calendar.setTime(new Date());
         calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应
         report.setReportTime(calendar.getTime());
-        Site site = null;
-        try {
-            site = siteApiService.getSiteById(siteId, "");
-        } catch (RemoteException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "报表生成，siteId[" + siteId + "]", e);
-        }
-        if (site == null) {
-            throw new BizException("站点不存在");
-        }
+        Site site = siteApiService.getSiteById(siteId, "");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
         report.setTitle(title);
@@ -252,8 +243,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
             workbook.write(out);
         } catch (IOException e) {
             monitorResult = 1;
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "报表生成，文件写入错误，siteId[" + siteId + "]", e);
+            String errorInfo = "任务调度[" + getName() + "]，报表生成，文件写入错误，siteId[" + siteId + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, errorInfo, e);
         }
         report.setPath(fileDir + fileName);
         report.setCrTime(new Date());
@@ -268,9 +260,9 @@ public class ReportGenerateScheduler implements SchedulerTask {
 
     @Override
     public EnumCheckJobType getCheckJobType() {
-        if(isTimeNode){
+        if (isTimeNode) {
             return EnumCheckJobType.TIMENODE_REPORT_GENERATE;
-        }else {
+        } else {
             return EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE;
         }
     }

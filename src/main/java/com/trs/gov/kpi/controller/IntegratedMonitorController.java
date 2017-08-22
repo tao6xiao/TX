@@ -72,8 +72,8 @@ public class IntegratedMonitorController {
             try {
                 list = integratedMonitorService.getHistoryPerformance(param);
             } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
+                log.error(logDesc, e);
+                throw new BizException("查询siteId[" + param.getSiteId() + "]绩效指数得分的历史记录失败");
             }
             LogUtil.addOperationLog(OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, param.getSiteId()));
             return list;

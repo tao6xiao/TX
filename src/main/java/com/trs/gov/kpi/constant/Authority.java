@@ -131,6 +131,7 @@ public class Authority {
     //手动监测
     public static final String KPIWEB_MANUALMONITOR = "kpiweb.manualmonitor";
     public static final String KPIWEB_MANUALMONITOR_CHECK = "kpiweb.manualmonitor.check";//监测
+    public static final String KPIWEB_MANUALMONITOR_SEARCH = "kpiweb.manualmonitor.search";//查询
 
 
 }

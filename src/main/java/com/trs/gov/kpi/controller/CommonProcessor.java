@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * Created by wangxuan on 2017/5/10.
  * 该类用于统一异常处理
- * TODO：日志打印规范未完成
  */
 @ControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -40,7 +39,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizException.class)
     @ResponseBody
     public ResponseTemplate handBizException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZEXCEPTION_MESSAGE : ex.getMessage(),
@@ -50,7 +49,7 @@ public class CommonProcessor {
     @ExceptionHandler(RemoteException.class)
     @ResponseBody
     public ResponseTemplate handRemoteException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? REMOTEEXCEPTION_MESSAGE : ex.getMessage(),
@@ -60,7 +59,7 @@ public class CommonProcessor {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseTemplate handCommonException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false, SYSTEMEXCEPTION_MESSAGE, null);
     }
@@ -68,7 +67,7 @@ public class CommonProcessor {
     @ExceptionHandler(BizRuntimeException.class)
     @ResponseBody
     public ResponseTemplate handBizRuntimeException(Exception ex) {
-        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "", ex);
+        LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, ex.getLocalizedMessage(), ex);
         log.error("", ex);
         return new ResponseTemplate(false,
                 StringUtils.isEmpty(ex.getMessage()) ? BIZRUNTIMEEXCEPTION_MESSAGE : ex.getMessage(),

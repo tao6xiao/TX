@@ -13,8 +13,8 @@ import com.trs.gov.kpi.entity.outerapi.bas.BasPVResponse;
 import com.trs.gov.kpi.entity.outerapi.bas.SiteSummary;
 import com.trs.gov.kpi.entity.outerapi.bas.SummaryResponse;
 import com.trs.gov.kpi.entity.requestdata.BasRequest;
-import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsResp;
 import com.trs.gov.kpi.entity.responsedata.HistoryStatistics;
+import com.trs.gov.kpi.entity.responsedata.HistoryStatisticsResp;
 import com.trs.gov.kpi.service.outer.BasService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DateUtil;
@@ -137,13 +137,13 @@ public class BasServiceImpl implements BasService {
                 }
                 basPVResponse = JSON.parseObject(jsonResult, BasPVResponse.class);
             } else {
-                log.error("failed to getVisits, error: " + response);
-                throw new RemoteException("获取访问量失败！");
+                log.error("failed to getVisits, [url=" + url + "],  error: " + response);
+                throw new RemoteException("获取访问量失败！[url=" + url + "]，返回：" + response);
             }
         } catch (Exception e) {
-            log.error("getVisits failed ", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getVisits failed ", e);
-            throw new RemoteException("获取访问量失败！", e);
+            log.error("getVisits failed, [url=" + url + "]", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getVisits failed, url=" + url, e);
+            throw new RemoteException("获取访问量失败！url=" + url, e);
         }
         if (basPVResponse.getRecords() == null || basPVResponse.getRecords().isEmpty()) {
             return 0;
@@ -157,7 +157,7 @@ public class BasServiceImpl implements BasService {
         Map<String, String> params = new HashMap<>();
         String mpId = siteApiService.getSiteById(basRequest.getSiteId(), null).getMpId();
         if (StringUtil.isEmpty(mpId)) {
-            throw new BizException("当前站点没有对应的mpId，无法获取数据！");
+            throw new BizException("当前站点siteId[" + basRequest.getSiteId() + "]没有对应的mpId，无法获取数据！");
         } else {
             params.put(MPIDS, mpId);
         }
@@ -180,7 +180,7 @@ public class BasServiceImpl implements BasService {
 
         String mpId = siteApiService.getSiteById(basRequest.getSiteId(), null).getMpId();
         if (StringUtil.isEmpty(mpId)) {
-            throw new BizException("当前站点没有对应的mpId，无法获取数据！");
+            throw new BizException("当前站点siteId[" + basRequest.getSiteId() + "]没有对应的mpId，无法获取数据！");
         }
 
         for (Iterator<HistoryDate> iterator = dateList.iterator(); iterator.hasNext(); ) {
@@ -271,12 +271,13 @@ public class BasServiceImpl implements BasService {
                 summaryResponse = JSON.parseObject(jsonResult, SummaryResponse.class);
             } else {
                 log.error("failed to getStayTime, error: " + response);
-                throw new RemoteException("获取停留时间失败！");
+                throw new RemoteException("获取停留时间失败！mpId=[" + params.get(MPIDS) + "]，返回：" + response);
             }
         } catch (Exception e) {
-            log.error("getStayTime failed ", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getStayTime failed ", e);
-            throw new RemoteException("获取停留时间失败！", e);
+            String errorInfo = "getStayTime failed, mpId=[" + params.get(MPIDS) + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取停留时间失败！mpId=[" + params.get(MPIDS) + "]", e);
         }
         if (summaryResponse.getRecords() == null || summaryResponse.getRecords().isEmpty()) {
             return null;

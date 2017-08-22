@@ -7,8 +7,8 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.entity.outerapi.Site;
 import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
@@ -67,19 +67,17 @@ public class HomePageCheckScheduler implements SchedulerTask {
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     @Getter
-    private Integer monitorType;
+    private int monitorType = 0;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_HOME_PAGE;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() throws RemoteException, BizException {
 
-        final Site checkSite = siteApiService.getSiteById(siteId, null);
-        baseUrl = OuterApiServiceUtil.checkSiteAndGetUrl(siteId, checkSite);
-        if(StringUtil.isEmpty(baseUrl))
-        {
-            return ;
+        baseUrl = OuterApiServiceUtil.getUrl(siteApiService.getSiteById(siteId, null));
+        if (StringUtil.isEmpty(baseUrl)) {
+            return;
         }
 
         List<String> unavailableUrls = spider.homePageCheck(siteId, baseUrl);

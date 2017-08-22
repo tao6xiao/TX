@@ -3,6 +3,7 @@ package com.trs.gov.kpi.dao;
 import com.trs.gov.kpi.entity.MonitorRecord;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,13 @@ public interface MonitorRecordMapper {
     Integer getResultByLastEndTime(QueryFilter filter);
 
     /**
+     * 获取手动监测最新的开始时间
+     * @param filter
+     * @return
+     */
+    Date getLastManualMonitorBeginTime(QueryFilter filter);
+
+    /**
      * 查询最近的监测任务的结束时间
      *
      * @param filter
@@ -35,4 +43,13 @@ public interface MonitorRecordMapper {
      * @return
      */
     List<MonitorRecord> selectMonitorRecordList(QueryFilter filter);
+
+    /**
+     * 获取最新一次的检测记录
+     * @param siteId
+     * @param taskId
+     * @return
+     */
+    List<MonitorRecord> selectNewestMonitorRecord(@Param("siteId")Integer siteId, @Param("taskId")Integer taskId);
+
 }

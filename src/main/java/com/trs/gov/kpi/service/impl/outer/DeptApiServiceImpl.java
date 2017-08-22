@@ -54,13 +54,14 @@ public class DeptApiServiceImpl implements DeptApiService {
                 }
                 return JSON.parseObject(result.getData(), Dept.class);
             } else {
-                log.error("failed to findDeptById, error: " + response);
-                throw new RemoteException("通过部门id获取部门对象失败！");
+                log.error("failed to findDeptById, groupId=[" + groupId + "], error: " + response);
+                throw new RemoteException("通过部门编号groupId=[" + groupId + "]获取部门对象失败！返回：" + response);
             }
         } catch (IOException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "从采编中心获取部门", e);
-            throw new RemoteException("获取部门失败！", e);
+            String errorInfo = "failed to get dept ! [userName=" + userName + ", groupId=" + groupId + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取部门失败！部门编号groupId=[" + groupId + "]", e);
         }
     }
 
@@ -89,13 +90,14 @@ public class DeptApiServiceImpl implements DeptApiService {
                 }
                 return idList;
             } else {
-                log.error("failed to queryDeptsByName, error: " + response);
-                throw new RemoteException("通过部门名称获取部门对象集合失败！");
+                log.error("failed to queryDeptsByName, deptName=[" + deptName + "], error: " + response);
+                throw new RemoteException("通过部门名称获取部门对象集合失败！部门名称deptName=[" + deptName + "]，返回：" + response);
             }
         } catch (IOException e) {
+            String errorInfo = "从采编中心获取部门集合失败，部门名称deptName=[" + deptName + "]";
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "从采编中心获取部门集合", e);
-            throw new RemoteException("获取部门集合失败！", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取部门集合失败！部门名称deptName=[" + deptName + "]", e);
         }
     }
 }

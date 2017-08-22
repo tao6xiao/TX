@@ -15,23 +15,41 @@ import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.requestdata.WorkOrderRequest;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.Setter;
 import org.apache.ibatis.annotations.Param;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Created by ranwei on 2017/6/8.
  */
+@RunWith(SpringRunner.class)
 public class QueryFilterHelperTest {
 
+    @MockBean
+    private DeptApiService deptApiService;
+
+    @Resource
+    private ApplicationContext applicationContext;
+
     @Test
-    public void toFilter_SearchField_Null_Sort()  {
+    public void toFilter_SearchField_Null_Sort() throws RemoteException {
+
+        SpringContextUtil contextUtil =  new SpringContextUtil();
+        contextUtil.setApplicationContext(this.applicationContext);
+
+        given(this.deptApiService.queryDeptsByName("", "123")).willReturn(Arrays.asList(1, 2));
+
         PageDataRequestParam param = new PageDataRequestParam();
         param.setSiteId(11);
         param.setBeginDateTime("2017-05-05 12:00:00");
@@ -44,8 +62,9 @@ public class QueryFilterHelperTest {
         } catch (RemoteException | NullPointerException e) {
 
         }
-        assertNull(filter);
-
+        assertNotNull(filter);
+        assertEquals(4, filter.getCondFields().size());
+        assertEquals(1, filter.getSortFields().size());
     }
 
     @Test

@@ -61,21 +61,23 @@ public class IDSActor extends StdHttpSessionBasedActor {
         localUser.setUserName(loginUser.getUserName());
         localUser.setLastLoginIP(RemoteAddrUtil.getRemoteAddr(request));
 
-        session.setAttribute(LOGIN_FLAG, localUser);
+        //在线程中初始化用户用于记录日志
         ContextHelper.initContext(localUser);
 
         UserApiService userApiService = (UserApiService) SpringContextUtil.getBean(UserApiService.class);
         User user;
-        String message = "采编中心无当前用户";
+        String message = "采编中心无当前用户[" + localUser.getUserName() + "]";
         try {
             user = userApiService.finUserByUserName("", loginUser.getUserName());
         } catch (RemoteException e) {
+            session.setAttribute(LOGIN_FLAG, null);
             log.error(message, e);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, message, e);
             LogUtil.addSecurityLog("登录失败");
             return;
         }
         if (user == null) {
+            session.setAttribute(LOGIN_FLAG, null);
             log.error(message);
             LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, message, new RemoteException(message));
             LogUtil.addSecurityLog("登录失败");
@@ -98,8 +100,9 @@ public class IDSActor extends StdHttpSessionBasedActor {
      */
     public void logout(HttpSession session) {
         try {
-            session.invalidate();
             log.info(" user logout : " + session.getAttribute(IDSActor.LOGIN_FLAG));
+            LogUtil.addSecurityLog("退出成功");
+            session.invalidate();
         } catch (IllegalStateException e) {
             // this can be ignored
         }
@@ -107,7 +110,7 @@ public class IDSActor extends StdHttpSessionBasedActor {
 
     @Override
     public boolean userExist(SSOUser ssoUser) {
-        log.info(" user exit : " + ssoUser.getUserName());
+        log.warn("user exit : " + ssoUser.getUserName());
         return false;
     }
 

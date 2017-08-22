@@ -1,9 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.trs.gov.kpi.constant.EnumUrlType;
-import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.scheduler.CKMScheduler;
-import com.trs.gov.kpi.service.LinkContentStatsService;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +15,10 @@ import us.codecraft.webmagic.downloader.HttpClientDownloader;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.utils.UrlUtils;
 
-import javax.annotation.Resource;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -34,12 +34,7 @@ public class PageCKMSpiderUtil {
     @Getter
     private String baseUrl;
 
-    private Integer siteId;
-
     private CKMScheduler ckmScheduler;
-
-    @Resource
-    private LinkContentStatsService linkContentStatsService;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -60,32 +55,7 @@ public class PageCKMSpiderUtil {
             }
 
             synchronized (pageParentMap) {
-                for (String targetUrl : targetUrls) {
-                    if (!pageParentMap.containsKey(targetUrl)) {
-                        pageParentMap.put(targetUrl.intern(), Collections.synchronizedSet(new HashSet<String>()));
-                    }
-                    Set<String> parentUrlSet = pageParentMap.get(targetUrl);
-                    if (!targetUrl.equals(page.getUrl().get().intern())) {
-
-                        boolean isEqual = false;
-                        if (targetUrl.startsWith(page.getUrl().get())) {
-                            String remainStr = targetUrl.substring(page.getUrl().get().length());
-                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                                isEqual = true;
-                            }
-                        }
-                        if (page.getUrl().get().startsWith(targetUrl)) {
-                            String remainStr = page.getUrl().get().substring(targetUrl.length());
-                            if (remainStr.equals("/") || remainStr.equals("#") || remainStr.endsWith("/#")) {
-                                isEqual = true;
-                            }
-                        }
-
-                        if (!isEqual) {
-                            parentUrlSet.add(page.getUrl().get().intern());
-                        }
-                    }
-                }
+                WebPageUtil.addParentUrl(targetUrls, pageParentMap, page.getUrl().get());
             }
             page.addTargetRequests(targetUrls);
         }
@@ -109,7 +79,6 @@ public class PageCKMSpiderUtil {
                 isUrlAvailable.set(false);
                 Page result = super.download(request, task);
                 if (isUrlAvailable.get()) {
-                    linkContentStatsService.insertLinkContent(siteId, Types.IssueType.INFO_ERROR_ISSUE.value,request.getUrl().intern(), result.getRawText().intern());
                     ckmScheduler.insert(new CKMPage(request.getUrl().intern(), result.getRawText()));
                     return result;
                 } else {
@@ -139,10 +108,9 @@ public class PageCKMSpiderUtil {
      * @param baseUrl   网页入口地址
      * @return
      */
-    public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler, Integer siteId) {
+    public synchronized void fetchPages(int threadNum, String baseUrl, CKMScheduler ckmScheduler) {
 
         log.info("fetch ckm pages started!");
-        this.siteId = siteId;
         this.ckmScheduler = ckmScheduler;
         init(baseUrl);
         if (StringUtils.isBlank(baseUrl)) {

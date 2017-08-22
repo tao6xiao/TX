@@ -21,9 +21,9 @@ public interface SchedulerTask {
     void setIsTimeNode(Boolean isTimeNode);
 
     //站点监测状态（0：自动监测；1：手动监测）
-    void setMonitorType(Integer typeId);
+    void setMonitorType(int typeId);
 
-    Integer getMonitorType();
+    int getMonitorType();
 
     String getName();
 

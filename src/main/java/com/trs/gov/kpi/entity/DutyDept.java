@@ -8,7 +8,7 @@ import lombok.Data;
  * 栏目部门关系表对应实体类
  * Created by he.lang on 2017/7/5.
  */
-@DBTable
+@DBTable("dutydept")
 @Data
 public class DutyDept {
 

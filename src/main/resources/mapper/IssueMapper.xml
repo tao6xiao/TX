@@ -370,4 +370,21 @@
     FROM issue WHERE 1=1
     <include refid="all_conditions_sql"/>
   </select>
+
+  <select id="getLastTimeCheckIssueList" parameterType="com.trs.gov.kpi.entity.dao.QueryFilter" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM issue WHERE 1=1
+    <include refid="all_conditions_sql"/>
+  </select>
+
+  <select id="grtLastTimeIssueCheckTime" resultType="java.util.Date">
+    select
+      MAX(checkTime)
+    from
+      issue
+    where siteId = #{siteId}
+    and typeId = #{typeId}
+    and customer3 = #{customer3}
+  </select>
 </mapper>

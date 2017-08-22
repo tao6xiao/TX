@@ -2,7 +2,6 @@ package com.trs.gov.kpi.controller;
 
 import com.trs.gov.kpi.constant.Authority;
 import com.trs.gov.kpi.constant.Constants;
-import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.OperationType;
 import com.trs.gov.kpi.entity.MonitorSiteDeal;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -112,26 +111,5 @@ public class MonitorSiteController {
             log.error("Invalid parameter: 参数monitorSiteDeal对象中siteId、departmentName、guarderId三个属性中至少有一个存在null值");
             throw new BizException(Constants.INVALID_PARAMETER);
         }
-    }
-
-    /**
-     * 网站手动监测
-     *
-     * @param siteId
-     * @return
-     */
-    @RequestMapping(value = "/manual/check", method = RequestMethod.PUT)
-    @ResponseBody
-    public Object manualMonitoring(Integer siteId, Integer checkJobValue) throws BizException, RemoteException {
-        String logDesc = "网站手动监测" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, "checkJobValue", checkJobValue);
-        return LogUtil.controlleFunctionWrapper(() -> {
-            if (siteId == null || checkJobValue == null) {
-                log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
-                throw new BizException(Constants.INVALID_PARAMETER);
-            }
-			authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
-            schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
-            return null;
-        }, OperationType.REQUEST, logDesc, LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
 }

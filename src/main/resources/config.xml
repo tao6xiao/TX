@@ -445,23 +445,30 @@
             <type>kpiweb.monitorrecord</type>
         </operation>
 
-        <operation name="kpiweb.manualmonitor.check">
-            <disp-name>监测</disp-name>
-            <desc>绩效考核-->手动监测-->监测</desc>
+        <operation name="kpiweb.manualmonitor.search">
+            <disp-name>查询</disp-name>
+            <desc>绩效考核-->手动监测-->查询</desc>
             <index>519</index>
+            <type>kpiweb.manualmonitor</type>
+        </operation>
+        <operation name="kpiweb.manualmonitor.check">
+            <disp-name>执行监测</disp-name>
+            <desc>绩效考核-->手动监测-->执行监测</desc>
+            <index>520</index>
             <type>kpiweb.manualmonitor</type>
         </operation>
 
         <operation name="kpiweb.report.search">
             <disp-name>查询</disp-name>
             <desc>绩效考核-->报表-->查询</desc>
-            <index>520</index>
+            <index>521</index>
             <type>kpiweb.report</type>
         </operation>
+
         <operation name="kpiweb.report.export">
             <disp-name>导出</disp-name>
             <desc>绩效考核-->报表-->导出</desc>
-            <index>521</index>
+            <index>522</index>
             <type>kpiweb.report</type>
         </operation>
 

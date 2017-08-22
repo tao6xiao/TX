@@ -58,8 +58,8 @@ public class UserAnalysisController {
             try {
                 value = basService.getVisits(basRequest);
             } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
+                log.error(logDesc, e);
+                throw new BizException(e.getLocalizedMessage());
             }
             return value;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));
@@ -85,8 +85,8 @@ public class UserAnalysisController {
             try {
                 historyStatisticsResp = basService.getHistoryVisits(basRequest);
             } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
+                log.error(logDesc, e);
+                throw new BizException(e.getLocalizedMessage());
             }
             return historyStatisticsResp;
 
@@ -122,7 +122,7 @@ public class UserAnalysisController {
      */
     @RequestMapping(value = "/stay/history", method = RequestMethod.GET)
     public HistoryStatisticsResp getHistoryStayTime(@ModelAttribute BasRequest basRequest) throws BizException, RemoteException {
-        String logDesc = "停留时间历史记录查询";
+        String logDesc = "停留时间历史记录查询" + LogUtil.paramsToLogString(BAS_REQUEST, basRequest);
         return LogUtil.controlleFunctionWrapper(() -> {
             check(basRequest);
             authorityService.checkRight(Authority.KPIWEB_ANALYSIS_STAYTIME, basRequest.getSiteId());
@@ -130,8 +130,8 @@ public class UserAnalysisController {
             try {
                 historyStatisticsResp = basService.getHistoryStayTime(basRequest);
             } catch (ParseException e) {
-                log.error("", e);
-                throw new BizException("");
+                log.error(logDesc, e);
+                throw new BizException(e.getLocalizedMessage());
             }
             return historyStatisticsResp;
         }, OperationType.QUERY, logDesc, LogUtil.getSiteNameForLog(siteApiService, basRequest.getSiteId()));

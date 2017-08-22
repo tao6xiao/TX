@@ -8,7 +8,9 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.scheduler.SchedulerTask;
 import com.trs.gov.kpi.service.MonitorRecordService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.SchedulerUtil;
 import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,29 +27,46 @@ import java.util.Date;
 @Slf4j
 public class CheckJob implements Job {
 
-    private MonitorRecordService monitorRecordService;
+    private MonitorRecordService monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
 
-    private CommonMapper commonMapper;
+    private CommonMapper commonMapper = (CommonMapper) SpringContextUtil.getBean(CommonMapper.class);
+
+    private SiteApiService siteApiService = (SiteApiService) SpringContextUtil.getBean(SiteApiService.class);
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
-        monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
-        commonMapper = (CommonMapper)SpringContextUtil.getBean(CommonMapper.class);
+
         SchedulerTask task = (SchedulerTask) jobExecutionContext.getMergedJobDataMap().get("task");
 
-        Date startTime = new Date();
-        //检测开始
-        insertBeginMonitorRecord(task, startTime);
 
         log.info(SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
+        Date startTime = new Date();
+        Date manualMonitorBeginTime = null;
         try {
+            OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
+
+
+            if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
+                manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
+            } else {
+                //检测开始
+                insertBeginMonitorRecord(task, startTime);
+            }
+
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, task.getName() + "[siteId=" + task.getSiteId()+ "]");
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, task.getName() + "[siteId=" + task.getSiteId() +
+                    "]");
 
             task.run();
+
             //检测结束
-            insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
+            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+                insertEndMonitorRecord(task, manualMonitorBeginTime, Status.MonitorStatusType.CHECK_DONE.value);
+            }else {
+                insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
+            }
+
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
             //TODO REVIEW  ran.wei DO_he.lang FIXED 日志描述错误 应该为任务调度
@@ -64,6 +83,21 @@ public class CheckJob implements Job {
         }
     }
 
+    /**
+     * 获取手动监测最新一次开始的开始时间
+     *
+     * @param task
+     * @return
+     */
+    private Date toGetManualMonitorBeginTime(SchedulerTask task) {
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, task.getSiteId());
+        filter.addCond(MonitorRecordTableField.TASK_ID, task.getCheckJobType().value);
+        filter.addCond(MonitorRecordTableField.TYPE_ID, task.getMonitorType());
+        filter.addSortField(MonitorRecordTableField.BEGIN_TIME, false);
+        return monitorRecordService.getLastManualMonitorBeginTime(filter);
+    }
+
     //检测开始，插入日志检测基本信息
     private void insertBeginMonitorRecord(SchedulerTask task, Date startTime) {
         MonitorRecord monitorRecord = new MonitorRecord();
@@ -72,7 +106,6 @@ public class CheckJob implements Job {
         monitorRecord.setTaskId(task.getCheckJobType().value);
         monitorRecord.setBeginTime(startTime);
         monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
-
         monitorRecordService.insertMonitorRecord(monitorRecord);
     }
 

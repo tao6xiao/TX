@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,13 +62,15 @@ public class AuthorityServiceImpl implements AuthorityService {
                 }
                 return JSON.parseObject(result.getData(), Boolean.class);
             } else {
-                log.error("failed to findRight, error: " + response);
-                throw new RemoteException("查找指定oprkeys的权限失败！");
+                String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1}], error:{2}", siteId, oprkeys, response);
+                log.error(errorInfo);
+                throw new RemoteException("获取权限失败！[siteId=" + siteId + ", oprkeys=" + oprkeys + "]");
             }
         } catch (IOException e) {
-            log.error("failed findRight", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed findRigh, siteId[" + siteId + "]", e);
-            throw new RemoteException("查找指定oprkeys的权限失败！", e);
+            String errorInfo = MessageFormat.format("failed findRight, [siteId={0}, oprkeys={1}]", siteId, oprkeys);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
+            throw new RemoteException("获取权限失败！[siteId=" + siteId + ", oprkeys=" + oprkeys + "]", e);
         }
     }
 

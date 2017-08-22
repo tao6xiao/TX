@@ -11,6 +11,7 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.PageDataRequestParam;
 import com.trs.gov.kpi.entity.responsedata.ApiPageData;
+import com.trs.gov.kpi.entity.responsedata.MonitorOnceResponse;
 import com.trs.gov.kpi.entity.responsedata.MonitorRecordResponse;
 import com.trs.gov.kpi.entity.responsedata.Pager;
 import com.trs.gov.kpi.service.MonitorRecordService;
@@ -39,8 +40,23 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
 
     @Override
     public void insertMonitorRecord(MonitorRecord monitorRecord) {
-
         commonMapper.insert(DBUtil.toRow(monitorRecord));
+    }
+
+    @Override
+    public void insertBeginManualMonitorRecord(Integer siteId, Integer taskId, Integer typeId, Date beginTime) {
+        MonitorRecord monitorRecord = new MonitorRecord();
+        monitorRecord.setSiteId(siteId);
+        monitorRecord.setTaskId(taskId);
+        monitorRecord.setTypeId(typeId);
+        monitorRecord.setBeginTime(beginTime);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
+        commonMapper.insert(DBUtil.toRow(monitorRecord));
+    }
+
+    @Override
+    public Date getLastManualMonitorBeginTime(QueryFilter filter) {
+        return monitorRecordMapper.getLastManualMonitorBeginTime(filter);
     }
 
     @Override
@@ -87,6 +103,52 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         }
         return new ApiPageData(pager, monitorRecordResponseList);
     }
+
+    @Override
+    public List<MonitorOnceResponse> selectMonitorResulrOnce(Integer siteId, List<Integer> checkJobValues) {
+        List<MonitorOnceResponse> monitorOnceResponseList = new ArrayList<>();
+        for (int i=0; i < checkJobValues.size(); i++){
+            List<MonitorRecord> monitorRecordList = monitorRecordMapper.selectNewestMonitorRecord(siteId, checkJobValues.get(i));
+            MonitorOnceResponse monitorOnceResponse = new MonitorOnceResponse();
+
+            if(monitorRecordList.isEmpty()){
+                monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.WAIT_CHECK.getName());
+                monitorOnceResponseList.add(monitorOnceResponse);
+            }else {
+                monitorOnceResponse.setTaskId(monitorRecordList.get(0).getTaskId());
+                monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecordList.get(0).getTaskStatus()).getName());
+                monitorOnceResponse.setBeginDateTime(monitorRecordList.get(0).getBeginTime());
+                monitorOnceResponse.setEndDateTime(monitorRecordList.get(0).getEndTime());
+                if (monitorRecordList.get(0).getTaskStatus() != Status.MonitorStatusType.CHECK_ERROR.value) {
+                    monitorOnceResponse.setResult(monitorRecordList.get(0).getResult());
+                }
+                monitorOnceResponseList.add(monitorOnceResponse);
+            }
+        }
+        return monitorOnceResponseList;
+    }
+
+    @Override
+    public List<MonitorRecord> selectNewestMonitorRecord(Integer siteId, Integer taskId) {
+       return monitorRecordMapper.selectNewestMonitorRecord(siteId, taskId);
+    }
+
+    @Override
+    public List<MonitorOnceResponse> getMonitorOnceResponse(List<MonitorRecord> monitorRecordList) {
+
+        List<MonitorOnceResponse> monitorOnceResponseList = new ArrayList<>();
+        MonitorOnceResponse monitorOnceResponse = new MonitorOnceResponse();
+        monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.valueOf(monitorRecordList.get(0).getTaskStatus()).getName());
+        monitorOnceResponse.setTaskId(monitorRecordList.get(0).getTaskId());
+        monitorOnceResponse.setBeginDateTime(monitorRecordList.get(0).getBeginTime());
+        monitorOnceResponse.setEndDateTime(monitorRecordList.get(0).getEndTime());
+        if (monitorRecordList.get(0).getTaskStatus() != Status.MonitorStatusType.CHECK_ERROR.value) {
+            monitorOnceResponse.setResult(monitorRecordList.get(0).getResult());
+        }
+        monitorOnceResponseList.add(monitorOnceResponse);
+        return monitorOnceResponseList;
+    }
+
 
     @NotNull
     private MonitorRecordResponse toMonitorRecordResponse(MonitorRecord monitorRecord) {

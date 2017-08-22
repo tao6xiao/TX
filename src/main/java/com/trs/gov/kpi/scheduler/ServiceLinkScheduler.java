@@ -10,9 +10,11 @@ import com.trs.gov.kpi.entity.Issue;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
 import com.trs.gov.kpi.service.outer.SGService;
+import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
 import lombok.Getter;
@@ -57,6 +59,9 @@ public class ServiceLinkScheduler implements SchedulerTask {
     @Resource
     private CommonMapper commonMapper;
 
+    @Resource
+    private SiteApiService siteApiService;
+
     //错误信息计数
     @Getter
     Integer monitorResult = 0;
@@ -64,13 +69,13 @@ public class ServiceLinkScheduler implements SchedulerTask {
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     @Getter
-    private Integer monitorType;
+    private int monitorType;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.SERVICE_LINK;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() throws RemoteException, BizException {
 
         for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
             if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {

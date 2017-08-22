@@ -41,7 +41,7 @@ public class SGServiceImpl implements SGService {
         Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/questionBszn.jsp", paramMap);
-        return (SGPageDataRes) getResult(client, request, "获取服务指南失败！", SGPageDataRes.class);
+        return (SGPageDataRes) getResult(client, request, "获取服务指南失败！[siteId=" + param.getSiteId() + "]", SGPageDataRes.class);
     }
 
 
@@ -50,7 +50,7 @@ public class SGServiceImpl implements SGService {
         Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/bsznCount.jsp", paramMap);
-        return (SGStatistics) getResult(client, request, "获取服务指南统计失败！", SGStatistics.class);
+        return (SGStatistics) getResult(client, request, "获取服务指南统计失败！[siteId=" + param.getSiteId() + "]", SGStatistics.class);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class SGServiceImpl implements SGService {
         Map<String, String> paramMap = initParamMap(param);
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/bsznCountByGranularity.jsp", paramMap);
-        List list = (List) getResult(client, request, "获取服务指南历史统计失败！", List.class);
+        List list = (List) getResult(client, request, "获取服务指南历史统计失败！[siteId=" + param.getSiteId() + "]", List.class);
         return new HistoryStatisticsResp(new Date(), list);
     }
 
@@ -68,7 +68,7 @@ public class SGServiceImpl implements SGService {
         paramMap.put("siteId", Integer.toString(siteId));
         OkHttpClient client = new OkHttpClient();
         Request request = OuterApiServiceUtil.buildRequest(sgServiceUrl, "/allBsznUrl.jsp", paramMap);
-        return (SGPageDataRes) getResult(client, request, "获取服务链接失败！", SGPageDataRes.class);
+        return (SGPageDataRes) getResult(client, request, "获取服务链接失败！[siteId=" + siteId + "]", SGPageDataRes.class);
     }
 
     private Map<String, String> initParamMap(PageDataRequestParam param) {
@@ -107,17 +107,17 @@ public class SGServiceImpl implements SGService {
             if (response.isSuccessful()) {
                 String jsonResult = response.body().string();
                 if (StringUtil.isEmpty(jsonResult)) {
-                    throw new RemoteException(msg);
+                    throw new RemoteException(msg + " 结果不存在！");
                 }
                 ApiResult result = JSON.parseObject(jsonResult, ApiResult.class);
                 return JSON.parseObject(result.getData(), clazz);
             } else {
                 log.error("failed to getSGService, error: " + response);
-                throw new RemoteException(msg);
+                throw new RemoteException(msg + " 返回：" + response);
             }
         } catch (Exception e) {
-            log.error("getSGService failed ", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getSGService failed ", e);
+            log.error("getSGService failed " + msg, e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "getSGService failed " + msg, e);
             throw new RemoteException(msg, e);
         }
     }

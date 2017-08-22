@@ -10,16 +10,14 @@ import com.trs.gov.kpi.entity.check.CheckingChannel;
 import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.DateUtil;
-import com.trs.gov.kpi.utils.LogUtil;
-import com.trs.gov.kpi.utils.SchedulerUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -96,13 +94,14 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
     @Getter
-    private Integer monitorType;
+    private int monitorType;
 
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_INFO_UPDATE;
 
     @Override
-    public void run() throws RemoteException {
+    public void run() throws RemoteException, BizException {
+
         log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
 
@@ -118,7 +117,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 try {
                     checkChannelTreeUpdate(child);
                 } catch (ParseException e) {
-                    String errorInfo = "检查当前栏目channel[" + child + "]下的子栏目是否更新";
+                    String errorInfo = "任务调度[" + getName() + "]，检查站点siteId[" + siteId + "]，栏目channel[" + child + "]下的子栏目是否更新";
                     log.error(errorInfo, e);
                     LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
                 }
@@ -586,8 +585,22 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         }
         //从数据库空栏目ID集合中去掉仍为空栏目的集合，余下为已处理的空栏目。
         chnlIdListInDB.removeAll(chnlIdList);
-        for (Integer resolvedChnlId : chnlIdListInDB) {
-            filter = buildQueryFilter(Arrays.asList(resolvedChnlId),
+
+        resolveOldEmptyChnlIssue(chnlIdListInDB);
+    }
+
+    /**
+     * 把已经不是空栏目的问题，变成resolved
+     * @param chnlIdListInDB
+     */
+    private void resolveOldEmptyChnlIssue(List<Integer> chnlIdListInDB) {
+        QueryFilter filter;
+        if (!chnlIdListInDB.isEmpty()) {
+            List<String> resolvedChnlIds = new ArrayList<>();
+            for (Integer resolvedChnlId : chnlIdListInDB) {
+                resolvedChnlIds.add(String.valueOf(resolvedChnlId));
+            }
+            filter = buildQueryFilter(resolvedChnlIds,
                     Types.IssueType.EMPTY_CHANNEL.value,
                     Types.EmptyChannelType.EMPTY_COLUMN.value);
             DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
@@ -655,7 +668,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     private QueryFilter buildQueryFilter(int channelId, int issueTypeId, int subIssueTypeId, String beginDateTime) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.SITE_ID, siteId);
-        filter.addCond(IssueTableField.CUSTOMER2, channelId);
+        filter.addCond(IssueTableField.CUSTOMER2, String.valueOf(channelId));
         filter.addCond(IssueTableField.TYPE_ID, issueTypeId);
         filter.addCond(IssueTableField.SUBTYPE_ID, subIssueTypeId);
         filter.addCond(IssueTableField.CHECK_TIME, beginDateTime).setRangeBegin(true);
@@ -670,7 +683,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
      * @param subIssueTypeId
      * @return
      */
-    private QueryFilter buildQueryFilter(List<Integer> chnlIdList, int issueTypeId, int subIssueTypeId) {
+    private QueryFilter buildQueryFilter(List<String> chnlIdList, int issueTypeId, int subIssueTypeId) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.CUSTOMER2, chnlIdList);
@@ -707,8 +720,9 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
         try {
             chnlUrl = siteApiService.getChannelPublishUrl("", 0, channelId);
         } catch (RemoteException e) {
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "信息更新监测，siteId[" + siteId + "]", e);
+            String errorInfo = MessageFormat.format("任务调度[{0}]，[siteId={1}, channelId={2}]", getName(), siteId, channelId);
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, errorInfo, e);
         }
         DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
         if (chnlUrl != null) {

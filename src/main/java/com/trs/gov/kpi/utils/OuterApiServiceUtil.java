@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.utils;
 
 import com.squareup.okhttp.Request;
+import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.outerapi.Site;
 import lombok.extern.slf4j.Slf4j;
 
@@ -99,6 +100,7 @@ public class OuterApiServiceUtil {
 
         return new Request.Builder().url(url.toString()).build();
     }
+
     public static Request buildRequest(String methodName, String userName,
                                        Map<String, String> params, String serviceName, String editCenterServiceUrl) {
         OuterApiServiceUtil.addUserNameParam(userName, params);
@@ -109,22 +111,35 @@ public class OuterApiServiceUtil {
                 .setMethodName(methodName)
                 .setParams(params).build();
     }
+
     /**
-     * 检查站点和url是否存在，存在则返回url
-     * @param siteId
+     * 检查url是否存在，存在则返回url
+     *
      * @param checkSite
      * @return
      */
-    public static String checkSiteAndGetUrl(Integer siteId, Site checkSite){
-        if (checkSite == null) {
-            log.error("site[" + siteId + "] is not exsit!");
-            return null;
-        }
+    public static String getUrl(Site checkSite) throws BizException {
         String baseUrl = checkSite.getWebHttp();
         if (StringUtil.isEmpty(baseUrl)) {
-            log.warn("site[" + siteId + "]'s web http is empty!");
+            log.warn("site[" + checkSite.getSiteId() + "]'s web http is empty!");
             return null;
         }
         return baseUrl;
+    }
+
+
+    /**
+     * 检查站点是否存在
+     *
+     * @param siteId
+     * @param checkSite
+     * @throws BizException
+     */
+    public static void checkSite(Integer siteId, Site checkSite) throws BizException {
+        if (checkSite == null) {
+            String errorInfo = "site[" + siteId + "] is not exsit!";
+            log.error(errorInfo);
+            throw new BizException(errorInfo);
+        }
     }
 }

@@ -21,6 +21,8 @@ public class MonitorRecordTableField {
 
     public static final String END_TIME = "endTime";//结束时间
 
+    public static final String TYPE_ID = "typeId";//检测类型
+
     private MonitorRecordTableField() {
     }
 }
