@@ -46,11 +46,16 @@ public class CheckJob implements Job {
         try {
             OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
 
-            if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
-                manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
-            } else {
+            if(task.getMonitorType() == null){
                 //检测开始
                 insertBeginMonitorRecord(task, startTime);
+            }else{
+                if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
+                    manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
+                } else {
+                    //检测开始
+                    insertBeginMonitorRecord(task, startTime);
+                }
             }
 
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
@@ -60,10 +65,14 @@ public class CheckJob implements Job {
             task.run();
 
             //检测结束
-            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
-                insertEndMonitorRecord(task, manualMonitorBeginTime, Status.MonitorStatusType.CHECK_DONE.value);
-            }else {
+            if(task.getMonitorType() == null){
                 insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
+            }else{
+                if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+                    insertEndMonitorRecord(task, manualMonitorBeginTime, Status.MonitorStatusType.CHECK_DONE.value);
+                }else {
+                    insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
+                }
             }
 
             performanceLogRecorder.recordAlways();

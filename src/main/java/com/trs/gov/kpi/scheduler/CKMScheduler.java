@@ -131,7 +131,7 @@ public class CKMScheduler implements SchedulerTask {
             Date lastTimeIssueCheckTime = issueMapper.grtLastTimeIssueCheckTime(siteId,
                     Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
 
-            if(linkTimeContentStats == null || !lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
+            if(linkTimeContentStats == null || !lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime()) || lastTimeIssueCheckTime != null){
                 //检测爬取内容
                 result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
             }else {
@@ -146,6 +146,9 @@ public class CKMScheduler implements SchedulerTask {
                         } else {//内容较上一次没有变化
                             //添加或者更新Issue表中的数据
                             updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
+                            //获取上一次错误个数
+                            int issueCoun = toGetIssueCount(page, runtimeResult, linkTimeContentStats);
+                            runtimeResult.setIssueCount(issueCoun);
                             return issueList;
                         }
                     }
@@ -168,7 +171,6 @@ public class CKMScheduler implements SchedulerTask {
         }
         return issueList;
     }
-
 
     private List<Issue> toIssueList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, ContentCheckResult result, CheckRuntimeResult runtimeResult) {
         List<Issue> issueList = new ArrayList<>();
@@ -625,6 +627,17 @@ public class CKMScheduler implements SchedulerTask {
         linkContentStats.setState(runtimeResult.getIsException());
         commonMapper.insert(DBUtil.toRow(linkContentStats));
     }
+
+    private int toGetIssueCount(PageCKMSpiderUtil.CKMPage page, CheckRuntimeResult runtimeResult, LinkContentStats linkTimeContentStats) {
+        QueryFilter filter = new QueryFilter(Table.ISSUE);
+        filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
+        filter.addCond(IssueTableField.CHECK_TIME, linkTimeContentStats.getCheckTime());
+        filter.addCond(IssueTableField.SITE_ID, siteId);
+        filter.addCond(IssueTableField.TYPE_ID, Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
+
+        return commonMapper.count(filter);
+    }
+
 
     @Data
     private class CheckRuntimeResult {
