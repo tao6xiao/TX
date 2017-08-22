@@ -78,7 +78,7 @@ public class MonitorRecordController {
                 log.error("Invalid parameter: 参数siteId或者checkJobTypeValue存在null值");
                 throw new BizException(Constants.INVALID_PARAMETER);
             }
-//            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
+            authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
             //如果当前任务为正在检查或是等待检测，再次请求的时候就不在执行检测,直接返回当前结果
             List<MonitorRecord> monitorRecordList = monitorRecordService.selectNewestMonitorRecord(siteId, checkJobValue);
             if (!monitorRecordList.isEmpty() && monitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.DOING_CHECK.value){

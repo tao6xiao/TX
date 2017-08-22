@@ -130,26 +130,26 @@ public class CKMScheduler implements SchedulerTask {
             //获取上一次检测的Issue的checkTime（数据库当前最新的记录）
             Date lastTimeIssueCheckTime = issueMapper.grtLastTimeIssueCheckTime(siteId,
                     Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-            if(linkTimeContentStats != null || lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
-                //上一次检测状态为——异常
-            if(linkTimeContentStats.getState() == Status.MonitorState.ABNORMAL.value){
-                    //检测爬取内容
-                    result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-            }else{
-                    if (linkTimeContentStats.getMd5() == null || !runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())) {//第一次检查或链接内容发生变化
-                        //检测爬取内容
-                        result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                    } else {//内容较上一次没有变化
-                        //添加或者更新Issue表中的数据
-                        updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
-                        return issueList;
-                    }
-                }
-            }else {
+
+            if(linkTimeContentStats == null || !lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
                 //检测爬取内容
                 result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-            }
-
+            }else {
+                //上一次检测状态为——异常
+                if(linkTimeContentStats.getState() == Status.MonitorState.ABNORMAL.value){
+                        //检测爬取内容
+                        result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+                }else{
+                        if (linkTimeContentStats.getMd5() == null || !runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())) {//第一次检查或链接内容发生变化
+                            //检测爬取内容
+                            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+                        } else {//内容较上一次没有变化
+                            //添加或者更新Issue表中的数据
+                            updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
+                            return issueList;
+                        }
+                    }
+                }
         } catch (Exception e) {
             runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
             String errorInfo = "siteId[" + siteId + "], url[" + baseUrl + "], failed to check content " + checkContent;
@@ -557,11 +557,7 @@ public class CKMScheduler implements SchedulerTask {
                 LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "插入信息错误数据失败，siteId[" + siteId + "]", e);
             }
         }
-        if (insertIssueInfoErrorCount != issueList.size()) {
-            runtimeResult.setIssueCount(insertIssueInfoErrorCount);
-        }else{
-            runtimeResult.setIssueCount(issueList.size());
-        }
+        runtimeResult.setIssueCount(insertIssueInfoErrorCount);
         log.info("buildCheckContent insert error count: " + issueList.size());
     }
 
