@@ -114,6 +114,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
 
             if(monitorRecordList.isEmpty()){
                 monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.WAIT_CHECK.getName());
+                monitorOnceResponse.setTaskId(checkJobValues.get(i));
                 monitorOnceResponseList.add(monitorOnceResponse);
             }else {
                 monitorOnceResponse.setTaskId(monitorRecordList.get(0).getTaskId());
