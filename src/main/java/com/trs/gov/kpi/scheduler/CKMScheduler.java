@@ -571,10 +571,10 @@ public class CKMScheduler implements SchedulerTask {
         runtimeResult.setMd5(DigestUtils.md5Hex(page.getContent()));
         try {
             insert(buildList(page, checkTypeList, runtimeResult), runtimeResult);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
             log.error("", e);
-            LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
         } finally {
             //插入当前链接本次检测记录
             toInsertLinkContentStats(page, runtimeResult);
