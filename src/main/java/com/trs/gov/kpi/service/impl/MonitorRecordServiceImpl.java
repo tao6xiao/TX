@@ -114,6 +114,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
 
             if(monitorRecordList.isEmpty()){
                 monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.WAIT_CHECK.getName());
+                monitorOnceResponse.setTaskId(checkJobValues.get(i));
                 monitorOnceResponseList.add(monitorOnceResponse);
             }else {
                 monitorOnceResponse.setTaskId(monitorRecordList.get(0).getTaskId());
@@ -143,7 +144,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         monitorOnceResponse.setTaskId(monitorRecordList.get(0).getTaskId());
         monitorOnceResponse.setBeginDateTime(monitorRecordList.get(0).getBeginTime());
         monitorOnceResponse.setEndDateTime(monitorRecordList.get(0).getEndTime());
-        if (monitorRecordList.get(0).getTaskStatus() != Status.MonitorStatusType.CHECK_ERROR.value) {
+        if (monitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.CHECK_DONE.value) {
             monitorOnceResponse.setResult(monitorRecordList.get(0).getResult());
         }
         monitorOnceResponseList.add(monitorOnceResponse);

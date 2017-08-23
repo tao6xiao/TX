@@ -85,7 +85,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             monitorResult = 1;
             QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
             queryFilter.addCond(IssueTableField.SITE_ID, siteId);
-            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
             queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
             queryFilter.addCond(IssueTableField.DETAIL, baseUrl);
             queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
@@ -95,7 +95,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
                 Issue issue = new Issue();
                 issue.setSiteId(siteId);
                 issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-                issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
+                issue.setTypeId(Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
                 issue.setDetail(baseUrl);
                 issue.setCustomer1(baseUrl);
                 issue.setIssueTime(new Date());
