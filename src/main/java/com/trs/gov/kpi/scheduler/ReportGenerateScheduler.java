@@ -243,7 +243,7 @@ public class ReportGenerateScheduler implements SchedulerTask {
             workbook.write(out);
         } catch (IOException e) {
             monitorResult = 1;
-            String errorInfo = "任务调度[" + getName() + "]，报表生成，文件写入错误，siteId[" + siteId + "]";
+            String errorInfo = "任务[" + getName() + "]，报表生成，文件写入错误，siteId[" + siteId + "]";
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, errorInfo, e);
         }
