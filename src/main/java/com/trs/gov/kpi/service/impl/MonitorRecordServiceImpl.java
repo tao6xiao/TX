@@ -95,6 +95,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         Pager pager = PageInfoDeal.buildResponsePager(param.getPageIndex(), param.getPageSize(), itemCount);
         filter.setPager(pager);
 
+        filter.addSortField(MonitorRecordTableField.BEGIN_TIME, false);
         List<MonitorRecord> monitorRecordList = monitorRecordMapper.selectMonitorRecordList(filter);
         List<MonitorRecordResponse> monitorRecordResponseList = new ArrayList<>();
         for (MonitorRecord monitorRecord : monitorRecordList) {
