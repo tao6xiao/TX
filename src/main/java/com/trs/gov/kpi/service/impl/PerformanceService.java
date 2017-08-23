@@ -73,7 +73,7 @@ public class PerformanceService {
 
         //网站可用情况
         IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
-        if (indexPage != null && indexPage.getIndexAvailable()) {
+        if (indexPage != null && indexPage.getIndexAvailable() != null && indexPage.getIndexAvailable() == Boolean.TRUE) {
             int linkIssueCount = linkAvailabilityService.getUnhandledIssueCount(param);
             availabilityScore *= 1 - linkIssueCount * 0.001;
             if (availabilityScore < 0) {
