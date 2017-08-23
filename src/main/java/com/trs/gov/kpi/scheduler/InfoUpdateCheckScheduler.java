@@ -102,9 +102,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
     @Override
     public void run() throws RemoteException, BizException {
 
-        log.info(SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(SchedulerType.INFO_UPDATE_CHECK_SCHEDULER.toString(), siteId));
-
         List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
         // 优先从最下面的子栏目开始进行检查，然后再遍历上层栏目，得出结果进行数据库更新
@@ -117,7 +114,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 try {
                     checkChannelTreeUpdate(child);
                 } catch (ParseException e) {
-                    String errorInfo = "任务调度[" + getName() + "]，检查站点siteId[" + siteId + "]，栏目channel[" + child + "]下的子栏目是否更新";
+                    String errorInfo = "任务[" + getName() + "]，检查站点siteId[" + siteId + "]，栏目channel[" + child + "]下的子栏目是否更新";
                     log.error(errorInfo, e);
                     LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
                 }

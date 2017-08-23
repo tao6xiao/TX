@@ -38,9 +38,9 @@ public class CheckJob implements Job {
 
         SchedulerTask task = (SchedulerTask) jobExecutionContext.getMergedJobDataMap().get("task");
 
-
-        log.info(SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
+        String logPrompt = "CheckJob:";
+        log.info(logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         Date startTime = new Date();
         Date manualMonitorBeginTime = null;
         try {
@@ -55,7 +55,7 @@ public class CheckJob implements Job {
             }
 
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
-            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, task.getName() + "[siteId=" + task.getSiteId() +
+            final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, logPrompt + task.getName() + "[siteId=" + task.getSiteId() +
                     "]");
 
             task.run();
@@ -79,7 +79,7 @@ public class CheckJob implements Job {
             // 记录结束
             String info = SchedulerUtil.getEndMessage(task.getName(), task.getSiteId());
             log.info(info);
-            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
+            LogUtil.addDebugLog(logPrompt + OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
     }
 
