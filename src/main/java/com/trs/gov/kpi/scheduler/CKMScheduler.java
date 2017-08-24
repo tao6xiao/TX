@@ -137,9 +137,9 @@ public class CKMScheduler implements SchedulerTask, Serializable {
 
         return !(linkTimeContentStats != null
                 && linkTimeContentStats.getState() == Status.MonitorState.NORMAL.value
-                && lastTimeIssueCheckTime != null
-                && lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())
-                && runtimeResult.getMd5().equals(linkTimeContentStats.getMd5()));
+                && runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())
+                && (lastTimeIssueCheckTime == null
+                    || lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())));
     }
 
     private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, CheckRuntimeResult runtimeResult) throws RemoteException {
@@ -579,7 +579,9 @@ public class CKMScheduler implements SchedulerTask, Serializable {
         } finally {
             //插入当前链接本次检测记录
             toInsertLinkContentStats(page, runtimeResult);
-            monitorResult += runtimeResult.getIssueCount();
+            synchronized (this) {
+                monitorResult += runtimeResult.getIssueCount();
+            }
         }
     }
 
