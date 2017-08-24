@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +40,7 @@ import java.util.List;
 @Slf4j
 @Component
 @Scope("prototype")
-public class ReportGenerateScheduler implements SchedulerTask {
+public class ReportGenerateScheduler implements SchedulerTask, Serializable {
 
     @Setter
     @Getter
@@ -57,13 +58,13 @@ public class ReportGenerateScheduler implements SchedulerTask {
     private String reportDir;
 
     @Resource
-    IssueCountService countService;
+    private transient IssueCountService countService;
 
     @Resource
-    private SiteApiService siteApiService;
+    private transient SiteApiService siteApiService;
 
     @Resource
-    private ReportMapper reportMapper;
+    private transient ReportMapper reportMapper;
 
     private int rowIndex = 0;//excel行的索引
     private int cellIndex = 0;//excel列的索引

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -42,7 +43,7 @@ import java.util.*;
 @Slf4j
 @Component
 @Scope("prototype")
-public class CKMScheduler implements SchedulerTask {
+public class CKMScheduler implements SchedulerTask, Serializable {
 
     private static final String LINE_SP = System.getProperty("line.separator");
 
@@ -66,25 +67,25 @@ public class CKMScheduler implements SchedulerTask {
     private Boolean isTimeNode;
 
     @Resource
-    private ContentCheckApiService contentCheckApiService;
+    private transient ContentCheckApiService contentCheckApiService;
 
     @Resource
-    private SiteChannelServiceHelper siteChannelServiceHelper;
+    private transient SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
-    private IssueMapper issueMapper;
+    private transient IssueMapper issueMapper;
 
     @Resource
-    PageCKMSpiderUtil spider;
+    private transient PageCKMSpiderUtil spider;
 
     @Resource
-    SiteApiService siteApiService;
+    private transient SiteApiService siteApiService;
 
     @Resource
-    private LinkContentStatsMapper linkContentStatsMapper;
+    private transient LinkContentStatsMapper linkContentStatsMapper;
 
     @Resource
-    private CommonMapper commonMapper;
+    private transient CommonMapper commonMapper;
 
     //错误信息计数
     @Getter
@@ -138,22 +139,22 @@ public class CKMScheduler implements SchedulerTask {
             }else {
                 //上一次检测状态为——异常
                 if(linkTimeContentStats.getState() == Status.MonitorState.ABNORMAL.value){
+                    //检测爬取内容
+                    result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
+                }else{
+                    if (linkTimeContentStats.getMd5() == null || !runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())) {//第一次检查或链接内容发生变化
                         //检测爬取内容
                         result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                }else{
-                        if (linkTimeContentStats.getMd5() == null || !runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())) {//第一次检查或链接内容发生变化
-                            //检测爬取内容
-                            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                        } else {//内容较上一次没有变化
-                            //添加或者更新Issue表中的数据
-                            updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
-                            //获取上一次错误个数
-                            int issueCoun = toGetIssueCount(page, linkTimeContentStats);
-                            runtimeResult.setIssueCount(issueCoun);
-                            return issueList;
-                        }
+                    } else {//内容较上一次没有变化
+                        //添加或者更新Issue表中的数据
+                        updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
+                        //获取上一次错误个数
+                        int issueCoun = toGetIssueCount(page, linkTimeContentStats);
+                        runtimeResult.setIssueCount(issueCoun);
+                        return issueList;
                     }
                 }
+            }
         } catch (Exception e) {
             runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
             String errorInfo = "siteId[" + siteId + "], url[" + baseUrl + "], failed to check content " + checkContent;
