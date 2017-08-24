@@ -33,7 +33,7 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
-    public String handIssuesByIds(@RequestParam("siteId") int siteId, @RequestParam("ids[]") Integer[] ids) throws RemoteException, BizException {
+    public String handIssuesByIds(@RequestParam int siteId, @RequestParam Integer[] ids) throws RemoteException, BizException {
         String logDesc = "处理问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
             issueService.handIssuesByIds(siteId, Arrays.asList(ids));
@@ -49,7 +49,7 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
-    public String ignoreIssuesByIds(@RequestParam("siteId") int siteId, @RequestParam("ids[]") Integer[] ids) throws RemoteException, BizException {
+    public String ignoreIssuesByIds(@RequestParam int siteId, @RequestParam Integer[] ids) throws RemoteException, BizException {
         String logDesc = "忽略问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
             issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
@@ -65,7 +65,7 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public String delIssueByIds(@RequestParam("siteId") int siteId, @RequestParam("ids[]") Integer[] ids) throws RemoteException, BizException {
+    public String delIssueByIds(@RequestParam int siteId, @RequestParam Integer[] ids) throws RemoteException, BizException {
         String logDesc = "删除问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
             issueService.delIssueByIds(siteId, Arrays.asList(ids));
@@ -82,7 +82,7 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/updatedept", method = RequestMethod.POST)
-    public String updateDeptByIds(@RequestParam("siteId") int siteId, @RequestParam("ids[]") Integer[] ids, @RequestParam("deptId") int deptId) throws RemoteException, BizException {
+    public String updateDeptByIds(@RequestParam int siteId, @RequestParam Integer[] ids, @RequestParam int deptId) throws RemoteException, BizException {
         String logDesc = "修改所属部门" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
             issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
