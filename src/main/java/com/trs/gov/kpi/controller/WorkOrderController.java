@@ -60,8 +60,8 @@ public class WorkOrderController {
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoUpdateService.selectInfoUpdateOrder(request);
-        }, OperationType.QUERY, logDesc, getSystemName(request));
-
+        }, OperationType.QUERY, logDesc, "");
+        // TODO: 2017/8/24 待讨论日志添加问题 
     }
 
     private String getSystemName(WorkOrderRequest request) {
@@ -91,7 +91,7 @@ public class WorkOrderController {
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoUpdateService.getInfoUpdateOrderById(request);
-        }, OperationType.QUERY, logDesc, getSystemName(request));
+        }, OperationType.QUERY, logDesc, "");
 
     }
 
@@ -109,7 +109,7 @@ public class WorkOrderController {
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoErrorService.selectInfoErrorOrder(request);
-        }, OperationType.QUERY, logDesc, getSystemName(request));
+        }, OperationType.QUERY, logDesc, "");
 
     }
 
@@ -127,7 +127,7 @@ public class WorkOrderController {
         return LogUtil.controlleFunctionWrapper(() -> {
             ParamCheckUtil.paramCheck(request);
             return infoErrorService.getInfoErrorOrderById(request);
-        }, OperationType.QUERY, logDesc, getSystemName(request));
+        }, OperationType.QUERY, logDesc, "");
     }
 
     /**
