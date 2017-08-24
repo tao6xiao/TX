@@ -543,7 +543,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
                 updater.addField(IssueTableField.CHECK_TIME, new Date());
                 commonMapper.update(updater, filter);
-                monitorResult++;
             } else {
                 InfoUpdate update = new InfoUpdate();
                 update.setSiteId(siteId);
@@ -555,7 +554,6 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
                 update.setCheckTime(curDate);
                 update.setChnlId(chnlId);
                 issueMapper.insert(DBUtil.toRow(update));
-                monitorResult++;
             }
         }
         updateResolvedEmptyColumn(chnlIdList);
