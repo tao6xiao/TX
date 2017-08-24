@@ -114,6 +114,33 @@ public class CKMScheduler implements SchedulerTask {
         return SchedulerType.CKM_SCHEDULER.toString();
     }
 
+    /**
+     * 上次已经检查过了，并且这次的内容和上次内容相同，才无需再次监测
+     *
+     * @param page
+     * @param runtimeResult
+     * @return
+     */
+    private boolean shouldCheck(PageCKMSpiderUtil.CKMPage page, CheckRuntimeResult runtimeResult) {
+        //获取上一次检测内容（数据库当前最新的记录）
+        LinkContentStats linkTimeContentStats = linkContentStatsMapper.getLastLinkContentStats(siteId,
+                Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
+
+        //获取上一次检测的Issue的checkTime（数据库当前最新的记录）
+        Date lastTimeIssueCheckTime = issueMapper.grtLastTimeIssueCheckTime(siteId,
+                Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
+
+        if (linkTimeContentStats != null) {
+            runtimeResult.setLastCheckTime(linkTimeContentStats.getCheckTime());
+        }
+
+        return !(linkTimeContentStats != null
+                && linkTimeContentStats.getState() == Status.MonitorState.NORMAL.value
+                && lastTimeIssueCheckTime != null
+                && lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())
+                && runtimeResult.getMd5().equals(linkTimeContentStats.getMd5()));
+    }
+
     private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, CheckRuntimeResult runtimeResult) throws RemoteException {
         List<Issue> issueList = new ArrayList<>();
 
@@ -121,46 +148,15 @@ public class CKMScheduler implements SchedulerTask {
         if (checkContent.length() <= 0) {
             return issueList;
         }
+
         ContentCheckResult result = null;
-
         try {
-            //获取上一次检测内容（数据库当前最新的记录）
-            LinkContentStats linkTimeContentStats = linkContentStatsMapper.getLastLinkContentStats(siteId,
-                    Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-            //获取上一次检测的Issue的checkTime（数据库当前最新的记录）
-            Date lastTimeIssueCheckTime = issueMapper.grtLastTimeIssueCheckTime(siteId,
-                    Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-
-            if(linkTimeContentStats == null || lastTimeIssueCheckTime == null || !lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
-                //检测爬取内容
-                result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-
-            }else {
-                //上一次检测状态为——异常
-                if(linkTimeContentStats.getState() == Status.MonitorState.ABNORMAL.value){
-                        //检测爬取内容
-                        result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                }else{
-                        if (linkTimeContentStats.getMd5() == null || !runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())) {//第一次检查或链接内容发生变化
-                            //检测爬取内容
-                            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                        } else {//内容较上一次没有变化
-                            //添加或者更新Issue表中的数据
-                            updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
-                            return issueList;
-                        }
-                    }
-                }
+            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
             String errorInfo = "siteId[" + siteId + "], url[" + baseUrl + "], failed to check content " + checkContent;
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
-            return issueList;
-        }
-
-        if (!result.isOk()) {
-            log.error("siteId[" + siteId + "], url[" + baseUrl + "]return error: " + result.getMessage());
             return issueList;
         }
 
@@ -557,29 +553,32 @@ public class CKMScheduler implements SchedulerTask {
                 LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "插入信息错误数据失败，siteId[" + siteId + "]", e);
             }
         }
-        runtimeResult.setThisTimeIssueCount(thisTimeIssueCount);
+        runtimeResult.setIssueCount(thisTimeIssueCount);
         log.info("buildCheckContent insert error count: " + issueList.size());
     }
-
 
     public void insert(PageCKMSpiderUtil.CKMPage page) {
         List<String> checkTypeList = Types.InfoErrorIssueType.getAllCheckTypes();
         CheckRuntimeResult runtimeResult = new CheckRuntimeResult();
         runtimeResult.setMd5(DigestUtils.md5Hex(page.getContent()));
         try {
-            insert(buildList(page, checkTypeList, runtimeResult), runtimeResult);
+
+            boolean bCheck = shouldCheck(page, runtimeResult);
+            if (bCheck) {
+                List<Issue> issues = buildList(page, checkTypeList, runtimeResult);
+                insert(issues, runtimeResult);
+            } else {
+                updateORInsertIssue(page, runtimeResult);
+            }
         } catch (Exception e) {
             runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
-            log.error("", e);
-            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, "检查信息错误信息失败，siteId[" + siteId + "]", e);
+            String errorInfo = "检查信息错误信息失败! [siteId=" + siteId + ", url=" + page.getUrl() + "]";
+            log.error(errorInfo, e);
+            LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, errorInfo, e);
         } finally {
             //插入当前链接本次检测记录
             toInsertLinkContentStats(page, runtimeResult);
-            if(runtimeResult.getThisTimeIssueCount() != 0){
-                monitorResult += runtimeResult.getThisTimeIssueCount();
-            }else{
-                monitorResult += runtimeResult.getLastTimeIssueCount();
-            }
+            monitorResult += runtimeResult.getIssueCount();
         }
     }
 
@@ -588,33 +587,38 @@ public class CKMScheduler implements SchedulerTask {
      * 未处理，未删除的数据——更新，其他情况的数据重新添加
      * @param page
      * @param runtimeResult
-     * @param lastCheckTime
      */
-    private void updateORInsertIssue(PageCKMSpiderUtil.CKMPage page, CheckRuntimeResult runtimeResult, Date lastCheckTime) {
+    private void updateORInsertIssue(PageCKMSpiderUtil.CKMPage page, CheckRuntimeResult runtimeResult) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
-        filter.addCond(IssueTableField.CHECK_TIME, lastCheckTime);
+        filter.addCond(IssueTableField.CHECK_TIME, runtimeResult.getLastCheckTime());
         filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.TYPE_ID, Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
 
-        int lastTimeIssueCount = 0;
+        int issueCount = 0;
         List<Issue> lastTimeCheckIssueList = issueMapper.getLastTimeCheckIssueList(filter);
         for(Issue issue: lastTimeCheckIssueList){
-            if(issue.getIsResolved() == Status.Resolve.UN_RESOLVED.value && issue.getIsDel() == Status.Delete.UN_DELETE.value){
-                //更新Issue表中checkTime
-                DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
-                updater.addField(IssueTableField.CHECK_TIME, runtimeResult.getCheckTime());
-                commonMapper.update(updater, filter);
-                lastTimeIssueCount++;
-            }else {
-                //添加较上一次比较已处理过的错误信息到Issue表中
-                issue.setIssueTime(runtimeResult.getCheckTime());
-                issue.setCheckTime(runtimeResult.getCheckTime());
-                commonMapper.insert(DBUtil.toRow(issue));
-                lastTimeIssueCount++;
+            try {
+                if(issue.getIsResolved() == Status.Resolve.UN_RESOLVED.value && issue.getIsDel() == Status.Delete.UN_DELETE.value){
+                    //更新Issue表中checkTime
+                    DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
+                    updater.addField(IssueTableField.CHECK_TIME, runtimeResult.getCheckTime());
+                    commonMapper.update(updater, filter);
+                }else {
+                    //添加较上一次比较已处理过的错误信息到Issue表中
+                    issue.setIssueTime(runtimeResult.getCheckTime());
+                    issue.setCheckTime(runtimeResult.getCheckTime());
+                    commonMapper.insert(DBUtil.toRow(issue));
+                }
+                issueCount++;
+            } catch (Exception e) {
+                runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
+                String errorInfo = Types.MonitorRecordNameType.TASK_CHECK_CONTENT.getName() + " insert or update issue error! issue: " + issue;
+                log.error(errorInfo, e);
+                LogUtil.addErrorLog(OperationType.MONITOR, ErrorType.RUN_FAILED, errorInfo, e);
             }
         }
-        runtimeResult.setLastTimeIssueCount(lastTimeIssueCount);
+        runtimeResult.setIssueCount(issueCount);
     }
 
     /**
@@ -629,7 +633,7 @@ public class CKMScheduler implements SchedulerTask {
         linkContentStats.setUrl(page.getUrl());
         linkContentStats.setMd5(runtimeResult.getMd5());
         linkContentStats.setCheckTime(runtimeResult.getCheckTime());
-        linkContentStats.setInfoErrorCount(runtimeResult.getThisTimeIssueCount());
+        linkContentStats.setInfoErrorCount(runtimeResult.getIssueCount());
         linkContentStats.setState(runtimeResult.getIsException());
         commonMapper.insert(DBUtil.toRow(linkContentStats));
     }
@@ -637,9 +641,9 @@ public class CKMScheduler implements SchedulerTask {
     @Data
     private class CheckRuntimeResult {
         private Date checkTime = new Date();
+        private Date lastCheckTime = null;
         private int isException = Status.MonitorState.NORMAL.value;
-        private int thisTimeIssueCount;
-        private int lastTimeIssueCount;
+        private int issueCount;
         private String md5;
     }
 
