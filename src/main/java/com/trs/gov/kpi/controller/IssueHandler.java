@@ -82,7 +82,7 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/updatedept", method = RequestMethod.POST)
-    public String updateDeptByIds(@RequestParam("siteId") int siteId, @RequestParam("ids") Integer[] ids) throws RemoteException, BizException {
+    public String updateDeptByIds(@RequestParam("siteId") int siteId, @RequestParam("ids") Integer[] ids, @RequestParam("deptId") int deptId) throws RemoteException, BizException {
         String logDesc = "修改所属部门" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
             issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
