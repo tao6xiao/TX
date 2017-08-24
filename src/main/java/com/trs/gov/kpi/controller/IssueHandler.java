@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by he.lang on 2017/6/8.
@@ -33,10 +33,10 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/handle", method = RequestMethod.POST)
-    public String handIssuesByIds(@RequestParam int siteId, @RequestParam Integer[] ids) throws RemoteException, BizException {
+    public String handIssuesByIds(int siteId, @RequestParam List<Integer> ids) throws RemoteException, BizException {
         String logDesc = "处理问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
-            issueService.handIssuesByIds(siteId, Arrays.asList(ids));
+            issueService.handIssuesByIds(siteId, ids);
             return null;
         }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -49,10 +49,10 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/ignore", method = RequestMethod.POST)
-    public String ignoreIssuesByIds(@RequestParam int siteId, @RequestParam Integer[] ids) throws RemoteException, BizException {
+    public String ignoreIssuesByIds(int siteId, @RequestParam List<Integer> ids) throws RemoteException, BizException {
         String logDesc = "忽略问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
-            issueService.ignoreIssuesByIds(siteId, Arrays.asList(ids));
+            issueService.ignoreIssuesByIds(siteId, ids);
             return null;
         }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -65,10 +65,10 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public String delIssueByIds(@RequestParam int siteId, @RequestParam Integer[] ids) throws RemoteException, BizException {
+    public String delIssueByIds(int siteId, @RequestParam List<Integer> ids) throws RemoteException, BizException {
         String logDesc = "删除问题" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
-            issueService.delIssueByIds(siteId, Arrays.asList(ids));
+            issueService.delIssueByIds(siteId, ids);
             return null;
         }, OperationType.DELETE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
@@ -82,10 +82,10 @@ public class IssueHandler {
      * @return
      */
     @RequestMapping(value = "/updatedept", method = RequestMethod.POST)
-    public String updateDeptByIds(@RequestParam int siteId, @RequestParam Integer[] ids, @RequestParam int deptId) throws RemoteException, BizException {
+    public String updateDeptByIds(int siteId, @RequestParam List<Integer> ids, int deptId) throws RemoteException, BizException {
         String logDesc = "修改所属部门" + LogUtil.paramsToLogString(Constants.DB_FIELD_SITE_ID, siteId, Constants.IDS, ids);
         return LogUtil.controlleFunctionWrapper(() -> {
-            issueService.updateDeptByIds(siteId, Arrays.asList(ids), deptId);
+            issueService.updateDeptByIds(siteId, ids, deptId);
             return null;
         }, OperationType.UPDATE, LogUtil.buildFailOperationLogDesc(logDesc), LogUtil.getSiteNameForLog(siteApiService, siteId));
     }
