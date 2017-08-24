@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 
 /**
  * Created by wangxuan on 2017/5/10.
@@ -23,13 +24,13 @@ import javax.annotation.Resource;
 @Slf4j
 @Component
 @Scope("prototype")
-public class LinkAnalysisScheduler implements SchedulerTask {
+public class LinkAnalysisScheduler implements SchedulerTask, Serializable {
 
     @Resource
-    private SiteApiService siteApiService;
+    private transient SiteApiService siteApiService;
 
     @Resource
-    SpiderUtils spider;
+    private transient SpiderUtils spider;
 
     @Setter
     @Getter

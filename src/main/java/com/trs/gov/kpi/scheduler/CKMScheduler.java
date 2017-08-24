@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -42,7 +43,7 @@ import java.util.*;
 @Slf4j
 @Component
 @Scope("prototype")
-public class CKMScheduler implements SchedulerTask {
+public class CKMScheduler implements SchedulerTask, Serializable {
 
     private static final String LINE_SP = System.getProperty("line.separator");
 
@@ -66,25 +67,25 @@ public class CKMScheduler implements SchedulerTask {
     private Boolean isTimeNode;
 
     @Resource
-    private ContentCheckApiService contentCheckApiService;
+    private transient ContentCheckApiService contentCheckApiService;
 
     @Resource
-    private SiteChannelServiceHelper siteChannelServiceHelper;
+    private transient SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
-    private IssueMapper issueMapper;
+    private transient IssueMapper issueMapper;
 
     @Resource
-    PageCKMSpiderUtil spider;
+    private transient PageCKMSpiderUtil spider;
 
     @Resource
-    SiteApiService siteApiService;
+    private transient SiteApiService siteApiService;
 
     @Resource
-    private LinkContentStatsMapper linkContentStatsMapper;
+    private transient LinkContentStatsMapper linkContentStatsMapper;
 
     @Resource
-    private CommonMapper commonMapper;
+    private transient CommonMapper commonMapper;
 
     //错误信息计数
     @Getter

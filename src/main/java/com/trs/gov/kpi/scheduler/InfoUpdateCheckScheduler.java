@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -37,34 +38,34 @@ import java.util.*;
 @Slf4j
 @Component
 @Scope("prototype")
-public class InfoUpdateCheckScheduler implements SchedulerTask {
+public class InfoUpdateCheckScheduler implements SchedulerTask, Serializable {
 
     // 开始检查的第一个周期起始点
     private static final String BEGIN_CHECK_DAY = "2017-05-01 00:00:00";
 
     @Resource
-    private SiteChannelServiceHelper siteChannelServiceHelper;
+    private transient SiteChannelServiceHelper siteChannelServiceHelper;
 
     @Resource
-    private SiteApiService siteApiService;
+    private transient SiteApiService siteApiService;
 
     @Resource
-    private DocumentApiService documentApiService;
+    private transient DocumentApiService documentApiService;
 
     @Resource
-    private FrequencySetupMapper frequencySetupMapper;
+    private transient FrequencySetupMapper frequencySetupMapper;
 
     @Resource
-    private FrequencyPresetMapper frequencyPresetMapper;
+    private transient FrequencyPresetMapper frequencyPresetMapper;
 
     @Resource
-    private DefaultUpdateFreqService defaultUpdateFreqService;
+    private transient DefaultUpdateFreqService defaultUpdateFreqService;
 
     @Resource
-    private IssueMapper issueMapper;
+    private transient IssueMapper issueMapper;
 
     @Resource
-    private CommonMapper commonMapper;
+    private transient CommonMapper commonMapper;
 
     @Getter
     @Setter
@@ -586,6 +587,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask {
 
     /**
      * 把已经不是空栏目的问题，变成resolved
+     *
      * @param chnlIdListInDB
      */
     private void resolveOldEmptyChnlIssue(List<Integer> chnlIdListInDB) {

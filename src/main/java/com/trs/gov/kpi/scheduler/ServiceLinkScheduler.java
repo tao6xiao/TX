@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -33,7 +34,7 @@ import java.util.Date;
 @Slf4j
 @Component
 @Scope("prototype")
-public class ServiceLinkScheduler implements SchedulerTask {
+public class ServiceLinkScheduler implements SchedulerTask, Serializable {
 
     @Setter
     @Getter
@@ -48,19 +49,16 @@ public class ServiceLinkScheduler implements SchedulerTask {
     private String baseUrl;
 
     @Resource
-    IssueMapper issueMapper;
+    private transient IssueMapper issueMapper;
 
     @Resource
-    ServiceLinkSpiderUtil spider;
+    private transient ServiceLinkSpiderUtil spider;
 
     @Resource
-    SGService sgService;
+    private transient SGService sgService;
 
     @Resource
-    private CommonMapper commonMapper;
-
-    @Resource
-    private SiteApiService siteApiService;
+    private transient CommonMapper commonMapper;
 
     //错误信息计数
     @Getter
