@@ -50,6 +50,9 @@ public class Issue {
     private Integer deptId;//所属部门编号
 
     @DBField
+    private Integer workOrderStatus = 0;//工单状态
+
+    @DBField
     private String customer1;//扩展字段1
 
     @DBField
@@ -162,6 +165,14 @@ public class Issue {
 
     public void setDeptId(Integer deptId) {
         this.deptId = deptId;
+    }
+
+    public Integer getWorkOrderStatus() {
+        return workOrderStatus;
+    }
+
+    public void setWorkOrderStatus(Integer workOrderStatus) {
+        this.workOrderStatus = workOrderStatus;
     }
 
     public Date getCheckTime() {
