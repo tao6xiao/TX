@@ -30,7 +30,7 @@ public class DBUtilTest {
         issue.setSubTypeId(Types.InfoErrorIssueType.TYPOS.value);
 
         row = DBUtil.toRow(issue);
-        assertEquals(5, row.getFields().size());
+        assertEquals(6, row.getFields().size());
 
         for (int index = 0; index < row.getFields().size(); index++) {
             if (row.getFields().get(index).equals("typeId")) {
