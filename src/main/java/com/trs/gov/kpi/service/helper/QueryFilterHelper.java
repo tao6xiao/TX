@@ -464,10 +464,10 @@ public class QueryFilterHelper {
 
         if (param.getSearchText() != null) {
             if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskName")) {
-                taskNameCond(param, filter);
+                addTaskNameCond(param, filter);
 
             }else if(param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("taskStatusName")){
-                taskStatusNameCond(param, filter);
+                addTaskStatusNameCond(param, filter);
             } else if (StringUtil.isEmpty(param.getSearchField())) {
                 filter.addOrConds(bulidByMonitorRecordParam(param.getSearchText()));
             } else{
@@ -484,7 +484,7 @@ public class QueryFilterHelper {
         return filter;
     }
 
-    private static void taskStatusNameCond(PageDataRequestParam param, QueryFilter filter) {
+    private static void addTaskStatusNameCond(PageDataRequestParam param, QueryFilter filter) {
         List<Integer> statusList = Status.MonitorStatusType.getStatusByStatusName(param.getSearchText());
         if(statusList.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
             filter.addCond(MonitorRecordTableField.TASK_STATUS, Status.MonitorStatusType.INVALID.value);
@@ -493,7 +493,7 @@ public class QueryFilterHelper {
         }
     }
 
-    private static void taskNameCond(PageDataRequestParam param, QueryFilter filter) {
+    private static void addTaskNameCond(PageDataRequestParam param, QueryFilter filter) {
         List<Integer> taskIds = Types.MonitorRecordNameType.getTaskIdsByTaskName(param.getSearchText());
         if(taskIds.isEmpty()){// 找不到符合条件的记录，构造一个不成立的条件
             filter.addCond(MonitorRecordTableField.TASK_ID, Types.MonitorRecordNameType.INVALID.value);

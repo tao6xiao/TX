@@ -14,35 +14,23 @@ public class RemoteAddrUtilTest {
     @Test
     public void is_IPAddress(){
         String address = new String();
-        assertFalse(is_IPAddress(address));
+        assertFalse(RemoteAddrUtil.isIPAddress(address));
         address = "0.0.0.0";
-        assertTrue(is_IPAddress(address));
+        assertTrue(RemoteAddrUtil.isIPAddress(address));
         address = "10.0.0.0";
-        assertTrue(is_IPAddress(address));
+        assertTrue(RemoteAddrUtil.isIPAddress(address));
         address = "010.0.0.0";
-        assertTrue(is_IPAddress(address));
+        assertTrue(RemoteAddrUtil.isIPAddress(address));
         address = "255.255.255.255";
-        assertTrue(is_IPAddress(address));
+        assertTrue(RemoteAddrUtil.isIPAddress(address));
         address = "256.0.0.0";
-        assertFalse(is_IPAddress(address));
+        assertFalse(RemoteAddrUtil.isIPAddress(address));
         address = "-1.0.0.0";
-        assertFalse(is_IPAddress(address));
+        assertFalse(RemoteAddrUtil.isIPAddress(address));
         address = ".0.0.0";
-        assertFalse(is_IPAddress(address));
+        assertFalse(RemoteAddrUtil.isIPAddress(address));
         address = "a.0.0.0";
-        assertFalse(is_IPAddress(address));
-        assertFalse(is_IPAddress(null));
-    }
-    public static final boolean is_IPAddress(String address) {
-        if (address != null) {
-            String addr = address.trim();
-            String pattern =
-                    "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
-                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
-            return addr.matches(pattern);
-        }
-        return false;
+        assertFalse(RemoteAddrUtil.isIPAddress(address));
+        assertFalse(RemoteAddrUtil.isIPAddress(null));
     }
 }
