@@ -147,9 +147,6 @@ public class CKMScheduler implements SchedulerTask {
                         } else {//内容较上一次没有变化
                             //添加或者更新Issue表中的数据
                             updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
-                            //获取上一次错误个数
-                            int issueCoun = toGetIssueCount(page, linkTimeContentStats);
-                            runtimeResult.setIssueCount(issueCoun);
                             return issueList;
                         }
                     }
@@ -528,7 +525,7 @@ public class CKMScheduler implements SchedulerTask {
      */
     public void insert(List<Issue> issueList,CheckRuntimeResult runtimeResult) {
         //记录错误插入条数
-        int insertIssueInfoErrorCount = 0;
+        int thisTimeIssueCount = 0;
         for (Issue issue : issueList) {
 
             try {
@@ -547,12 +544,12 @@ public class CKMScheduler implements SchedulerTask {
                 List<InfoError> infoErrors = issueMapper.selectInfoError(queryFilter);
                 if (infoErrors.isEmpty()) {
                     issueMapper.insert(DBUtil.toRow(issue));
-                    insertIssueInfoErrorCount++;
+                    thisTimeIssueCount++;
                 } else {
                     DBUpdater update = new DBUpdater(Table.ISSUE.getTableName());
                     update.addField(IssueTableField.CHECK_TIME, runtimeResult.getCheckTime());
                     commonMapper.update(update, queryFilter);
-                    insertIssueInfoErrorCount++;
+                    thisTimeIssueCount++;
                 }
             } catch (Exception e) {
                 runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
@@ -560,7 +557,7 @@ public class CKMScheduler implements SchedulerTask {
                 LogUtil.addErrorLog(OperationType.REMOTE, ErrorType.REMOTE_FAILED, "插入信息错误数据失败，siteId[" + siteId + "]", e);
             }
         }
-        runtimeResult.setIssueCount(insertIssueInfoErrorCount);
+        runtimeResult.setThisTimeIssueCount(thisTimeIssueCount);
         log.info("buildCheckContent insert error count: " + issueList.size());
     }
 
@@ -578,7 +575,11 @@ public class CKMScheduler implements SchedulerTask {
         } finally {
             //插入当前链接本次检测记录
             toInsertLinkContentStats(page, runtimeResult);
-            monitorResult += runtimeResult.getIssueCount();
+            if(runtimeResult.getThisTimeIssueCount() != 0){
+                monitorResult += runtimeResult.getThisTimeIssueCount();
+            }else{
+                monitorResult += runtimeResult.getLastTimeIssueCount();
+            }
         }
     }
 
@@ -596,6 +597,7 @@ public class CKMScheduler implements SchedulerTask {
         filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.TYPE_ID, Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
 
+        int lastTimeIssueCount = 0;
         List<Issue> lastTimeCheckIssueList = issueMapper.getLastTimeCheckIssueList(filter);
         for(Issue issue: lastTimeCheckIssueList){
             if(issue.getIsResolved() == Status.Resolve.UN_RESOLVED.value && issue.getIsDel() == Status.Delete.UN_DELETE.value){
@@ -603,13 +605,16 @@ public class CKMScheduler implements SchedulerTask {
                 DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
                 updater.addField(IssueTableField.CHECK_TIME, runtimeResult.getCheckTime());
                 commonMapper.update(updater, filter);
+                lastTimeIssueCount++;
             }else {
                 //添加较上一次比较已处理过的错误信息到Issue表中
                 issue.setIssueTime(runtimeResult.getCheckTime());
                 issue.setCheckTime(runtimeResult.getCheckTime());
                 commonMapper.insert(DBUtil.toRow(issue));
+                lastTimeIssueCount++;
             }
         }
+        runtimeResult.setLastTimeIssueCount(lastTimeIssueCount);
     }
 
     /**
@@ -624,27 +629,17 @@ public class CKMScheduler implements SchedulerTask {
         linkContentStats.setUrl(page.getUrl());
         linkContentStats.setMd5(runtimeResult.getMd5());
         linkContentStats.setCheckTime(runtimeResult.getCheckTime());
-        linkContentStats.setInfoErrorCount(runtimeResult.getIssueCount());
+        linkContentStats.setInfoErrorCount(runtimeResult.getThisTimeIssueCount());
         linkContentStats.setState(runtimeResult.getIsException());
         commonMapper.insert(DBUtil.toRow(linkContentStats));
     }
-
-    private int toGetIssueCount(PageCKMSpiderUtil.CKMPage page, LinkContentStats linkTimeContentStats) {
-        QueryFilter filter = new QueryFilter(Table.ISSUE);
-        filter.addCond(IssueTableField.CUSTOMER3, page.getUrl());
-        filter.addCond(IssueTableField.CHECK_TIME, linkTimeContentStats.getCheckTime());
-        filter.addCond(IssueTableField.SITE_ID, siteId);
-        filter.addCond(IssueTableField.TYPE_ID, Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
-
-        return commonMapper.count(filter);
-    }
-
 
     @Data
     private class CheckRuntimeResult {
         private Date checkTime = new Date();
         private int isException = Status.MonitorState.NORMAL.value;
-        private int issueCount;
+        private int thisTimeIssueCount;
+        private int lastTimeIssueCount;
         private String md5;
     }
 
