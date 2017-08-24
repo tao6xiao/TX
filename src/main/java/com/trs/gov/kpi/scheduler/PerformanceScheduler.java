@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,7 +25,7 @@ import java.util.Date;
 @Slf4j
 @Component
 @Scope("prototype")
-public class PerformanceScheduler implements SchedulerTask {
+public class PerformanceScheduler implements SchedulerTask, Serializable {
 
 
     @Setter
@@ -36,10 +37,10 @@ public class PerformanceScheduler implements SchedulerTask {
     private Integer siteId;
 
     @Resource
-    private PerformanceService performanceService;
+    private transient PerformanceService performanceService;
 
     @Resource
-    private PerformanceMapper performanceMapper;
+    private transient PerformanceMapper performanceMapper;
 
     @Setter
     @Getter

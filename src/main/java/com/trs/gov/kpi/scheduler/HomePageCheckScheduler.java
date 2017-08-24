@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -31,13 +32,13 @@ import java.util.List;
 @Slf4j
 @Component
 @Scope("prototype")
-public class HomePageCheckScheduler implements SchedulerTask {
+public class HomePageCheckScheduler implements SchedulerTask, Serializable {
 
     @Resource
-    SpiderUtils spider;
+    private transient SpiderUtils spider;
 
     @Resource
-    private SiteApiService siteApiService;
+    private transient SiteApiService siteApiService;
 
     @Setter
     @Getter
@@ -52,13 +53,13 @@ public class HomePageCheckScheduler implements SchedulerTask {
     private Integer siteId;
 
     @Resource
-    private IssueMapper issueMapper;
+    private transient IssueMapper issueMapper;
 
     @Resource
-    private MonitorRecordService monitorRecordService;
+    private transient MonitorRecordService monitorRecordService;
 
     @Resource
-    private CommonMapper commonMapper;
+    private transient CommonMapper commonMapper;
 
     //错误信息计数
     @Getter
@@ -85,7 +86,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
             monitorResult = 1;
             QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
             queryFilter.addCond(IssueTableField.SITE_ID, siteId);
-            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
+            queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
             queryFilter.addCond(IssueTableField.SUBTYPE_ID, Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
             queryFilter.addCond(IssueTableField.DETAIL, baseUrl);
             queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
@@ -95,7 +96,7 @@ public class HomePageCheckScheduler implements SchedulerTask {
                 Issue issue = new Issue();
                 issue.setSiteId(siteId);
                 issue.setSubTypeId(Types.LinkAvailableIssueType.INVALID_HOME_PAGE.value);
-                issue.setTypeId(Types.IssueType.HOMEPAGE_AVAILABLE_ISSUE.value);
+                issue.setTypeId(Types.IssueType.LINK_AVAILABLE_ISSUE.value);
                 issue.setDetail(baseUrl);
                 issue.setCustomer1(baseUrl);
                 issue.setIssueTime(new Date());
