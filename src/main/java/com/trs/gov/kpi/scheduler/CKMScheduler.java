@@ -149,39 +149,10 @@ public class CKMScheduler implements SchedulerTask, Serializable {
         if (checkContent.length() <= 0) {
             return issueList;
         }
+
         ContentCheckResult result = null;
-
         try {
-            //获取上一次检测内容（数据库当前最新的记录）
-            LinkContentStats linkTimeContentStats = linkContentStatsMapper.getLastLinkContentStats(siteId,
-                    Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-            //获取上一次检测的Issue的checkTime（数据库当前最新的记录）
-            Date lastTimeIssueCheckTime = issueMapper.grtLastTimeIssueCheckTime(siteId,
-                    Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value, page.getUrl());
-
-            if(linkTimeContentStats == null || lastTimeIssueCheckTime == null || !lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())){
-                //检测爬取内容
-                result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-
-            }else {
-                //上一次检测状态为——异常
-                if(linkTimeContentStats.getState() == Status.MonitorState.ABNORMAL.value){
-                    //检测爬取内容
-                    result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                }else{
-                    if (linkTimeContentStats.getMd5() == null || !runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())) {//第一次检查或链接内容发生变化
-                        //检测爬取内容
-                        result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
-                    } else {//内容较上一次没有变化
-                        //添加或者更新Issue表中的数据
-                        updateORInsertIssue(page, runtimeResult, linkTimeContentStats.getCheckTime());
-                        //获取上一次错误个数
-                        int issueCoun = toGetIssueCount(page, linkTimeContentStats);
-                        runtimeResult.setIssueCount(issueCoun);
-                        return issueList;
-                    }
-                }
-            }
+            result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
             String errorInfo = "siteId[" + siteId + "], url[" + baseUrl + "], failed to check content " + checkContent;
