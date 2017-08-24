@@ -12,17 +12,15 @@ import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
@@ -30,11 +28,17 @@ import static org.mockito.BDDMockito.given;
 /**
  * Created by tao.xiao on 2017/8/23.
  */
-@SpringBootTest
+@MybatisTest(includeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {DutyDeptServiceImpl.class})})
 @TestPropertySource(properties = {TestConfigConst.TEST_DB_URL_PROP, TestConfigConst.TEST_DB_USER_NAME_PROP, TestConfigConst.TEST_DB_PWD_PROP})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @RunWith(SpringRunner.class)
 public class DutyDeptServiceImplTest {
+
+//    @InjectMocks
+//    private DutyDeptServiceImpl dutyDeptService;
+
+//    @Mock
+//    private IssueMapper issueMapper;
 
     @Resource
     private DutyDeptService dutyDeptService;
