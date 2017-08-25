@@ -6,6 +6,7 @@ import com.trs.gov.kpi.constant.Types;
 import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.MonitorRecordMapper;
 import com.trs.gov.kpi.entity.MonitorRecord;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
 import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
@@ -149,6 +150,24 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         }
         monitorOnceResponseList.add(monitorOnceResponse);
         return monitorOnceResponseList;
+    }
+
+    @Override
+    public void updateLastServerAbnormalShutdownTaskMonitorState(Integer siteId, Integer taskId) {
+        List<MonitorRecord> newestMonitorRecordList = monitorRecordMapper.selectNewestMonitorRecord(siteId, taskId);
+
+        if(!newestMonitorRecordList.isEmpty() && newestMonitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.DOING_CHECK.value){
+            QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+            filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
+            filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
+            filter.addCond(MonitorRecordTableField.BEGIN_TIME, newestMonitorRecordList.get(0).getBeginTime());
+
+            DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+            updater.addField(MonitorRecordTableField.END_TIME, new Date());
+            updater.addField(MonitorRecordTableField.TASK_STATUS,Status.MonitorStatusType.CHECK_ERROR.value);
+            commonMapper.update(updater,filter);
+        }
+
     }
 
 

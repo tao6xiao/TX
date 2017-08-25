@@ -79,5 +79,15 @@ public interface MonitorRecordService {
      */
     List<MonitorRecord> selectNewestMonitorRecord(Integer siteId, Integer taskId);
 
+    /**
+     * 手动检测返回结果
+     * @param monitorRecordList
+     * @return
+     */
     List<MonitorOnceResponse> getMonitorOnceResponse(List<MonitorRecord> monitorRecordList);
+
+    /**
+     * 更新上一次服务器异常关闭时候的任务检测状态
+     */
+    void updateLastServerAbnormalShutdownTaskMonitorState(Integer siteId, Integer taskId);
 }
