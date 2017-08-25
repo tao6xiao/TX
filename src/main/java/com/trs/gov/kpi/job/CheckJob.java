@@ -41,18 +41,18 @@ public class CheckJob implements Job {
         String logPrompt = "CheckJob:";
         log.info(logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
-        Date startTime = new Date();
-        Date manualMonitorBeginTime = null;
+        Date startTime = null;
         try {
             OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
 
-
-            if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
-                manualMonitorBeginTime = toGetManualMonitorBeginTime(task);
-            } else {
-                //检测开始
-                insertBeginMonitorRecord(task, startTime);
+            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+                startTime = toGetManualMonitorBeginTime(task);
+            }else {
+                startTime = new Date();
             }
+
+            //检测开始
+            insertBeginMonitorRecord(task, startTime);
 
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, logPrompt + task.getName() + "[siteId=" + task.getSiteId() +
@@ -61,11 +61,7 @@ public class CheckJob implements Job {
             task.run();
 
             //检测结束
-            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
-                insertEndMonitorRecord(task, manualMonitorBeginTime, Status.MonitorStatusType.CHECK_DONE.value);
-            }else {
-                insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
-            }
+            insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_DONE.value);
 
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
