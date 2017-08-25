@@ -12,6 +12,7 @@ import com.trs.gov.kpi.entity.responsedata.*;
 import com.trs.gov.kpi.service.IssueCountService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +81,10 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
 
     @Override
     public void run() throws BizException, RemoteException {
+        countService = SpringContextUtil.getBean(IssueCountService.class);
+        siteApiService = SpringContextUtil.getBean(SiteApiService.class);
+        reportMapper = SpringContextUtil.getBean(ReportMapper.class);
+
         IssueCountRequest request = new IssueCountRequest();
         request.setSiteIds(Integer.toString(siteId));
         Report report = new Report();

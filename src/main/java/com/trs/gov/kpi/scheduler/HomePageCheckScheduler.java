@@ -10,10 +10,7 @@ import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.outer.SiteApiService;
-import com.trs.gov.kpi.utils.DBUtil;
-import com.trs.gov.kpi.utils.OuterApiServiceUtil;
-import com.trs.gov.kpi.utils.SpiderUtils;
-import com.trs.gov.kpi.utils.StringUtil;
+import com.trs.gov.kpi.utils.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +68,10 @@ public class HomePageCheckScheduler implements SchedulerTask, Serializable {
 
     @Override
     public void run() throws RemoteException, BizException {
+        spider = SpringContextUtil.getBean(SpiderUtils.class);
+        siteApiService = SpringContextUtil.getBean(SiteApiService.class);
+        issueMapper = SpringContextUtil.getBean(IssueMapper.class);
+        commonMapper = SpringContextUtil.getBean(CommonMapper.class);
 
         baseUrl = OuterApiServiceUtil.getUrl(siteApiService.getSiteById(siteId, null));
         if (StringUtil.isEmpty(baseUrl)) {

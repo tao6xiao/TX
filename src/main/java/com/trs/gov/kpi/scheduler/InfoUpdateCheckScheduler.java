@@ -17,7 +17,10 @@ import com.trs.gov.kpi.service.DefaultUpdateFreqService;
 import com.trs.gov.kpi.service.outer.DocumentApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.service.outer.SiteChannelServiceHelper;
-import com.trs.gov.kpi.utils.*;
+import com.trs.gov.kpi.utils.DBUtil;
+import com.trs.gov.kpi.utils.DateUtil;
+import com.trs.gov.kpi.utils.LogUtil;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -80,13 +83,13 @@ public class InfoUpdateCheckScheduler implements SchedulerTask, Serializable {
     private Boolean isTimeNode;
 
     // 检测时缓存频率设置
-    private Map<Integer, FrequencySetup> setupCache;
+    private transient Map<Integer, FrequencySetup> setupCache;
 
     // 检测时缓存频率预设
-    private Map<Integer, FrequencyPreset> presetCache;
+    private transient Map<Integer, FrequencyPreset> presetCache;
 
     // 缓存自查更新频率
-    private DefaultUpdateFreq defaultUpdateFreq;
+    private transient DefaultUpdateFreq defaultUpdateFreq;
 
     //信息(栏目)更新数量计数
     @Getter
@@ -102,6 +105,14 @@ public class InfoUpdateCheckScheduler implements SchedulerTask, Serializable {
 
     @Override
     public void run() throws RemoteException, BizException {
+        siteChannelServiceHelper = SpringContextUtil.getBean(SiteChannelServiceHelper.class);
+        siteApiService = SpringContextUtil.getBean(SiteApiService.class);
+        documentApiService = SpringContextUtil.getBean(DocumentApiService.class);
+        frequencySetupMapper = SpringContextUtil.getBean(FrequencySetupMapper.class);
+        frequencyPresetMapper = SpringContextUtil.getBean(FrequencyPresetMapper.class);
+        defaultUpdateFreqService = SpringContextUtil.getBean(DefaultUpdateFreqService.class);
+        issueMapper = SpringContextUtil.getBean(IssueMapper.class);
+        commonMapper = SpringContextUtil.getBean(CommonMapper.class);
 
         List<SimpleTree<CheckingChannel>> siteTrees = buildChannelTree();
 
@@ -151,8 +162,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask, Serializable {
             }
         }
 
-        defaultUpdateFreq = defaultUpdateFreqService
-                .getDefaultUpdateFreqBySiteId(siteId);
+        defaultUpdateFreq = defaultUpdateFreqService.getDefaultUpdateFreqBySiteId(siteId);
 
         // 获取监控站点
         List<SimpleTree<CheckingChannel>> trees = new ArrayList<>();

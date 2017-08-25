@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.impl.PerformanceService;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,9 @@ public class PerformanceScheduler implements SchedulerTask, Serializable {
 
     @Override
     public void run() throws BizException, RemoteException {
+
+        performanceService = SpringContextUtil.getBean(PerformanceService.class);
+        performanceMapper = SpringContextUtil.getBean(PerformanceMapper.class);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());

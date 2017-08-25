@@ -101,6 +101,13 @@ public class CKMScheduler implements SchedulerTask, Serializable {
 
     @Override
     public void run() throws RemoteException, BizException {
+        contentCheckApiService = SpringContextUtil.getBean(ContentCheckApiService.class);
+        siteChannelServiceHelper = SpringContextUtil.getBean(SiteChannelServiceHelper.class);
+        issueMapper = SpringContextUtil.getBean(IssueMapper.class);
+        spider = SpringContextUtil.getBean(PageCKMSpiderUtil.class);
+        siteApiService = SpringContextUtil.getBean(SiteApiService.class);
+        linkContentStatsMapper = SpringContextUtil.getBean(LinkContentStatsMapper.class);
+        commonMapper = SpringContextUtil.getBean(CommonMapper.class);
 
         baseUrl = OuterApiServiceUtil.getUrl(siteApiService.getSiteById(siteId, null));
         if (StringUtil.isEmpty(baseUrl)) {
@@ -139,7 +146,7 @@ public class CKMScheduler implements SchedulerTask, Serializable {
                 && linkTimeContentStats.getState() == Status.MonitorState.NORMAL.value
                 && runtimeResult.getMd5().equals(linkTimeContentStats.getMd5())
                 && (lastTimeIssueCheckTime == null
-                    || lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())));
+                || lastTimeIssueCheckTime.equals(linkTimeContentStats.getCheckTime())));
     }
 
     private List<Issue> buildList(PageCKMSpiderUtil.CKMPage page, List<String> checkTypeList, CheckRuntimeResult runtimeResult) throws RemoteException {
@@ -520,7 +527,7 @@ public class CKMScheduler implements SchedulerTask, Serializable {
      *
      * @param issueList
      */
-    public void insert(List<Issue> issueList,CheckRuntimeResult runtimeResult) {
+    public void insert(List<Issue> issueList, CheckRuntimeResult runtimeResult) {
         //记录错误插入条数
         int thisTimeIssueCount = 0;
         for (Issue issue : issueList) {
@@ -588,6 +595,7 @@ public class CKMScheduler implements SchedulerTask, Serializable {
     /**
      * 链接内容没有发生变化，添加或者更新Issue表中的数据
      * 未处理，未删除的数据——更新，其他情况的数据重新添加
+     *
      * @param page
      * @param runtimeResult
      */
@@ -600,14 +608,14 @@ public class CKMScheduler implements SchedulerTask, Serializable {
 
         int issueCount = 0;
         List<Issue> lastTimeCheckIssueList = issueMapper.getLastTimeCheckIssueList(filter);
-        for(Issue issue: lastTimeCheckIssueList){
+        for (Issue issue : lastTimeCheckIssueList) {
             try {
-                if(issue.getIsResolved() == Status.Resolve.UN_RESOLVED.value && issue.getIsDel() == Status.Delete.UN_DELETE.value){
+                if (issue.getIsResolved() == Status.Resolve.UN_RESOLVED.value && issue.getIsDel() == Status.Delete.UN_DELETE.value) {
                     //更新Issue表中checkTime
                     DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
                     updater.addField(IssueTableField.CHECK_TIME, runtimeResult.getCheckTime());
                     commonMapper.update(updater, filter);
-                }else {
+                } else {
                     //添加较上一次比较已处理过的错误信息到Issue表中
                     issue.setIssueTime(runtimeResult.getCheckTime());
                     issue.setCheckTime(runtimeResult.getCheckTime());
@@ -626,6 +634,7 @@ public class CKMScheduler implements SchedulerTask, Serializable {
 
     /**
      * 插入
+     *
      * @param page
      * @param runtimeResult
      */

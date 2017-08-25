@@ -56,7 +56,7 @@ public class QueryFilterHelper {
                 CondDBField field = buildIssueTypeCond(param.getSearchText(), issueType);
                 initSubTypeId(field, filter);
             } else if (param.getSearchField() != null && param.getSearchField().equalsIgnoreCase("deptName")) {
-                DeptApiService deptApiService = (DeptApiService) SpringContextUtil.getBean(DeptApiService.class);
+                DeptApiService deptApiService = SpringContextUtil.getBean(DeptApiService.class);
                 List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
                 if (deptIds != null && !deptIds.isEmpty()) {
                     filter.addCond(IssueTableField.DEPT_ID, deptIds);
@@ -86,7 +86,7 @@ public class QueryFilterHelper {
 
     private static CondDBField buildDeptIdsField(PageDataRequestParam param) throws RemoteException {
         CondDBField deptIdsField = null;
-        DeptApiService deptApiService = (DeptApiService) SpringContextUtil.getBean(DeptApiService.class);
+        DeptApiService deptApiService = SpringContextUtil.getBean(DeptApiService.class);
         List<Integer> deptIds = deptApiService.queryDeptsByName("", param.getSearchText());
         if (deptIds != null && !deptIds.isEmpty()) {
             deptIdsField = new CondDBField(IssueTableField.DEPT_ID, deptIds);

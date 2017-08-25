@@ -13,12 +13,12 @@ public class ChnlDocumentServiceHelper {
     private ChnlDocumentServiceHelper(){}
 
     public static Integer getChnlIdByUrl(String currUserName, String url, int siteId) throws RemoteException {
-        DocumentApiService documentApiService = (DocumentApiService) SpringContextUtil.getBean(DocumentApiService.class);
+        DocumentApiService documentApiService = SpringContextUtil.getBean(DocumentApiService.class);
         ChnlDoc chnlDoc = documentApiService.findDocumentByUrl(currUserName, url);
         if(chnlDoc != null){
             return chnlDoc.getChnlId();
         }else {
-            SiteApiService siteApiService = (SiteApiService) SpringContextUtil.getBean(SiteApiService.class);
+            SiteApiService siteApiService = SpringContextUtil.getBean(SiteApiService.class);
             Channel channel = siteApiService.findChannelByUrl(currUserName, url, siteId);
             if(channel != null){
                 return channel.getChannelId();
