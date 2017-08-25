@@ -9,7 +9,6 @@ import com.trs.gov.kpi.entity.dao.QueryFilter;
 import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
-import com.trs.gov.kpi.service.MonitorRecordService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
@@ -56,14 +55,11 @@ public class HomePageCheckScheduler implements SchedulerTask, Serializable {
     private transient IssueMapper issueMapper;
 
     @Resource
-    private transient MonitorRecordService monitorRecordService;
-
-    @Resource
     private transient CommonMapper commonMapper;
 
     //错误信息计数
     @Getter
-    Integer monitorResult = 0;
+    int monitorResult = 0;
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter

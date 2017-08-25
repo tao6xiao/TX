@@ -110,7 +110,6 @@ public class CheckJob implements Job {
     }
 
     private void insertEndMonitorRecord(SchedulerTask task, Date startTime, Integer taskStatus) {
-        Date endTime = new Date();
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, task.getSiteId());
         filter.addCond(MonitorRecordTableField.TASK_ID, task.getCheckJobType().value);
@@ -118,7 +117,7 @@ public class CheckJob implements Job {
 
         DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
         updater.addField(MonitorRecordTableField.RESULT, task.getMonitorResult());
-        updater.addField(MonitorRecordTableField.END_TIME, endTime);
+        updater.addField(MonitorRecordTableField.END_TIME, new Date());
         updater.addField(MonitorRecordTableField.TASK_STATUS, taskStatus);
         commonMapper.update(updater, filter);
     }

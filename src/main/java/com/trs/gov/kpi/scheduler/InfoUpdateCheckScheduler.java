@@ -90,7 +90,7 @@ public class InfoUpdateCheckScheduler implements SchedulerTask, Serializable {
 
     //信息(栏目)更新数量计数
     @Getter
-    private Integer monitorResult = 0;
+    private int monitorResult = 0;
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter

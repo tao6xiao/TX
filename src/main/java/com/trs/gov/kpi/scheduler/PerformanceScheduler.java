@@ -7,7 +7,6 @@ import com.trs.gov.kpi.entity.Performance;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.impl.PerformanceService;
-import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -80,8 +79,8 @@ public class PerformanceScheduler implements SchedulerTask, Serializable {
     }
 
     @Override
-    public Integer getMonitorResult() {
-        return null;
+    public int getMonitorResult() {
+        return 0;
     }
 
 }

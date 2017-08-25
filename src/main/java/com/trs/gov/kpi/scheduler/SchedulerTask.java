@@ -29,6 +29,6 @@ public interface SchedulerTask {
 
     EnumCheckJobType getCheckJobType();
 
-    Integer getMonitorResult();
+    int getMonitorResult();
 
 }

@@ -89,7 +89,7 @@ public class CKMScheduler implements SchedulerTask, Serializable {
 
     //错误信息计数
     @Getter
-    Integer monitorResult = 0;
+    int monitorResult = 0;
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter

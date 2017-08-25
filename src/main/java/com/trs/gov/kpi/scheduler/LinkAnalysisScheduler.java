@@ -52,6 +52,9 @@ public class LinkAnalysisScheduler implements SchedulerTask, Serializable {
     @Getter
     private EnumCheckJobType checkJobType = EnumCheckJobType.CHECK_LINK;
 
+    @Getter
+    private int monitorResult;
+
     @Override
     public void run() throws RemoteException, BizException {
         baseUrl = OuterApiServiceUtil.getUrl(siteApiService.getSiteById(siteId, null));
@@ -66,8 +69,7 @@ public class LinkAnalysisScheduler implements SchedulerTask, Serializable {
         return SchedulerType.LINK_ANALYSIS_SCHEDULER.toString();
     }
 
-    @Override
-    public Integer getMonitorResult() {
-        return spider.getCount();
+    private void getIssueCount(){
+        monitorResult = spider.getIssueCount();
     }
 }

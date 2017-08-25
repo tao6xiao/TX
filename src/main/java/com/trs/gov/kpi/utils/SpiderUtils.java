@@ -100,7 +100,7 @@ public class SpiderUtils {
 
     //失效链接计数
     @Getter
-    private Integer count = 0;
+    private int issueCount = 0;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -315,7 +315,7 @@ public class SpiderUtils {
                     CKMScheduler.createIndexHtml(absoluteDir);
 
                     linkAvailabilityService.insertLinkAvailability(linkAvailability);
-                    count++;
+                    issueCount++;
                 } else {
                     QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
                     queryFilter.addCond(IssueTableField.SITE_ID, siteId);
@@ -326,6 +326,7 @@ public class SpiderUtils {
                     DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
                     updater.addField(IssueTableField.CHECK_TIME, new Date());
                     commonMapper.update(updater, queryFilter);
+                    issueCount++;
                 }
             } catch (Exception e) {
                 log.error("", e);

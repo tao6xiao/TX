@@ -14,7 +14,6 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
 import com.trs.gov.kpi.service.outer.SGService;
-import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
 import lombok.Getter;
@@ -62,7 +61,7 @@ public class ServiceLinkScheduler implements SchedulerTask, Serializable {
 
     //错误信息计数
     @Getter
-    Integer monitorResult = 0;
+    int monitorResult = 0;
 
     //站点监测状态（0：自动监测；1：手动监测）
     @Setter
