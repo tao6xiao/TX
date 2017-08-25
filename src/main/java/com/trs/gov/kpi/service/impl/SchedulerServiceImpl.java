@@ -187,11 +187,11 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
             // 首页有效性检查
             initHomepageCheckJob(scheduler);
 
-//            // 全站链接有效性检查
-//            initLinkCheckJob(scheduler);
-//
-//            //文档内容错误检测
-//            initContentCheckJob(scheduler);
+            // 全站链接有效性检查
+            initLinkCheckJob(scheduler);
+
+            //文档内容错误检测
+            initContentCheckJob(scheduler);
 
             //计算绩效指数
             initPerformanceCheckJob(scheduler);
@@ -241,7 +241,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         // 每一个站点一个job
         for (MonitorSite site : allMonitorSites) {
             if (!isExists(site, EnumCheckJobType.CHECK_INFO_UPDATE, scheduler)) {
-                scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, 60);
+                scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, DateUtil.SECOND_ONE_DAY);
             }
         }
 
@@ -399,7 +399,6 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         for (MonitorFrequency freq : monitorFrequencies) {
             if (freq != null && freq.getTypeId() == freqType.getTypeId()) {
                 int interval = getInterval(freqType.getFreqUnit(), freq.getValue());
-                interval = 60;
                 scheduleJob(scheduler, jobType, site, interval);
             }
         }
