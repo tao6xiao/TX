@@ -7,6 +7,7 @@ import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.OuterApiServiceUtil;
 import com.trs.gov.kpi.utils.SpiderUtils;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import com.trs.gov.kpi.utils.StringUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,6 +55,10 @@ public class LinkAnalysisScheduler implements SchedulerTask, Serializable {
 
     @Override
     public void run() throws RemoteException, BizException {
+
+        siteApiService = SpringContextUtil.getBean(SiteApiService.class);
+        spider = SpringContextUtil.getBean(SpiderUtils.class);
+
         baseUrl = OuterApiServiceUtil.getUrl(siteApiService.getSiteById(siteId, null));
         if (StringUtil.isEmpty(baseUrl)) {
             return;

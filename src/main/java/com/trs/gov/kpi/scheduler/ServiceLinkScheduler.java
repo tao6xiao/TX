@@ -14,9 +14,9 @@ import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.exception.RemoteException;
 import com.trs.gov.kpi.entity.outerapi.sp.ServiceGuide;
 import com.trs.gov.kpi.service.outer.SGService;
-import com.trs.gov.kpi.service.outer.SiteApiService;
 import com.trs.gov.kpi.utils.DBUtil;
 import com.trs.gov.kpi.utils.ServiceLinkSpiderUtil;
+import com.trs.gov.kpi.utils.SpringContextUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -74,6 +74,11 @@ public class ServiceLinkScheduler implements SchedulerTask, Serializable {
 
     @Override
     public void run() throws RemoteException, BizException {
+
+        issueMapper = SpringContextUtil.getBean(IssueMapper.class);
+        spider = SpringContextUtil.getBean(ServiceLinkSpiderUtil.class);
+        sgService = SpringContextUtil.getBean(SGService.class);
+        commonMapper = SpringContextUtil.getBean(CommonMapper.class);
 
         for (ServiceGuide guide : sgService.getAllService(siteId).getData()) {
             if (spider.linkCheck(guide.getItemLink()) == Types.ServiceLinkIssueType.INVALID_LINK) {
