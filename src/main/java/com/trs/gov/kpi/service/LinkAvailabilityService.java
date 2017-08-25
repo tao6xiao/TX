@@ -40,7 +40,7 @@ public interface LinkAvailabilityService {
     /**
      * 判断链接不可用是否已存在
      */
-    boolean existLinkAvailability(Integer siteId, String invalidLink);
+    boolean existLinkAvailability(Integer siteId, String invalidLink, String parentUrl);
 
     /**
      * 获取网站首页的url及有效性

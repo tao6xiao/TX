@@ -101,6 +101,7 @@ public class SpiderUtils {
     //失效链接计数
     @Getter
     private int issueCount = 0;
+    private int issueCount2 = 0;
 
     private PageProcessor kpiProcessor = new PageProcessor() {
 
@@ -209,7 +210,7 @@ public class SpiderUtils {
                 } else {
                     for (String parentUrl : parents) {
                         final SoftReference<String> parentContentSoftReference = pageContentMap.get(parentUrl);
-                        insertInvalidLink(new ImmutablePair<>(parentUrl, unavailableUrl), chnlId, deptId, parentContentSoftReference.get(), statusCode);
+                        insertInvalidLink(new ImmutablePair<>( parentUrl, unavailableUrl), chnlId, deptId, parentContentSoftReference.get(), statusCode);
                     }
                 }
             } else {
@@ -279,6 +280,7 @@ public class SpiderUtils {
 
                 LinkAvailability linkAvailability = new LinkAvailability();
                 linkAvailability.setInvalidLink(unavailableUrlAndParentUrl.getValue());
+                linkAvailability.setParentUrl(unavailableUrlAndParentUrl.getKey());
                 linkAvailability.setCheckTime(new Date());
                 linkAvailability.setChnlId(chnlId);
                 linkAvailability.setDeptId(deptId);
@@ -288,7 +290,7 @@ public class SpiderUtils {
                         linkAvailability.getInvalidLink());
                 String absoluteDir = locationDir + File.separator + relativeDir;
                 linkAvailability.setSnapshot("gov/kpi/loc/" + relativeDir.replace(File.separator, "/") + "/index.html");
-                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue())) {
+                if (!linkAvailabilityService.existLinkAvailability(siteId, unavailableUrlAndParentUrl.getValue(), unavailableUrlAndParentUrl.getKey())) {
 
                     CKMScheduler.createDir(absoluteDir);
 
@@ -313,24 +315,26 @@ public class SpiderUtils {
 
                     // 创建首页
                     CKMScheduler.createIndexHtml(absoluteDir);
-
                     linkAvailabilityService.insertLinkAvailability(linkAvailability);
-                    issueCount++;
                 } else {
                     QueryFilter queryFilter = new QueryFilter(Table.ISSUE);
                     queryFilter.addCond(IssueTableField.SITE_ID, siteId);
                     queryFilter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
                     queryFilter.addCond(IssueTableField.DETAIL, unavailableUrlAndParentUrl.getValue());
+                    queryFilter.addCond(IssueTableField.CUSTOMER3, unavailableUrlAndParentUrl.getKey());
                     queryFilter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
                     queryFilter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
                     DBUpdater updater = new DBUpdater(Table.ISSUE.getTableName());
                     updater.addField(IssueTableField.CHECK_TIME, new Date());
                     commonMapper.update(updater, queryFilter);
-                    issueCount++;
                 }
             } catch (Exception e) {
                 log.error("", e);
                 LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "插入失效链接，url=" + unavailableUrlAndParentUrl.getValue(), e);
+            }finally {
+                synchronized (this){
+                    issueCount++;
+                }
             }
 
         }

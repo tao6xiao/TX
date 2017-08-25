@@ -177,13 +177,14 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
     }
 
     @Override
-    public boolean existLinkAvailability(Integer siteId, String invalidLink) {
+    public boolean existLinkAvailability(Integer siteId, String invalidLink, String parentUrl) {
         QueryFilter filter = new QueryFilter(Table.ISSUE);
         filter.addCond(IssueTableField.TYPE_ID, Types.IssueType.LINK_AVAILABLE_ISSUE.value);
         filter.addCond(IssueTableField.IS_RESOLVED, Status.Resolve.UN_RESOLVED.value);
         filter.addCond(IssueTableField.IS_DEL, Status.Delete.UN_DELETE.value);
         filter.addCond(IssueTableField.SITE_ID, siteId);
         filter.addCond(IssueTableField.DETAIL, invalidLink);
+        filter.addCond(IssueTableField.CUSTOMER3,parentUrl );
         return issueMapper.count(filter) > 0;
     }
 
@@ -199,6 +200,7 @@ public class LinkAvailabilityServiceImpl implements LinkAvailabilityService {
         issue.setCheckTime(linkAvailability.getCheckTime());
         issue.setCustomer1(linkAvailability.getSnapshot());
         issue.setCustomer2(String.valueOf(linkAvailability.getChnlId()));
+        issue.setCustomer3(linkAvailability.getParentUrl());
         issue.setDeptId(linkAvailability.getDeptId());
         return issue;
     }

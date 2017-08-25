@@ -67,6 +67,8 @@ public class LinkAnalysisScheduler implements SchedulerTask, Serializable {
             return;
         }
         spider.linkCheck(3, siteId, baseUrl);//测试url：http://tunchang.hainan.gov.cn/tcgov/
+
+        monitorResult = spider.getIssueCount();
     }
 
     @Override
@@ -74,7 +76,4 @@ public class LinkAnalysisScheduler implements SchedulerTask, Serializable {
         return SchedulerType.LINK_ANALYSIS_SCHEDULER.toString();
     }
 
-    private void getIssueCount(){
-        monitorResult = spider.getIssueCount();
-    }
 }

@@ -19,6 +19,8 @@ public class LinkAvailability {
 
     private String invalidLink;//失效链接
 
+    private String parentUrl;//父链接;
+
     private Integer chnlId; //栏目编号
 
     private String snapshot;//快照
