@@ -64,7 +64,7 @@ public class IDSActor extends StdHttpSessionBasedActor {
         //在线程中初始化用户用于记录日志
         ContextHelper.initContext(localUser);
 
-        UserApiService userApiService = (UserApiService) SpringContextUtil.getBean(UserApiService.class);
+        UserApiService userApiService = SpringContextUtil.getBean(UserApiService.class);
         User user;
         String message = "采编中心无当前用户[" + localUser.getUserName() + "]";
         try {

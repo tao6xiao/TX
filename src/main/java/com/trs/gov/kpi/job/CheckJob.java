@@ -27,11 +27,11 @@ import java.util.Date;
 @Slf4j
 public class CheckJob implements Job {
 
-    private MonitorRecordService monitorRecordService = (MonitorRecordService) SpringContextUtil.getBean(MonitorRecordService.class);
+    private MonitorRecordService monitorRecordService = SpringContextUtil.getBean(MonitorRecordService.class);
 
-    private CommonMapper commonMapper = (CommonMapper) SpringContextUtil.getBean(CommonMapper.class);
+    private CommonMapper commonMapper = SpringContextUtil.getBean(CommonMapper.class);
 
-    private SiteApiService siteApiService = (SiteApiService) SpringContextUtil.getBean(SiteApiService.class);
+    private SiteApiService siteApiService = SpringContextUtil.getBean(SiteApiService.class);
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {

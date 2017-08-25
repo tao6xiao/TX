@@ -29,7 +29,7 @@ public class SpringContextUtil implements ApplicationContextAware {
     }
 
     //通过类型获取上下文中的bean
-    public static synchronized Object getBean(Class requiredType) {
+    public static synchronized <T> T getBean(Class<T> requiredType) {
         return getApplicationContext().getBean(requiredType);
     }
 
