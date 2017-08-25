@@ -1,6 +1,11 @@
 package com.trs.gov.kpi.job;
 
 import com.trs.gov.kpi.config.TestConfigConst;
+import com.trs.gov.kpi.constant.MonitorRecordTableField;
+import com.trs.gov.kpi.dao.CommonMapper;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.scheduler.HomePageCheckScheduler;
 import com.trs.gov.kpi.scheduler.SchedulerTask;
 import com.trs.gov.kpi.service.impl.MonitorRecordServiceImpl;
@@ -27,12 +32,15 @@ import java.util.Date;
  */
 @RunWith(SpringRunner.class)
 @MybatisTest(includeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {MonitorRecordServiceImpl.class, SiteApiServiceImpl.class})})
-@TestPropertySource(properties = {TestConfigConst.TEST_DB_URL_PROP, TestConfigConst.TEST_DB_USER_NAME_PROP, TestConfigConst.TEST_DB_PWD_PROP})
+@TestPropertySource(properties = {TestConfigConst.LOCAL_DB_URL_PROP, TestConfigConst.LOCAL_DB_USER_NAME_PROP, TestConfigConst.LOCAL_DB_PWD_PROP})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class CheckJobTest {
 
     @Resource
     private ApplicationContext applicationContext;
+
+    @Resource
+    private CommonMapper commonMapper;
 
     @Before
     public void setup() {
@@ -55,5 +63,19 @@ public class CheckJobTest {
                 new Class<?>[]{SchedulerTask.class, Date.class}, new Object[]{homePageCheckScheduler, date});
 
 
+    }
+
+    @Test
+    public void updateMonitorRecord() {
+        QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
+        filter.addCond(MonitorRecordTableField.SITE_ID, 499);
+        filter.addCond(MonitorRecordTableField.TASK_ID, 2);
+        filter.addCond(MonitorRecordTableField.BEGIN_TIME, null);
+
+        DBUpdater updater = new DBUpdater(Table.MONITOR_RECORD.getTableName());
+        updater.addField(MonitorRecordTableField.RESULT, 12);
+        updater.addField(MonitorRecordTableField.END_TIME, new Date());
+        updater.addField(MonitorRecordTableField.TASK_STATUS, 5);
+        commonMapper.update(updater, filter);
     }
 }

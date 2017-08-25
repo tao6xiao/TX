@@ -42,13 +42,17 @@ public class CheckJob implements Job {
         log.info(logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
         Date startTime = null;
+        Date manualStartTime = toGetManualMonitorBeginTime(task);
         try {
-            OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
-
             if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
-                startTime = toGetManualMonitorBeginTime(task);
+                startTime = manualStartTime;
             }else {
                 startTime = new Date();
+            }
+
+            OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
+
+            if(task.getMonitorType() != Status.MonitorType.MANUAL_MONITOR.value){
                 //检测开始
                 insertBeginMonitorRecord(task, startTime);
             }
