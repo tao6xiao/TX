@@ -49,10 +49,9 @@ public class CheckJob implements Job {
                 startTime = toGetManualMonitorBeginTime(task);
             }else {
                 startTime = new Date();
+                //检测开始
+                insertBeginMonitorRecord(task, startTime);
             }
-
-            //检测开始
-            insertBeginMonitorRecord(task, startTime);
 
             // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, logPrompt + task.getName() + "[siteId=" + task.getSiteId() +
