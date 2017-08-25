@@ -60,6 +60,14 @@ public class DutyDeptServiceImpl implements DutyDeptService {
 
     @Override
     public DutyDept getByChnlId(int chnlId, Byte containChildValue) {
+
+        // 参数校验
+        if (containChildValue != DutyDept.CONTAIN_CHILD
+                && containChildValue != DutyDept.NOT_CONTAIN_CHILD
+                && containChildValue != DutyDept.ALL_CONTAIN_COND ) {
+            return null;
+        }
+
         QueryFilter filter = new QueryFilter(Table.DUTY_DEPT);
         filter.addCond(DutyDeptTableField.CHNL_ID, chnlId);
         if (containChildValue == DutyDept.CONTAIN_CHILD || containChildValue == DutyDept.NOT_CONTAIN_CHILD) {
