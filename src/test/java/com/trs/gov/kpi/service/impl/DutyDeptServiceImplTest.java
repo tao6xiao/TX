@@ -1,6 +1,7 @@
 package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.config.TestConfigConst;
+import com.trs.gov.kpi.dao.DutyDeptMapper;
 import com.trs.gov.kpi.entity.DutyDept;
 import com.trs.gov.kpi.entity.outerapi.Channel;
 import com.trs.gov.kpi.entity.outerapi.Dept;
@@ -10,6 +11,7 @@ import com.trs.gov.kpi.entity.responsedata.ApiPageData;
 import com.trs.gov.kpi.service.DutyDeptService;
 import com.trs.gov.kpi.service.outer.DeptApiService;
 import com.trs.gov.kpi.service.outer.SiteApiService;
+import com.trs.gov.kpi.utils.DBUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -41,6 +44,9 @@ public class DutyDeptServiceImplTest {
 //    private IssueMapper issueMapper;
 
     @Resource
+    private DutyDeptMapper deptMapper;
+
+    @Resource
     private DutyDeptService dutyDeptService;
 
     @MockBean
@@ -50,15 +56,74 @@ public class DutyDeptServiceImplTest {
     private DeptApiService deptApiService;
 
     @Test
-    public void getByChnlId() throws Exception {
-        DutyDeptRequest deptRequest = new DutyDeptRequest();
-        deptRequest.setDeptId(2);
-        assertNotEquals(dutyDeptService.getByChnlId(deptRequest.getDeptId(), DutyDept.ALL_CONTAIN_COND), null);
-        deptRequest.setDeptId(2);
-        assertEquals(dutyDeptService.getByChnlId(deptRequest.getDeptId(), DutyDept.NOT_CONTAIN_CHILD), null);
-        deptRequest.setDeptId(2);
-        assertNotEquals(dutyDeptService.getByChnlId(deptRequest.getDeptId(), DutyDept.CONTAIN_CHILD), null);
+    @Rollback
+    public void getByChnlId_empty() throws Exception {
+        // 测试不存在的情况
+        int chnlId = 1111111111;
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, DutyDept.ALL_CONTAIN_COND));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, DutyDept.NOT_CONTAIN_CHILD));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, DutyDept.CONTAIN_CHILD));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, (byte)3));
     }
+
+    @Test
+    @Rollback
+    public void getByChnlId_containChild() throws Exception {
+        int chnlId = 1111111111;
+        // 测试包含子栏目，且存在
+        DutyDept dept = new DutyDept();
+        dept.setChnlId(chnlId);
+        dept.setSiteId(22222222);
+        dept.setContain(DutyDept.CONTAIN_CHILD);
+        dept.setDeptId(33);
+        deptMapper.insert(DBUtil.toRow(dept));
+        assertEquals(dept, dutyDeptService.getByChnlId(chnlId, DutyDept.ALL_CONTAIN_COND));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, DutyDept.NOT_CONTAIN_CHILD));
+        assertEquals(dept, dutyDeptService.getByChnlId(chnlId, DutyDept.CONTAIN_CHILD));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, (byte)3));
+    }
+
+    @Test
+    @Rollback
+    public void getByChnlId_notContainChild() throws Exception {
+        int chnlId = 1111111111;
+        // 测试包含子栏目，且存在
+        DutyDept dept = new DutyDept();
+        dept.setChnlId(chnlId);
+        dept.setSiteId(22222222);
+        dept.setContain(DutyDept.NOT_CONTAIN_CHILD);
+        dept.setDeptId(33);
+        deptMapper.insert(DBUtil.toRow(dept));
+        assertEquals(dept, dutyDeptService.getByChnlId(chnlId, DutyDept.ALL_CONTAIN_COND));
+        assertEquals(dept, dutyDeptService.getByChnlId(chnlId, DutyDept.NOT_CONTAIN_CHILD));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, DutyDept.CONTAIN_CHILD));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, (byte)3));
+    }
+
+    @Test
+    @Rollback
+    public void getByChnlId_allContain() throws Exception {
+        int chnlId = 1111111111;
+        // 测试包含子栏目，且存在
+        DutyDept dept = new DutyDept();
+        dept.setChnlId(chnlId);
+        dept.setSiteId(22222222);
+        dept.setContain(DutyDept.CONTAIN_CHILD);
+        dept.setDeptId(33);
+        deptMapper.insert(DBUtil.toRow(dept));
+
+        DutyDept dept2 = new DutyDept();
+        dept2.setChnlId(chnlId+1);
+        dept2.setSiteId(22222222);
+        dept2.setContain(DutyDept.NOT_CONTAIN_CHILD);
+        dept2.setDeptId(33);
+        deptMapper.insert(DBUtil.toRow(dept2));
+
+        assertEquals(dept, dutyDeptService.getByChnlId(chnlId, DutyDept.ALL_CONTAIN_COND));
+        assertEquals(dept2, dutyDeptService.getByChnlId(chnlId+1, DutyDept.ALL_CONTAIN_COND));
+        assertEquals(null, dutyDeptService.getByChnlId(chnlId, (byte)3));
+    }
+
 
     @Test
     public void get() throws Exception {
