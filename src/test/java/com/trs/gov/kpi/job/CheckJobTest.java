@@ -32,7 +32,7 @@ import java.util.Date;
  */
 @RunWith(SpringRunner.class)
 @MybatisTest(includeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = {MonitorRecordServiceImpl.class, SiteApiServiceImpl.class})})
-@TestPropertySource(properties = {TestConfigConst.LOCAL_DB_URL_PROP, TestConfigConst.LOCAL_DB_USER_NAME_PROP, TestConfigConst.LOCAL_DB_PWD_PROP})
+@TestPropertySource(properties = {TestConfigConst.TEST_DB_URL_PROP, TestConfigConst.TEST_DB_USER_NAME_PROP, TestConfigConst.TEST_DB_PWD_PROP})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class CheckJobTest {
 
@@ -66,6 +66,7 @@ public class CheckJobTest {
     }
 
     @Test
+    @Rollback
     public void updateMonitorRecord() {
         QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
         filter.addCond(MonitorRecordTableField.SITE_ID, 499);
