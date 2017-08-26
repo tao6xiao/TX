@@ -30,6 +30,8 @@ import java.util.List;
 @Scope("prototype")
 public class HomePageCheckScheduler implements SchedulerTask, Serializable {
 
+    private static final long serialVersionUID = 6884198860979332626L;
+
     @Resource
     private transient SpiderUtils spider;
 

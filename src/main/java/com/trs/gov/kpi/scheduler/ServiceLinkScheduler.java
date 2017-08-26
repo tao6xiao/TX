@@ -36,6 +36,8 @@ import java.util.Date;
 @Scope("prototype")
 public class ServiceLinkScheduler implements SchedulerTask, Serializable {
 
+    private static final long serialVersionUID = 418654230767463001L;
+
     @Setter
     @Getter
     private Integer siteId;

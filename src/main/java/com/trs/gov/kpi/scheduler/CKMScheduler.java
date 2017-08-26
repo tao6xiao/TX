@@ -45,10 +45,11 @@ import java.util.*;
 @Scope("prototype")
 public class CKMScheduler implements SchedulerTask, Serializable {
 
+    private static final long serialVersionUID = -2340008741453251048L;
+
     private static final String LINE_SP = System.getProperty("line.separator");
 
     private static final String INDEX = "index";
-
     private static final String HTML_SUF = "</html>";
 
     @Setter

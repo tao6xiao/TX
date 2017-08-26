@@ -27,6 +27,7 @@ import java.util.Date;
 @Scope("prototype")
 public class PerformanceScheduler implements SchedulerTask, Serializable {
 
+    private static final long serialVersionUID = 6712426703443838473L;
 
     @Setter
     @Getter

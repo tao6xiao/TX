@@ -43,6 +43,8 @@ import java.util.*;
 @Scope("prototype")
 public class InfoUpdateCheckScheduler implements SchedulerTask, Serializable {
 
+    private static final long serialVersionUID = -5431333408289823999L;
+
     // 开始检查的第一个周期起始点
     private static final String BEGIN_CHECK_DAY = "2017-05-01 00:00:00";
 

@@ -43,6 +43,8 @@ import java.util.List;
 @Scope("prototype")
 public class ReportGenerateScheduler implements SchedulerTask, Serializable {
 
+    private static final long serialVersionUID = -7376999369189091093L;
+
     @Setter
     @Getter
     private String baseUrl;

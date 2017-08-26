@@ -27,6 +27,8 @@ import java.io.Serializable;
 @Scope("prototype")
 public class LinkAnalysisScheduler implements SchedulerTask, Serializable {
 
+    private static final long serialVersionUID = -3154970912809575985L;
+
     @Resource
     private transient SiteApiService siteApiService;
 
