@@ -558,9 +558,6 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
                 .withIdentity(getOnceJobTriggerName(siteId, checkJobType), getOnceJobGroupName(checkJobType))
                 .startNow()
                 .forJob(job.getKey())
-                .withSchedule(simpleSchedule()
-                        .withIntervalInSeconds(5)
-                        .repeatForever())
                 .build();
 
         try {
