@@ -484,7 +484,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         try {
             scheduleJob(scheduler, jobType, site, simpleSchedule()
                     .withIntervalInSeconds(interval)
-                    .repeatForever());
+                    .repeatForever()
+                    .withMisfireHandlingInstructionNowWithExistingCount());
             LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "注册调度任务成功：站点Id: " + site.getSiteId() + ", 任务类型:" + jobType.name() + "，间隔时间：" + interval);
         } catch (SchedulerException e) {
             addSchedulerExceptionLog(jobType, site, e);
