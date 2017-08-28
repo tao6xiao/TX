@@ -257,12 +257,6 @@ public class SiteApiServiceImpl implements SiteApiService {
     }
 
     @Override
-    public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
-        // TODO FIXED 该方法未实现， 需要确认一下是否使用了 （此方法已确认未使用）
-        return new ArrayList<>();
-    }
-
-    @Override
     public Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException {
         try {
             Map<String, String> params = new HashMap<>();
