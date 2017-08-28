@@ -27,6 +27,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
 import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -177,33 +179,33 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
 
     @PostConstruct
     public void startService() {
-            // 启动完成后，就开始执行
-            try {
-                // 分发样式文件
-                distStyleFile();
+        // 启动完成后，就开始执行
+        try {
+            // 分发样式文件
+            distStyleFile();
 
-                Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-                scheduler.start();
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
 
-                // 首页有效性检查
-                initHomepageCheckJob(scheduler);
+            // 首页有效性检查
+            initHomepageCheckJob(scheduler);
 
-                // 全站链接有效性检查
-                initLinkCheckJob(scheduler);
+            // 全站链接有效性检查
+            initLinkCheckJob(scheduler);
 
-                //文档内容错误检测
-                initContentCheckJob(scheduler);
+            //文档内容错误检测
+            initContentCheckJob(scheduler);
 
-                // 栏目更新检查
-                initInfoUpdateCheckJob(scheduler);
+            // 栏目更新检查
+            initInfoUpdateCheckJob(scheduler);
 
-                //计算绩效指数
-                initPerformanceCheckJob(scheduler);
+            //计算绩效指数
+            initPerformanceCheckJob(scheduler);
 
-                //按时间节点生成报表
-                initTimeNodeCheckJob(scheduler);
+            //按时间节点生成报表
+            initTimeNodeCheckJob(scheduler);
 
-                //按时间区间生成报表
+            //按时间区间生成报表
             initTimeIntervalCheckJob(scheduler);
 
             //服务链接可用性监测
@@ -244,8 +246,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         for (MonitorSite site : allMonitorSites) {
             if (!isExists(site, EnumCheckJobType.CHECK_HOME_PAGE, scheduler)) {
                 scheduleCheckJob(scheduler, site, FrequencyType.HOMEPAGE_AVAILABILITY, EnumCheckJobType.CHECK_HOME_PAGE);
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_HOME_PAGE.value);
             }
         }
 
@@ -267,8 +269,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         for (MonitorSite site : allMonitorSites) {
             if (!isExists(site, EnumCheckJobType.CHECK_LINK, scheduler)) {
                 scheduleCheckJob(scheduler, site, FrequencyType.TOTAL_BROKEN_LINKS, EnumCheckJobType.CHECK_LINK);
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_CHECK_LINK.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_LINK.value);
             }
         }
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "启动全站链接监测任务成功");
@@ -289,8 +291,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         for (MonitorSite site : allMonitorSites) {
             if (!isExists(site, EnumCheckJobType.CHECK_CONTENT, scheduler)) {
                 scheduleCheckJob(scheduler, site, FrequencyType.WRONG_INFORMATION, EnumCheckJobType.CHECK_CONTENT);
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_CONTENT.value);
             }
         }
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "启动信息错误监测任务成功");
@@ -313,8 +315,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         for (MonitorSite site : allMonitorSites) {
             if (!isExists(site, EnumCheckJobType.CHECK_INFO_UPDATE, scheduler)) {
                 scheduleJob(scheduler, EnumCheckJobType.CHECK_INFO_UPDATE, site, DateUtil.SECOND_ONE_DAY);
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_CHECK_INFO_UPDATE.value);
             }
         }
 
@@ -337,8 +339,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
             if (!isExists(site, EnumCheckJobType.CALCULATE_PERFORMANCE, scheduler)) {
                 // 每个月1日凌晨0点执行一次
                 scheduleJob(scheduler, EnumCheckJobType.CALCULATE_PERFORMANCE, site, FIRST_DAY_OF_MONTH);
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_CALCULATE_PERFORMANCE.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_CALCULATE_PERFORMANCE.value);
             }
         }
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "启动绩效指数计算任务成功");
@@ -360,8 +362,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
             if (!isExists(site, EnumCheckJobType.TIMENODE_REPORT_GENERATE, scheduler)) {
                 // 每天凌晨0点执行一次
                 scheduleJob(scheduler, EnumCheckJobType.TIMENODE_REPORT_GENERATE, site, "0 0 0 * * ?");
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_TIMENODE_REPORT_GENERATE.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_TIMENODE_REPORT_GENERATE.value);
             }
         }
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "启动时间节点报表生成任务成功");
@@ -383,8 +385,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
             if (!isExists(site, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, scheduler)) {
                 // 每个月1日凌晨0点执行一次
                 scheduleJob(scheduler, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE, site, FIRST_DAY_OF_MONTH);
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_TIMEINTERVAL_REPORT_GENERATE.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_TIMEINTERVAL_REPORT_GENERATE.value);
             }
         }
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "启动时间区间生成报表任务成功");
@@ -405,8 +407,8 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         for (MonitorSite site : allMonitorSites) {
             if (!isExists(site, EnumCheckJobType.SERVICE_LINK, scheduler)) {
                 scheduleJob(scheduler, EnumCheckJobType.SERVICE_LINK, site, DateUtil.SECOND_ONE_DAY);
-            }else{
-                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(),Types.MonitorRecordNameType.TASK_SERVICE_LINK.value);
+            } else {
+                monitorRecordService.updateLastServerAbnormalShutdownTaskMonitorState(site.getSiteId(), Types.MonitorRecordNameType.TASK_SERVICE_LINK.value);
             }
         }
         LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.REGISTER_SCHEDULE, "启动服务链接监测任务成功");
@@ -518,13 +520,19 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         }
         job.getJobDataMap().put("task", task);
 
-        // TODO: 2017/8/14 he.lang 手动检测实现后，startNow()将删除
-        // 每天执行一次
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        // 第二天的零点开始执行
         Trigger trigger = newTrigger()
                 .withIdentity(getJobTriggerName(site.getSiteId(), jobType), getJobGroupName(jobType))
-                .startNow()
                 .forJob(job.getKey())
                 .withSchedule(builder)
+                .startAt(calendar.getTime())
                 .build();
 
         scheduler.scheduleJob(job, trigger);
@@ -558,6 +566,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
                 .withIdentity(getOnceJobTriggerName(siteId, checkJobType), getOnceJobGroupName(checkJobType))
                 .startNow()
                 .forJob(job.getKey())
+                .withSchedule(simpleSchedule()
+                        .withIntervalInSeconds(5)
+                        .repeatForever())
                 .build();
 
         try {
