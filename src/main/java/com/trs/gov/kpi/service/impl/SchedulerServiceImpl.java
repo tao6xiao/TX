@@ -27,11 +27,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.*;
 import java.text.MessageFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.DateBuilder.tomorrowAt;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -520,19 +519,12 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         }
         job.getJobDataMap().put("task", task);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-
         // 第二天的零点开始执行
         Trigger trigger = newTrigger()
                 .withIdentity(getJobTriggerName(site.getSiteId(), jobType), getJobGroupName(jobType))
                 .forJob(job.getKey())
                 .withSchedule(builder)
-                .startAt(calendar.getTime())
+                .startAt(tomorrowAt(0, 0, 0))
                 .build();
 
         scheduler.scheduleJob(job, trigger);
@@ -566,6 +558,7 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
                 .withIdentity(getOnceJobTriggerName(siteId, checkJobType), getOnceJobGroupName(checkJobType))
                 .startNow()
                 .forJob(job.getKey())
+                .withSchedule(simpleSchedule().withMisfireHandlingInstructionNowWithExistingCount())
                 .build();
 
         try {
