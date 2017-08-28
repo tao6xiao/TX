@@ -104,17 +104,6 @@ public interface SiteApiService extends OuterApiService {
 
 
     /**
-     * 根据部门名称找栏目id
-     *
-     * @param userName
-     * @param siteIds
-     * @param departmentName
-     * @return
-     * @throws RemoteException
-     */
-    List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException;
-
-    /**
      * 通过url查找栏目
      *
      * @param userName

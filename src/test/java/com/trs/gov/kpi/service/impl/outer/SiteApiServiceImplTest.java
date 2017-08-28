@@ -112,11 +112,6 @@ public class SiteApiServiceImplTest {
         }
 
         @Override
-        public List<Integer> findChnlIdsByDepartment(String userName, List<Integer> siteIds, String departmentName) throws RemoteException {
-            return null;
-        }
-
-        @Override
         public Channel findChannelByUrl(String userName, String url, int siteId) throws RemoteException {
             if("www.test.com".equals(url)){
                 Channel channel = new Channel();
