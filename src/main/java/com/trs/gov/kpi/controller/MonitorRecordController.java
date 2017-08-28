@@ -81,10 +81,11 @@ public class MonitorRecordController {
             authorityService.checkRight(Authority.KPIWEB_MANUALMONITOR_CHECK, siteId);
             //如果当前任务为正在检查或是等待检测，再次请求的时候就不在执行检测,直接返回当前结果
             List<MonitorRecord> newestMonitorRecordList = monitorRecordService.selectNewestMonitorRecord(siteId, checkJobValue);
-            if (!newestMonitorRecordList.isEmpty() && newestMonitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.DOING_CHECK.value){
+            if ((!newestMonitorRecordList.isEmpty() && newestMonitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.DOING_CHECK.value)
+                    || (!newestMonitorRecordList.isEmpty() && newestMonitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.WAIT_CHECK.value)){
                 return monitorRecordService.getMonitorOnceResponse(newestMonitorRecordList);
             }else {
-                //执行监测任务开始之前因先生成初始记录
+                //插入手动检测开始记录
                 monitorRecordService.insertBeginManualMonitorRecord(siteId, checkJobValue, Status.MonitorType.MANUAL_MONITOR.value, new Date());
                 schedulerService.doCheckJobOnce(siteId, EnumCheckJobType.valueOf(checkJobValue));
                 List<MonitorRecord> monitorRecordListAfterCheck = monitorRecordService.selectNewestMonitorRecord(siteId, checkJobValue);

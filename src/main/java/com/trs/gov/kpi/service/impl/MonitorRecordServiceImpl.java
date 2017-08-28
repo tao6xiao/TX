@@ -51,7 +51,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
         monitorRecord.setTaskId(taskId);
         monitorRecord.setTypeId(typeId);
         monitorRecord.setBeginTime(beginTime);
-        monitorRecord.setTaskStatus(Status.MonitorStatusType.DOING_CHECK.value);
+        monitorRecord.setTaskStatus(Status.MonitorStatusType.WAIT_CHECK.value);
         commonMapper.insert(DBUtil.toRow(monitorRecord));
     }
 
@@ -114,7 +114,7 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
             MonitorOnceResponse monitorOnceResponse = new MonitorOnceResponse();
 
             if(monitorRecordList.isEmpty()){
-                monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.WAIT_CHECK.getName());
+                monitorOnceResponse.setTaskStatusName(Status.MonitorStatusType.NO_CHECK.getName());
                 monitorOnceResponse.setTaskId(checkJobValues.get(i));
                 monitorOnceResponseList.add(monitorOnceResponse);
             }else {
@@ -156,7 +156,8 @@ public class MonitorRecordServiceImpl implements MonitorRecordService {
     public void updateLastServerAbnormalShutdownTaskMonitorState(Integer siteId, Integer taskId) {
         List<MonitorRecord> newestMonitorRecordList = monitorRecordMapper.selectNewestMonitorRecord(siteId, taskId);
 
-        if(!newestMonitorRecordList.isEmpty() && newestMonitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.DOING_CHECK.value){
+        if((!newestMonitorRecordList.isEmpty() && newestMonitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.DOING_CHECK.value)
+                || (!newestMonitorRecordList.isEmpty() && newestMonitorRecordList.get(0).getTaskStatus() == Status.MonitorStatusType.WAIT_CHECK.value)){
             QueryFilter filter = new QueryFilter(Table.MONITOR_RECORD);
             filter.addCond(MonitorRecordTableField.SITE_ID, siteId);
             filter.addCond(MonitorRecordTableField.TASK_ID, taskId);
