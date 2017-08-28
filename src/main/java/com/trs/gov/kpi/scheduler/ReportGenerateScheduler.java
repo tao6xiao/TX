@@ -93,7 +93,7 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         report.setSiteId(siteId);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.HOUR, -1);//数据对应时间往前退一小时，使数据与时间对应
+        calendar.add(Calendar.DAY_OF_MONTH, -1);//数据对应时间往前退一天，使数据与时间对应
         report.setReportTime(calendar.getTime());
         Site site = siteApiService.getSiteById(siteId, "");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
