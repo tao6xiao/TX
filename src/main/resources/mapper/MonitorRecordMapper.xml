@@ -47,7 +47,7 @@
         select * from monitorrecord
         where siteId = #{siteId}
         and taskId = #{taskId}
-        and beginTime = (SELECT max(beginTime) FROM monitorrecord where siteId = #{siteId} and taskId = #{taskId} order by beginTime DESC)
+        and beginTime = (SELECT max(beginTime) FROM monitorrecord where siteId = #{siteId} and taskId = #{taskId})
     </select>
 
     <sql id="all_conditions_sql">
