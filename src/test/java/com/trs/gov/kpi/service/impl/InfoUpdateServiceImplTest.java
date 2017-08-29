@@ -70,18 +70,18 @@ public class InfoUpdateServiceImplTest {
         param.setSiteId(11);
         List<Statistics> statisticsList = infoUpdateService.getIssueCount(param);
         //已解决问题和预警
-        assertEquals(statisticsList.get(0).getType(), 2);
-        assertEquals(statisticsList.get(0).getCount(), 24);
+        assertEquals(2, statisticsList.get(0).getType());
+        assertEquals(24, statisticsList.get(0).getCount());
         //待解决问题
-        assertEquals(statisticsList.get(1).getType(), 12);
-        assertEquals(statisticsList.get(1).getCount(), 57);
+        assertEquals(12, statisticsList.get(1).getType());
+        assertEquals(57, statisticsList.get(1).getCount());
         //待解决预警
-        assertEquals(statisticsList.get(2).getType(), 21);
-        assertEquals(statisticsList.get(2).getCount(), 150);
+        assertEquals(21, statisticsList.get(2).getType());
+        assertEquals(150, statisticsList.get(2).getCount());
 
         param.setBeginDateTime("2017-07-01 00:00:00");
         statisticsList = infoUpdateService.getIssueCount(param);
-        assertEquals(statisticsList.get(0).getCount(), 0);
+        assertEquals(0, statisticsList.get(0).getCount());
 
     }
 
@@ -92,8 +92,8 @@ public class InfoUpdateServiceImplTest {
         HistoryStatisticsResp historyStatisticsResp = infoUpdateService.getIssueHistoryCount(param);
         //测试七月份统计数量
         HistoryStatistics historyStatistics = (HistoryStatistics) historyStatisticsResp.getData().get(6);
-        assertEquals(historyStatistics.getTime(), "2017-07");
-        assertEquals(historyStatistics.getValue(), Integer.valueOf(11));
+        assertEquals("2017-07", historyStatistics.getTime());
+        assertEquals(Integer.valueOf(11), historyStatistics.getValue());
     }
 
     @Test
@@ -122,8 +122,8 @@ public class InfoUpdateServiceImplTest {
 
         //测试A类
         Statistics statistics = infoUpdateService.getUpdateNotInTimeCountList(param).get(1);
-        assertEquals(statistics.getType(), 2);
-        assertEquals(statistics.getCount(), 2);
+        assertEquals(2, statistics.getType());
+        assertEquals(2, statistics.getCount());
     }
 
     @Test
@@ -135,23 +135,18 @@ public class InfoUpdateServiceImplTest {
         param.setPageIndex(1);
         param.setBeginDateTime("2017-05-01 00:00:00");
         param.setEndDateTime("2017-05-10 00:00:00");
-        assertEquals(infoUpdateService.get(param).getData().size(), 1);
+        assertEquals(1, infoUpdateService.get(param).getData().size());
     }
 
     @Test
     public void getNotInTimeCountMonth() throws Exception {
         PageDataRequestParam param = new PageDataRequestParam();
         param.setSiteId(11);
-        param.setBeginDateTime("2017-06-24 00:00:00");
-        param.setEndDateTime("2017-06-24 23:59:00");
-        MonthUpdateResponse monthUpdateResponse = infoUpdateService.getNotInTimeCountMonth(param);
-        assertEquals(monthUpdateResponse.getUpdateNotInTimeChnl().size(), 7);
-        assertEquals(monthUpdateResponse.getEmptyChnl().size(), 0);
-
         param.setBeginDateTime("2017-05-01 00:00:00");
         param.setEndDateTime("2017-05-10 00:00:00");
-        monthUpdateResponse = infoUpdateService.getNotInTimeCountMonth(param);
-        assertEquals(monthUpdateResponse.getUpdateNotInTimeChnl().size(), 1);
-        assertEquals(monthUpdateResponse.getEmptyChnl().size(), 1);
+
+        MonthUpdateResponse monthUpdateResponse = infoUpdateService.getNotInTimeCountMonth(param);
+        assertEquals(1, monthUpdateResponse.getUpdateNotInTimeChnl().size());
+        assertEquals(1, monthUpdateResponse.getEmptyChnl().size());
     }
 }

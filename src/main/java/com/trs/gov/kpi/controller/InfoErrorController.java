@@ -57,7 +57,7 @@ public class InfoErrorController extends IssueHandler {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/all/count/history", method = RequestMethod.GET)
+    @RequestMapping(value = "/all/count/history", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public HistoryStatisticsResp getIssueHistoryCount(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误历史记录" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {
@@ -74,7 +74,7 @@ public class InfoErrorController extends IssueHandler {
      * @return
      * @throws BizException
      */
-    @RequestMapping(value = "/unhandled", method = RequestMethod.GET)
+    @RequestMapping(value = "/unhandled", method = RequestMethod.GET, produces="application/json;charset=UTF-8")
     public ApiPageData getIssueList(@ModelAttribute PageDataRequestParam param) throws BizException, RemoteException {
         String logDesc = "查询信息错误待解决问题列表" + LogUtil.paramsToLogString(Constants.PARAM, param);
         return LogUtil.controlleFunctionWrapper(() -> {

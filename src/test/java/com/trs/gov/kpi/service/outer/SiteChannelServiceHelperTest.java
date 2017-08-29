@@ -42,7 +42,7 @@ public class SiteChannelServiceHelperTest {
         int parentChnlId = 1244;
         //183为父栏目部门ID
         given(this.siteApiService.findChannelPath(chnlId, "")).willReturn(Arrays.asList(chnlId, parentChnlId));
-        assertEquals(siteChannelServiceHelper.findRelatedDept(parentChnlId, ""), Integer.valueOf(183));
+        assertEquals(Integer.valueOf(183), siteChannelServiceHelper.findRelatedDept(parentChnlId, ""));
     }
 
 }

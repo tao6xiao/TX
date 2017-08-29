@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -48,9 +49,9 @@ public class InfoErrorServiceImplTest {
         param.setSiteId(11);
         List<Statistics> testList = infoErrorService.getIssueCount(param);
         //已处理测试
-        assertEquals(testList.get(0).getCount(), 16);
+        assertEquals(16, testList.get(0).getCount());
         //未处理测试
-        assertEquals(testList.get(1).getCount(), 76);
+        assertEquals(76, testList.get(1).getCount());
 
     }
 
@@ -61,12 +62,13 @@ public class InfoErrorServiceImplTest {
         HistoryStatisticsResp historyStatisticsResp = infoErrorService.getIssueHistoryCount(param);
         //五月数据测试
         HistoryStatistics historyStatisticsTest = (HistoryStatistics) historyStatisticsResp.getData().get(4);
-        assertEquals(historyStatisticsTest.getValue(), Integer.valueOf(10));
+        assertEquals(Integer.valueOf(10), historyStatisticsTest.getValue());
         //六月数据测试
         historyStatisticsTest = (HistoryStatistics) historyStatisticsResp.getData().get(5);
-        assertEquals(historyStatisticsTest.getValue(), Integer.valueOf(82));
+        assertEquals(Integer.valueOf(82), historyStatisticsTest.getValue());
     }
 
+    @Rollback
     @Test
     public void getInfoErrorList() throws Exception {
         PageDataRequestParam param = new PageDataRequestParam();
@@ -75,8 +77,7 @@ public class InfoErrorServiceImplTest {
         //模拟空数据，防止报空指针错误
         given(this.deptApiService.findDeptById("", 201)).willReturn(new Dept());
 
-        assertEquals(infoErrorService.getInfoErrorList(param).getPager().getItemCount(), Integer.valueOf(76));
-;
-    }
+        assertEquals(Integer.valueOf(76), infoErrorService.getInfoErrorList(param).getPager().getItemCount());
 
+    }
 }

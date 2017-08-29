@@ -37,12 +37,6 @@ import static org.mockito.BDDMockito.given;
 @RunWith(SpringRunner.class)
 public class DutyDeptServiceImplTest {
 
-//    @InjectMocks
-//    private DutyDeptServiceImpl dutyDeptService;
-
-//    @Mock
-//    private IssueMapper issueMapper;
-
     @Resource
     private DutyDeptMapper deptMapper;
 
@@ -143,12 +137,12 @@ public class DutyDeptServiceImplTest {
         ApiPageData apiPageData = dutyDeptService.get(param);
 
         DutyDept dutyDeptTest = (DutyDept)apiPageData.getData().get(0);
-        assertEquals(dutyDeptTest.getChnlId(), Integer.valueOf(124));
-        assertEquals(dutyDeptTest.getDeptId(), Integer.valueOf(169));
+        assertEquals(Integer.valueOf(124), dutyDeptTest.getChnlId());
+        assertEquals(Integer.valueOf(169), dutyDeptTest.getDeptId());
         DutyDept nullDutyDeptTest = (DutyDept)apiPageData.getData().get(1);
-        assertEquals(nullDutyDeptTest.getDeptId(), null);
+        assertEquals(null, nullDutyDeptTest.getDeptId());
 
-        assertEquals(apiPageData.getData().size(), 3);
+        assertEquals(3, apiPageData.getData().size());
     }
 
 }
