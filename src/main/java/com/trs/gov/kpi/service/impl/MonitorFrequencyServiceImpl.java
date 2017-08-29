@@ -2,8 +2,13 @@ package com.trs.gov.kpi.service.impl;
 
 import com.trs.gov.kpi.constant.EnumCheckJobType;
 import com.trs.gov.kpi.constant.FrequencyType;
+import com.trs.gov.kpi.constant.MonitorFrequencyTableFileld;
+import com.trs.gov.kpi.dao.CommonMapper;
 import com.trs.gov.kpi.dao.MonitorFrequencyMapper;
 import com.trs.gov.kpi.entity.MonitorFrequency;
+import com.trs.gov.kpi.entity.dao.DBUpdater;
+import com.trs.gov.kpi.entity.dao.QueryFilter;
+import com.trs.gov.kpi.entity.dao.Table;
 import com.trs.gov.kpi.entity.exception.BizException;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencyFreq;
 import com.trs.gov.kpi.entity.requestdata.MonitorFrequencySetUp;
@@ -31,6 +36,9 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
 
     @Resource
     SchedulerService schedulerService;
+
+    @Resource
+    CommonMapper commonMapper;
 
     @Override
     public List<MonitorFrequencyResponse> queryBySiteId(int siteId) {
@@ -62,9 +70,17 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     @Override
     public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) throws BizException {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
-        int num = monitorFrequencyMapper.updateMonitorFrequencySetUp(monitorFrequencyList);
+        for (MonitorFrequency frequency: monitorFrequencyList) {
+            QueryFilter filter = new QueryFilter(Table.MONITOR_FREQUENCY);
+            filter.addCond(MonitorFrequencyTableFileld.SITE_ID, frequency.getSiteId());
+            filter.addCond(MonitorFrequencyTableFileld.TYPE_ID, frequency.getTypeId());
+
+            DBUpdater updater = new DBUpdater(Table.MONITOR_FREQUENCY.getTableName());
+            updater.addField(MonitorFrequencyTableFileld.VALUE, frequency.getValue());
+            commonMapper.update(updater,filter);
+        }
         updateMonitorScheduler(monitorFrequencyList);
-        return num;
+        return 0;
     }
 
     private List<MonitorFrequency> addFrequencySetUpToList(MonitorFrequencySetUp monitorFrequencySetUp) {
