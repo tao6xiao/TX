@@ -81,7 +81,7 @@ public class InfoErrorServiceImpl implements InfoErrorService {
 
     @Override
     public HistoryStatisticsResp getIssueHistoryCount(PageDataRequestParam param) {
-        // TODO: 2017/8/29 tao.xiao 有没有可能前端只传开始时间，没有给结束时间，则会报空指针异常
+        // TODO: 2017/8/29 tao.xiao 有没有可能前端只传开始时间，没有给结束时间，则会报空指针异常  FIXED
         param.setDefaultDate();
 
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());

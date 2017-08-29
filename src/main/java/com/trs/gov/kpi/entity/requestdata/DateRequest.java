@@ -126,13 +126,12 @@ public class DateRequest {
      * 设置默认起止时间
      */
     public void setDefaultDate() {
+        Date endDate = getEndDate();
+        setEndDateTime(DateUtil.toString(endDate));
         if (StringUtil.isEmpty(getBeginDateTime())) {
-            Date endDate = getEndDate();
-            setEndDateTime(DateUtil.toString(endDate));
             String beginTime;
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(endDate);
-
             if (Granularity.DAY.equals(getGranularity())) {
                 calendar.set(Calendar.DAY_OF_MONTH, 1);
                 beginTime = DateUtil.toString(calendar.getTime());
