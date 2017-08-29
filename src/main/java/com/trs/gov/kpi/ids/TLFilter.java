@@ -40,6 +40,7 @@ public class TLFilter implements Filter {
             //给其他模块提供的接口需要放行
             if (req.getRequestURI().startsWith("/gov/kpi/opendata")) {
                 chain.doFilter(request, response);
+                return;
             }
 
             final BizException ex = new BizException("当前用户处于未登录状态或者IDS服务器已停止");
