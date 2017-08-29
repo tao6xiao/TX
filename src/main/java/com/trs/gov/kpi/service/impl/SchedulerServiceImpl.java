@@ -186,6 +186,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
 
+            //添加Trigger监听器，用于记录正在排队的任务
+            scheduler.getListenerManager().addTriggerListener(new CustomizeTriggerListener());
+
             // 首页有效性检查
             initHomepageCheckJob(scheduler);
 
