@@ -58,7 +58,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     public int addMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) throws BizException {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
         int num = monitorFrequencyMapper.insertMonitorFrequencyList(monitorFrequencyList);
-        updateMonitorScheduler(monitorFrequencyList);
+        addMonitorScheduler(monitorFrequencyList);
         return num;
     }
 
@@ -70,14 +70,14 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     @Override
     public int updateMonitorFrequencySetUp(MonitorFrequencySetUp monitorFrequencySetUp) throws BizException {
         List<MonitorFrequency> monitorFrequencyList = addFrequencySetUpToList(monitorFrequencySetUp);
-        for (MonitorFrequency frequency: monitorFrequencyList) {
+        for (MonitorFrequency frequency : monitorFrequencyList) {
             QueryFilter filter = new QueryFilter(Table.MONITOR_FREQUENCY);
             filter.addCond(MonitorFrequencyTableFileld.SITE_ID, frequency.getSiteId());
             filter.addCond(MonitorFrequencyTableFileld.TYPE_ID, frequency.getTypeId());
 
             DBUpdater updater = new DBUpdater(Table.MONITOR_FREQUENCY.getTableName());
             updater.addField(MonitorFrequencyTableFileld.VALUE, frequency.getValue());
-            commonMapper.update(updater,filter);
+            commonMapper.update(updater, filter);
         }
         updateMonitorScheduler(monitorFrequencyList);
         return 0;
@@ -113,6 +113,28 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
     }
 
     /**
+     * 新增检测任务
+     *
+     * @param monitorFrequencyList
+     */
+    private void addMonitorScheduler(List<MonitorFrequency> monitorFrequencyList) throws BizException {
+        if (monitorFrequencyList == null || monitorFrequencyList.isEmpty()) {
+            return;
+        }
+        Integer siteId = monitorFrequencyList.get(0).getSiteId();
+        for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
+            // TODO  FIXED  需要考虑移除成功，但添加不成功的情况，最好调整为只修改调度频率
+            if (monitorFrequency.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_LINK);
+            } else if (monitorFrequency.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY.getTypeId()) {
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+            } else if (monitorFrequency.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
+                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_CONTENT);
+            }
+        }
+    }
+
+    /**
      * 更新检测任务
      *
      * @param monitorFrequencyList
@@ -123,16 +145,12 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         }
         Integer siteId = monitorFrequencyList.get(0).getSiteId();
         for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
-            // TODO 需要考虑移除成功，但添加不成功的情况，最好调整为只修改调度频率
             if (monitorFrequency.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
-                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_LINK);
-                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_LINK);
+                schedulerService.updateTrigger(siteId, EnumCheckJobType.CHECK_LINK);
             } else if (monitorFrequency.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY.getTypeId()) {
-                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
-                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
+                schedulerService.updateTrigger(siteId, EnumCheckJobType.CHECK_HOME_PAGE);
             } else if (monitorFrequency.getTypeId() == FrequencyType.WRONG_INFORMATION.getTypeId()) {
-                schedulerService.removeCheckJob(siteId, EnumCheckJobType.CHECK_CONTENT);
-                schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_CONTENT);
+                schedulerService.updateTrigger(siteId, EnumCheckJobType.CHECK_CONTENT);
             }
         }
     }
