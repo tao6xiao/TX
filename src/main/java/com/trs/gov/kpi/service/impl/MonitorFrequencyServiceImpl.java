@@ -123,7 +123,7 @@ public class MonitorFrequencyServiceImpl implements MonitorFrequencyService {
         }
         Integer siteId = monitorFrequencyList.get(0).getSiteId();
         for (MonitorFrequency monitorFrequency : monitorFrequencyList) {
-            // TODO  FIXED  需要考虑移除成功，但添加不成功的情况，最好调整为只修改调度频率
+            // TODO  需要考虑移除成功，但添加不成功的情况，最好调整为只修改调度频率  FIXED 2017/08/29  ran.wei
             if (monitorFrequency.getTypeId() == FrequencyType.TOTAL_BROKEN_LINKS.getTypeId()) {
                 schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_LINK);
             } else if (monitorFrequency.getTypeId() == FrequencyType.HOMEPAGE_AVAILABILITY.getTypeId()) {

@@ -71,7 +71,6 @@ public class CheckJob implements Job {
 
             performanceLogRecorder.recordAlways();
         } catch (Exception e) {
-            //TODO REVIEW  ran.wei DO_he.lang FIXED 日志描述错误 应该为任务调度
             String errorInfo = "任务调度[" + task.getName() + "]运行失败，站点siteId[" + task.getSiteId() + "]";
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, errorInfo, e);
