@@ -14,4 +14,6 @@ public class DebugType {
     public static final String MONITOR_START = "监测开始";
 
     public static final String MONITOR_END = "监测结束";
+
+    public static final String MONITOR_WAIT = "等待监测";
 }
