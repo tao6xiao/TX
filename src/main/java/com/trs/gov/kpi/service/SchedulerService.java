@@ -24,6 +24,13 @@ public interface SchedulerService {
     void removeCheckJob(int siteId, EnumCheckJobType checkType) throws BizException;
 
     /**
+     * 更新监测任务
+     *
+     * @param siteId
+     */
+    void updateTrigger(int siteId, EnumCheckJobType checkType) throws BizException;
+
+    /**
      * 执行一次监测
      *
      * @param siteId

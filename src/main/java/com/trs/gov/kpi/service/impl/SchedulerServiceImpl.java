@@ -176,6 +176,51 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
         }
     }
 
+    @Override
+    public void updateTrigger(int siteId, EnumCheckJobType checkType) throws BizException {
+        try {
+            final List<MonitorFrequency> monitorFrequencies = monitorFrequencyMapper
+                    .queryBySiteId(siteId);
+            FrequencyType frequencyType;
+            switch (checkType) {
+                case CHECK_HOME_PAGE:
+                    frequencyType = FrequencyType.HOMEPAGE_AVAILABILITY;
+                    break;
+                case CHECK_CONTENT:
+                    frequencyType = FrequencyType.WRONG_INFORMATION;
+                    break;
+                case CHECK_LINK:
+                    frequencyType = FrequencyType.TOTAL_BROKEN_LINKS;
+                    break;
+                default:
+                    throw new BizException("invalid checkType: " + checkType);
+            }
+            int interval = DateUtil.SECOND_ONE_DAY;
+            for (MonitorFrequency freq : monitorFrequencies) {
+                if (freq != null && freq.getTypeId() == frequencyType.getTypeId()) {
+                    interval = getInterval(frequencyType.getFreqUnit(), freq.getValue());
+                }
+            }
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            TriggerKey triggerKey = TriggerKey.triggerKey(getJobTriggerName(siteId, checkType), getJobGroupName(checkType));
+            Trigger trigger = scheduler.getTrigger(triggerKey);
+
+            TriggerBuilder triggerBuilder = trigger.getTriggerBuilder();
+            Trigger newTrigger = triggerBuilder.withSchedule(simpleSchedule()
+                    .withIntervalInSeconds(interval)
+                    .repeatForever()
+                    .withMisfireHandlingInstructionNowWithExistingCount())
+                    .withIdentity(getJobTriggerName(siteId, checkType), getJobGroupName(checkType))
+                    .startAt(tomorrowAt(0, 0, 0))
+                    .build();
+            scheduler.rescheduleJob(triggerKey, newTrigger);
+
+        } catch (SchedulerException e) {
+            log.error("failed to update trigger of " + checkType.name() + "    the siteId:[ " + siteId + " ]", e);
+        }
+
+    }
+
     @PostConstruct
     public void startService() {
         // 启动完成后，就开始执行
@@ -185,6 +230,9 @@ public class SchedulerServiceImpl implements SchedulerService, ApplicationContex
 
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
+
+            //添加Trigger监听器，用于记录正在排队的任务
+            scheduler.getListenerManager().addTriggerListener(new CustomizeTriggerListener());
 
             // 首页有效性检查
             initHomepageCheckJob(scheduler);

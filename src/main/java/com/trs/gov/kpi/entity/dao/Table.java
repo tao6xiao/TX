@@ -19,7 +19,8 @@ public enum Table {
     DUTY_DEPT("dutydept", DutyDept.class),
     REPORT("report", Report.class),
     MONITOR_RECORD("monitorrecord", MonitorRecord.class),
-    LINK_CONTENT_STATS("linkcontentstats", LinkContentStats.class);
+    LINK_CONTENT_STATS("linkcontentstats", LinkContentStats.class),
+    MONITOR_FREQUENCY("monitorfrequency", MonitorFrequency.class);
 
     // 表名
     @Getter

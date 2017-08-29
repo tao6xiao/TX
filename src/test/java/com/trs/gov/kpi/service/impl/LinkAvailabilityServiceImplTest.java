@@ -56,7 +56,7 @@ public class LinkAvailabilityServiceImplTest {
     @Rollback
     public void getIssueList() throws Exception {
         PageDataRequestParam param = new PageDataRequestParam();
-        param.setSiteId(8269426);
+        param.setSiteId(TestConfigConst.testSiteId);
         param.setPageIndex(1);
         param.setPageSize(10);
 
@@ -83,7 +83,7 @@ public class LinkAvailabilityServiceImplTest {
     public void showIndexAvailability() throws Exception {
         PageDataRequestParam param = new PageDataRequestParam();
         IndexPage expectedResult = new IndexPage();
-        param.setSiteId(8269426);
+        param.setSiteId(TestConfigConst.testSiteId);
         Site site = new Site();
         site.setWebHttp("www.testindex.com");
         given(this.siteApiService.getSiteById(param.getSiteId(), null)).willReturn(site);
@@ -119,7 +119,7 @@ public class LinkAvailabilityServiceImplTest {
         assertEquals(false, expectedResult.getIndexAvailable());
 
         // 不存在监测记录
-        param.setSiteId(8269427);
+        param.setSiteId(TestConfigConst.testSiteId+1);
         given(this.siteApiService.getSiteById(param.getSiteId(), null)).willReturn(site);
         monitorRecordService.insertMonitorRecord(monitorRecord);
         expectedResult = linkAvailabilityService.showIndexAvailability(param);
