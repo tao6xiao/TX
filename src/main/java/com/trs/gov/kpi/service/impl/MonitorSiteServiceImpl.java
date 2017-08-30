@@ -54,6 +54,7 @@ public class MonitorSiteServiceImpl implements MonitorSiteService {
         schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMENODE_REPORT_GENERATE);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.TIMEINTERVAL_REPORT_GENERATE);
         schedulerService.addCheckJob(siteId, EnumCheckJobType.SERVICE_LINK);
+        schedulerService.addCheckJob(siteId, EnumCheckJobType.CHECK_INFO_UPDATE);
     }
 
     @Override
