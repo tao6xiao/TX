@@ -89,6 +89,36 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
 
         IssueCountRequest request = new IssueCountRequest();
         request.setSiteIds(Integer.toString(siteId));
+
+        Report report = buildReport();
+        String fileDir = initFileDirAndType(report);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String fileName = sdf.format(new Date()) + ".xlsx";
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("问题统计");// 创建工作表(Sheet)
+        CellStyle style = initExcelStyle(workbook);
+
+        //各状态问题数量统计
+        initIssueByStatus(sheet, style, request, "各状态的问题统计");
+        //各状态问题数量统计的历史记录
+        initHistoryIssueByStatus(sheet, style, request, "各状态问题的历史记录统计");
+        //按状态再按部门统计问题的数量
+        initIssueByStatusAndDept(sheet, style, request, "各状态各部门的问题统计");
+        //按部门再按状态统计问题的数量
+        initIssueByDeptAndStatus(sheet, style, request, "各部门各状态的问题统计");
+        //按问题类型再按部门统计未处理的问题数量
+        initIssueByTypeAndDept(sheet, style, "问题分类统计");
+
+        writeExcel(fileDir, fileName, workbook);
+
+        report.setPath(fileDir + fileName);
+        report.setCrTime(new Date());
+        //入库
+        reportMapper.insert(report);
+    }
+
+    private Report buildReport() throws RemoteException {
         Report report = new Report();
         report.setSiteId(siteId);
         Calendar calendar = Calendar.getInstance();
@@ -99,7 +129,10 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String title = site.getSiteDesc() + "报表" + "(" + sdf.format(calendar.getTime()) + ")";
         report.setTitle(title);
+        return report;
+    }
 
+    private String initFileDirAndType(Report report) {
         String granularity;
         if (isTimeNode) {
             granularity = "day";
@@ -108,12 +141,11 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
             granularity = "month";
             report.setTypeId(2);
         }
-        sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        return File.separator + Integer.toString(siteId) + File.separator + granularity + File.separator;
+    }
 
-        String fileDir = File.separator + Integer.toString(siteId) + File.separator + granularity + File.separator;
-        String fileName = sdf.format(new Date()) + ".xlsx";
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("问题统计");// 创建工作表(Sheet)
+
+    private CellStyle initExcelStyle(Workbook workbook) {
         CellStyle style = workbook.createCellStyle();
         style.setFillForegroundColor(HSSFColor.GREEN.index);//设置图案颜色
         style.setFillBackgroundColor(HSSFColor.GREEN.index);//设置图案背景色
@@ -123,9 +155,12 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         font.setFontHeightInPoints((short) 17);//设置字号
         font.setColor(HSSFColor.WHITE.index);//设置字体颜色
         style.setFont(font);
+        return style;
+    }
 
-        //各状态问题数量统计
-        addTitle(sheet, style, "各状态的问题统计");
+
+    private void initIssueByStatus(Sheet sheet, CellStyle style, IssueCountRequest request, String title) {
+        addTitle(sheet, style, title);
         changeIndex();
         List<Statistics> statisticsList = countService.countSort(request);
         Row row = sheet.createRow(rowIndex);
@@ -140,9 +175,10 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         changeIndex();
         sheet.createRow(rowIndex);
         changeIndex();
+    }
 
-        //各状态问题数量统计的历史记录
-        addTitle(sheet, style, "各状态问题的历史记录统计");
+    private void initHistoryIssueByStatus(Sheet sheet, CellStyle style, IssueCountRequest request, String title) {
+        addTitle(sheet, style, title);
         changeIndex();
         List list = countService.historyCountSort(request).getData();
         for (Object object : list) {
@@ -151,15 +187,16 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
             CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex, cellIndex + 1);
             sheet.addMergedRegion(region);
             changeIndex();
-            row = sheet.createRow(rowIndex);
+            Row row = sheet.createRow(rowIndex);
             writeHistoryCount(response.getData(), row, cellIndex);
             changeIndex();
         }
         sheet.createRow(rowIndex);
         changeIndex();
+    }
 
-        //按状态再按部门统计问题的数量
-        addTitle(sheet, style, "各状态各部门的问题统计");
+    private void initIssueByStatusAndDept(Sheet sheet, CellStyle style, IssueCountRequest request, String title) throws RemoteException {
+        addTitle(sheet, style, title);
         changeIndex();
         List<DeptCountResponse> deptCountResponseList = countService.deptCountSort(request);
         for (DeptCountResponse deptCountResponse : deptCountResponseList) {
@@ -167,7 +204,7 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
             CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex, cellIndex + 1);
             sheet.addMergedRegion(region);
             changeIndex();
-            row = sheet.createRow(rowIndex);
+            Row row = sheet.createRow(rowIndex);
             for (DeptCount deptCount : deptCountResponse.getCount()) {
                 row.createCell(cellIndex).setCellValue(deptCount.getDept());
                 row.createCell(cellIndex + 1).setCellValue(deptCount.getValue());
@@ -178,12 +215,13 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         }
         sheet.createRow(rowIndex);
         changeIndex();
+    }
 
-        //按部门再按状态统计问题的数量
-        addTitle(sheet, style, "各部门各状态的问题统计");
+    private void initIssueByDeptAndStatus(Sheet sheet, CellStyle style, IssueCountRequest request, String title) throws RemoteException {
+        addTitle(sheet, style, title);
         changeIndex();
         DeptInductionResponse[] induction = countService.deptInductionSort(request);
-        row = sheet.createRow(rowIndex);
+        Row row = sheet.createRow(rowIndex);
         row.createCell(cellIndex).setCellValue("部门");
         row.createCell(cellIndex + 1).setCellValue("待解决问题/待解决预警/已解决问题和预警");
         CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, cellIndex + 1, cellIndex + 5);
@@ -207,9 +245,10 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         changeIndex();
         sheet.createRow(rowIndex);
         changeIndex();
+    }
 
-        //按问题类型再按部门统计未处理的问题数量
-        addTitle(sheet, style, "问题分类统计");
+    private void initIssueByTypeAndDept(Sheet sheet, CellStyle style, String title) throws RemoteException {
+        addTitle(sheet, style, title);
         changeIndex();
         IssueCountByTypeRequest typeRequest = new IssueCountByTypeRequest();
         typeRequest.setSiteIds(Integer.toString(siteId));
@@ -218,7 +257,7 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         List<DeptCount> deptCountList = countService.getDeptCountByType(typeRequest);
         sheet.createRow(rowIndex).createCell(cellIndex).setCellValue(Types.IssueType.LINK_AVAILABLE_ISSUE.getName());
         changeIndex();
-        row = sheet.createRow(rowIndex);
+        Row row = sheet.createRow(rowIndex);
         int index = 0;
         writeDeptCount(deptCountList, sheet, row, index);
         changeIndex();
@@ -240,7 +279,9 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
         index = 0;
         writeDeptCount(deptCountList, sheet, row, index);
         changeIndex();
+    }
 
+    private void writeExcel(String fileDir, String fileName, Workbook workbook) {
         //创建目录
         File dir = new File(reportDir + fileDir);
         if (!dir.exists()) {
@@ -255,10 +296,6 @@ public class ReportGenerateScheduler implements SchedulerTask, Serializable {
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.TASK_SCHEDULE, ErrorType.TASK_SCHEDULE_FAILED, errorInfo, e);
         }
-        report.setPath(fileDir + fileName);
-        report.setCrTime(new Date());
-        //入库
-        reportMapper.insert(report);
     }
 
     @Override
