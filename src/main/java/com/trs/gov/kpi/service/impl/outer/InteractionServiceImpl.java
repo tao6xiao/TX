@@ -126,28 +126,12 @@ public class InteractionServiceImpl implements InteractionService {
             params.put("granularity", String.valueOf(param.getGranularity()));
         }
 
-        OkHttpClient client = new OkHttpClient();
-        NBHDHistoryRes nbhdHistoryRes;
-        try {
-            Response response = client.newCall(
-                    buildRequest("countDetailGovmsgboxs", GOVMSGBOX_SERVICE_NAME, null, params)).execute();
+        NBHDHistoryRes nbhdHistoryRes = buildNBHDHistoryRes(param, params);
 
-            if (response.isSuccessful()) {
-                String jsonResult = response.body().string();
-                if (StringUtil.isEmpty(jsonResult)) {
-                    return new ArrayList<>();
-                }
-                nbhdHistoryRes = JSON.parseObject(jsonResult, NBHDHistoryRes.class);
-            } else {
-                log.error("failed to countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "], error: " + response);
-                throw new RemoteException("获取咨询统计历史记录失败！ [siteId=" + param.getSiteId() + "]");
-            }
-        } catch (IOException e) {
-            log.error("failed countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
-            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
-            throw new RemoteException("获取咨询统计历史记录失败！[siteId=" + param.getSiteId() + "]", e);
-        }
         List<NBHDHistory> datas = nbhdHistoryRes.getDatas();
+        if(datas == null || datas.isEmpty()){
+            return new ArrayList<>();
+        }
 
         List<HistoryStatistics> historyStatisticsList = new ArrayList<>();
         List<HistoryDate> dateList = DateUtil.splitDate(param.getBeginDateTime(), param.getEndDateTime(), param.getGranularity());
@@ -173,6 +157,31 @@ public class InteractionServiceImpl implements InteractionService {
         }
 
         return historyStatisticsList;
+    }
+
+    private NBHDHistoryRes buildNBHDHistoryRes(NBHDRequestParam param, Map<String, String> params) throws RemoteException {
+        OkHttpClient client = new OkHttpClient();
+        NBHDHistoryRes nbhdHistoryRes;
+        try {
+            Response response = client.newCall(
+                    buildRequest("countDetailGovmsgboxs", GOVMSGBOX_SERVICE_NAME, null, params)).execute();
+
+            if (response.isSuccessful()) {
+                String jsonResult = response.body().string();
+                if (StringUtil.isEmpty(jsonResult)) {
+                    return new NBHDHistoryRes();
+                }
+                nbhdHistoryRes = JSON.parseObject(jsonResult, NBHDHistoryRes.class);
+            } else {
+                log.error("failed to countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "], error: " + response);
+                throw new RemoteException("获取咨询统计历史记录失败！ [siteId=" + param.getSiteId() + "]");
+            }
+        } catch (IOException e) {
+            log.error("failed countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
+            LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, "failed countDetailGovmsgboxs, [siteId=" + param.getSiteId() + "]", e);
+            throw new RemoteException("获取咨询统计历史记录失败！[siteId=" + param.getSiteId() + "]", e);
+        }
+        return nbhdHistoryRes;
     }
 
     private Boolean isEqual(String kpiDate, String nbhdDate, Integer granularity) {
