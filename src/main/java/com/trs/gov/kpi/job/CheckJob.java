@@ -39,28 +39,28 @@ public class CheckJob implements Job {
         SchedulerTask task = (SchedulerTask) jobExecutionContext.getMergedJobDataMap().get("task");
 
         String logPrompt = "CheckJob:";
-        log.info(logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
-        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId()));
+        String startMessage = logPrompt + SchedulerUtil.getStartMessage(task.getName(), task.getSiteId());
+        log.info(startMessage);
+        LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_START, startMessage);
         Date startTime = null;
         try {
             Date manualStartTime = toGetManualMonitorBeginTime(task);
-            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+            if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
                 startTime = manualStartTime;
-            }else {
+            } else {
                 startTime = new Date();
             }
 
             OuterApiServiceUtil.checkSite(task.getSiteId(), siteApiService.getSiteById(task.getSiteId(), ""));
 
-            if(task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value){
+            if (task.getMonitorType() == Status.MonitorType.MANUAL_MONITOR.value) {
                 //修改手动检测记录
                 updateManualMonitorRecord(task, startTime);
-            }else {
+            } else {
                 //添加自动检测开始记录
                 insertBeginMonitorRecord(task, startTime);
             }
 
-            // TODO REVIEW DO_he.lang FIXED 日志记录到这边来
             final LogUtil.PerformanceLogRecorder performanceLogRecorder = new LogUtil.PerformanceLogRecorder(OperationType.TASK_SCHEDULE, logPrompt + task.getName() + "[siteId=" + task.getSiteId() +
                     "]");
 
@@ -78,9 +78,9 @@ public class CheckJob implements Job {
             insertEndMonitorRecord(task, startTime, Status.MonitorStatusType.CHECK_ERROR.value);
         } finally {
             // 记录结束
-            String info = SchedulerUtil.getEndMessage(task.getName(), task.getSiteId());
+            String info = logPrompt + SchedulerUtil.getEndMessage(task.getName(), task.getSiteId());
             log.info(info);
-            LogUtil.addDebugLog(logPrompt + OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
+            LogUtil.addDebugLog(OperationType.TASK_SCHEDULE, DebugType.MONITOR_END, info);
         }
     }
 
