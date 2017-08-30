@@ -60,30 +60,41 @@ public class PerformanceService {
         PageDataRequestParam param = new PageDataRequestParam();
         param.setSiteId(siteId);
 
-        //网站可用得分
-        double availabilityScore = 37.5;
-        //网站信息更新得分
-        double infoUpdateScore = 37.5;
-        //办事指南得分
-        double handleGuideScore = 12.5;
-        //咨询得分
+        //咨询信件答复质量情况
         double advisoryScore = 6.25;
-        //访谈得分
-        double interviewScore = 6.25;
+        advisoryScore *= (1);
 
-        //网站可用情况
-        IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
-        if (indexPage != null && indexPage.getIndexAvailable() != null && indexPage.getIndexAvailable() == Boolean.TRUE) {
-            int linkIssueCount = linkAvailabilityService.getUnhandledIssueCount(param);
-            availabilityScore *= 1 - linkIssueCount * 0.001;
-            if (availabilityScore < 0) {
-                availabilityScore = 0;
-            }
-        } else {
-            availabilityScore = 0;
+        //年度在线访谈情况
+        double interviewScore = 6.25;
+        interviewScore *= (1);
+
+        //总分
+        double sum = getAvailabilityScore(param) + getInfoUpdateScore(param) + getHandleGuideScore(param) + advisoryScore + interviewScore;
+
+        return Double.parseDouble(String.format("%.2f", sum));
+    }
+
+    //办事指南得分
+    private double getHandleGuideScore(PageDataRequestParam param) throws RemoteException {
+
+        double handleGuideScore = 12.5;
+        SGStatistics sgStatistics = sgService.getSGCount(param);
+        int handleIssueCount = 0;
+        if (sgStatistics != null) {
+            handleIssueCount = sgStatistics.getAbandonedCounts();
         }
 
-        //网站信息更新情况
+        handleGuideScore *= 1 - handleIssueCount * 0.1;
+        if (handleGuideScore < 0) {
+            handleGuideScore = 0;
+        }
+        return handleGuideScore;
+    }
+
+    //网站信息更新得分
+    private double getInfoUpdateScore(PageDataRequestParam param) throws BizException, RemoteException {
+        double infoUpdateScore = 37.5;
+
         List<Statistics> statisticsList = infoUpdateService.getUpdateNotInTimeCountList(param);
         int updateNotInTimeCount = 0;
         int blankChnlCount = 0;
@@ -100,29 +111,24 @@ public class PerformanceService {
         } else {
             infoUpdateScore = 0;
         }
+        return infoUpdateScore;
+    }
 
-        //办事指南要素的完整性、准确性
-        SGStatistics sgStatistics = sgService.getSGCount(param);
-        int handleIssueCount = 0;
-        if (sgStatistics != null) {
-            handleIssueCount = sgStatistics.getAbandonedCounts();
+    //网站可用性得分
+    private double getAvailabilityScore(PageDataRequestParam param) throws RemoteException {
+
+        double availabilityScore = 37.5;
+        IndexPage indexPage = linkAvailabilityService.showIndexAvailability(param);
+        if (indexPage != null && indexPage.getIndexAvailable() != null && indexPage.getIndexAvailable() == Boolean.TRUE) {
+            int linkIssueCount = linkAvailabilityService.getUnhandledIssueCount(param);
+            availabilityScore *= 1 - linkIssueCount * 0.001;
+            if (availabilityScore < 0) {
+                availabilityScore = 0;
+            }
+        } else {
+            availabilityScore = 0;
         }
-
-        handleGuideScore *= 1 - handleIssueCount * 0.1;
-        if (handleGuideScore < 0) {
-            handleGuideScore = 0;
-        }
-
-        //咨询信件答复质量情况
-        advisoryScore *= (1);
-
-        //年度在线访谈情况
-        interviewScore *= (1);
-
-        //总分
-        double sum = availabilityScore + infoUpdateScore + handleGuideScore + advisoryScore + interviewScore;
-
-        return Double.parseDouble(String.format("%.2f", sum));
+        return availabilityScore;
     }
 
 
