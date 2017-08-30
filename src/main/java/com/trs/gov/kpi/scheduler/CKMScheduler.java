@@ -163,7 +163,7 @@ public class CKMScheduler implements SchedulerTask, Serializable {
             result = contentCheckApiService.check(checkContent, CollectionUtil.join(checkTypeList, ";"));
         } catch (Exception e) {
             runtimeResult.setIsException(Status.MonitorState.ABNORMAL.value);
-            String errorInfo = "siteId[" + siteId + "], url[" + baseUrl + "], failed to check content " + checkContent;
+            String errorInfo = "siteId[" + siteId + "], url[" + baseUrl + "], failed to check content .";
             log.error(errorInfo, e);
             LogUtil.addErrorLog(OperationType.REQUEST, ErrorType.REQUEST_FAILED, errorInfo, e);
             return issueList;
