@@ -7,8 +7,8 @@
             </PatternLayout>
         </Console>
         <!-- 按日期每天生成log文件 -->
-        <RollingFile name="RollingFile" fileName="/opt/TRS/TRSWCMV7/wcmlogs/kpi/info.log"
-                     filePattern="/opt/TRS/TRSWCMV7/wcmlogs/kpi/info-%d{yyyy-MM-dd}.log">
+        <RollingFile name="RollingFile" fileName="@log.dir@/kpi/info.log"
+                     filePattern="@log.dir@/kpi/info-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="%d %p %C{1.} [%t]: %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
@@ -20,8 +20,8 @@
             </Filters>-->
         </RollingFile>
         <!-- 按日期每天生成log文件 -->
-        <RollingFile name="LogStashRollingFile" fileName="/opt/TRS/TRSWCMV7/wcmlogs/kpi/logstash.log"
-                     filePattern="/opt/TRS/TRSWCMV7/wcmlogs/kpi/logstash-%d{yyyy-MM-dd}.log">
+        <RollingFile name="LogStashRollingFile" fileName="@log.dir@/kpi/logstash.log"
+                     filePattern="@log.dir@/kpi/logstash-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="%d %p %C{1.} [%t]: %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
