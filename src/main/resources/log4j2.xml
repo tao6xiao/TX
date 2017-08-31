@@ -7,7 +7,7 @@
             </PatternLayout>
         </Console>
         <!-- 按日期每天生成log文件 -->
-        <RollingFile name="RollingFile" fileName="@log.dir@/kpi/info.log"
+        <RollingFile name="KpiRollingFile" fileName="@log.dir@/kpi/info.log"
                      filePattern="@log.dir@/kpi/info-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="%d %p %C{1.} [%t]: %m%n"/>
             <Policies>
@@ -37,14 +37,14 @@
         <!-- 屏蔽掉warning：Going to buffer response body of large or unknown size输出，只输出error -->
         <Logger name="org.apache.commons.httpclient.HttpMethodBase" level="ERROR" />
 
-        <Logger name="com.trs.mlf.simplelog.SimpleLogServer" level="DEBUG">
+        <Logger name="com.trs.mlf.simplelog.SimpleLogServer" additivity="false" level="DEBUG">
             <AppenderRef ref="LogStashRollingFile" />
         </Logger>
 
         <!-- 输出info级别信息 -->
         <Root level="INFO">
             <AppenderRef ref="Console" />
-            <AppenderRef ref="RollingFile" />
+            <AppenderRef ref="KpiRollingFile" />
         </Root>
 
     </Loggers>
