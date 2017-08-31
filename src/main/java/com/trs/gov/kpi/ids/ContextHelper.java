@@ -59,7 +59,7 @@ public class ContextHelper {
     public static LocalUser getLoginUser() {
         LocalUser loginUser = (LocalUser) BaseContextHelper.getArg(ARG_INDEX_USER);
         if (loginUser == null) {
-            log.info("");
+            log.info("fatal error:no current user in threadlocal,iniContext please!");
             throw new BizRuntimeException("fatal error:no current user in threadlocal,iniContext please!");
         }
         return loginUser;
